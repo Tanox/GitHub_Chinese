@@ -1,0 +1,6 @@
+{
+  "name": "GitHub Chinese 简体中文",
+  "description": "GitHub 简体中文 - GitHub 中文本地化解决方案",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
