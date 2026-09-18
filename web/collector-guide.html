@@ -7,48 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-      @import "tailwindcss";
-      
-      :root {
-        --font-display: 'Space Grotesk', system-ui, sans-serif;
-        --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-      }
-
-      body {
-        font-family: var(--font-body);
-      }
-
-      h1, h2, h3 {
-        font-family: var(--font-display);
-      }
-
-      .font-display {
-        font-family: var(--font-display);
-      }
-
-      .font-body {
-        font-family: var(--font-body);
-      }
-
-      .terminal-scrollbar::-webkit-scrollbar {
-        width: 6px;
-      }
-      .terminal-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .terminal-scrollbar::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 10px;
-      }
-      .terminal-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-      .terminal-scrollbar {
-        scrollbar-width: thin;
-        scrollbar-color: #334155 transparent;
-      }
-    </style>
+    <link rel="stylesheet" href="/css/collector-guide.css">
   </head>
   <body class="bg-[#f8fafc] text-slate-900 h-screen flex overflow-hidden">
     <!-- Sidebar -->
@@ -104,6 +63,9 @@
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+      <!-- Toast Notification Container -->
+      <div id="toastContainer" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center pointer-events-none"></div>
+
       <header class="bg-white/80 backdrop-blur-md h-20 flex items-center justify-between px-6 md:px-10 border-b border-slate-200 shrink-0 z-30">
         <div>
           <h1 class="text-2xl font-bold text-slate-900 tracking-tight font-display">智能词典采集控制台</h1>
@@ -231,13 +193,16 @@ https://github.com/pulls"></textarea>
           </div>
           
           <!-- Progress Bar -->
-          <div class="mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <div class="flex justify-between text-sm mb-3">
-              <span id="progressText" class="text-slate-600 font-bold">准备就绪</span>
-              <span id="progressPercent" class="text-blue-600 font-bold font-mono">0%</span>
+          <div class="mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-inner">
+            <div class="flex justify-between items-end text-sm mb-3">
+              <div class="flex flex-col">
+                <span class="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Current Task</span>
+                <span id="progressText" class="text-slate-700 font-bold">引擎准备就绪</span>
+              </div>
+              <span id="progressPercent" class="text-blue-600 font-bold font-mono text-lg">0%</span>
             </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-              <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+            <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-300/30">
+              <div id="progressBar" class="bg-gradient-to-r from-blue-500 via-indigo-600 to-emerald-500 h-2.5 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(59,130,246,0.3)]" style="width: 0%"></div>
             </div>
           </div>
 
@@ -262,293 +227,6 @@ https://github.com/pulls"></textarea>
       </div>
     </main>
 
-    <script>
-      const STORAGE_KEYS = {
-        INPUT: 'i18n_collector_raw_input',
-        LOG: 'i18n_collector_log',
-        PROG_WIDTH: 'i18n_collector_progress_width',
-        PROG_PERCENT: 'i18n_collector_progress_percent',
-        PROG_TEXT: 'i18n_collector_progress_text'
-      };
-
-      // Restore state on load
-      window.addEventListener('DOMContentLoaded', () => {
-        const rawInput = document.getElementById('rawInput');
-        const savedInput = localStorage.getItem(STORAGE_KEYS.INPUT);
-        if (savedInput) {
-          rawInput.value = savedInput;
-          updatePreviewTable(savedInput);
-        }
-
-        // Auto-save input changes
-        rawInput.addEventListener('input', (e) => {
-          localStorage.setItem(STORAGE_KEYS.INPUT, e.target.value);
-          updatePreviewTable(e.target.value);
-        });
-
-        const savedLog = localStorage.getItem(STORAGE_KEYS.LOG);
-        if (savedLog) {
-          const dashboardSection = document.getElementById('dashboardSection');
-          dashboardSection.classList.remove('hidden');
-          dashboardSection.classList.add('flex');
-          
-          document.getElementById('outputLog').innerText = savedLog;
-          document.getElementById('progressBar').style.width = localStorage.getItem(STORAGE_KEYS.PROG_WIDTH) || '0%';
-          document.getElementById('progressPercent').innerText = localStorage.getItem(STORAGE_KEYS.PROG_PERCENT) || '0%';
-          document.getElementById('progressText').innerText = localStorage.getItem(STORAGE_KEYS.PROG_TEXT) || '就绪';
-          
-          const outputLog = document.getElementById('outputLog');
-          outputLog.scrollTop = outputLog.scrollHeight;
-        }
-      });
-
-      function saveProgressState() {
-        localStorage.setItem(STORAGE_KEYS.LOG, document.getElementById('outputLog').innerText);
-        localStorage.setItem(STORAGE_KEYS.PROG_WIDTH, document.getElementById('progressBar').style.width);
-        localStorage.setItem(STORAGE_KEYS.PROG_PERCENT, document.getElementById('progressPercent').innerText);
-        localStorage.setItem(STORAGE_KEYS.PROG_TEXT, document.getElementById('progressText').innerText);
-      }
-
-      function copyScript(btn) {
-        const originalText = btn.innerText;
-        const script = document.getElementById('script').innerText;
-        navigator.clipboard.writeText(script).then(() => {
-          btn.innerText = '已复制！';
-          btn.classList.replace('bg-blue-50', 'bg-emerald-50');
-          btn.classList.replace('text-blue-600', 'text-emerald-600');
-          setTimeout(() => {
-            btn.innerText = originalText;
-            btn.classList.replace('bg-emerald-50', 'bg-blue-50');
-            btn.classList.replace('text-emerald-600', 'text-blue-600');
-          }, 2000);
-        });
-      }
-
-      function cleanData() {
-        const input = document.getElementById('rawInput').value;
-        const lines = input.split('\n');
-        const cleaned = lines.filter(line => {
-          const trimmed = line.trim();
-          // Allow terms with length >= 2 (e.g., 'Go', 'Up', 'UI')
-          // Filter out pure numbers and pure punctuation/symbols
-          return trimmed.length >= 2 && !/^\d+$/.test(trimmed) && !/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(trimmed);
-        });
-        const newValue = [...new Set(cleaned)].join('\n');
-        document.getElementById('rawInput').value = newValue;
-        localStorage.setItem(STORAGE_KEYS.INPUT, newValue);
-        updatePreviewTable(newValue);
-      }
-
-      function updatePreviewTable(content) {
-        const previewContainer = document.getElementById('previewContainer');
-        const previewBody = document.getElementById('previewBody');
-        const termCount = document.getElementById('termCount');
-        
-        const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-        
-        if (lines.length === 0) {
-          previewContainer.classList.add('hidden');
-          return;
-        }
-
-        previewContainer.classList.remove('hidden');
-        termCount.innerText = `${lines.length} 词条`;
-        
-        previewBody.innerHTML = lines.map((line, index) => `
-          <tr class="group even:bg-slate-50/50 hover:bg-blue-50/50 transition-colors">
-            <td class="px-6 py-4 text-xs font-mono text-slate-400">#${(index + 1).toString().padStart(3, '0')}</td>
-            <td class="px-6 py-4 text-sm font-medium text-slate-700">${escapeHtml(line)}</td>
-            <td class="px-6 py-4 text-right">
-              <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
-                PENDING
-              </span>
-            </td>
-          </tr>
-        `).join('');
-      }
-
-      function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      function exportDataToJson() {
-        const input = document.getElementById('rawInput').value;
-        if (!input.trim()) {
-          return;
-        }
-        
-        const lines = input.split('\n').map(line => line.trim()).filter(line => line);
-        const jsonData = JSON.stringify(lines, null, 2);
-        
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `github-terms-${new Date().toISOString().slice(0, 10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-
-      function switchTab(mode) {
-        const tabManual = document.getElementById('tabManual');
-        const tabUrls = document.getElementById('tabUrls');
-        const manualMode = document.getElementById('manualMode');
-        const urlMode = document.getElementById('urlMode');
-
-        const activeClass = "flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 bg-white text-blue-600 shadow-sm border border-slate-200/50";
-        const inactiveClass = "flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 text-slate-500 hover:text-slate-800";
-
-        if (mode === 'manual') {
-          tabManual.className = activeClass;
-          tabUrls.className = inactiveClass;
-          manualMode.classList.remove('hidden');
-          urlMode.classList.add('hidden');
-        } else {
-          tabUrls.className = activeClass;
-          tabManual.className = inactiveClass;
-          urlMode.classList.remove('hidden');
-          manualMode.classList.add('hidden');
-        }
-      }
-
-      function handleStreamResponse(response, runBtnId) {
-        return new Promise(async (resolve, reject) => {
-          const runBtn = document.getElementById(runBtnId);
-          const dashboardSection = document.getElementById('dashboardSection');
-          const outputLog = document.getElementById('outputLog');
-          const progressBar = document.getElementById('progressBar');
-          const progressText = document.getElementById('progressText');
-          const progressPercent = document.getElementById('progressPercent');
-
-          runBtn.disabled = true;
-          runBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          dashboardSection.classList.remove('hidden');
-          dashboardSection.classList.add('flex');
-          
-          outputLog.innerText = '> 引擎启动...\n';
-          progressBar.style.width = '5%';
-          progressPercent.innerText = '5%';
-          progressText.innerText = '正在启动子进程...';
-          saveProgressState();
-
-          try {
-            if (!response.body) throw new Error('流式响应失败');
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-            const totalModules = 7;
-            let modulesProcessed = 0;
-
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-
-              buffer += decoder.decode(value, { stream: true });
-              const lines = buffer.split('\n\n');
-              buffer = lines.pop(); 
-
-              for (const line of lines) {
-                if (line.trim().startsWith('data: ')) {
-                  try {
-                    const dataContent = line.substring(line.indexOf('data: ') + 6).trim();
-                    if (!dataContent) continue;
-                    const event = JSON.parse(dataContent);
-                    
-                    if (event.type === 'log') {
-                      outputLog.innerText += `${event.message}\n`;
-                      outputLog.scrollTop = outputLog.scrollHeight;
-
-                      if (event.message.includes('[模块分析] 正在解析模块:')) {
-                        const moduleName = event.message.split('正在解析模块:')[1].trim();
-                        modulesProcessed++;
-                        const percent = Math.min(10 + Math.floor((modulesProcessed / totalModules) * 70), 80);
-                        progressBar.style.width = `${percent}%`;
-                        progressPercent.innerText = `${percent}%`;
-                        progressText.innerText = `正在分析 Github 模块：${moduleName}`;
-                      } else if (event.message.includes('待翻译词条列表')) {
-                        progressBar.style.width = `90%`;
-                        progressPercent.innerText = `90%`;
-                        progressText.innerText = `正在生成翻译对比报告...`;
-                      }
-                    } else if (event.type === 'progress') {
-                       if (event.message.type === 'fetch') {
-                         const p = Math.floor((event.message.current / event.message.total) * 40); // Fetching is first 40%
-                         progressBar.style.width = `${p}%`;
-                         progressPercent.innerText = `${p}%`;
-                         progressText.innerText = `正在抓取页面: ${event.message.url} (${event.message.current}/${event.message.total})`;
-                       } else if (event.message.type === 'analyze') {
-                         progressBar.style.width = `45%`;
-                         progressPercent.innerText = `45%`;
-                         progressText.innerText = `开始分析词典...`;
-                       }
-                    } else if (event.type === 'error') {
-                      outputLog.innerText += `[错误] ${event.message}\n`;
-                      outputLog.scrollTop = outputLog.scrollHeight;
-                    } else if (event.type === 'done') {
-                      progressBar.style.width = `100%`;
-                      progressPercent.innerText = `100%`;
-                      progressText.innerText = `采集与分析完成，状态码: ${event.code || 0}`;
-                    }
-                    
-                    saveProgressState();
-
-                  } catch (e) {
-                    // ignore
-                  }
-                }
-              }
-            }
-            resolve();
-          } catch (error) {
-            outputLog.innerText += `\n[系统错误] ${error.message}`;
-            progressText.innerText = `执行失败`;
-            progressBar.classList.add('bg-red-500');
-            saveProgressState();
-            reject(error);
-          } finally {
-            runBtn.disabled = false;
-            runBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-          }
-        });
-      }
-
-      async function runCollection() {
-        const data = document.getElementById('rawInput').value.trim();
-        if (!data) return alert('请先粘贴或输入数据！');
-        
-        try {
-          const response = await fetch('/api/collect', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data })
-          });
-          await handleStreamResponse(response, 'runBtn');
-        } catch(e) {}
-      }
-
-      async function runBatchCollection() {
-        const data = document.getElementById('urlInput').value.trim();
-        if (!data) return alert('请输入需要抓取的 URL！');
-        
-        const urls = data.split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
-        if (urls.length === 0) return alert('未找到有效的 http/https 链接！');
-
-        try {
-          const response = await fetch('/api/batch-collect', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ urls })
-          });
-          await handleStreamResponse(response, 'batchRunBtn');
-        } catch(e) {}
-      }
-    </script>
+    <script src="/js/collector-guide.js"></script>
   </body>
 </html>

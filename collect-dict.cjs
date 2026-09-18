@@ -25,12 +25,11 @@ async function mergeDictionaries() {
   const merged = {};
   const dictFiles = ['common.js', 'codespaces.js', 'explore.js', 'pull_requests.js', 'issues.js', 'settings.js', 'repository.js'];
   
-  // 确保我们在项目中有这些文件，如果不存在也可以跳过，只是为了展示进度
   for (const file of dictFiles) {
-    console.log(`[模块分析] 正在解析模块: ${file}`);
-    await sleep(200); // 增加少许延迟，便于在前端可视化进度
     const filePath = path.join(DICT_DIR, file);
     if (fs.existsSync(filePath)) {
+      console.log(`[模块分析] 正在解析模块: ${file}`);
+      await sleep(150);
       const content = fs.readFileSync(filePath, 'utf-8');
       try {
         const ast = babel.parseSync(content, {
@@ -73,18 +72,20 @@ function findUntranslated(texts, dictionary) {
 
   for (const text of texts) {
     const trimmed = text.trim();
-    // 更严格的垃圾数据过滤
-    if (trimmed.length < 3 || trimmed.length > 200) continue;
+    // 基础过滤：允许长度 >= 2 的词条（同步前端逻辑）
+    if (trimmed.length < 2 || trimmed.length > 300) continue;
     if (/^\d+$/.test(trimmed)) continue; // 纯数字
     if (/^[\s\p{P}]+$/u.test(trimmed)) continue; // 纯标点或空白
-    if (/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(trimmed)) continue; // 不包含字母或中文(例如仅由数字和符号组成)
-    // 过滤掉像 "a", "A", "1a" 这样的短无意义词
-    if (trimmed.length < 4 && !/[a-zA-Z]{3,}/.test(trimmed)) continue;
+    if (/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(trimmed)) continue; // 不包含字母或中文
 
+    // 检查词典（不区分大小写）
+    const lowerText = trimmed.toLowerCase();
+    const upperText = trimmed.toUpperCase();
+    
     if (
       dictionary[trimmed] ||
-      dictionary[trimmed.toLowerCase()] ||
-      dictionary[trimmed.toUpperCase()]
+      dictionary[lowerText] ||
+      dictionary[upperText]
     ) {
       translated.add(trimmed);
     } else {

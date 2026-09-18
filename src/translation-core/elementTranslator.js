@@ -1,37 +1,16 @@
 /**
  * 元素翻译模块
  * @file translationCore/elementTranslator.js
- * @version 1.9.21
- * @date 2026-06-10
- * @author Sut
- * @description 实际翻译DOM元素的模块
  */
 import { CONFIG } from '../config.js';
 import virtualDomManager from '../core/virtualDom.js';
-import { ErrorHandler } from '../core/errorHandler.js';
 import { dictionaryManager } from './dictionaryManager.js';
 import { elementSelector } from './elementSelector.js';
+import { initialPerformanceData } from './elementTranslator/stats.js';
+import { translateCriticalElementsOnly } from './elementTranslator/critical.js';
 
 export const elementTranslator = {
-  performanceData: {
-    translateStartTime: 0,
-    translateEndTime: 0,
-    elementsProcessed: 0,
-    textsTranslated: 0,
-    cacheHits: 0,
-    cacheMisses: 0,
-    cacheEvictions: 0,
-    cacheCleanups: 0,
-    domOperations: 0,
-    domOperationTime: 0,
-    networkRequests: 0,
-    networkRequestTime: 0,
-    dictionaryLookups: 0,
-    partialMatches: 0,
-    batchProcessings: 0,
-    errorCount: 0,
-    totalMemory: 0,
-  },
+  performanceData: { ...initialPerformanceData },
 
   translateElement(element) {
     if (!element || !(element instanceof HTMLElement)) {
@@ -68,7 +47,6 @@ export const elementTranslator = {
       if (node.nodeType === Node.TEXT_NODE) {
         const trimmedText = node.nodeValue.trim();
         if (trimmedText && trimmedText.length >= CONFIG.performance?.minTextLengthToTranslate) {
-          // 预先检查是否有对应的翻译
           const translatedText = dictionaryManager.getTranslatedText(trimmedText);
           if (translatedText && translatedText !== trimmedText) {
             textNodesToProcess.push({ node, originalText: node.nodeValue });
@@ -98,12 +76,10 @@ export const elementTranslator = {
       }
     }
 
-    // 如果没有任何可翻译的内容，直接返回false，不修改DOM
     if (!hasTranslatableContent) {
       return false;
     }
 
-    // 只有在有可翻译内容时才进行文本节点处理
     textNodesToProcess.forEach(({ node, originalText }) => {
       const parentNode = node.parentNode;
       if (parentNode) {
@@ -164,52 +140,6 @@ export const elementTranslator = {
   },
 
   async translateCriticalElementsOnly() {
-    const criticalSelectors = ['.Header', '.repository-content', '.js-repo-pjax-container', 'main'];
-
-    const criticalElements = [];
-    let processedElements = 0;
-    let failedElements = 0;
-
-    criticalSelectors.forEach((selector) => {
-      try {
-        const elements = document.querySelectorAll(selector);
-        if (elements && elements.length > 0) {
-          Array.from(elements).forEach((el) => {
-            if (el && el instanceof HTMLElement) {
-              criticalElements.push(el);
-            }
-          });
-
-          if (CONFIG.debugMode) {
-            console.log(`[GitHub 中文翻译] 找到关键元素: ${selector}, 数量: ${elements.length}`);
-          }
-        }
-      } catch (err) {
-        ErrorHandler.handleError('查询选择器', err, ErrorHandler.ERROR_TYPES.DOM_OPERATION);
-      }
-    });
-
-    if (criticalElements.length === 0) {
-      if (CONFIG.debugMode) {
-        console.log('[GitHub 中文翻译] 没有找到关键元素需要翻译');
-      }
-      return;
-    }
-
-    criticalElements.forEach((element) => {
-      try {
-        this.translateElement(element);
-        processedElements++;
-      } catch (err) {
-        failedElements++;
-        ErrorHandler.handleError('关键元素翻译', err, ErrorHandler.ERROR_TYPES.DOM_OPERATION);
-      }
-    });
-
-    if (CONFIG.debugMode) {
-      console.log(
-        `[GitHub 中文翻译] 关键元素翻译完成 - 总数量: ${criticalElements.length}, 成功: ${processedElements}, 失败: ${failedElements}`,
-      );
-    }
+    return translateCriticalElementsOnly((el) => this.translateElement(el));
   },
 };

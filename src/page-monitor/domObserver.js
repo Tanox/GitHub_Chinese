@@ -12,6 +12,7 @@ import { utils } from '../utils/utils.js';
 import { translationCore } from '../translation-core/index.js';
 import { pageAnalyzer } from './pageAnalyzer.js';
 import { pageMonitorCache } from './cacheManager.js';
+import { domObserverConfig } from './domObserver.config.js';
 import {
   isElementImportant,
   isElementIgnored,
@@ -45,8 +46,8 @@ export const domObserver = {
       }
 
       const pageMode = translationCore.detectPageMode();
-      const rootNode = this.selectOptimalRootNode(pageMode);
-      const observerConfig = this.getOptimizedObserverConfig(pageMode);
+      const rootNode = domObserverConfig.selectOptimalRootNode(pageMode);
+      const observerConfig = domObserverConfig.getOptimizedObserverConfig(pageMode);
 
       if (CONFIG.debugMode) {
         console.log('[GitHub 中文翻译] 当前页面模式:', pageMode);
@@ -106,116 +107,6 @@ export const domObserver = {
       console.error('[GitHub 中文翻译] 设置DOM观察器失败:', error);
       this.setupFallbackMonitoring();
     }
-  },
-
-  selectOptimalRootNode(pageMode) {
-    const effectivePageMode = pageMode || translationCore.detectPageMode();
-    let candidateSelectors;
-
-    switch (effectivePageMode) {
-      case 'search':
-        candidateSelectors = ['.codesearch-results', '#js-pjax-container', 'main', 'body'];
-        break;
-      case 'issues':
-      case 'pullRequests':
-        candidateSelectors = [
-          '.js-discussion',
-          '.issue-details',
-          '#js-issue-title',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'repository':
-        candidateSelectors = [
-          '#js-repo-pjax-container',
-          '.repository-content',
-          '.application-main',
-          'body',
-        ];
-        break;
-      case 'notifications':
-        candidateSelectors = [
-          '.notifications-list',
-          '.notification-shelf',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'wiki':
-        candidateSelectors = [
-          '.wiki-wrapper',
-          '.markdown-body',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'actions':
-        candidateSelectors = [
-          '.workflow-run-list',
-          '.workflow-jobs',
-          '.workflow-run-header',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'projects':
-        candidateSelectors = [
-          '.project-layout',
-          '.project-columns',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      default:
-        candidateSelectors = ['#js-pjax-container', 'main', '.application-main', 'body'];
-    }
-
-    for (const selector of candidateSelectors) {
-      const element = document.querySelector(selector);
-      if (element && element.textContent.trim().length > 0) {
-        return element;
-      }
-    }
-
-    return document.body;
-  },
-
-  getOptimizedObserverConfig(inputPageMode) {
-    const pageMode = inputPageMode || translationCore.detectPageMode();
-    const baseConfig = { childList: true };
-
-    if (!CONFIG.performance?.ignoreCharacterDataMutations) {
-      baseConfig.characterData = true;
-    }
-
-    const complexPages = ['wiki', 'issues', 'pullRequests', 'markdown'];
-    const simplePages = ['search', 'codespaces', 'marketplace'];
-
-    if (complexPages.includes(pageMode)) {
-      baseConfig.subtree = CONFIG.performance?.observeSubtree;
-    } else if (simplePages.includes(pageMode)) {
-      baseConfig.subtree = false;
-    } else {
-      baseConfig.subtree = CONFIG.performance?.observeSubtree;
-    }
-
-    if (CONFIG.performance?.observeAttributes && !CONFIG.performance?.ignoreAttributeMutations) {
-      baseConfig.attributes = true;
-      baseConfig.attributeFilter = CONFIG.performance?.importantAttributes || [
-        'id',
-        'class',
-        'href',
-        'title',
-      ];
-    }
-
-    return baseConfig;
   },
 
   setupFallbackMonitoring() {

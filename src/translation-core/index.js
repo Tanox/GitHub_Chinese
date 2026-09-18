@@ -8,12 +8,13 @@
  */
 import { CONFIG } from '../config.js';
 import { ErrorHandler } from '../core/errorHandler.js';
-import virtualDomManager from '../core/virtualDom.js';
 import { dictionaryManager } from './dictionaryManager.js';
 import { pageModeDetector } from './pageModeDetector.js';
 import { elementSelector } from './elementSelector.js';
 import { elementTranslator } from './elementTranslator.js';
 import { performanceMonitor } from './performanceMonitor.js';
+import { processElementsInBatches } from './batchProcessor.js';
+import { cacheController } from './cacheController.js';
 
 export const translationCore = {
   isPageUnloading: false,
@@ -138,7 +139,7 @@ export const translationCore = {
           return;
         }
 
-        this.processElementsInBatches(elements)
+        processElementsInBatches(elements, () => this.getCurrentPageModeConfig())
           .then(() => {
             elementTranslator.performanceData.translateEndTime = Date.now();
             performanceMonitor.logPerformanceData();
@@ -198,186 +199,20 @@ export const translationCore = {
     });
   },
 
-  async processElementsInBatches(inputElements) {
-    const elements = virtualDomManager.processElements(inputElements);
-    const modeConfig = this.getCurrentPageModeConfig();
-    const batchSize = modeConfig.batchSize || CONFIG.performance?.batchSize || 50;
-    const delay = CONFIG.performance?.batchDelay || 0;
-
-    if (!elements || !Array.isArray(elements) || elements.length === 0) {
-      return Promise.resolve();
-    }
-
-    const validElements = elements.filter((element) => element instanceof HTMLElement);
-
-    if (validElements.length <= batchSize) {
-      validElements.forEach((element) => {
-        try {
-          elementTranslator.translateElement(element);
-        } catch (error) {
-          ErrorHandler.handleError('翻译元素', error, ErrorHandler.ERROR_TYPES.DOM_OPERATION);
-        }
-      });
-      return Promise.resolve();
-    }
-
-    return new Promise((resolve) => {
-      const processBatch = (startIndex) => {
-        try {
-          const endIndex = Math.min(startIndex + batchSize, validElements.length);
-          const batch = validElements.slice(startIndex, endIndex);
-
-          batch.forEach((element) => {
-            try {
-              elementTranslator.translateElement(element);
-            } catch (error) {
-              ErrorHandler.handleError('翻译元素', error, ErrorHandler.ERROR_TYPES.DOM_OPERATION);
-            }
-          });
-
-          if (
-            CONFIG.performance?.logTiming &&
-            (endIndex % (batchSize * 5) === 0 || endIndex === validElements.length)
-          ) {
-            const progress = Math.round((endIndex / validElements.length) * 100);
-            console.log(
-              `[GitHub 中文翻译] 翻译进度: ${progress}%, 已处理: ${endIndex}/${validElements.length} 元素`,
-            );
-          }
-
-          if (endIndex < validElements.length) {
-            if (delay > 0) {
-              setTimeout(() => processBatch(endIndex), delay);
-            } else {
-              requestAnimationFrame(() => processBatch(endIndex));
-            }
-          } else {
-            resolve();
-          }
-        } catch (error) {
-          ErrorHandler.handleError('批处理过程', error, ErrorHandler.ERROR_TYPES.TRANSLATION);
-          resolve();
-        }
-      };
-
-      processBatch(0);
-    });
-  },
-
   translateCriticalElementsOnly() {
     return elementTranslator.translateCriticalElementsOnly();
   },
 
   cleanCache() {
-    try {
-      if (
-        !dictionaryManager.cacheManager.translationCache ||
-        !(dictionaryManager.cacheManager.translationCache instanceof Map)
-      ) {
-        if (CONFIG.debugMode) {
-          console.warn('[GitHub 中文翻译] 缓存对象不存在或无效');
-        }
-        return;
-      }
-
-      dictionaryManager.cacheManager.cleanCache();
-      elementTranslator.performanceData.cacheCleanups =
-        (elementTranslator.performanceData.cacheCleanups || 0) + 1;
-
-      if (CONFIG.debugMode) {
-        console.log(
-          `[GitHub 中文翻译] 缓存清理完成，当前大小: ${dictionaryManager.cacheManager.translationCache.size}`,
-        );
-      }
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 缓存清理过程出错，使用回退策略:', error);
-      }
-
-      try {
-        if (CONFIG.debugMode) {
-          console.log('[GitHub 中文翻译] 执行缓存重置作为最后手段');
-        }
-        dictionaryManager.cacheManager.translationCache.clear();
-        dictionaryManager.cacheManager.cacheStats.size = 0;
-      } catch (fallbackError) {
-        if (CONFIG.debugMode) {
-          console.error('[GitHub 中文翻译] 缓存重置失败:', fallbackError);
-        }
-      }
-    }
+    cacheController.cleanCache(elementTranslator.performanceData);
   },
 
   clearCache() {
-    try {
-      if (virtualDomManager && typeof virtualDomManager.clear === 'function') {
-        virtualDomManager.clear();
-      }
-
-      if (dictionaryManager.cacheManager) {
-        dictionaryManager.cacheManager.clearCache();
-      }
-
-      if (elementSelector.elementCache) {
-        elementSelector.elementCache = new WeakMap();
-      }
-
-      performanceMonitor.resetPerformanceData();
-
-      try {
-        const translatedElements = document.querySelectorAll('[data-github-zh-translated]');
-        translatedElements.forEach((element) => {
-          element.removeAttribute('data-github-zh-translated');
-        });
-      } catch (domError) {
-        if (CONFIG.debugMode) {
-          console.warn('[GitHub 中文翻译] 清除翻译标记时出错:', domError);
-        }
-      }
-
-      if (CONFIG.debugMode) {
-        console.log('[GitHub 中文翻译] 翻译缓存已彻底清除');
-      }
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 清除缓存时出错:', error);
-      }
-
-      try {
-        if (dictionaryManager.cacheManager) dictionaryManager.cacheManager.clearCache();
-        if (elementSelector.elementCache) elementSelector.elementCache = new WeakMap();
-        dictionaryManager.cacheManager.cacheStats = { hits: 0, misses: 0, evictions: 0, size: 0 };
-      } catch (fallbackError) {
-        if (CONFIG.debugMode) {
-          console.error('[GitHub 中文翻译] 基本缓存清理也失败:', fallbackError);
-        }
-      }
-    }
+    cacheController.clearCache();
   },
 
   warmUpCache() {
-    if (!CONFIG.performance?.enableTranslationCache) {
-      return;
-    }
-
-    try {
-      const commonKeys = Object.keys(dictionaryManager.dictionary)
-        .filter(
-          (key) => !dictionaryManager.dictionary[key].startsWith('待翻译: ') && key.length <= 50,
-        )
-        .slice(0, 100);
-
-      commonKeys.forEach((key) => {
-        const value = dictionaryManager.dictionary[key];
-        dictionaryManager.cacheManager.setToCache(key, value, this.isPageUnloading);
-      });
-
-      if (CONFIG.debugMode) {
-        console.log(`[GitHub 中文翻译] 缓存预热完成，已预加载${commonKeys.length}个常用词条`);
-      }
-    } catch (error) {
-      console.error('[GitHub 中文翻译] 缓存预热失败:', error);
-    }
+    cacheController.warmUpCache(this.isPageUnloading);
   },
 
   updateDictionary(newDictionary) {
