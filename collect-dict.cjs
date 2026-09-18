@@ -7,7 +7,7 @@
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表
  */
 
-/* global __dirname, console, process */
+/* global __dirname, console, process, setTimeout */
 
 const fs = require('fs');
 const path = require('path');

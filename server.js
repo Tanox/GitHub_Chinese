@@ -124,7 +124,7 @@ app.post('/api/batch-collect', async (req, res) => {
           const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
           while(walker.nextNode()) {
               const text = walker.currentNode.textContent.trim();
-              if (text.length > 2 && !/^\\s*$/.test(text)) {
+              if (text.length > 2 && !/^\s*$/.test(text)) {
                   nodes.push(text);
               }
           }
