@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub 词典采集引擎 Dashboard</title>
+    <style>
+      @import "tailwindcss";
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-sans h-screen flex overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col">
+      <div class="h-16 flex items-center px-6 border-b border-slate-800">
+        <span class="text-white font-bold text-lg tracking-wide">i18n Collector</span>
+      </div>
+      <nav class="flex-1 py-6 px-4 space-y-2">
+        <a href="/" class="block px-4 py-2 rounded hover:bg-slate-800 hover:text-white transition-colors">项目主页</a>
+        <a href="#" class="block px-4 py-2 rounded bg-blue-600 text-white font-medium">采集中心 (Dashboard)</a>
+        <a href="/prototype/design-system/index.html" class="block px-4 py-2 rounded hover:bg-slate-800 hover:text-white transition-colors">设计规范</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+      <header class="bg-white h-16 flex items-center px-8 border-b border-slate-200 shrink-0">
+        <h1 class="text-xl font-bold text-slate-800">GitHub 词典智能采集控制台</h1>
+      </header>
+
+      <div class="p-8 max-w-5xl w-full mx-auto space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Card 1: Script Injector -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-lg font-semibold mb-2 text-slate-800 flex items-center">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs mr-2">1</span>
+              浏览器探针脚本
+            </h2>
+            <p class="text-slate-500 text-sm mb-4">在需要提取文本的 GitHub 页面控制台执行以下代码，获取页面全部有效字符串。</p>
+            <div class="relative bg-slate-900 p-3 rounded-lg text-slate-300 font-mono text-xs overflow-x-auto">
+              <pre id="script">const textNodes = [];
+const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+while(walker.nextNode()) {
+    const text = walker.currentNode.textContent.trim();
+    if (text.length > 2 && !/^\s*$/.test(text)) {
+        textNodes.push(text);
+    }
+}
+console.log([...new Set(textNodes)].join('\n'));</pre>
+              <button onclick="copyScript()" class="absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded">复制</button>
+            </div>
+          </div>
+
+          <!-- Card 2: Input Area -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-lg font-semibold mb-2 text-slate-800 flex items-center">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs mr-2">2</span>
+              待处理数据池 / URL 列表
+            </h2>
+            
+            <div class="mb-4">
+              <div class="flex border-b border-slate-200 mb-4">
+                <button id="tabManual" onclick="switchTab('manual')" class="px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600">手动粘贴文本</button>
+                <button id="tabUrls" onclick="switchTab('urls')" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">自动爬取 URLs</button>
+              </div>
+
+              <!-- Manual Input -->
+              <div id="manualMode">
+                <p class="text-slate-500 text-sm mb-4">将控制台输出的原始字符串粘贴于此，进行自动化清洗与去重处理。</p>
+                <textarea id="rawInput" class="w-full h-32 p-3 border border-slate-300 rounded-lg font-mono text-xs mb-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="在此粘贴控制台采集到的文本..."></textarea>
+                <div class="flex gap-3">
+                  <button onclick="cleanData()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">自动清洗数据</button>
+                  <button onclick="exportDataToJson()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">导出 JSON</button>
+                  <button id="runBtn" onclick="runCollection()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors">
+                    执行采集分析
+                  </button>
+                </div>
+              </div>
+
+              <!-- URL Input -->
+              <div id="urlMode" class="hidden">
+                <p class="text-slate-500 text-sm mb-4">输入多个 GitHub 页面链接（每行一个），引擎将自动访问页面并提取所有文本。</p>
+                <textarea id="urlInput" class="w-full h-32 p-3 border border-slate-300 rounded-lg font-mono text-xs mb-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="https://github.com/
+https://github.com/issues
+https://github.com/pulls"></textarea>
+                <div class="flex gap-3">
+                  <button id="batchRunBtn" onclick="runBatchCollection()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors">
+                    启动批量自动采集
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Dashboard Progress & Output -->
+        <div id="dashboardSection" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hidden flex-col">
+          <h2 class="text-lg font-semibold mb-4 text-slate-800">引擎实时状态</h2>
+          
+          <!-- Progress Bar -->
+          <div class="mb-6">
+            <div class="flex justify-between text-sm mb-2">
+              <span id="progressText" class="text-blue-600 font-medium">正在初始化引擎...</span>
+              <span id="progressPercent" class="text-slate-500 font-medium">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+              <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Log Output -->
+          <div class="flex-1 bg-slate-900 rounded-lg border border-slate-800 overflow-hidden flex flex-col h-64">
+            <div class="bg-slate-800 px-4 py-2 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-mono">Terminal Output</span>
+              <div class="flex gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              </div>
+            </div>
+            <pre id="outputLog" class="p-4 text-emerald-400 font-mono text-xs overflow-y-auto flex-1 whitespace-pre-wrap m-0"></pre>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script>
+      const STORAGE_KEYS = {
+        INPUT: 'i18n_collector_raw_input',
+        LOG: 'i18n_collector_log',
+        PROG_WIDTH: 'i18n_collector_progress_width',
+        PROG_PERCENT: 'i18n_collector_progress_percent',
+        PROG_TEXT: 'i18n_collector_progress_text'
+      };
+
+      // Restore state on load
+      window.addEventListener('DOMContentLoaded', () => {
+        const rawInput = document.getElementById('rawInput');
+        const savedInput = localStorage.getItem(STORAGE_KEYS.INPUT);
+        if (savedInput) rawInput.value = savedInput;
+
+        // Auto-save input changes
+        rawInput.addEventListener('input', (e) => {
+          localStorage.setItem(STORAGE_KEYS.INPUT, e.target.value);
+        });
+
+        const savedLog = localStorage.getItem(STORAGE_KEYS.LOG);
+        if (savedLog) {
+          const dashboardSection = document.getElementById('dashboardSection');
+          dashboardSection.classList.remove('hidden');
+          dashboardSection.classList.add('flex');
+          
+          document.getElementById('outputLog').innerText = savedLog;
+          document.getElementById('progressBar').style.width = localStorage.getItem(STORAGE_KEYS.PROG_WIDTH) || '0%';
+          document.getElementById('progressPercent').innerText = localStorage.getItem(STORAGE_KEYS.PROG_PERCENT) || '0%';
+          document.getElementById('progressText').innerText = localStorage.getItem(STORAGE_KEYS.PROG_TEXT) || '就绪';
+          
+          const outputLog = document.getElementById('outputLog');
+          outputLog.scrollTop = outputLog.scrollHeight;
+        }
+      });
+
+      function saveProgressState() {
+        localStorage.setItem(STORAGE_KEYS.LOG, document.getElementById('outputLog').innerText);
+        localStorage.setItem(STORAGE_KEYS.PROG_WIDTH, document.getElementById('progressBar').style.width);
+        localStorage.setItem(STORAGE_KEYS.PROG_PERCENT, document.getElementById('progressPercent').innerText);
+        localStorage.setItem(STORAGE_KEYS.PROG_TEXT, document.getElementById('progressText').innerText);
+      }
+
+      function copyScript() {
+        const script = document.getElementById('script').innerText;
+        navigator.clipboard.writeText(script);
+        alert('脚本已复制到剪贴板！');
+      }
+
+      function cleanData() {
+        const input = document.getElementById('rawInput').value;
+        const lines = input.split('\n');
+        const cleaned = lines.filter(line => {
+          const trimmed = line.trim();
+          return trimmed.length > 3 && !/^\d+$/.test(trimmed) && !/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(trimmed);
+        });
+        const newValue = [...new Set(cleaned)].join('\n');
+        document.getElementById('rawInput').value = newValue;
+        localStorage.setItem(STORAGE_KEYS.INPUT, newValue);
+      }
+
+      function exportDataToJson() {
+        const input = document.getElementById('rawInput').value;
+        if (!input.trim()) {
+          alert('没有可导出的数据！');
+          return;
+        }
+        
+        const lines = input.split('\n').map(line => line.trim()).filter(line => line);
+        const jsonData = JSON.stringify(lines, null, 2);
+        
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `github-terms-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function switchTab(mode) {
+        const tabManual = document.getElementById('tabManual');
+        const tabUrls = document.getElementById('tabUrls');
+        const manualMode = document.getElementById('manualMode');
+        const urlMode = document.getElementById('urlMode');
+
+        if (mode === 'manual') {
+          tabManual.className = "px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600";
+          tabUrls.className = "px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700";
+          manualMode.classList.remove('hidden');
+          urlMode.classList.add('hidden');
+        } else {
+          tabUrls.className = "px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600";
+          tabManual.className = "px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700";
+          urlMode.classList.remove('hidden');
+          manualMode.classList.add('hidden');
+        }
+      }
+
+      function handleStreamResponse(response, runBtnId) {
+        return new Promise(async (resolve, reject) => {
+          const runBtn = document.getElementById(runBtnId);
+          const dashboardSection = document.getElementById('dashboardSection');
+          const outputLog = document.getElementById('outputLog');
+          const progressBar = document.getElementById('progressBar');
+          const progressText = document.getElementById('progressText');
+          const progressPercent = document.getElementById('progressPercent');
+
+          runBtn.disabled = true;
+          runBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          dashboardSection.classList.remove('hidden');
+          dashboardSection.classList.add('flex');
+          
+          outputLog.innerText = '> 引擎启动...\n';
+          progressBar.style.width = '5%';
+          progressPercent.innerText = '5%';
+          progressText.innerText = '正在启动子进程...';
+          saveProgressState();
+
+          try {
+            if (!response.body) throw new Error('流式响应失败');
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let buffer = '';
+            const totalModules = 7;
+            let modulesProcessed = 0;
+
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n\n');
+              buffer = lines.pop(); 
+
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  try {
+                    const event = JSON.parse(line.substring(6));
+                    
+                    if (event.type === 'log') {
+                      outputLog.innerText += `${event.message}\n`;
+                      outputLog.scrollTop = outputLog.scrollHeight;
+
+                      if (event.message.includes('[模块分析] 正在解析模块:')) {
+                        const moduleName = event.message.split('正在解析模块:')[1].trim();
+                        modulesProcessed++;
+                        const percent = Math.min(10 + Math.floor((modulesProcessed / totalModules) * 70), 80);
+                        progressBar.style.width = `${percent}%`;
+                        progressPercent.innerText = `${percent}%`;
+                        progressText.innerText = `正在分析 Github 模块：${moduleName}`;
+                      } else if (event.message.includes('待翻译词条列表')) {
+                        progressBar.style.width = `90%`;
+                        progressPercent.innerText = `90%`;
+                        progressText.innerText = `正在生成翻译对比报告...`;
+                      }
+                    } else if (event.type === 'progress') {
+                       if (event.message.type === 'fetch') {
+                         const p = Math.floor((event.message.current / event.message.total) * 40); // Fetching is first 40%
+                         progressBar.style.width = `${p}%`;
+                         progressPercent.innerText = `${p}%`;
+                         progressText.innerText = `正在抓取页面: ${event.message.url} (${event.message.current}/${event.message.total})`;
+                       } else if (event.message.type === 'analyze') {
+                         progressBar.style.width = `45%`;
+                         progressPercent.innerText = `45%`;
+                         progressText.innerText = `开始分析词典...`;
+                       }
+                    } else if (event.type === 'error') {
+                      outputLog.innerText += `[错误] ${event.message}\n`;
+                      outputLog.scrollTop = outputLog.scrollHeight;
+                    } else if (event.type === 'done') {
+                      progressBar.style.width = `100%`;
+                      progressPercent.innerText = `100%`;
+                      progressText.innerText = `采集与分析完成，状态码: ${event.code || 0}`;
+                    }
+                    
+                    saveProgressState();
+
+                  } catch (e) {
+                    // ignore
+                  }
+                }
+              }
+            }
+            resolve();
+          } catch (error) {
+            outputLog.innerText += `\n[系统错误] ${error.message}`;
+            progressText.innerText = `执行失败`;
+            progressBar.classList.add('bg-red-500');
+            saveProgressState();
+            reject(error);
+          } finally {
+            runBtn.disabled = false;
+            runBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          }
+        });
+      }
+
+      async function runCollection() {
+        const data = document.getElementById('rawInput').value.trim();
+        if (!data) return alert('请先粘贴或输入数据！');
+        
+        try {
+          const response = await fetch('/api/collect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data })
+          });
+          await handleStreamResponse(response, 'runBtn');
+        } catch(e) {}
+      }
+
+      async function runBatchCollection() {
+        const data = document.getElementById('urlInput').value.trim();
+        if (!data) return alert('请输入需要抓取的 URL！');
+        
+        const urls = data.split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
+        if (urls.length === 0) return alert('未找到有效的 http/https 链接！');
+
+        try {
+          const response = await fetch('/api/batch-collect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls })
+          });
+          await handleStreamResponse(response, 'batchRunBtn');
+        } catch(e) {}
+      }
+    </script>
+  </body>
+</html>

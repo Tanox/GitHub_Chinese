@@ -14,7 +14,7 @@
     "test": "npm run lint && npm run build && npm run validate",
     "clean": "node -e \"const fs=require('fs');const path=require('path');['build','dist','coverage'].forEach(dir=>{if(fs.existsSync(dir)){fs.rmSync(dir,{recursive:true});console.log('已清理:',dir)}})\"",
     "dict:collect": "node collect-dict.cjs",
-    "start": "serve -l 3000 prototype/"
+    "start": "node server.js"
   },
   "keywords": [
     "github",
@@ -53,5 +53,11 @@
       "eslint --fix",
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "express": "^5.2.1",
+    "puppeteer": "^25.11.0",
+    "ws": "^8.21.3"
   }
 }

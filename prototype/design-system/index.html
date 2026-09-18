@@ -9,7 +9,18 @@
   <body>
     <div class="proto-shell">
       <aside class="proto-nav">
-        <div class="proto-nav-brand">GitHub Chinese 简体中文 · 设计系统</div>
+        <div class="proto-nav-brand">
+          <button class="proto-nav-toggle" aria-label="切换导航" onclick="document.querySelector('.proto-nav').classList.toggle('is-open')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          GitHub Chinese 简体中文 · 设计系统
+        </div>
+
+        <div class="proto-nav-search" style="padding: 0 var(--sp-4) var(--sp-4);">
+          <input type="text" placeholder="搜索组件、令牌..." 
+                 oninput="const t=this.value.toLowerCase();document.querySelectorAll('.proto-nav-group li').forEach(li=>li.style.display=li.textContent.toLowerCase().includes(t)?'':'none');document.querySelectorAll('.proto-nav-group').forEach(g=>g.style.display=g.querySelectorAll('li:not([style*=\'display: none\'])').length>0?'':'none')"
+                 style="width: 100%; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); border: 1px solid var(--c-border); background: var(--c-surface); color: var(--c-text); font-size: var(--fs-sm);">
+        </div>
 
         <div class="proto-nav-group">
           <h4>概览</h4>

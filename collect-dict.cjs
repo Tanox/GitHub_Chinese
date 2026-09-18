@@ -11,38 +11,52 @@
 
 const fs = require('fs');
 const path = require('path');
+const babel = require('@babel/core');
 
 const PROJECT_ROOT = path.resolve(__dirname);
 const DICT_DIR = path.join(PROJECT_ROOT, 'src', 'dictionaries');
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
  * 合并所有词典
  */
-function mergeDictionaries() {
+async function mergeDictionaries() {
   const merged = {};
-  const dictFiles = ['common.js', 'codespaces.js', 'explore.js'];
-
+  const dictFiles = ['common.js', 'codespaces.js', 'explore.js', 'pull_requests.js', 'issues.js', 'settings.js', 'repository.js'];
+  
+  // 确保我们在项目中有这些文件，如果不存在也可以跳过，只是为了展示进度
   for (const file of dictFiles) {
+    console.log(`[模块分析] 正在解析模块: ${file}`);
+    await sleep(200); // 增加少许延迟，便于在前端可视化进度
     const filePath = path.join(DICT_DIR, file);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, 'utf-8');
-      // 提取 export const xxxDictionary = { ... } 中的内容
-      const match = content.match(/export\s+const\s+\w+Dictionary\s*=\s*\{([^}]*)\}/s);
-      if (match) {
-        // 解析键值对
-        const dictContent = match[1];
-        const lines = dictContent.split('\n');
-        for (const line of lines) {
-          // 匹配键值对：'key': 'value' 或 key: 'value'
-          const kvMatch = line.match(/^\s*['"]?([^'":]+)['"]?\s*:\s*['"]([^'"]*)['"]/);
-          if (kvMatch) {
-            const key = kvMatch[1].trim();
-            const value = kvMatch[2].trim();
-            if (key && value && !key.startsWith('//') && !key.startsWith('*')) {
-              merged[key] = value;
+      try {
+        const ast = babel.parseSync(content, {
+          sourceType: 'module',
+          filename: filePath
+        });
+
+        babel.traverse(ast, {
+          ObjectProperty(path) {
+            const keyNode = path.node.key;
+            const valueNode = path.node.value;
+
+            let key = null;
+            if (keyNode.type === 'StringLiteral') {
+              key = keyNode.value;
+            } else if (keyNode.type === 'Identifier') {
+              key = keyNode.name;
+            }
+
+            if (key && valueNode.type === 'StringLiteral') {
+               merged[key] = valueNode.value;
             }
           }
-        }
+        });
+      } catch (err) {
+        console.warn(`[WARN] 无法解析词典文件 ${file}: ${err.message}`);
       }
     }
   }
@@ -59,9 +73,13 @@ function findUntranslated(texts, dictionary) {
 
   for (const text of texts) {
     const trimmed = text.trim();
+    // 更严格的垃圾数据过滤
     if (trimmed.length < 3 || trimmed.length > 200) continue;
-    if (/^\d+$/.test(trimmed)) continue;
-    if (/^[\s\p{P}]+$/u.test(trimmed)) continue;
+    if (/^\d+$/.test(trimmed)) continue; // 纯数字
+    if (/^[\s\p{P}]+$/u.test(trimmed)) continue; // 纯标点或空白
+    if (/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(trimmed)) continue; // 不包含字母或中文(例如仅由数字和符号组成)
+    // 过滤掉像 "a", "A", "1a" 这样的短无意义词
+    if (trimmed.length < 4 && !/[a-zA-Z]{3,}/.test(trimmed)) continue;
 
     if (
       dictionary[trimmed] ||
@@ -122,8 +140,8 @@ function generateReport(untranslated) {
 /**
  * 主函数
  */
-function main() {
-  const dictionary = mergeDictionaries();
+async function main() {
+  const dictionary = await mergeDictionaries();
   console.log(`[词典采集] 已加载 ${Object.keys(dictionary).length} 个词条`);
 
   // 从命令行参数获取待检测的文本列表
