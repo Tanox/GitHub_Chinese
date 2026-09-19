@@ -1,0 +1,38 @@
+/*
+ * GitHub 中文 · 采集工作台 — 轻提示
+ * @file web/css/toast.css
+ * @version 1.9.22
+ */
+.toast-wrap {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.toast {
+  margin-top: 1rem;
+  padding: .7rem 1.25rem;
+  border-radius: 12px;
+  background: var(--rail-2);
+  color: #fff;
+  font-weight: 700;
+  font-size: .85rem;
+  box-shadow: 0 10px 30px rgba(13, 17, 23, .4);
+  pointer-events: auto;
+  transition: opacity .3s, transform .3s;
+}
+
+.toast.hide {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.toast.error {
+  background: var(--danger);
+}

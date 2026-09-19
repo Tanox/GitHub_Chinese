@@ -1,0 +1,99 @@
+/*
+ * GitHub 中文 · 采集工作台 — 代码块 / 标签页 / 输入字段 / 预览
+ * @file web/css/code.css
+ * @version 1.9.22
+ */
+.code-block {
+  position: relative;
+  background: var(--term-bg);
+  border-radius: 10px;
+  border: 1px solid #21262d;
+  padding: 1.1rem 1.25rem;
+  overflow: auto;
+  max-height: 18rem;
+}
+
+.code-block::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brand), var(--term));
+  opacity: .6;
+}
+
+.code-block pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.7;
+  color: #c9d1d9;
+  white-space: pre;
+}
+
+.tabbar {
+  display: inline-flex;
+  padding: .2rem;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  gap: .2rem;
+}
+
+.tab {
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .5rem 1rem;
+  border-radius: 7px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab.active {
+  background: #fff;
+  color: var(--brand-strong);
+  box-shadow: var(--shadow);
+}
+
+.field {
+  width: 100%;
+  min-height: 10rem;
+  padding: 1rem;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.6;
+  color: var(--ink);
+  resize: vertical;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+
+.field:focus {
+  background: #fff;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(46, 164, 79, .15);
+}
+
+.preview {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.preview-scroll {
+  max-height: 24rem;
+  overflow: auto;
+}

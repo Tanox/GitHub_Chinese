@@ -1,0 +1,82 @@
+/*
+ * GitHub 中文 · 采集工作台 — 终端
+ * @file web/css/terminal.css
+ * @version 1.9.22
+ */
+.terminal {
+  background: var(--term-bg);
+  border: 1px solid #21262d;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 24rem;
+  box-shadow: 0 10px 30px rgba(13, 17, 23, .35);
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .7rem 1rem;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+}
+
+.term-dots {
+  display: flex;
+  gap: .4rem;
+}
+
+.term-dots i {
+  width: .7rem;
+  height: .7rem;
+  border-radius: 50%;
+  display: block;
+}
+
+.term-dots .r {
+  background: #ff5f56;
+}
+
+.term-dots .y {
+  background: #ffbd2e;
+}
+
+.term-dots .g {
+  background: #27c93f;
+}
+
+.term-title {
+  font-family: var(--mono);
+  font-size: .68rem;
+  color: var(--rail-muted);
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.term-clear {
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--rail-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.term-clear:hover {
+  color: #fff;
+}
+
+.term-body {
+  margin: 0;
+  flex: 1;
+  overflow: auto;
+  padding: 1.1rem 1.25rem;
+  font-family: var(--mono);
+  font-size: .76rem;
+  line-height: 1.7;
+  color: var(--term);
+  white-space: pre-wrap;
+}

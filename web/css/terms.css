@@ -1,0 +1,70 @@
+/*
+ * GitHub 中文 · 采集工作台 — 词条预览表
+ * @file web/css/terms.css
+ * @version 1.9.22
+ */
+table.terms {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+}
+
+.terms thead th {
+  position: sticky;
+  top: 0;
+  background: var(--canvas);
+  text-align: left;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--faint);
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.terms thead th.right {
+  text-align: right;
+}
+
+.term-row td.right {
+  text-align: right;
+}
+
+.term-row td {
+  padding: .7rem 1.25rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.term-row:last-child td {
+  border-bottom: 0;
+}
+
+.term-row:nth-child(even) {
+  background: rgba(246, 248, 250, .6);
+}
+
+.term-row:hover {
+  background: var(--brand-soft);
+}
+
+.term-index {
+  font-family: var(--mono);
+  font-size: .75rem;
+  color: var(--faint);
+  width: 3rem;
+}
+
+.term-text {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.term-badge {
+  display: inline-block;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  font-size: .65rem;
+  font-weight: 700;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  border: 1px solid rgba(46, 164, 79, .2);
+}

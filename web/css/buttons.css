@@ -1,0 +1,60 @@
+/*
+ * GitHub 中文 · 采集工作台 — 按钮
+ * @file web/css/buttons.css
+ * @version 1.9.22
+ */
+.btn {
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  padding: .7rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  transition: background .15s, border-color .15s, transform .05s;
+}
+
+.btn:hover {
+  background: var(--canvas);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--brand);
+  border-color: var(--brand-strong);
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(27, 31, 36, .1), 0 4px 14px rgba(46, 164, 79, .25);
+}
+
+.btn-primary:hover {
+  background: var(--brand-strong);
+}
+
+.btn-copy {
+  font-size: .78rem;
+  padding: .45rem .9rem;
+  background: var(--brand-soft);
+  border-color: rgba(46, 164, 79, .25);
+  color: var(--brand-strong);
+}
+
+.btn-copy.is-copied {
+  background: var(--brand);
+  border-color: var(--brand-strong);
+  color: #fff;
+}
+
+.btn-row {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
