@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.9.22] - 2026-09-18
+
+### Changed
+- 重构 web/collector-guide.html 词典采集向导：移除无效的 Tailwind 依赖，改用自包含 CSS（离线可用）
+- 统一品牌绿主题（GitHub 绿 #2ea44f），对齐中文插件视觉，去除 SaaS 蓝与彩虹渐变
+- 同步更新向导 JS 注入的样式类（renderer/utils/stream）
+
+---
+
 ## [1.9.20] - 2026-06-10
 
 ### Added

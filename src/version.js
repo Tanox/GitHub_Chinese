@@ -1,8 +1,8 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.9.21
- * @date 2026-06-10
+ * @version 1.9.22
+ * @date 2026-09-18
  * @author Sut
  * @description 统一管理GitHub自动化字符串更新工具的版本信息
  */
@@ -12,4 +12,4 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-export const VERSION = '1.9.21';
+export const VERSION = '1.9.22';

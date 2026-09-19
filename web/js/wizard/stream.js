@@ -1,6 +1,7 @@
 /**
  * 采集向导流式处理模块
  * @file web/js/wizard/stream.js
+ * @version 1.9.22
  */
 import { wizardRenderer } from './renderer.js';
 import { TOTAL_MODULES } from './constants.js';
@@ -78,7 +79,7 @@ export const wizardStream = {
       wizardRenderer.appendLog(`\n[系统错误] ${error.message}`);
       wizardRenderer.updateProgress('100%', '失败', '执行失败');
       const progressBar = document.getElementById('progressBar');
-      if (progressBar) progressBar.classList.add('bg-red-500');
+      if (progressBar) progressBar.classList.add('is-error');
       wizardRenderer.saveCurrentState();
     } finally {
       runBtn.disabled = false;

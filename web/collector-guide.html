@@ -3,229 +3,188 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GitHub 词典采集引擎 Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/collector-guide.css">
+    <title>GitHub 中文 · 词典采集工作台</title>
+    <link rel="stylesheet" href="/css/collector-guide.css" />
   </head>
-  <body class="bg-[#f8fafc] text-slate-900 h-screen flex overflow-hidden">
-    <!-- Sidebar -->
-    <aside class="hidden lg:flex w-72 bg-[#0f172a] text-slate-400 flex-col border-r border-slate-800 shadow-2xl z-20 shrink-0">
-      <div class="h-20 flex items-center px-8 border-b border-slate-800/50">
-        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3 shadow-lg shadow-blue-500/20">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
-        </div>
-        <span class="text-white font-bold text-xl tracking-tight font-display">i18n.Engine</span>
+  <body>
+    <!-- 侧栏 -->
+    <aside class="rail">
+      <div class="rail-brand">
+        <div class="rail-mark">中</div>
+        <span class="rail-name">GitHub 中文</span>
       </div>
-      
-      <div class="flex-1 py-8 px-6 space-y-8">
+
+      <div class="rail-body scroll">
         <div>
-          <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4 px-2">主要导航</h3>
-          <nav class="space-y-1">
-            <a href="/" class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl hover:bg-slate-800/50 hover:text-white transition-all">
-              <svg class="w-5 h-5 mr-3 text-slate-500 group-hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+          <p class="rail-section-title">工作台</p>
+          <nav class="rail-nav">
+            <a class="rail-link" href="/">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
               项目概览
             </a>
-            <a href="#" class="group flex items-center px-4 py-2.5 text-sm font-bold rounded-xl bg-blue-600/10 text-blue-400 border border-blue-600/20 shadow-inner">
-              <svg class="w-5 h-5 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+            <a class="rail-link active" href="#">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
               采集控制台
             </a>
-            <a href="/prototype/design-system/index.html" class="group flex items-center px-4 py-2.5 text-sm font-medium rounded-xl hover:bg-slate-800/50 hover:text-white transition-all">
-              <svg class="w-5 h-5 mr-3 text-slate-500 group-hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
+            <a class="rail-link" href="/prototype/design-system/index.html">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
               设计系统
             </a>
           </nav>
         </div>
 
         <div>
-          <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4 px-2">系统统计</h3>
-          <div class="px-4 py-4 bg-slate-800/30 rounded-2xl border border-slate-800/50">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs text-slate-500">引擎版本</span>
-              <span class="text-xs text-blue-400 font-mono">v2.4.0</span>
+          <p class="rail-section-title">引擎状态</p>
+          <div class="rail-stat">
+            <div class="rail-stat-row">
+              <span class="k">引擎版本</span>
+              <span class="v">v1.9.22</span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-xs text-slate-500">运行环境</span>
-              <span class="text-xs text-emerald-400 font-mono">Production</span>
+            <div class="rail-stat-row">
+              <span class="k">运行环境</span>
+              <span class="v">本地</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="p-6 border-t border-slate-800/50">
-        <div class="flex items-center">
-          <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2"></div>
-          <span class="text-xs font-medium text-slate-400">服务正常运行中</span>
-        </div>
+      <div class="rail-foot">
+        <span class="dot"></span>
+        <span>采集服务运行中</span>
       </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-      <!-- Toast Notification Container -->
-      <div id="toastContainer" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center pointer-events-none"></div>
+    <!-- 主区 -->
+    <main class="workspace">
+      <div id="toastContainer" class="toast-wrap"></div>
 
-      <header class="bg-white/80 backdrop-blur-md h-20 flex items-center justify-between px-6 md:px-10 border-b border-slate-200 shrink-0 z-30">
+      <header class="topbar">
         <div>
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight font-display">智能词典采集控制台</h1>
-          <p class="text-sm text-slate-500 mt-0.5">自动化工作流，高效捕获 GitHub 原生界面词条</p>
+          <h1>词典采集工作台</h1>
+          <p class="topbar-sub">从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典</p>
         </div>
-        <div class="flex items-center gap-4">
-          <div class="flex items-center px-3 py-1.5 bg-slate-100 rounded-full border border-slate-200">
-            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></span>
-            <span class="text-xs font-semibold text-slate-600">云端加速已开启</span>
-          </div>
+        <div class="status-pill">
+          <span class="dot"></span>
+          本地优先 · 离线可用
         </div>
       </header>
 
-      <div class="flex-1 overflow-y-auto terminal-scrollbar px-4 py-8 md:p-10">
-        <div class="max-w-6xl w-full mx-auto space-y-10">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          <!-- Card 1: Script Injector -->
-          <div class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_10px_40px_rgba(0,0,0,0.02)] border border-slate-100 hover:border-blue-100 transition-colors group">
-            <div class="flex items-center justify-between mb-6">
-              <h2 class="text-xl font-bold text-slate-800 flex items-center">
-                <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold mr-3 group-hover:scale-110 transition-transform">1</span>
-                探针脚本
-              </h2>
-              <button id="copyScriptBtn" class="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-full transition-colors active:scale-95">复制脚本</button>
-            </div>
-            <p class="text-slate-500 text-sm leading-relaxed mb-6">在 GitHub 页面控制台执行此脚本，引擎将提取当前视图中所有的有效 UI 文本块。</p>
-            <div class="relative bg-[#0f172a] p-5 rounded-2xl text-slate-300 font-mono text-[11px] leading-relaxed overflow-hidden shadow-inner border border-slate-800">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-50"></div>
-              <pre id="script" class="overflow-x-auto terminal-scrollbar pr-4">const textNodes = [];
+      <div class="content scroll">
+        <div class="content-inner">
+
+          <!-- 流程指示（真实序列：植入探针 → 归集词条 → 解析入库） -->
+          <div class="steps">
+            <div class="step-node done"><span class="step-num">1</span><span>植入探针</span></div>
+            <span class="step-line"></span>
+            <div class="step-node done"><span class="step-num">2</span><span>归集词条</span></div>
+            <span class="step-line"></span>
+            <div class="step-node done"><span class="step-num">3</span><span>解析入库</span></div>
+          </div>
+
+          <!-- 两步卡片 -->
+          <div class="grid-2">
+            <!-- 卡片 1：探针脚本 -->
+            <section class="card">
+              <div class="card-head">
+                <h2 class="card-title"><span class="step-badge">1</span>探针脚本</h2>
+                <button id="copyScriptBtn" class="btn btn-copy">复制脚本</button>
+              </div>
+              <p class="card-desc">在 GitHub 页面控制台执行下方脚本，引擎会提取当前视图中的全部有效 UI 文本块。</p>
+              <div class="code-block">
+                <pre id="script">const textNodes = [];
 const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
 while(walker.nextNode()) {
     const text = walker.currentNode.textContent.trim();
-    if (text.length > 2 && !/^\s*$/.test(text)) {
+    if (text.length > 2 &amp;&amp; !/^\s*$/.test(text)) {
         textNodes.push(text);
     }
 }
 console.log([...new Set(textNodes)].join('\n'));</pre>
-            </div>
-          </div>
-
-          <!-- Card 2: Input Area -->
-          <div class="lg:col-span-3 bg-white p-6 md:p-8 rounded-3xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_10px_40px_rgba(0,0,0,0.02)] border border-slate-100 hover:border-blue-100 transition-colors">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-              <h2 class="text-xl font-bold text-slate-800 flex items-center">
-                <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold mr-3">2</span>
-                数据中心
-              </h2>
-              <div class="flex p-1 bg-slate-100 rounded-xl w-full sm:w-auto">
-                <button id="tabManual" class="flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 bg-white text-blue-600 shadow-sm border border-slate-200/50">文本粘贴</button>
-                <button id="tabUrls" class="flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 text-slate-500 hover:text-slate-800">批量 URL</button>
               </div>
-            </div>
-            
-            <div class="space-y-6">
-              <!-- Manual Input -->
-              <div id="manualMode" class="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <textarea id="rawInput" class="w-full h-40 p-5 bg-slate-50/50 border border-slate-200 rounded-2xl font-mono text-xs focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all outline-none resize-none" placeholder="在此粘贴控制台采集到的文本..."></textarea>
-                <div class="flex gap-3">
-                  <button id="cleanBtn" class="px-5 py-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-sm font-bold transition-all hover:shadow-sm active:scale-95 flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    智能清洗
-                  </button>
-                  <button id="exportBtn" class="px-5 py-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-sm font-bold transition-all hover:shadow-sm active:scale-95 flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                    导出 JSON
-                  </button>
-                  <button id="runBtn" class="flex-1 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98] flex items-center justify-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                    开始分析
-                  </button>
+            </section>
+
+            <!-- 卡片 2：数据中心 -->
+            <section class="card">
+              <div class="card-head">
+                <h2 class="card-title"><span class="step-badge">2</span>数据中心</h2>
+                <div class="tabbar">
+                  <button id="tabManual" class="tab active">文本粘贴</button>
+                  <button id="tabUrls" class="tab">批量 URL</button>
                 </div>
               </div>
 
-              <!-- URL Input -->
-              <div id="urlMode" class="hidden space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <textarea id="urlInput" class="w-full h-40 p-5 bg-slate-50/50 border border-slate-200 rounded-2xl font-mono text-xs focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all outline-none resize-none" placeholder="https://github.com/
+              <div id="manualMode" class="field-stack">
+                <textarea id="rawInput" class="field" placeholder="在此粘贴控制台采集到的文本..."></textarea>
+                <div class="btn-row">
+                  <button id="cleanBtn" class="btn">智能清洗</button>
+                  <button id="exportBtn" class="btn">导出 JSON</button>
+                  <button id="runBtn" class="btn btn-primary" style="flex:1">开始分析</button>
+                </div>
+              </div>
+
+              <div id="urlMode" class="field-stack hidden">
+                <textarea id="urlInput" class="field" placeholder="https://github.com/
 https://github.com/issues
 https://github.com/pulls"></textarea>
-                <button id="batchRunBtn" class="w-full px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98] flex items-center justify-center">
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                  启动批量自动抓取
-                </button>
+                <button id="batchRunBtn" class="btn btn-primary" style="width:100%">启动批量自动抓取</button>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Data Preview Table (New) -->
-        <div id="previewContainer" class="bg-white p-8 rounded-3xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_10px_40px_rgba(0,0,0,0.02)] border border-slate-100 hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-slate-800 flex items-center">
-              <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-              清洗结果预览
-            </h2>
-            <span id="termCount" class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">0 词条</span>
-          </div>
-          
-          <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <div class="max-h-96 overflow-y-auto terminal-scrollbar">
-              <table class="w-full text-left border-collapse">
-                <thead class="sticky top-0 bg-slate-50 border-b border-slate-200 z-10">
-                  <tr>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">序号</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">采集词条 (Term)</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">状态</th>
-                  </tr>
-                </thead>
-                <tbody id="previewBody" class="divide-y divide-slate-100">
-                  <!-- Rows will be injected here -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3: Dashboard Progress & Output -->
-        <div id="dashboardSection" class="bg-white p-10 rounded-[32px] shadow-[0_1px_3px_rgba(0,0,0,0.05),0_10px_40px_rgba(0,0,0,0.02)] border border-slate-100 hidden flex-col">
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-xl font-bold text-slate-800">引擎实时处理中心</h2>
-            <div id="statusIndicator" class="flex items-center text-xs font-bold text-blue-600 uppercase tracking-widest">
-              <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping mr-2"></span>
-              Processing
-            </div>
-          </div>
-          
-          <!-- Progress Bar -->
-          <div class="mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-inner">
-            <div class="flex justify-between items-end text-sm mb-3">
-              <div class="flex flex-col">
-                <span class="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Current Task</span>
-                <span id="progressText" class="text-slate-700 font-bold">引擎准备就绪</span>
-              </div>
-              <span id="progressPercent" class="text-blue-600 font-bold font-mono text-lg">0%</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-300/30">
-              <div id="progressBar" class="bg-gradient-to-r from-blue-500 via-indigo-600 to-emerald-500 h-2.5 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(59,130,246,0.3)]" style="width: 0%"></div>
-            </div>
-            <div id="backupStatus" class="mt-4 flex items-center text-[10px] text-slate-400 font-medium bg-white/50 px-3 py-1.5 rounded-full border border-slate-200/50 w-fit">
-              <svg class="w-3 h-3 mr-1.5 text-slate-300 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-              等待首次自动备份...
-            </div>
+            </section>
           </div>
 
-          <!-- Log Output -->
-          <div class="flex-1 bg-[#0f172a] rounded-[24px] border border-slate-800 overflow-hidden flex flex-col h-96 shadow-2xl">
-            <div class="bg-slate-800/80 backdrop-blur px-6 py-3 flex items-center justify-between border-b border-slate-700/50">
-              <div class="flex items-center">
-                <div class="flex gap-1.5 mr-4">
-                  <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-                  <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                  <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-                </div>
-                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">i18n-engine-cli --stream</span>
-              </div>
-              <button id="clearLogBtn" class="text-[10px] font-bold text-slate-500 hover:text-slate-300 uppercase">Clear</button>
+          <!-- 预览表 -->
+          <section id="previewContainer" class="card hidden">
+            <div class="card-head">
+              <h2 class="card-title">清洗结果预览</h2>
+              <span id="termCount" class="term-badge">0 词条</span>
             </div>
-            <pre id="outputLog" class="p-6 text-[#2edb8b] font-mono text-xs overflow-y-auto flex-1 whitespace-pre-wrap m-0 leading-relaxed terminal-scrollbar"></pre>
-          </div>
-        </div>
+            <div class="preview">
+              <div class="preview-scroll scroll">
+                <table class="terms">
+                  <thead>
+                    <tr>
+                      <th>序号</th>
+                      <th>采集词条</th>
+                      <th class="right">状态</th>
+                    </tr>
+                  </thead>
+                  <tbody id="previewBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- 处理中心 -->
+          <section id="dashboardSection" class="progress-card hidden">
+            <div class="progress-head">
+              <h2>引擎实时处理中心</h2>
+              <div id="statusIndicator" class="status-indicator">
+                <span class="ping"></span>Processing
+              </div>
+            </div>
+
+            <div class="progress-meta">
+              <div class="progress-label">当前任务</div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;">
+                <span id="progressText" class="progress-task">引擎准备就绪</span>
+                <span id="progressPercent" class="progress-percent">0%</span>
+              </div>
+            </div>
+
+            <div class="progress-track">
+              <div id="progressBar" class="progress-fill"></div>
+            </div>
+
+            <div id="backupStatus" class="backup-pill">等待首次自动备份...</div>
+
+            <div class="terminal">
+              <div class="term-bar">
+                <div class="term-dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+                <span class="term-title">i18n-engine --stream</span>
+                <button id="clearLogBtn" class="term-clear">Clear</button>
+              </div>
+              <pre id="outputLog" class="term-body"></pre>
+            </div>
+          </section>
 
         </div>
       </div>

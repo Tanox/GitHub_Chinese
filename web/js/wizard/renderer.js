@@ -1,6 +1,7 @@
 /**
  * 采集向导渲染模块
  * @file web/js/wizard/renderer.js
+ * @version 1.9.22
  */
 import { wizardUtils } from './utils.js';
 import { wizardStore } from './store.js';
@@ -24,13 +25,11 @@ export const wizardRenderer = {
     termCount.innerText = `${lines.length} 词条`;
     
     previewBody.innerHTML = lines.map((line, index) => `
-      <tr class="group even:bg-slate-50/50 hover:bg-blue-50/50 transition-colors">
-        <td class="px-6 py-4 text-xs font-mono text-slate-400">#${(index + 1).toString().padStart(3, '0')}</td>
-        <td class="px-6 py-4 text-sm font-medium text-slate-700">${wizardUtils.escapeHtml(line)}</td>
-        <td class="px-6 py-4 text-right">
-          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
-            PENDING
-          </span>
+      <tr class="term-row">
+        <td class="term-index">#${(index + 1).toString().padStart(3, '0')}</td>
+        <td class="term-text">${wizardUtils.escapeHtml(line)}</td>
+        <td class="right">
+          <span class="term-badge">PENDING</span>
         </td>
       </tr>
     `).join('');
@@ -50,7 +49,7 @@ export const wizardRenderer = {
     const backupStatus = document.getElementById('backupStatus');
     if (backupStatus) {
       backupStatus.innerHTML = `
-        <svg class="w-3 h-3 mr-1.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         数据已自动备份: <span class="font-mono ml-1 font-bold">${time}</span>
       `;
     }
@@ -80,8 +79,8 @@ export const wizardRenderer = {
 
     if (!tabManual || !tabUrls || !manualMode || !urlMode) return;
 
-    const activeClass = "flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 bg-white text-blue-600 shadow-sm border border-slate-200/50";
-    const inactiveClass = "flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 text-slate-500 hover:text-slate-800";
+    const activeClass = "tab active";
+    const inactiveClass = "tab";
 
     if (mode === 'manual') {
       tabManual.className = activeClass;
