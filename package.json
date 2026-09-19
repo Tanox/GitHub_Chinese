@@ -1,6 +1,6 @@
 {
   "name": "github-chinese",
-  "version": "1.9.22",
+  "version": "1.9.23",
   "description": "GitHub Chinese 简体中文 - GitHub 中文本地化解决方案",
   "main": "src/main.js",
   "type": "module",
@@ -15,7 +15,8 @@
     "validate": "node -e \"const fs=require('fs');const path=require('path');const buildFile=path.join('build','GitHub_i18n.user.js');if(!fs.existsSync(buildFile)){console.error('构建产物不存在');process.exit(1)}const content=fs.readFileSync(buildFile,'utf8');if(content.length<1000){console.error('构建产物过小');process.exit(1)}console.log('验证通过');process.exit(0)\"",
     "test": "npm run lint && npm run build && npm run validate",
     "clean": "node -e \"const fs=require('fs');const path=require('path');['build','dist','coverage'].forEach(dir=>{if(fs.existsSync(dir)){fs.rmSync(dir,{recursive:true});console.log('已清理:',dir)}})\"",
-    "dict:collect": "node collect-dict.cjs"
+    "dict:collect": "node collect-dict.cjs",
+    "prepare": "husky"
   },
   "keywords": [
     "github",
@@ -42,15 +43,28 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.5",
+    "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.39.4",
+    "@types/node": "^20.14.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9.0.0",
+    "eslint-config-next": "^16.3.5",
     "globals": "^14.0.0",
+    "husky": "^9.1.7",
     "lint-staged": "^15.0.0",
+    "postcss": "^8.4.49",
     "prettier": "^3.2.0",
-    "serve": "^14.2.6"
+    "serve": "^14.2.6",
+    "tailwindcss": "^3.4.17"
   },
   "lint-staged": {
-    "*.js": [
+    "*.{js,cjs,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write"
     ]

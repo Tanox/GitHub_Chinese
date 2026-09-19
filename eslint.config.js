@@ -7,9 +7,26 @@
 
 import js from '@eslint/js';
 import globals from 'globals';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   js.configs.recommended,
+  {
+    // TypeScript/TSX：类型与未使用变量交由 tsc 处理，关闭易误报的 JS 规则
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
+      globals: { ...globals.browser, ...globals.node },
+    },
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      'no-redeclare': 'off',
+      'no-shadow': 'off',
+      'no-dupe-class-members': 'off',
+    },
+  },
   {
     files: ['**/*.js'],
     languageOptions: {
@@ -44,9 +61,9 @@ export default [
       'prefer-const': 'error',
 
       // 禁用与 Prettier 冲突的格式化规则
-      'indent': 'off',
-      'quotes': 'off',
-      'semi': 'off',
+      indent: 'off',
+      quotes: 'off',
+      semi: 'off',
       'comma-dangle': 'off',
       'object-curly-spacing': 'off',
       'array-bracket-spacing': 'off',
@@ -85,7 +102,7 @@ export default [
       'no-cond-assign': ['error', 'always'], // 不允许在条件中意外赋值
       'no-constant-condition': ['error', { checkLoops: true }], // 检测常量条件
       'no-duplicate-case': 'error', // 不允许重复的 case 标签
-      'no-empty': ['error', { 'allowEmptyCatch': true }], // 不允许空块，但允许空的 catch
+      'no-empty': ['error', { allowEmptyCatch: true }], // 不允许空块，但允许空的 catch
       'no-empty-character-class': 'error', // 不允许空的正则字符类
       'no-ex-assign': 'error', // 不允许重新分配异常变量
       'no-extra-boolean-cast': 'error', // 不需要的布尔转换
@@ -155,12 +172,18 @@ export default [
       'no-labels': ['error', { allowLoop: false, allowSwitch: false }], // 不允许标签
       'no-lone-blocks': 'error', // 不允许不必要的块
       'no-loop-func': 'warn', // 警告循环中定义函数
-      'no-magic-numbers': ['warn', {
-        ignore: [0, 0.1, 0.2, 0.3, 0.5, 0.8, 1, -1, 2, 3, 4, 5, 10, 15, 16, 20, 25, 31, 50, 60, 100, 127, 200, 300, 500, 1000, 2000, 3000, 5000, 3600, 86400, 2592000, 31536000, 30000],
-        ignoreArrayIndexes: true,
-        ignoreDefaultValues: true,
-        ignoreClassFieldInitialValues: true,
-      }], // 警告魔法数字（忽略常用数字）
+      'no-magic-numbers': [
+        'warn',
+        {
+          ignore: [
+            0, 0.1, 0.2, 0.3, 0.5, 0.8, 1, -1, 2, 3, 4, 5, 10, 15, 16, 20, 25, 31, 50, 60, 100, 127,
+            200, 300, 500, 1000, 2000, 3000, 5000, 3600, 86400, 2592000, 31536000, 30000,
+          ],
+          ignoreArrayIndexes: true,
+          ignoreDefaultValues: true,
+          ignoreClassFieldInitialValues: true,
+        },
+      ], // 警告魔法数字（忽略常用数字）
       'no-multi-assign': 'warn', // 警告链式赋值
       'no-multi-str': 'error', // 不允许多行字符串
       'no-native-reassign': 'error', // 不允许重新分配原生对象
@@ -194,15 +217,18 @@ export default [
       'no-useless-return': 'error', // 不需要的 return
       'no-var': 'error', // 已在上面
       'no-void': 'error', // 不允许 void
-      'no-warning-comments': ['warn', { terms: ['todo', 'fixme', 'xxx', 'hack'], location: 'start' }], // 警告待办注释
+      'no-warning-comments': [
+        'warn',
+        { terms: ['todo', 'fixme', 'xxx', 'hack'], location: 'start' },
+      ], // 警告待办注释
       'no-with': 'error', // 已在上面
       'prefer-promise-reject-errors': 'error', // 已在上面
-      'radix': 'error', // parseInt 应提供基数
+      radix: 'error', // parseInt 应提供基数
       'require-await': 'off', // 已在上面
       'require-unicode-regexp': 'off', // 不强制使用 Unicode 正则
       'vars-on-top': 'error', // 变量声明应放在顶部
       'wrap-iife': ['error', 'any'], // IIFE 应被包裹
-      'yoda': ['error', 'never'], // 不允许 Yoda 条件
+      yoda: ['error', 'never'], // 不允许 Yoda 条件
 
       // ==================== 新增：代码质量规则 ====================
       'logical-assignment-operators': ['warn', 'always'], // 优先使用逻辑赋值
@@ -210,7 +236,7 @@ export default [
       'guard-for-in': 'warn', // 降级为警告：for-in 应过滤原型链属性
       'consistent-return': 'warn', // 降级为警告：函数应一致地返回值
       'no-promise-executor-return': 'warn', // 降级为警告：Promise executor 不应返回值
-      'radix': 'warn', // 降级为警告：parseInt 应提供基数
+      radix: 'warn', // 降级为警告：parseInt 应提供基数
     },
   },
   {
@@ -260,6 +286,13 @@ export default [
     },
   },
   {
-    ignores: ['build/**', 'dist/**', 'node_modules/**', 'coverage/**', 'docs/**'],
+    ignores: [
+      'build/**',
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      'docs/**',
+      'eslint.config.js',
+    ],
   },
 ];

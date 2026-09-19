@@ -1,0 +1,8 @@
+/**
+ * 全局样式入口（Next.js 经 layout 引入）
+ * Tailwind 指令入口；现有组件样式由 public/css 经 <link> 引入，互不冲突
+ * @file src/app/globals.css
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

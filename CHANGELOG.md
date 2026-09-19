@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.9.23] - 2026-09-19
+
+### Added
+- 升级采集演示页为 Next.js（App Router, `src/` 模式）：`src/app`、`src/components`、`src/lib`、`src/hooks`、`src/config`
+- 新增 `next.config.mjs`（根级，与源码解耦）
+- 新增 `src/middleware.ts`（Edge 中间件，附加基础安全响应头）
+- 新增 Tailwind CSS + PostCSS 根级配置（`tailwind.config.ts`、`postcss.config.mjs`），`preflight:false` 保留自包含组件样式
+- 整合 ESLint（`eslint-config-next` + FlatCompat），与现有用户脚本规则并存
+- 新增 Husky（`prepare` 脚本 + `.husky/pre-commit` 触发 lint-staged）
+
+### Changed
+- `layout.tsx` 引入 `src/app/globals.css`（Tailwind 入口），保留 `public/css` 组件样式
+- 用户脚本核心（`src/core`、`src/translation-core` 等）保留独立构建，不纳入 Next 处理
+
+---
+
 ## [1.9.22] - 2026-09-18
 
 ### Changed

@@ -5,6 +5,8 @@
 # /test   <- 允许追踪调试脚本
 /utils/api
 /dist
+# Next.js 构建产物（勿提交）
+/.next
 *.code-workspace
 *.bak
 github_string_fetcher.js
