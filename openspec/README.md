@@ -1,10 +1,29 @@
-# 项目规范文档索引
+# OpenSpec 规范索引
 
-本目录集中管理项目规范与配置文档，用于指导开发流程与协作。
+> 版本：**v1.9.24** ｜ 版本权威源：`src/version.js`
 
-## 原型与设计系统
+本目录是 OpenSpec 的入口与配置目录，**仅保留规范索引与配置**。
 
-设计系统与高保真原型已迁移至 [prototype/](../prototype/)，它是设计与开发的唯一信息源：
+项目规范文档的**唯一权威正文位于 [`docs/`](../docs/)**：`docs/` 下维护完整内容，
+本目录下的同名 `.md` 均为简短索引，指向对应权威正文，避免同一内容维护两份而长期脱节。
+
+## 规范索引
+
+### 项目核心文档
+
+| 文档 | 权威正文 | 本目录索引 |
+|------|---------|-----------|
+| 开发进度 | [docs/PROGRESS.md](../docs/PROGRESS.md) | `PROGRESS.md`（仅正文一处，无需索引） |
+| 项目规范 | [docs/project.md](../docs/project.md) | [project.md](./project.md) |
+| 架构文档 | [docs/architecture.md](../docs/architecture.md) | [architecture.md](./architecture.md) |
+| 开发指南 | [docs/development.md](../docs/development.md) | [development.md](./development.md) |
+| 代码风格 | [docs/coding-style.md](../docs/coding-style.md) | [coding-style.md](./coding-style.md) |
+| 原型设计 | [docs/prototype.md](../docs/prototype.md) | [prototype.md](./prototype.md) |
+| OpenSpec 配置 | — | [config.yaml](./config.yaml) |
+
+### 原型与设计系统
+
+设计系统与高保真原型由 [`prototype/`](../prototype/) 统一维护，它是设计与开发的唯一信息源：
 
 | 模块 | 路径 | 说明 |
 |------|------|------|
@@ -15,34 +34,15 @@
 
 打开 [prototype/index.html](../prototype/index.html) 浏览完整的原型与设计系统。
 
-## 目录导航
+## 关键约定（摘要）
 
-### 项目核心文档
+- 版本单一来源：`src/version.js` 的 `VERSION`
+- 提交规范：Conventional Commits
+- 质量门禁：`npm run lint`（0 error）→ `npm run build` → `npm run validate`
+- 单代码文件 ≤ 200 行；主要容器与交互控件须带语义化 `id`
 
-| 文档 | 路径 | 说明 |
-|------|------|------|
-| 项目规范 | [project.md](./project.md) | 项目概述、目录结构、开发规范、核心模块说明等 |
-| 配置文件 | [config.yaml](./config.yaml) | OpenSpec 系统配置、项目上下文和规则定义 |
-| 开发指南 | [development.md](./development.md) | 分支策略、提交规范、发布流程、测试要求等 |
-| 架构文档 | [architecture.md](./architecture.md) | 系统架构、核心模块、技术选型等 |
-| 代码风格 | [coding-style.md](./coding-style.md) | 命名约定、代码格式、注释规范、最佳实践等 |
-
-### 规范文档说明
-
-- **openspec/project.md**
-  - 包含完整的项目架构说明
-  - 目录结构文档
-  - 编码规范和版本管理规则
-  - 核心模块详细说明
-  - 开发工具与脚本说明
-  - 代码质量保障措施
-
-- **openspec/config.yaml**
-  - OpenSpec 驱动架构配置
-  - 项目上下文信息（技术栈、领域等）
-  - 提案和变更的规则定义
-
-### 与文档相关的变更
+## 历史说明
 
 - 旧 `docs/prototype/prototype.html` 已被 `prototype/` 替代并移除
 - 所有新增的设计 / 交互规范请直接在 `prototype/` 下维护
+- v1.9.24 起，`openspec/*.md` 由「与 `docs/` 完全重复的正文」改为「指向 `docs/` 的索引」

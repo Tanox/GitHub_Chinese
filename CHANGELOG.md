@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.9.24] - 2026-09-19
+
+### Fixed
+- 修复构建脚本模块清单脱节：`build.cjs` 缺失 `main/lifecycle.js`、`core/errorHandler/*`、`core/virtualDom/*`、`page-monitor/domObserver/*`、`translation-core/*` 等 40+ 模块，导致产物存在大量未定义引用、脚本运行即报错
+- 修复跨模块顶层重名：`translateCriticalElementsOnly`（`elementTranslator/critical.js` 与 `translator.js`）重命名为 `translateCriticalElements`；清理 `versionUtils.js` 中未使用的导出常量
+- 修复 `configUI` 未导出实例且缺少 `init()` 的问题（浮动入口按钮与脚本菜单命令此前从未生效）
+- 修复「启用部分匹配」开关空转：`dictionaryManager` 现构建 Trie 树与正则缓存，并接入查询回退链路
+- 修复 `collect-dict.cjs` 引用已不存在的词典文件导致词典加载近乎为空的问题，改为递归扫描 `src/dictionaries/**/*.js`（词条数由残缺恢复为完整 459 条）
+- 修复版本号不一致：`package.json` 1.9.23 / `src/version.js` 1.9.22 / 工作台硬编码 1.9.22，统一为 1.9.24
+- 修复 `npm run build` 被 `next build` 覆盖导致 CI 的 build → validate → artifact 链路必然失败的问题
+- 修复 `server.js` 静态目录指向不存在的 `web/`（改为 `public/`）
+- 修复 `DataCenter` 中「智能清洗」「导出 JSON」按钮无点击处理、`ScriptInjector` 缺少复制反馈
+- 修复 `src/app/page.tsx` 侧栏 `href="#"` 死链
+- 用 `TextEncoder`/`TextDecoder` 替换已废弃的 `escape`/`unescape`（保持存储格式向后兼容）
+
+### Added
+- 新增 `scripts/build/moduleGraph.cjs`：从入口递归解析 ESM 依赖并拓扑排序，含循环引用检测
+- 新增 `scripts/build/transform.cjs`：ESM → 单作用域拼接，含跨模块顶层重名冲突检测
+- 新增 `scripts/validate-bundle.cjs`：产物校验（存在性 / 体积 / 语法 / 未定义引用扫描）
+- 新增 `src/ui/configUI/bootstrap.js`：浮动入口按钮与用户脚本菜单命令
+- 新增 `docs/PROGRESS.md`：开发进度报告与遗留任务清单
+- 新增 `src/types/puppeteer.d.ts`：可选依赖的最小类型声明
+- 新增 `npm run build:web` 与 `npm run dev:prototype` 脚本
+
+### Changed
+- 按「单代码文件 ≤ 200 行」约定拆分 6 处超长文件（导出契约不变）：
+  `eslint.config.js` → `eslint/rules/{core,bestPractices,quality}.js`；
+  `src/i18n/manager.js` → `constants`/`storage`/`observers`/`formatters`/`lookup`/`loader`；
+  `src/core/virtualDom/manager.js` → `cleanup`/`nodes`/`lifecycle`；
+  `src/dictionaries/common/misc.js` → `miscOrganization`/`miscMarketing`/`miscActions`；
+  `src/translation-core/selectorUtils/patterns.js` → `skipTags`/`skipIdsEntity`/`skipIdsTechnical`；
+  `prototype/assets/prototype.css` → 9 个模块 + `@import` 聚合入口
+- 修正 `misc.js` 中英文混排的译文（"数百万开发者 and 业务" → "数百万开发者与业务"）
+- 构建产物体积改为按字节统计（原按字符统计会低估约 9%）
+- `npm run build` 恢复为用户脚本构建；`validate` 指向真实校验脚本
+- `partialTranslator` 的部分匹配默认开启（对齐原型设计）
+- `eslint.config.js` 的 CommonJS 规则块扩展至全部 `**/*.cjs`，忽略项补 `.next`/`prototype`/`public`
+- `src/lib/collector-logic.ts` 移除 `eval('require(...)')` 与死代码，改用 `spawn`，采集临时文件改写入系统临时目录
+- `src/hooks/useCollector.ts` 消除 `any`，新增非 2xx 响应与事件流解析失败的显式错误提示
+- `public/` 下 16 个源码文件的头注释路径由 `web/...` 修正为 `public/...`
+- 文档同步：`README.md`、`docs/*`、`openspec/*`（改为指向 `docs/` 的索引）、`docs/config.yaml` 修正 `../spec` 无效路径
+- 质量门禁现状：`npm run lint` 0 error / 0 warning，`tsc --noEmit` 通过，`npm run validate` 通过
+
+### Known Issues
+- `puppeteer` 已在 `package.json` 声明但未安装，批量 URL 采集暂不可用（未安装时返回明确提示）
+- `jest.config.js` / `jest.setup.js` 为未启用状态（`jest` 未安装且无测试用例）
+- `src/i18n/*`（9 个模块）已实现但无调用方，暂不参与打包，去留待决策（`docs/PROGRESS.md` P1-2）
+
+---
+
 ## [1.9.23] - 2026-09-19
 
 ### Added

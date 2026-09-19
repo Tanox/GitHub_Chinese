@@ -1,5 +1,7 @@
 # 代码风格规范
 
+> 版本：**v1.9.24** ｜ 版本权威源：`src/version.js`
+
 本文档定义了项目的代码风格规范，包括命名约定、代码格式、注释规范和最佳实践。
 
 ## 目录
@@ -282,12 +284,15 @@ function processData(data)
 /**
  * GitHub Chinese 简体中文主入口文件
  * @file main.js
- * @version 1.9.20
- * @date 2026-06-10
+ * @version 1.9.24
+ * @date 2026-09-19
  * @author Sut
  * @description 整合所有模块并初始化脚本
  */
 ```
+
+> 版本号须与 `src/version.js` 的 `VERSION` 一致。仅在文件**实际被改动**时同步其头注释版本号，
+> 未改动文件保持原值，禁止全仓库批量刷写。
 
 ### 4.2 函数/方法注释
 
@@ -525,7 +530,39 @@ function createUser(name, email, age, address, phone) {
 }
 ```
 
-### 5.8 复杂度控制
+### 5.8 文件行数与模块拆分
+
+- 单个**源代码文件**不超过 200 行，超出时按职责拆分（UI 组件 / hooks / 工具函数 / 类型 / 常量分别成文件）
+- 拆分不得改变外部导出契约，公开 API 保持稳定
+- 文档文件（`.md`）不适用该规则，必须保持完整与连贯
+- 项目内既有拆分实践：`utils/string/*`、`utils/tools/*`、`translation-core/elementTranslator/*`、
+  `translation-core/selectorUtils/*`、`page-monitor/domObserver/*`、`ui/configUI/*`、`ui/styles/configUI/*`、
+  `scripts/build/*`、`public/css/*`
+
+### 5.9 语义化 id
+
+为主要容器与交互控件添加语义化 `id`（kebab-case，表达用途），便于调试、无障碍关联与测试定位：
+
+```html
+<div id="collector-workspace">
+  <aside id="collector-rail">…</aside>
+  <main id="collector-main">
+    <textarea id="data-center-input"></textarea>
+    <button id="data-center-run-btn">开始分析</button>
+  </main>
+</div>
+```
+
+反例：`div1`、`box`、`wrapper2` 等无意义命名。
+
+### 5.10 TypeScript 约定（采集工作台）
+
+- 禁止 `any`：使用 `unknown` + 类型收窄，或定义明确的接口
+- 捕获异常统一走 `describeError(error: unknown): string`
+- 服务端逻辑（`src/lib/*`）与客户端组件（`src/components/*`）分离，客户端组件需 `'use client'`
+- 外部可选依赖若无类型，使用最小 `declare module` 声明（见 `src/types/puppeteer.d.ts`）
+
+### 5.11 复杂度控制
 
 - 圈复杂度不超过 20（与 ESLint 规则一致）
 - 使用提前返回减少嵌套

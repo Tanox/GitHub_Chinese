@@ -1,18 +1,28 @@
 # GitHub Chinese 简体中文插件架构文档
 
+> 版本：**v1.9.24** ｜ 版本权威源：`src/version.js`
+
 ## 1. 系统整体架构概述
 
 ### 1.1 项目简介
 GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitHub 提供全面的中文本地化支持。该项目采用模块化设计，使用现代 JavaScript 技术栈，提供高性能、可扩展的 GitHub 界面翻译功能。
+
+项目由两条**相互独立、仅共享词典数据**的链路组成：
+
+| 链路 | 交付物 | 构建方式 |
+|------|--------|---------|
+| A. 用户脚本引擎 | `build/GitHub_i18n.user.js` 单文件用户脚本 | `build.cjs` 从 `src/main.js` 递归解析依赖图并拼接 |
+| B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
 ### 1.2 架构特点
 - **模块化设计**：将功能分解为独立模块，便于维护和扩展
 - **事件驱动**：采用观察者模式实现模块间通信
 - **高性能优化**：使用 Trie 树、LRU 缓存、虚拟 DOM 等技术提升性能
 - **智能预检查**：无匹配翻译时不修改 DOM，减少不必要操作
-- **质量保障**：完善的测试覆盖和代码规范检查
+- **构建即校验**：依赖图自动推导 + 跨模块重名冲突检测 + 孤立模块报告
+- **质量保障**：ESLint / Prettier / TypeScript 类型检查 / 产物静态校验
 
-### 1.3 整体架构图
+### 1.3 用户脚本引擎架构图
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        用户脚本主入口 (main.js)              │
@@ -159,6 +169,26 @@ GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitH
 - init()              // 初始化脚本
 - startScript()       // 启动脚本
 - cleanup()           // 资源清理
+```
+
+### 2.7 生命周期编排 (main/lifecycle.js)
+
+`src/main.js` 仅作为薄入口，实际编排收敛在 `lifecycleManager`：
+
+- `init()`：版本检查 → 翻译核心初始化 → 首次翻译 → 页面监控 → 配置界面初始化
+- `startScript()`：根据 `document.readyState` 决定立即初始化或等待 `DOMContentLoaded`
+- `cleanup()`：停止页面监控、清理翻译缓存、销毁配置界面、移除事件监听
+
+同时 `main.js` 暴露 `window.GitHub_i18n = { translationCore, configUI }`，供错误处理器的词典恢复与脚本菜单命令使用。
+
+### 2.8 配置界面启动链 (ui/configUI)
+
+```
+lifecycleManager.init()
+  └─ configUI.init()
+      ├─ mergeUserConfig()                     ← 合并 localStorage 中的用户配置
+      ├─ configBootstrap.registerMenuCommands() ← 注册「打开配置面板 / 立即翻译页面」
+      └─ configBootstrap.createFloatingButton() ← 页面右下角浮动入口按钮
 ```
 
 ---
@@ -329,66 +359,46 @@ main.js
 ## 5. 目录结构
 
 ```
-GitHub Chinese/
-├── src/                          # 用户脚本源码
-│   ├── core/                    # 核心工具模块
-│   │   ├── cacheManager.js
-│   │   ├── errorHandler.js
-│   │   ├── trie.js
-│   │   └── virtualDom.js
-│   ├── dictionaries/            # 翻译词典模块
-│   │   ├── index.js
-│   │   ├── common.js
-│   │   ├── codespaces.js
-│   │   └── explore.js
-│   ├── page-monitor/           # 页面监控模块
-│   │   ├── index.js
-│   │   ├── cacheManager.js
-│   │   ├── domObserver.js
-│   │   ├── domObserver.utils.js  # DOM 工具函数
-│   │   ├── pageAnalyzer.js
-│   │   ├── pathListener.js
-│   │   └── translationTrigger.js
-│   ├── translation-core/       # 翻译核心模块
-│   │   ├── index.js
-│   │   ├── dictionaryManager.js
-│   │   ├── elementSelector.js
-│   │   ├── elementTranslator.js ⭐
-│   │   ├── pageModeDetector.js
-│   │   ├── partialTranslator.js
-│   │   └── performanceMonitor.js
-│   ├── ui/                     # UI 模块
-│   │   ├── components/        # UI 组件
-│   │   │   └── performanceMonitor.js
-│   │   ├── styles/            # UI 样式
-│   │   │   └── configUI.styles.js
-│   │   └── configUI.js
-│   ├── utils/                   # 工具模块
-│   │   ├── tools.js
-│   │   └── utils.js
-│   ├── config.js
-│   ├── i18n.js
-│   ├── main.js
-│   ├── version.js
-│   └── versionChecker.js
-├── docs/                        # 文档目录
-│   ├── prototype.md            # 原型设计文档
-│   ├── architecture.md
-│   ├── development.md
-│   └── coding-style.md
-├── build/                       # 用户脚本构建产物
-├── openspec/                    # OpenSpec 规范
-│   ├── project.md
-│   ├── architecture.md
-│   ├── development.md
-│   ├── coding-style.md
-│   ├── config.yaml
-│   └── README.md
-├── build.cjs
-├── jest.config.js
-├── eslint.config.js
-├── package.json
-└── README.md
+GitHub_Chinese/
+├── src/                              # 源码根目录
+│   ├── main.js                       # 用户脚本唯一入口
+│   ├── main/lifecycle.js             # 生命周期编排
+│   ├── core/                         # cacheManager / errorHandler(+/*) / trie / virtualDom(+/*) / virtualNode
+│   ├── translation-core/             # 翻译核心引擎
+│   │   ├── dictionaryManager.js      # 词典加载、哈希索引、Trie 与缓存查询
+│   │   ├── elementTranslator.js      # 单元素翻译
+│   │   ├── elementTranslator/        # stats / critical
+│   │   ├── partialTranslator.js      # Trie 部分匹配
+│   │   ├── selectorUtils/            # patterns / matchers
+│   │   ├── batchProcessor.js         # 分批执行
+│   │   ├── cacheController.js        # 缓存治理
+│   │   ├── translator.js             # 翻译编排
+│   │   ├── lifecycle.js              # 卸载处理与缓存清理定时器
+│   │   └── index.js                  # translationCore 对象
+│   ├── page-monitor/                 # domObserver(+/*) / pageAnalyzer / pathListener / translationTrigger
+│   ├── dictionaries/                 # codespaces / explore / common(nav,repo,pr,issue,misc)
+│   ├── ui/                           # configUI(+store,renderer,bootstrap) / components / styles
+│   ├── utils/                        # functionUtils / stringUtils(+string/) / domUtils / urlUtils / securityUtils / tools
+│   ├── i18n/                         # 国际化框架（已实现，暂未接入）
+│   ├── config.js + config/           # 全局配置与配置分片
+│   ├── version.js                    # 单一版本源
+│   ├── versionUtils.js / versionChecker/ / updateNotification/
+│   ├── app/                          # Next.js App Router（采集工作台）
+│   ├── components/ hooks/ lib/ types/# 工作台组件、Hook、服务端逻辑、类型声明
+│   └── middleware.ts                 # Edge 安全响应头
+├── public/                           # 静态资源（css 模块化 / js 向导）
+├── prototype/                        # 设计系统与高保真原型
+├── scripts/build/                    # moduleGraph.cjs / transform.cjs
+├── scripts/validate-bundle.cjs       # 构建产物校验
+├── docs/                             # 正式规范文档（权威正文）
+├── openspec/                         # OpenSpec 规范索引与配置
+├── build/GitHub_i18n.user.js         # 用户脚本构建产物（纳入版本控制）
+├── build.cjs                         # 用户脚本构建入口
+├── collect-dict.cjs                  # 词典采集工具
+├── server.js                         # 原型热更新预览服务器
+├── next.config.mjs / tailwind.config.ts / postcss.config.mjs
+├── eslint.config.js / tsconfig.json
+└── package.json / CHANGELOG.md / README.md
 ```
 
 ---
@@ -412,12 +422,40 @@ GitHub Chinese/
 
 ---
 
-## 7. 版本历史
+## 7. 采集工作台架构（Next.js）
+
+采集工作台是与用户脚本解耦的独立 Next.js 16 应用，复用同一份词典数据。
+
+```
+浏览器（src/app/page.tsx）
+  └─ useCollector（src/hooks/useCollector.ts）
+      ├─ POST /api/collect        → processRawData(data)
+      └─ POST /api/batch-collect  → collectFromUrls(urls)
+            └─ src/lib/collector-logic.ts
+                ├─ puppeteer（可选依赖）抓取页面文本
+                └─ spawn(collect-dict.cjs) ← 与用户脚本共享词典
+                      └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
+```
+
+要点：
+
+- 两条 API 路由均声明 `runtime = 'nodejs'`（需要 `child_process` 与文件系统）
+- 采集原始文本写入系统临时目录（`os.tmpdir()`），不污染仓库工作区
+- `puppeteer` 为**可选运行时依赖**：未安装时批量采集返回明确错误提示，而非崩溃
+- `src/middleware.ts` 为所有响应附加 `X-Content-Type-Options`、`X-Frame-Options` 等基础安全头
+
+架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `middleware.ts`；
+用户脚本核心 `.js` 由 `build.cjs` 独立构建，二者互不打包。
+
+---
+
+## 8. 版本历史
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| 1.9.20 | 2026-06-10 | 完善项目规范文档至 100% 完成度，统一版本号，修正 CI/CD 配置 |
-| 1.9.19 | 2026-06-08 | ⭐ 优化翻译逻辑：无匹配时不修改 DOM，更新架构文档 |
-| 1.9.18 | 2026-06-07 | 版本更新和 bug 修复 |
-| 1.9.17 | 2026-05-22 | 之前版本 |
-| 1.9.16 | 2026-05-22 | 之前版本 |
+| 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节、`configUI` 未导出、部分匹配空转、版本号不一致等阻塞缺陷；新增产物校验脚本与进度文档 |
+| 1.9.23 | 2026-09-19 | 采集演示页升级为 Next.js 16（App Router），新增 Tailwind / ESLint / Husky 配置 |
+| 1.9.22 | 2026-09-18 | 重构词典采集向导样式，统一品牌绿主题 |
+| 1.9.21 | 2026-07-18 | 项目更名为 GitHub Chinese 简体中文 |
+| 1.9.20 | 2026-06-10 | 完善项目规范文档，统一版本号，修正 CI/CD 配置 |
+| 1.9.19 | 2026-06-08 | ⭐ 优化翻译逻辑：无匹配时不修改 DOM |

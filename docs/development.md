@@ -1,5 +1,7 @@
 # 开发指南
 
+> 版本：**v1.9.24** ｜ 版本权威源：`src/version.js`
+
 本文档记录了项目的开发流程、分支策略、提交规范、发布流程和测试要求。
 
 ## 目录
@@ -146,10 +148,10 @@ MAJOR.MINOR.PATCH
 
 #### 3.2.2 版本号更新
 
-更新以下文件中的版本号：
-- `package.json`
-- `src/version.js`
-- 所有源代码文件中的版本注释
+1. 更新**单一版本源** `src/version.js` 中的 `VERSION`
+2. 同步全局展示位：`package.json` 的 `version`
+3. 同步文档展示位：`README.md`、`docs/*.md`、`openspec/config.yaml`、`prototype/` 中出现的版本号
+4. 仅同步**本次实际改动文件**的头注释版本号；未改动文件保持不变，**禁止全仓库批量刷写头注释**
 
 #### 3.2.3 CHANGELOG 更新
 
@@ -201,7 +203,19 @@ MAJOR.MINOR.PATCH
 
 ### 4.1 测试框架
 
-项目使用 **ESLint** 和 **Prettier** 进行代码质量检查和格式化。
+项目当前的 `npm test` 为**质量流水线**，由三步构成：
+
+```bash
+npm run lint      # ESLint（0 error 门禁）
+npm run build     # 构建用户脚本
+npm run validate  # 校验产物：存在性 / 体积 / 语法 / 未定义引用扫描
+```
+
+此外 Next 工作台可单独做类型检查：`node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json`。
+
+> **注意**：仓库中保留 `jest.config.js` 与 `jest.setup.js`，但 `jest`、
+> `jest-environment-jsdom`、`babel-jest` 尚未安装，且当前无任何测试用例，
+> `npm test` 不会执行单元测试。是否启用 Jest 待决策（见 `docs/PROGRESS.md` P1-3）。
 
 ### 4.2 测试文件组织
 
@@ -302,9 +316,14 @@ npm run validate
 | `npm run lint:fix` | 自动修复 ESLint 问题 |
 | `npm run format` | 运行 Prettier 格式化 |
 | `npm run format:check` | 检查代码格式 |
-| `npm run build` | 构建项目 |
+| `npm run build` | 构建用户脚本 → `build/GitHub_i18n.user.js` |
 | `npm run validate` | 验证构建产物 |
-| `npm run clean` | 清理构建产物 |
+| `npm run dev` | 启动 Next.js 采集工作台 |
+| `npm run dev:prototype` | 启动 `prototype/` 热更新预览（Express + WebSocket） |
+| `npm run build:web` | 构建 Next.js 采集工作台 |
+| `npm run dict:collect -- <文件>` | 采集文本文件中的待翻译词条 |
+| `npm test` | 完整流水线：lint → build → validate |
+| `npm run clean` | 清理 `build`/`dist`/`coverage`/`.next` |
 
 ### 相关文档
 
