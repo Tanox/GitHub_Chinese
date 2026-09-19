@@ -35,6 +35,17 @@
   `src/server/collector.js`（Express，`server.js` 使用），待合并去重。
 - `tsconfig.json` 为 `strict: false`（与「避免 any」约定不一致，待开启）。
 
+## 仓库与提交
+- 远程：`https://github.com/Tanox/GitHub_Chinese.git`（分支 `main`）。
+  文档/package.json/用户脚本头中的旧名 `Tanox/GitHub_i18n` 两条 raw 路径实测均 200 且内容一致，
+  自动更新不受影响；改名需谨慎（`@updateURL` 依赖 raw 路径）。
+- **提交钩子是真的**：`.husky/pre-commit` → `lint-staged`（eslint --fix + prettier --write）。
+  ⚠️ lint-staged v15 **不支持顶层 `ignore` 键**，写了会导致 pre-commit 直接失败、提交中断；
+  排除目录请用 `.prettierignore` 或 eslint `ignores`。
+- **构建产物须可复现**：`build.cjs` 先 `\r\n`→`\n` 再折叠空行（顺序颠倒会因 Windows CRLF 残留空行，
+  导致每次构建都产生 diff）。发版后应 `node build.cjs` 再确认 `git status` 干净。
+- `build/GitHub_i18n.user.js` 随仓库提交（README 一键安装与 `@updateURL` 都指向它）。
+
 ## 编码约定（本项目）
 - 单代码文件 ≤ 200 行，超长须按职责拆分（文档 .md 不适用，须保持完整）。
 - 每次修改至少 bump patch 版本；**仅同步被改动文件的头注释版本号**，禁止全仓库批量刷写。
