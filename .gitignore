@@ -5,8 +5,9 @@
 # /test   <- 允许追踪调试脚本
 /utils/api
 /dist
-# Next.js 构建产物（勿提交）
+# Next.js / TypeScript 构建产物（勿提交）
 /.next
+tsconfig.tsbuildinfo
 *.code-workspace
 *.bak
 github_string_fetcher.js

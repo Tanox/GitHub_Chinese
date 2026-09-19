@@ -16,10 +16,14 @@ const startScript = () => lifecycleManager.startScript();
 // 导出函数
 export { init, startScript, cleanup };
 
-// 调试模式暴露
-if (typeof window !== 'undefined' && CONFIG.debugMode) {
-  window.translationCore = translationCore;
-  window.configUI = configUI;
+// 对外暴露运行实例（错误处理器的词典恢复与脚本菜单依赖此命名空间）
+if (typeof window !== 'undefined') {
+  window.GitHub_i18n = { translationCore, configUI };
+
+  if (CONFIG.debugMode) {
+    window.translationCore = translationCore;
+    window.configUI = configUI;
+  }
 }
 
 // 启动脚本

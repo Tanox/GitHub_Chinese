@@ -1,0 +1,153 @@
+/*
+ * GitHub 中文 · 原型 — 色卡 / 排版样例 / 间距展示 / 组件预览卡片
+ * @file prototype/assets/prototype.examples.css
+ * @version 1.9.24
+ */
+/* ========== 色卡 ========== */
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--sp-4);
+}
+.swatch {
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--c-bg-elevated);
+}
+.swatch-chip {
+  height: 72px;
+  position: relative;
+}
+.swatch-chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08),
+    transparent 40%
+  );
+  pointer-events: none;
+}
+.swatch-meta {
+  padding: var(--sp-4) var(--sp-5);
+}
+.swatch-meta .name {
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-base);
+  margin-bottom: var(--sp-1);
+}
+.swatch-meta .token,
+.swatch-meta .hex {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-text-dim);
+}
+
+/* ========== 排版样例 ========== */
+.type-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 180px;
+  gap: var(--sp-6);
+  padding: var(--sp-5) 0;
+  border-bottom: 1px solid var(--c-border-subtle);
+  align-items: baseline;
+}
+.type-row:last-child {
+  border-bottom: none;
+}
+.type-token {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--c-text-dim);
+}
+.type-sample {
+  font-size: inherit;
+}
+.type-meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+  text-align: right;
+}
+
+/* ========== 间距展示 ========== */
+.spacing-row {
+  display: grid;
+  grid-template-columns: 140px 60px 1fr;
+  gap: var(--sp-5);
+  align-items: center;
+  padding: var(--sp-4) 0;
+  border-bottom: 1px solid var(--c-border-subtle);
+}
+.spacing-token {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--c-text-dim);
+}
+.spacing-bar {
+  background: linear-gradient(
+    90deg,
+    var(--c-primary),
+    var(--c-accent)
+  );
+  border-radius: var(--r-sm);
+  height: 10px;
+  box-shadow: 0 0 8px rgba(46, 160, 67, 0.25);
+}
+.spacing-px {
+  font-family: var(--font-mono);
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* ========== 组件预览卡片 ========== */
+.component-card {
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin-bottom: var(--sp-7);
+}
+.component-head {
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: 1px solid var(--c-border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.component-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+}
+.component-head .tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-text-dim);
+}
+.component-preview {
+  padding: var(--sp-8) var(--sp-6);
+  background:
+    radial-gradient(
+      circle at 1px 1px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 0
+    )
+    0 0 / 18px 18px,
+    var(--c-bg);
+  min-height: 180px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5);
+  align-items: center;
+  justify-content: flex-start;
+}
+.component-desc {
+  padding: var(--sp-5) var(--sp-6);
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+  border-top: 1px solid var(--c-border-subtle);
+}

@@ -1,7 +1,7 @@
 /**
  * 采集向导工具模块
- * @file web/js/wizard/utils.js
- * @version 1.9.22
+ * @file public/js/wizard/utils.js
+ * @version 1.9.24
  */
 import { NOTIFICATION_AUTO_HIDE_MS } from './constants.js';
 
@@ -48,5 +48,5 @@ export const wizardUtils = {
     } catch (err) {
       this.showToast('复制失败', 'error');
     }
-  }
+  },
 };

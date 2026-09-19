@@ -1,15 +1,12 @@
 /**
  * 词典处理工具
  * @file src/utils/tools/dictionaryProcessor.js
+ * @version 1.9.24
  */
 import { translationModule } from '../../dictionaries/index.js';
 import { stringExtractor } from './stringExtractor.js';
 
 export class DictionaryProcessor {
-  constructor() {
-    this.processedCount = 0;
-  }
-
   static mergeDictionaries() {
     const merged = {};
     for (const module in translationModule) {
@@ -20,7 +17,7 @@ export class DictionaryProcessor {
     return merged;
   }
 
-  validateDictionary() {
+  static validateDictionary() {
     const dictionary = DictionaryProcessor.mergeDictionaries();
     const total = Object.keys(dictionary).length;
     const untranslated = Array.from(stringExtractor.findUntranslatedStrings(false)).length;
@@ -31,8 +28,8 @@ export class DictionaryProcessor {
     };
   }
 
-  showStatisticsInConsole() {
-    const stats = this.validateDictionary();
+  static showStatisticsInConsole() {
+    const stats = DictionaryProcessor.validateDictionary();
     console.log('[GitHub 中文翻译] 词典统计');
     console.log(`📊 总条目数: ${stats.totalEntries}`);
     console.log(`✅ 已翻译条目: ${stats.translatedEntries}`);

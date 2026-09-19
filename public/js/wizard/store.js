@@ -1,6 +1,6 @@
 /**
  * 采集向导存储模块
- * @file web/js/wizard/store.js
+ * @file public/js/wizard/store.js
  */
 import { STORAGE_KEYS } from './constants.js';
 
@@ -18,7 +18,7 @@ export const wizardStore = {
       log: localStorage.getItem(STORAGE_KEYS.LOG),
       width: localStorage.getItem(STORAGE_KEYS.PROG_WIDTH),
       percent: localStorage.getItem(STORAGE_KEYS.PROG_PERCENT),
-      text: localStorage.getItem(STORAGE_KEYS.PROG_TEXT)
+      text: localStorage.getItem(STORAGE_KEYS.PROG_TEXT),
     };
   },
 
@@ -50,5 +50,5 @@ export const wizardStore = {
     const now = new Date().toLocaleTimeString();
     localStorage.setItem(STORAGE_KEYS.LAST_BACKUP, now);
     return now;
-  }
+  },
 };

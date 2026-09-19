@@ -5,7 +5,11 @@
 import { CONFIG } from '../../config.js';
 import { ErrorHandler } from '../../core/errorHandler.js';
 
-export function translateCriticalElementsOnly(translateElementFn) {
+/**
+ * 翻译页面关键区域元素（失败降级策略的兜底实现）
+ * @param {Function} translateElementFn - 单元素翻译函数
+ */
+export function translateCriticalElements(translateElementFn) {
   const criticalSelectors = ['.Header', '.repository-content', '.js-repo-pjax-container', 'main'];
 
   const criticalElements = [];

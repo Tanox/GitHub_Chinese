@@ -7,7 +7,7 @@ import virtualDomManager from '../core/virtualDom.js';
 import { dictionaryManager } from './dictionaryManager.js';
 import { elementSelector } from './elementSelector.js';
 import { initialPerformanceData } from './elementTranslator/stats.js';
-import { translateCriticalElementsOnly } from './elementTranslator/critical.js';
+import { translateCriticalElements } from './elementTranslator/critical.js';
 
 export const elementTranslator = {
   performanceData: { ...initialPerformanceData },
@@ -140,6 +140,6 @@ export const elementTranslator = {
   },
 
   async translateCriticalElementsOnly() {
-    return translateCriticalElementsOnly((el) => this.translateElement(el));
+    return translateCriticalElements((el) => this.translateElement(el));
   },
 };

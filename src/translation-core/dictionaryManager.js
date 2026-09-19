@@ -14,10 +14,14 @@ const MAX_KEY_LENGTH_FOR_CASE_VARIANTS = 100; // 生成大小写变体的最大�
 import { CONFIG } from '../config.js';
 import { mergeAllDictionaries } from '../dictionaries/index.js';
 import { CacheManager } from '../core/cacheManager.js';
+import { Trie } from '../core/trie.js';
+import { partialTranslator } from './partialTranslator.js';
 
 export const dictionaryManager = {
   dictionary: {},
   dictionaryHash: new Map(),
+  dictionaryTrie: null,
+  regexCache: new Map(),
   cacheManager: null,
 
   init() {
@@ -32,8 +36,10 @@ export const dictionaryManager = {
       );
       this.dictionary = mergeAllDictionaries();
       this.dictionaryHash.clear();
+      this.dictionaryTrie = new Trie();
+      this.regexCache.clear();
 
-      // 构建哈希表，支持大小写不敏感查询
+      // 构建哈希表与 Trie 树：哈希用于精确查询，Trie 用于部分匹配
       Object.keys(this.dictionary).forEach((key) => {
         const value = this.dictionary[key];
         if (value && !value.startsWith('待翻译: ')) {
@@ -44,6 +50,7 @@ export const dictionaryManager = {
             this.dictionaryHash.set(key.toLowerCase(), value);
             this.dictionaryHash.set(key.toUpperCase(), value);
           }
+          this.dictionaryTrie.insert(key, value);
         }
       });
 
@@ -87,6 +94,11 @@ export const dictionaryManager = {
       const lowerCaseText = normalizedText.toLowerCase();
       const upperCaseText = normalizedText.toUpperCase();
       result = this.dictionaryHash.get(lowerCaseText) || this.dictionaryHash.get(upperCaseText);
+    }
+
+    // 精确匹配仍无结果时，按配置启用 Trie 部分匹配
+    if (result === null && CONFIG.performance?.enablePartialMatch) {
+      result = partialTranslator.performPartialTranslation(normalizedText, true);
     }
 
     // 清理文本中的潜在危险内容
@@ -135,10 +147,11 @@ export const dictionaryManager = {
         const value = newDictionary[key];
         if (value && !value.startsWith('待翻译: ')) {
           this.dictionaryHash.set(key, value);
-          if (key.length <= 100) {
+          if (key.length <= MAX_KEY_LENGTH_FOR_CASE_VARIANTS) {
             this.dictionaryHash.set(key.toLowerCase(), value);
             this.dictionaryHash.set(key.toUpperCase(), value);
           }
+          this.dictionaryTrie?.insert(key, value);
         }
       });
 

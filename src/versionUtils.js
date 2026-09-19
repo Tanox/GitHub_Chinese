@@ -1,14 +1,11 @@
 /**
  * 版本工具模块
  * @file versionUtils.js
- * @version 1.9.21
- * @date 2026-06-10
+ * @version 1.9.24
+ * @date 2026-09-19
  * @author Sut
  * @description 版本比较、提取等工具函数
  */
-
-const PARSE_INT_RADIX = 10;
-const HASH_DISPLAY_LENGTH = 16;
 
 /**
  * 从脚本内容中提取版本号
@@ -59,4 +56,4 @@ function isNewerVersion(newVersion, currentVersion) {
   return false;
 }
 
-export { extractVersion, isNewerVersion, PARSE_INT_RADIX, HASH_DISPLAY_LENGTH };
+export { extractVersion, isNewerVersion };

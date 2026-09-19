@@ -2,8 +2,8 @@
  * GitHub 中文 · 采集工作台 — 全局基础样式
  * 设计变量、reset、排版、滚动条、焦点样式与全局动画
  * 自包含，无 Tailwind / 外部字体依赖（离线可用）
- * @file web/css/base.css
- * @version 1.9.22
+ * @file public/css/base.css
+ * @version 1.9.24
  */
 :root {
   --canvas: #f6f8fa;

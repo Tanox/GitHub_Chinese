@@ -6,7 +6,7 @@ import { importantElements, ignoreElements } from './elements.js';
 
 export const performanceConfig = {
   enableDeepObserver: true,
-  enablePartialMatch: false,
+  enablePartialMatch: true,
   maxDictSize: 2000,
   enableTranslationCache: true,
   batchSize: 50,

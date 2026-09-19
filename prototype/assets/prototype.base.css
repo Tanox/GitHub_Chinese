@@ -1,0 +1,183 @@
+/*
+ * GitHub 中文 · 原型 — 基础重置与原型页面壳
+ * @file prototype/assets/prototype.base.css
+ * @version 1.9.24
+ */
+/* ================== 基础重置 ================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-ui);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--c-text-link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* ================== 原型页面壳 ================== */
+.proto-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+}
+
+.proto-nav {
+  background: var(--c-bg-inset);
+  border-right: 1px solid var(--c-border-subtle);
+  padding: var(--sp-8) var(--sp-6);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.proto-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--sp-8);
+  padding-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--c-border-subtle);
+}
+
+.proto-nav-brand::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  box-shadow: 0 0 12px var(--c-primary);
+}
+
+.proto-nav-group {
+  margin-bottom: var(--sp-7);
+}
+.proto-nav-group h4 {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--c-text-dim);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-wide);
+  margin: 0 0 var(--sp-3) 0;
+}
+.proto-nav-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.proto-nav-group li {
+  margin: 1px 0;
+}
+.proto-nav-group a {
+  display: block;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-sm);
+  color: var(--c-text-muted);
+  font-size: var(--fs-base);
+}
+.proto-nav-group a:hover {
+  background: var(--c-surface);
+  color: var(--c-text);
+  text-decoration: none;
+}
+.proto-nav-group a.is-active {
+  background: var(--c-success-bg);
+  color: var(--c-success-fg);
+  font-weight: var(--fw-medium);
+}
+
+.proto-main {
+  padding: var(--sp-12) var(--sp-12) var(--sp-16);
+  max-width: 1200px;
+}
+
+.proto-eyebrow {
+  display: inline-block;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--c-success-bg);
+  color: var(--c-success-fg);
+  font-size: var(--fs-sm);
+  font-family: var(--font-mono);
+  letter-spacing: var(--ls-wide);
+  border-radius: var(--r-sm);
+  margin-bottom: var(--sp-5);
+  text-transform: uppercase;
+}
+
+.proto-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-5xl);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-tight);
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--sp-5);
+}
+
+.proto-lede {
+  font-size: var(--fs-md);
+  color: var(--c-text-muted);
+  max-width: 640px;
+  line-height: var(--lh-relaxed);
+  margin: 0 0 var(--sp-10);
+}
+
+.proto-section {
+  margin-bottom: var(--sp-12);
+}
+
+.proto-section h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-tight);
+  margin: 0 0 var(--sp-2);
+}
+
+.proto-section .meta {
+  color: var(--c-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--sp-7);
+}
+
+.proto-section p {
+  color: var(--c-text-muted);
+  max-width: 720px;
+  line-height: var(--lh-relaxed);
+}
+
+.proto-divider {
+  height: 1px;
+  background: var(--c-border-subtle);
+  margin: var(--sp-10) 0;
+}

@@ -5,12 +5,10 @@
 
 import { CONFIG } from '../config.js';
 import { addConfigUIStyles } from './styles/configUI.styles.js';
-import {
-  updatePerformanceStats,
-  exportPerformanceStats,
-} from './components/performanceMonitor.js';
+import { updatePerformanceStats, exportPerformanceStats } from './components/performanceMonitor.js';
 import { configStore } from './configUI/store.js';
 import { configRenderer } from './configUI/renderer.js';
+import { configBootstrap } from './configUI/bootstrap.js';
 
 class ConfigUI {
   constructor() {
@@ -23,6 +21,20 @@ class ConfigUI {
     this.eventListeners = [];
 
     this.setupPageUnloadHandler();
+  }
+
+  /**
+   * 初始化配置界面：合并用户配置、注册脚本菜单、创建浮动入口按钮
+   */
+  init() {
+    this.mergeUserConfig();
+
+    configBootstrap.registerMenuCommands({
+      open: () => this.show(),
+      translate: () => window.GitHub_i18n?.translationCore?.translate?.(),
+    });
+
+    configBootstrap.createFloatingButton(() => this.toggle());
   }
 
   setupPageUnloadHandler() {
@@ -38,6 +50,7 @@ class ConfigUI {
   cleanup() {
     this.hide();
     this.cleanupEventListeners();
+    configBootstrap.removeFloatingButton();
     this.container = null;
   }
 
@@ -172,4 +185,7 @@ class ConfigUI {
   }
 }
 
-export { ConfigUI };
+/** 全局配置界面单例（供脚本生命周期与菜单调用） */
+const configUI = new ConfigUI();
+
+export { ConfigUI, configUI };

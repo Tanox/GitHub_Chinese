@@ -7,8 +7,6 @@
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表
  */
 
-/* global __dirname, console, process, setTimeout */
-
 const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
@@ -16,47 +14,63 @@ const babel = require('@babel/core');
 const PROJECT_ROOT = path.resolve(__dirname);
 const DICT_DIR = path.join(PROJECT_ROOT, 'src', 'dictionaries');
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * 递归收集词典目录下的全部模块文件（避免手工清单与源码结构脱节）
+ * @param {string} dir - 目录绝对路径
+ * @param {string[]} [acc] - 累积结果
+ * @returns {string[]} 词典模块绝对路径列表
+ */
+function listDictionaryFiles(dir, acc = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      listDictionaryFiles(full, acc);
+    } else if (entry.name.endsWith('.js')) {
+      acc.push(full);
+    }
+  }
+  return acc;
+}
 
 /**
  * 合并所有词典
  */
 async function mergeDictionaries() {
   const merged = {};
-  const dictFiles = ['common.js', 'codespaces.js', 'explore.js', 'pull_requests.js', 'issues.js', 'settings.js', 'repository.js'];
-  
-  for (const file of dictFiles) {
-    const filePath = path.join(DICT_DIR, file);
-    if (fs.existsSync(filePath)) {
-      console.log(`[模块分析] 正在解析模块: ${file}`);
-      await sleep(150);
-      const content = fs.readFileSync(filePath, 'utf-8');
-      try {
-        const ast = babel.parseSync(content, {
-          sourceType: 'module',
-          filename: filePath
-        });
+  const dictFiles = listDictionaryFiles(DICT_DIR).sort();
 
-        babel.traverse(ast, {
-          ObjectProperty(path) {
-            const keyNode = path.node.key;
-            const valueNode = path.node.value;
+  for (const filePath of dictFiles) {
+    const file = path.relative(PROJECT_ROOT, filePath);
+    console.log(`[模块分析] 正在解析模块: ${file}`);
+    await sleep(20);
+    const content = fs.readFileSync(filePath, 'utf-8');
+    try {
+      const ast = babel.parseSync(content, {
+        sourceType: 'module',
+        filename: filePath,
+      });
 
-            let key = null;
-            if (keyNode.type === 'StringLiteral') {
-              key = keyNode.value;
-            } else if (keyNode.type === 'Identifier') {
-              key = keyNode.name;
-            }
+      babel.traverse(ast, {
+        ObjectProperty(propPath) {
+          const keyNode = propPath.node.key;
+          const valueNode = propPath.node.value;
 
-            if (key && valueNode.type === 'StringLiteral') {
-               merged[key] = valueNode.value;
-            }
+          let key = null;
+          if (keyNode.type === 'StringLiteral') {
+            key = keyNode.value;
+          } else if (keyNode.type === 'Identifier') {
+            key = keyNode.name;
           }
-        });
-      } catch (err) {
-        console.warn(`[WARN] 无法解析词典文件 ${file}: ${err.message}`);
-      }
+
+          if (key && valueNode.type === 'StringLiteral') {
+            merged[key] = valueNode.value;
+          }
+        },
+      });
+    } catch (err) {
+      console.warn(`[WARN] 无法解析词典文件 ${file}: ${err.message}`);
     }
   }
 
@@ -81,12 +95,8 @@ function findUntranslated(texts, dictionary) {
     // 检查词典（不区分大小写）
     const lowerText = trimmed.toLowerCase();
     const upperText = trimmed.toUpperCase();
-    
-    if (
-      dictionary[trimmed] ||
-      dictionary[lowerText] ||
-      dictionary[upperText]
-    ) {
+
+    if (dictionary[trimmed] || dictionary[lowerText] || dictionary[upperText]) {
       translated.add(trimmed);
     } else {
       untranslated.push(trimmed);

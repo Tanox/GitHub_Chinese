@@ -1,0 +1,92 @@
+/*
+ * GitHub 中文 · 原型 — 模拟 GitHub 页面展示 / 浮动按钮
+ * @file prototype/assets/prototype.mockup.css
+ * @version 1.9.24
+ */
+/* ========== 模拟 GitHub 页面展示 ========== */
+.gh-window {
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  background: var(--c-bg);
+  box-shadow: var(--sh-lg);
+}
+.gh-titlebar {
+  height: 38px;
+  background: var(--c-bg-inset);
+  border-bottom: 1px solid var(--c-border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--sp-5);
+  gap: var(--sp-3);
+}
+.gh-titlebar .traffic {
+  display: flex;
+  gap: 6px;
+}
+.gh-titlebar .traffic span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.gh-titlebar .traffic span:nth-child(1) {
+  background: #ff5f56;
+}
+.gh-titlebar .traffic span:nth-child(2) {
+  background: #ffbd2e;
+}
+.gh-titlebar .traffic span:nth-child(3) {
+  background: #27c93f;
+}
+.gh-titlebar .url {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-text-dim);
+  background: var(--c-bg);
+  border-radius: var(--r-full);
+  padding: 4px 12px;
+  max-width: 380px;
+  margin: 0 auto;
+}
+.gh-body {
+  padding: 0;
+}
+
+/* ========== 浮动按钮 ========== */
+.float-btn {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--sh-float);
+  transition: transform var(--t-base) var(--ease-out),
+    box-shadow var(--t-base) var(--ease-out);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.float-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 10px 28px rgba(46, 160, 67, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+}
+.float-btn::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px dashed rgba(46, 160, 67, 0.4);
+  animation: spin 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,7 +1,7 @@
 /**
  * 采集向导渲染模块
- * @file web/js/wizard/renderer.js
- * @version 1.9.22
+ * @file public/js/wizard/renderer.js
+ * @version 1.9.24
  */
 import { wizardUtils } from './utils.js';
 import { wizardStore } from './store.js';
@@ -11,11 +11,14 @@ export const wizardRenderer = {
     const previewContainer = document.getElementById('previewContainer');
     const previewBody = document.getElementById('previewBody');
     const termCount = document.getElementById('termCount');
-    
+
     if (!previewContainer || !previewBody || !termCount) return;
 
-    const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    
+    const lines = content
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
+
     if (lines.length === 0) {
       previewContainer.classList.add('hidden');
       return;
@@ -23,8 +26,10 @@ export const wizardRenderer = {
 
     previewContainer.classList.remove('hidden');
     termCount.innerText = `${lines.length} 词条`;
-    
-    previewBody.innerHTML = lines.map((line, index) => `
+
+    previewBody.innerHTML = lines
+      .map(
+        (line, index) => `
       <tr class="term-row">
         <td class="term-index">#${(index + 1).toString().padStart(3, '0')}</td>
         <td class="term-text">${wizardUtils.escapeHtml(line)}</td>
@@ -32,7 +37,9 @@ export const wizardRenderer = {
           <span class="term-badge">PENDING</span>
         </td>
       </tr>
-    `).join('');
+    `,
+      )
+      .join('');
   },
 
   updateProgress(width, percent, text) {
@@ -58,7 +65,7 @@ export const wizardRenderer = {
   appendLog(message) {
     const outputLog = document.getElementById('outputLog');
     if (!outputLog) return;
-    
+
     outputLog.innerText += `${message}\n`;
     outputLog.scrollTop = outputLog.scrollHeight;
   },
@@ -79,8 +86,8 @@ export const wizardRenderer = {
 
     if (!tabManual || !tabUrls || !manualMode || !urlMode) return;
 
-    const activeClass = "tab active";
-    const inactiveClass = "tab";
+    const activeClass = 'tab active';
+    const inactiveClass = 'tab';
 
     if (mode === 'manual') {
       tabManual.className = activeClass;
@@ -114,8 +121,8 @@ export const wizardRenderer = {
         outputLog.innerText,
         progressBar.style.width,
         progressPercent.innerText,
-        progressText.innerText
+        progressText.innerText,
       );
     }
-  }
+  },
 };

@@ -1,6 +1,6 @@
 /**
  * 词典采集向导主入口
- * @file web/js/collector-guide.js
+ * @file public/js/collector-guide.js
  */
 import { wizardStore } from './wizard/store.js';
 import { wizardRenderer } from './wizard/renderer.js';
@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', () => {
     wizardRenderer.updateProgress(
       savedState.width || '0%',
       savedState.percent || '0%',
-      savedState.text || '就绪'
+      savedState.text || '就绪',
     );
   }
 
@@ -104,7 +104,7 @@ window.addEventListener('DOMContentLoaded', () => {
       log: outputLog?.innerText,
       width: progressBar?.style.width,
       percent: progressPercent?.innerText,
-      text: progressText?.innerText
+      text: progressText?.innerText,
     };
 
     const time = wizardStore.saveBackup(rawInputVal, state);

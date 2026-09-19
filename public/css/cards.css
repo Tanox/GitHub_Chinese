@@ -1,7 +1,7 @@
 /*
  * GitHub 中文 · 采集工作台 — 卡片
- * @file web/css/cards.css
- * @version 1.9.22
+ * @file public/css/cards.css
+ * @version 1.9.24
  */
 .card {
   background: var(--surface);

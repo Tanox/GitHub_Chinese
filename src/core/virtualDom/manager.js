@@ -1,15 +1,14 @@
 /**
  * 虚拟DOM管理器类
  * @file src/core/virtualDom/manager.js
+ * @version 1.9.24
+ * @description 节点创建/查询与翻译状态判定；清理策略与生命周期钩子拆分到同目录子模块
  */
 import { CONFIG } from '../../config.js';
-import { VirtualNode } from '../virtualNode.js';
-import {
-  CLEANUP_INTERVAL_MS,
-  MAX_NODES_DEFAULT,
-  NODES_REMOVE_RATIO,
-  MAX_AGE_MS
-} from './constants.js';
+import { CLEANUP_INTERVAL_MS, MAX_NODES_DEFAULT } from './constants.js';
+import { collectStaleNodeIds, removeNodes } from './cleanup.js';
+import { getOrCreateNode } from './nodes.js';
+import { bindPageUnloadHandler, startCleanupTimer, stopCleanupTimer } from './lifecycle.js';
 
 export class VirtualDomManager {
   constructor() {
@@ -21,75 +20,36 @@ export class VirtualDomManager {
     this.cleanupTimer = null;
     this.isPageUnloading = false;
 
-    this.setupPageUnloadHandler();
+    bindPageUnloadHandler(this);
     this.startAutoCleanup();
   }
 
-  setupPageUnloadHandler() {
-    const unloadHandler = () => {
-      this.isPageUnloading = true;
-      this.cleanup();
-    };
-
-    window.addEventListener('beforeunload', unloadHandler);
-    window.addEventListener('unload', unloadHandler);
-    window.addEventListener('pagehide', unloadHandler);
-  }
-
+  /**
+   * 复用缓存节点或按需创建；节点数超限时先淘汰最旧节点
+   * @param {HTMLElement} element - 目标元素
+   * @returns {VirtualNode|null} 虚拟节点
+   */
   getOrCreateNode(element) {
-    try {
-      if (this.isPageUnloading) {
-        return null;
-      }
-
-      if (element.dataset && element.dataset.virtualDomId) {
-        const cachedNode = this.nodeCache.get(element.dataset.virtualDomId);
-        if (cachedNode && cachedNode.element === element) {
-          return cachedNode;
-        }
-      }
-
-      if (this.nodes.size >= this.maxNodes) {
-        this.cleanup(true);
-
-        if (this.nodes.size >= this.maxNodes) {
-          const nodesToRemove = Math.floor(this.maxNodes * NODES_REMOVE_RATIO);
-          const entries = Array.from(this.nodes.entries());
-
-          entries.sort((a, b) => a[1].lastUpdated - b[1].lastUpdated);
-
-          for (let i = 0; i < nodesToRemove; i++) {
-            const [id] = entries[i];
-            this.nodes.delete(id);
-            this.nodeCache.delete(id);
-          }
-
-          if (CONFIG.debugMode) {
-            console.log(`[GitHub 中文翻译] 强制清理了${nodesToRemove}个虚拟节点`);
-          }
-        }
-      }
-
-      const node = new VirtualNode(element);
-      this.nodes.set(node.elementId, node);
-      this.nodeCache.set(node.elementId, node);
-
-      return node;
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 获取或创建虚拟节点失败:', error);
-      }
-      return null;
-    }
+    return getOrCreateNode(this, element);
   }
 
+  /**
+   * 按元素 ID 查询虚拟节点
+   * @param {string} elementId - 元素 ID
+   * @returns {VirtualNode|null} 虚拟节点
+   */
   findNodeById(elementId) {
     return this.nodes.get(elementId) || null;
   }
 
+  /**
+   * 判定元素是否需要重新翻译
+   * @param {HTMLElement} element - 目标元素
+   * @returns {boolean} 是否需要翻译
+   */
   shouldTranslate(element) {
     try {
-      const node = this.getOrCreateNode(element);
+      const node = getOrCreateNode(this, element);
 
       if (!node) {
         return true;
@@ -116,6 +76,10 @@ export class VirtualDomManager {
     }
   }
 
+  /**
+   * 标记元素已翻译
+   * @param {HTMLElement} element - 目标元素
+   */
   markElementAsTranslated(element) {
     try {
       const node = this.getOrCreateNode(element);
@@ -127,6 +91,11 @@ export class VirtualDomManager {
     }
   }
 
+  /**
+   * 批量筛选需要翻译的元素
+   * @param {Iterable<HTMLElement>} elements - 候选元素
+   * @returns {HTMLElement[]} 需要翻译的元素
+   */
   processElements(elements) {
     const elementsToTranslate = [];
 
@@ -146,25 +115,24 @@ export class VirtualDomManager {
     return elementsToTranslate;
   }
 
+  /**
+   * 启动自动清理
+   */
   startAutoCleanup() {
-    this.stopAutoCleanup();
-    this.cleanupTimer = setInterval(() => {
-      if (this.isPageUnloading) {
-        this.stopAutoCleanup();
-        return;
-      }
-
-      this.cleanup();
-    }, this.cleanupInterval);
+    startCleanupTimer(this);
   }
 
+  /**
+   * 停止自动清理
+   */
   stopAutoCleanup() {
-    if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer);
-      this.cleanupTimer = null;
-    }
+    stopCleanupTimer(this);
   }
 
+  /**
+   * 清理虚拟节点
+   * @param {boolean} [force] - 是否强制清空全部节点
+   */
   cleanup(force = false) {
     try {
       const now = Date.now();
@@ -174,10 +142,9 @@ export class VirtualDomManager {
       }
 
       this.lastCleanupTime = now;
-      let removedCount = 0;
 
       if (force || this.isPageUnloading) {
-        removedCount = this.nodes.size;
+        const removedCount = this.nodes.size;
         this.nodes.clear();
         this.nodeCache.clear();
 
@@ -187,27 +154,7 @@ export class VirtualDomManager {
         return;
       }
 
-      const nodesToRemove = [];
-
-      for (const [id, node] of this.nodes) {
-        if (!document.contains(node.element)) {
-          nodesToRemove.push(id);
-          continue;
-        }
-
-        const timeSinceUpdate = now - node.lastUpdated;
-        const maxAge = MAX_AGE_MS;
-
-        if (timeSinceUpdate > maxAge) {
-          nodesToRemove.push(id);
-        }
-      }
-
-      for (const id of nodesToRemove) {
-        this.nodes.delete(id);
-        this.nodeCache.delete(id);
-        removedCount++;
-      }
+      const removedCount = removeNodes(this, collectStaleNodeIds(this.nodes, now));
 
       if (CONFIG.debugMode && removedCount > 0) {
         console.log(
@@ -221,12 +168,19 @@ export class VirtualDomManager {
     }
   }
 
+  /**
+   * 清空全部节点
+   */
   clear() {
     this.nodes.clear();
     this.nodeCache.clear();
     this.lastCleanupTime = Date.now();
   }
 
+  /**
+   * 获取管理器统计信息
+   * @returns {{nodeCount: number, lastCleanupTime: number}} 统计信息
+   */
   getStats() {
     return {
       nodeCount: this.nodes.size,

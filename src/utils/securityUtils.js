@@ -10,6 +10,26 @@
 const RADIX_16 = 16;
 const PAD_LENGTH_2 = 2;
 const PAD_CHAR = '0';
+const BYTE_RANGE = 256;
+
+/**
+ * 将字符串转为 UTF-8 字节串（替代已废弃的 unescape + encodeURIComponent 组合）
+ * @param {string} data - 原始字符串
+ * @returns {string} 每字符对应一个字节的字符串
+ */
+function toBinaryString(data) {
+  return Array.from(new TextEncoder().encode(data), (byte) => String.fromCharCode(byte)).join('');
+}
+
+/**
+ * 将 UTF-8 字节串还原为字符串（替代已废弃的 escape + decodeURIComponent 组合）
+ * @param {string} binary - 每字符对应一个字节的字符串
+ * @returns {string} 原始字符串
+ */
+function fromBinaryString(binary) {
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0) % BYTE_RANGE);
+  return new TextDecoder().decode(bytes);
+}
 
 /**
  * 对数据进行Base64编码（用于轻量级数据混淆，非加密）
@@ -18,7 +38,7 @@ const PAD_CHAR = '0';
  */
 function base64Encode(data) {
   try {
-    return btoa(unescape(encodeURIComponent(data)));
+    return btoa(toBinaryString(data));
   } catch (_error) {
     return data;
   }
@@ -31,7 +51,7 @@ function base64Encode(data) {
  */
 function base64Decode(encodedData) {
   try {
-    return decodeURIComponent(escape(atob(encodedData)));
+    return fromBinaryString(atob(encodedData));
   } catch (_error) {
     return null;
   }

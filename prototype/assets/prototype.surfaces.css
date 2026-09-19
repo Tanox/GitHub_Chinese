@@ -1,0 +1,175 @@
+/*
+ * GitHub 中文 · 原型 — 卡片 / 徽章 / 表格 / 标签导航 / 状态指示器 / Toast / 规则列表
+ * @file prototype/assets/prototype.surfaces.css
+ * @version 1.9.24
+ */
+/* ========== 卡片 ========== */
+.card {
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-7);
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  margin: 0 0 var(--sp-2);
+}
+.card-subtitle {
+  color: var(--c-text-muted);
+  margin: 0 0 var(--sp-5);
+  font-size: var(--fs-sm);
+}
+
+/* ========== 徽章 ========== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  font-family: var(--font-mono);
+  letter-spacing: var(--ls-tight);
+  border: 1px solid transparent;
+}
+.badge-success {
+  background: var(--c-success-bg);
+  color: var(--c-success-fg);
+  border-color: rgba(63, 185, 80, 0.4);
+}
+.badge-info {
+  background: var(--c-info-bg);
+  color: var(--c-info-fg);
+}
+.badge-warn {
+  background: var(--c-warn-bg);
+  color: var(--c-warn-fg);
+}
+.badge-danger {
+  background: var(--c-danger-bg);
+  color: var(--c-danger-fg);
+}
+
+/* ========== 表格 ========== */
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-base);
+}
+.ds-table th,
+.ds-table td {
+  text-align: left;
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--c-border-subtle);
+  vertical-align: top;
+}
+.ds-table th {
+  font-weight: var(--fw-semibold);
+  color: var(--c-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-wide);
+  background: var(--c-bg-inset);
+}
+.ds-table td code {
+  background: var(--c-bg-inset);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--c-border-subtle);
+  font-size: var(--fs-xs);
+}
+
+/* ========== 标签 / 导航选项卡 ========== */
+.tabs {
+  display: inline-flex;
+  gap: var(--sp-2);
+  background: var(--c-bg-inset);
+  padding: var(--sp-1);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-border-subtle);
+}
+.tab {
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-md);
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+}
+.tab:hover {
+  color: var(--c-text);
+}
+.tab.is-active {
+  background: var(--c-bg-elevated);
+  color: var(--c-text);
+  box-shadow: var(--sh-sm);
+}
+
+/* ========== 状态指示器 ========== */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-live {
+  background: var(--c-primary);
+  box-shadow: 0 0 0 4px rgba(46, 160, 67, 0.2);
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px rgba(46, 160, 67, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(46, 160, 67, 0.05);
+  }
+}
+
+/* ========== Toast / 提示 ========== */
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-6);
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--c-primary);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-md);
+  font-size: var(--fs-base);
+}
+
+/* ========== 规则列表 ========== */
+.rule-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rule-list li {
+  padding: var(--sp-4) 0;
+  border-bottom: 1px solid var(--c-border-subtle);
+  color: var(--c-text-muted);
+  line-height: var(--lh-relaxed);
+  position: relative;
+  padding-left: 22px;
+}
+.rule-list li::before {
+  content: "›";
+  position: absolute;
+  left: 0;
+  top: var(--sp-4);
+  color: var(--c-primary);
+  font-weight: var(--fw-bold);
+}
+.rule-list li:last-child {
+  border-bottom: none;
+}
+.rule-list li strong {
+  color: var(--c-text);
+  font-weight: var(--fw-semibold);
+}

@@ -1,7 +1,7 @@
 /*
  * GitHub 中文 · 采集工作台 — 终端
- * @file web/css/terminal.css
- * @version 1.9.22
+ * @file public/css/terminal.css
+ * @version 1.9.24
  */
 .terminal {
   background: var(--term-bg);

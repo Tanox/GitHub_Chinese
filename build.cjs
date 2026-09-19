@@ -1,56 +1,26 @@
 /**
  * GitHub Chinese 简体中文构建脚本
  * @file build.cjs
- * @version 1.9.21
- * @date 2026-06-10
- * @description 简化的单文件构建脚本
+ * @version 1.9.24
+ * @date 2026-09-19
+ * @author Sut
+ * @description 从入口自动解析模块依赖并拼接为单文件用户脚本（依赖 scripts/build/ 下的图谱与转换模块）
  */
 
 const fs = require('fs');
 const path = require('path');
 
+const { buildModuleOrder, listAllSources } = require('./scripts/build/moduleGraph.cjs');
+const { assembleBundle, findConflicts, readModules } = require('./scripts/build/transform.cjs');
+
 const PROJECT_ROOT = path.resolve(__dirname);
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 const OUTPUT_FILE = path.join(BUILD_DIR, 'GitHub_i18n.user.js');
+const ENTRY_FILE = path.join(SRC_DIR, 'main.js');
 
-const SOURCE_ORDER = [
-  'version.js',
-  'config.js',
-  'utils/functionUtils.js',
-  'utils/stringUtils.js',
-  'utils/domUtils.js',
-  'utils/urlUtils.js',
-  'utils/securityUtils.js',
-  'utils/utils.js',
-  'core/cacheManager.js',
-  'core/errorHandler.js',
-  'core/virtualNode.js',
-  'core/virtualDom.js',
-  'utils/tools.js',
-  'page-monitor/cacheManager.js',
-  'page-monitor/pageAnalyzer.js',
-  'page-monitor/pathListener.js',
-  'page-monitor/domObserver.js',
-  'page-monitor/translationTrigger.js',
-  'page-monitor/index.js',
-  'dictionaries/common.js',
-  'dictionaries/codespaces.js',
-  'dictionaries/explore.js',
-  'dictionaries/index.js',
-  'translation-core/dictionaryManager.js',
-  'translation-core/pageModeDetector.js',
-  'translation-core/elementSelector.js',
-  'translation-core/elementTranslator.js',
-  'translation-core/partialTranslator.js',
-  'translation-core/performanceMonitor.js',
-  'translation-core/index.js',
-  'ui/configUI.js',
-  'versionUtils.js',
-  'updateNotification.js',
-  'versionChecker.js',
-  'main.js',
-];
+/** 未被入口引用、但需继续随用户脚本发布的模块 */
+const EXTRA_ENTRIES = [path.join(SRC_DIR, 'utils', 'tools.js')];
 
 const USER_SCRIPT_HEADER = `// ==UserScript==
 // @name         GitHub Chinese 简体中文
@@ -83,73 +53,116 @@ const USER_SCRIPT_HEADER = `// ==UserScript==
 const USER_SCRIPT_FOOTER = `})();
 `;
 
+/**
+ * 读取 src/version.js 中的版本号（项目单一版本源）
+ * @returns {string} 版本号
+ */
 function readCurrentVersion() {
-  const versionFile = path.join(SRC_DIR, 'version.js');
-  const content = fs.readFileSync(versionFile, 'utf-8');
-  const match = content.match(/export\s+const\s+VERSION\s+=\s+['"]([^'"]+)['"]/);
+  const content = fs.readFileSync(path.join(SRC_DIR, 'version.js'), 'utf-8');
+  const match = content.match(/export\s+const\s+VERSION\s*=\s*['"]([^'"]+)['"]/);
   return match ? match[1] : '0.0.0';
 }
 
-function mergeSourceFiles() {
-  const mergedParts = [];
-
-  for (const file of SOURCE_ORDER) {
-    const filePath = path.join(SRC_DIR, file);
-    if (!fs.existsSync(filePath)) {
-      console.warn(`⚠️  源文件不存在，跳过: ${file}`);
-      continue;
-    }
-    let content = fs.readFileSync(filePath, 'utf-8');
-    content = content.replace(/^import\s+.*from\s+['"].+['"];?\s*$/gm, '');
-    content = content.replace(/^export\s+default\s+(\w+);?\s*$/gm, '$1;');
-    content = content.replace(/^export\s+default\s+/gm, '');
-    content = content.replace(/^export\s+{\s*([^}]+)\s*};?\s*$/gm, '');
-    content = content.replace(/^export\s+/gm, '');
-    mergedParts.push(content.trim());
-  }
-
-  return mergedParts.join('\n\n');
-}
-
-function cleanProject() {
+/**
+ * 清理并重建构建目录
+ */
+function prepareBuildDir() {
   if (fs.existsSync(BUILD_DIR)) {
     fs.rmSync(BUILD_DIR, { recursive: true });
   }
-}
-
-function createBuildDir() {
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 }
 
-function buildUserScript(version) {
-  createBuildDir();
+/**
+ * 收集模块并执行打包前校验
+ * @returns {{files: string[], orphans: string[], cycles: string[][]}} 打包文件与诊断信息
+ */
+function resolveModules() {
+  const order = [];
+  const seen = new Set();
+  const cycles = [];
 
-  const mergedCode = mergeSourceFiles();
-  let scriptContent =
-    USER_SCRIPT_HEADER.replace('{VERSION}', version) + mergedCode + USER_SCRIPT_FOOTER;
+  for (const entry of [ENTRY_FILE, ...EXTRA_ENTRIES]) {
+    if (!fs.existsSync(entry)) {
+      continue;
+    }
+    const graph = buildModuleOrder(entry, SRC_DIR);
+    cycles.push(...graph.cycles);
+    for (const file of graph.order) {
+      if (!seen.has(file)) {
+        seen.add(file);
+        order.push(file);
+      }
+    }
+  }
 
-  scriptContent = scriptContent.replace(/\n{3,}/g, '\n\n');
-  scriptContent = scriptContent.replace(/\s+\n/g, '\n');
+  const orphans = listAllSources(SRC_DIR, SRC_DIR).filter((file) => !seen.has(file));
+  const modules = readModules(order);
+  const conflicts = findConflicts(modules);
+  if (conflicts.length > 0) {
+    const detail = conflicts
+      .map(
+        ({ name, files }) =>
+          `  - ${name}: ${files.map((f) => path.relative(PROJECT_ROOT, f)).join(', ')}`,
+      )
+      .join('\n');
+    throw new Error(`检测到跨模块顶层重名声明，无法安全拼接：\n${detail}`);
+  }
 
-  fs.writeFileSync(OUTPUT_FILE, scriptContent, 'utf-8');
-  return true;
+  return { files: order, orphans, cycles };
 }
 
+/**
+ * 执行构建并写入用户脚本产物
+ * @param {string} version - 版本号
+ * @param {string[]} files - 模块文件列表（依赖在前）
+ */
+function writeUserScript(version, files) {
+  const mergedCode = assembleBundle(readModules(files));
+  const content =
+    USER_SCRIPT_HEADER.replace('{VERSION}', version) + mergedCode + USER_SCRIPT_FOOTER;
+
+  fs.writeFileSync(
+    OUTPUT_FILE,
+    content.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+\n/g, '\n'),
+    'utf-8',
+  );
+}
+
+/**
+ * 构建入口
+ * @returns {boolean} 构建是否成功
+ */
 function build() {
   console.log('\n========================================');
   console.log('  GitHub Chinese 简体中文构建');
   console.log('========================================\n');
 
-  cleanProject();
+  prepareBuildDir();
   console.log('✓ 清理完成');
 
   const version = readCurrentVersion();
   console.log(`📌 当前版本: ${version}`);
 
-  console.log('🔨 开始构建...');
-  buildUserScript(version);
+  const { files, orphans, cycles } = resolveModules();
+  console.log(`🔗 入口模块: ${path.relative(PROJECT_ROOT, ENTRY_FILE)}`);
+  console.log(`📦 已纳入模块: ${files.length} 个`);
 
-  const fileSize = (fs.readFileSync(OUTPUT_FILE, 'utf-8').length / 1024).toFixed(2);
+  if (orphans.length > 0) {
+    console.log(`⚠️  未被入口引用（不打包）: ${orphans.length} 个`);
+    orphans.forEach((file) => console.log(`    · ${path.relative(PROJECT_ROOT, file)}`));
+  }
+  if (cycles.length > 0) {
+    console.log(`⚠️  检测到循环引用: ${cycles.length} 处`);
+    cycles.forEach((chain) =>
+      console.log(`    · ${chain.map((f) => path.basename(f)).join(' → ')}`),
+    );
+  }
+
+  console.log('🔨 开始构建...');
+  writeUserScript(version, files);
+
+  const fileSize = (fs.statSync(OUTPUT_FILE).size / 1024).toFixed(2);
 
   console.log('\n========================================');
   console.log('  🎉 构建完成!');

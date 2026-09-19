@@ -1,0 +1,118 @@
+/*
+ * GitHub 中文 · 原型 — 图标栅格 / 动效示例 / 错误与空状态 / 组件规则代码块
+ * @file prototype/assets/prototype.effects.css
+ * @version 1.9.24
+ */
+/* ========== 图标栅格 ========== */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--sp-4);
+}
+.icon-cell {
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  text-align: center;
+}
+.icon-cell svg {
+  width: 32px;
+  height: 32px;
+  color: var(--c-primary);
+  margin-bottom: var(--sp-3);
+}
+.icon-cell .label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-text-dim);
+}
+
+/* ========== 动效示例 ========== */
+.motion-demo {
+  display: flex;
+  gap: var(--sp-6);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.motion-box {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.motion-fade {
+  animation: fadeIn var(--t-slow) var(--ease-out) both;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.motion-slide {
+  animation: slideIn var(--t-slow) var(--ease-spring) both;
+}
+@keyframes slideIn {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+}
+.motion-scale:hover {
+  transform: scale(1.08) rotate(-2deg);
+  transition: transform var(--t-base) var(--ease-spring);
+}
+
+/* ========== 错误/空状态 ========== */
+.state-block {
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-10) var(--sp-8);
+  text-align: center;
+  max-width: 420px;
+}
+.state-ico {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--c-danger-bg);
+  color: var(--c-danger-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: var(--fw-bold);
+  margin-bottom: var(--sp-5);
+}
+.state-block h4 {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  margin: 0 0 var(--sp-3);
+}
+.state-block p {
+  color: var(--c-text-muted);
+  margin: 0 auto var(--sp-5);
+  max-width: 320px;
+}
+
+/* ========== 组件规则代码块 ========== */
+.code-block {
+  background: var(--c-bg-inset);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5) var(--sp-6);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: #b4e1a5;
+  line-height: 1.7;
+}

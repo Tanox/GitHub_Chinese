@@ -1,6 +1,6 @@
 /**
  * 采集向导常量定义
- * @file web/js/wizard/constants.js
+ * @file public/js/wizard/constants.js
  */
 
 export const STORAGE_KEYS = {
@@ -9,7 +9,7 @@ export const STORAGE_KEYS = {
   PROG_WIDTH: 'i18n_collector_progress_width',
   PROG_PERCENT: 'i18n_collector_progress_percent',
   PROG_TEXT: 'i18n_collector_progress_text',
-  LAST_BACKUP: 'i18n_collector_last_backup'
+  LAST_BACKUP: 'i18n_collector_last_backup',
 };
 
 export const NOTIFICATION_AUTO_HIDE_MS = 3000;

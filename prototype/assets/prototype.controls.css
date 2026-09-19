@@ -1,0 +1,141 @@
+/*
+ * GitHub 中文 · 原型 — 按钮系统 / 切换开关 / 输入框
+ * @file prototype/assets/prototype.controls.css
+ * @version 1.9.24
+ */
+/* ========== 按钮系统 ========== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5);
+  font-family: var(--font-ui);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  line-height: 1.5;
+  color: var(--c-text);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-out);
+  user-select: none;
+  white-space: nowrap;
+}
+.btn:hover {
+  background: var(--c-surface-hover);
+  border-color: var(--c-divider);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: var(--c-primary);
+  border-color: rgba(240, 246, 252, 0.1);
+  color: var(--c-primary-ink);
+  box-shadow: var(--sh-sm);
+}
+.btn-primary:hover {
+  background: var(--c-primary-hover);
+}
+.btn-primary:active {
+  background: var(--c-primary-active);
+}
+
+.btn-danger {
+  background: var(--c-danger-soft);
+  border-color: rgba(240, 246, 252, 0.1);
+  color: #fff;
+}
+.btn-danger:hover {
+  background: var(--c-danger);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--c-text-muted);
+}
+.btn-ghost:hover {
+  background: var(--c-surface);
+  color: var(--c-text);
+}
+
+.btn-sm {
+  padding: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-sm);
+  border-radius: var(--r-sm);
+}
+.btn-lg {
+  padding: var(--sp-4) var(--sp-7);
+  font-size: var(--fs-md);
+  border-radius: var(--r-lg);
+}
+
+/* ========== 切换 / 开关 ========== */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-4);
+  cursor: pointer;
+  user-select: none;
+}
+.switch-track {
+  width: 36px;
+  height: 20px;
+  background: var(--c-border);
+  border-radius: var(--r-full);
+  position: relative;
+  transition: background var(--t-fast) var(--ease-out);
+}
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left var(--t-fast) var(--ease-out);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.switch.is-on .switch-track {
+  background: var(--c-primary);
+}
+.switch.is-on .switch-thumb {
+  left: 18px;
+}
+.switch-label {
+  font-size: var(--fs-base);
+}
+
+/* ========== 输入框 ========== */
+.input {
+  background: var(--c-bg-inset);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  color: var(--c-text);
+  font-family: var(--font-ui);
+  font-size: var(--fs-base);
+  padding: var(--sp-3) var(--sp-5);
+  transition: border-color var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out);
+  min-width: 220px;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px rgba(68, 147, 248, 0.3);
+}
+.input::placeholder {
+  color: var(--c-text-dim);
+}

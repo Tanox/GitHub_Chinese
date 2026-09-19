@@ -1,6 +1,12 @@
+/**
+ * 原型预览服务器（Express + WebSocket HMR）
+ * @file server.js
+ * @version 1.9.24
+ * @description 提供 prototype/ 的热更新预览、public/ 静态资源与采集 API；Next 工作台请使用 npm run dev
+ */
+
 import express from 'express';
 import fs from 'fs/promises';
-import { exec } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
@@ -25,29 +31,34 @@ wss.on('connection', (ws) => {
 
 // Watch for file changes
 const watcher = chokidar.watch(['prototype/**/*.html', 'prototype/**/*.css'], {
-  ignored: /(^|[\/\\])\../,
-  persistent: true
+  ignored: /(^|[/\\])\../,
+  persistent: true,
 });
 
 watcher.on('change', (path) => {
   console.log(`File ${path} has been changed, notifying clients...`);
   clients.forEach((client) => {
-    if (client.readyState === 1) { // WebSocket.OPEN
+    if (client.readyState === 1) {
+      // WebSocket.OPEN
       client.send(JSON.stringify({ type: 'reload' }));
     }
   });
 });
 
-app.use(express.static(path.join(__dirname, 'web'), { extensions: ['html'] }));
+app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 app.use(express.json({ limit: '10mb' }));
 
 // Middleware to inject HMR script into prototype HTML files
 app.use('/prototype', async (req, res, next) => {
   if (req.path.endsWith('.html') || req.path === '/') {
     try {
-      const filePath = path.join(__dirname, 'prototype', req.path === '/' ? 'index.html' : req.path);
+      const filePath = path.join(
+        __dirname,
+        'prototype',
+        req.path === '/' ? 'index.html' : req.path,
+      );
       let content = await fs.readFile(filePath, 'utf-8');
-      
+
       const hmrScript = `
       <script>
         (function() {
@@ -68,7 +79,8 @@ app.use('/prototype', async (req, res, next) => {
       </script>
       `;
       content = content.replace('</body>', `${hmrScript}</body>`);
-      return res.send(content);
+      res.send(content);
+      return;
     } catch (err) {
       // If file not found, let static middleware or others handle it
       if (err.code !== 'ENOENT') {

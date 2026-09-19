@@ -1,0 +1,134 @@
+/*
+ * GitHub 中文 · 原型 — 设计令牌（色彩 / 排版 / 间距 / 圆角 / 阴影 / 动效 / 布局）
+ * @file prototype/assets/prototype.tokens.css
+ * @version 1.9.24
+ */
+:root {
+  /* ============ 核心色彩 ============ */
+  --c-bg: #0d1117;
+  --c-bg-elevated: #161b22;
+  --c-bg-inset: #010409;
+  --c-canvas: #0d1117;
+  --c-canvas-subtle: #010409;
+  --c-surface: #161b22;
+  --c-surface-hover: #1f2630;
+  --c-border: #30363d;
+  --c-border-subtle: #21262d;
+  --c-divider: #373e47;
+
+  /* 文本 */
+  --c-text: #e6edf3;
+  --c-text-muted: #8b949e;
+  --c-text-dim: #6e7681;
+  --c-text-inverse: #010409;
+  --c-text-link: #4493f8;
+
+  /* 强调色 */
+  --c-primary: #2ea44f;         /* GitHub green */
+  --c-primary-hover: #2c974b;
+  --c-primary-active: #298e46;
+  --c-primary-soft: #238636;
+  --c-primary-ink: #ffffff;
+
+  --c-accent: #4493f8;          /* GitHub blue */
+  --c-accent-hover: #58a6ff;
+  --c-warn: #d29922;
+  --c-warn-soft: #bb8009;
+  --c-danger: #f85149;
+  --c-danger-soft: #da3633;
+  --c-purple: #a371f7;
+  --c-pink: #ff8182;
+
+  /* 语义色（色板） */
+  --c-success-bg: rgba(46, 160, 67, 0.15);
+  --c-success-fg: #3fb950;
+  --c-info-bg: rgba(56, 139, 253, 0.15);
+  --c-info-fg: #58a6ff;
+  --c-warn-bg: rgba(210, 153, 34, 0.15);
+  --c-warn-fg: #d29922;
+  --c-danger-bg: rgba(248, 81, 73, 0.15);
+  --c-danger-fg: #f85149;
+
+  /* ============ 排版 ============ */
+  --font-display: "Noto Serif SC", "Source Han Serif SC", "PingFang SC",
+    Georgia, "Times New Roman", serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "SFMono-Regular", Menlo, Consolas,
+    "Courier New", monospace;
+  --font-zh: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Helvetica Neue", sans-serif;
+
+  /* 字号阶 */
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-base: 14px;
+  --fs-md: 15px;
+  --fs-lg: 16px;
+  --fs-xl: 18px;
+  --fs-2xl: 20px;
+  --fs-3xl: 24px;
+  --fs-4xl: 32px;
+  --fs-5xl: 44px;
+  --fs-6xl: 60px;
+
+  /* 行高 */
+  --lh-tight: 1.2;
+  --lh-base: 1.5;
+  --lh-relaxed: 1.7;
+
+  /* 字重 */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* 字母间距 */
+  --ls-tight: -0.01em;
+  --ls-normal: 0;
+  --ls-wide: 0.04em;
+
+  /* ============ 间距 ============ */
+  --sp-1: 2px;
+  --sp-2: 4px;
+  --sp-3: 6px;
+  --sp-4: 8px;
+  --sp-5: 12px;
+  --sp-6: 16px;
+  --sp-7: 20px;
+  --sp-8: 24px;
+  --sp-9: 32px;
+  --sp-10: 40px;
+  --sp-11: 48px;
+  --sp-12: 64px;
+  --sp-16: 96px;
+
+  /* ============ 圆角 ============ */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+  --r-2xl: 16px;
+  --r-full: 999px;
+
+  /* ============ 阴影 ============ */
+  --sh-sm: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.25);
+  --sh-md: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --sh-lg: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --sh-float: 0 6px 18px rgba(46, 160, 67, 0.22), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --sh-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+
+  /* ============ 动效 ============ */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-fast: 120ms;
+  --t-base: 200ms;
+  --t-slow: 320ms;
+
+  /* ============ 布局 ============ */
+  --z-float: 2147483000;
+  --z-panel: 2147483100;
+  --z-overlay: 2147483200;
+}

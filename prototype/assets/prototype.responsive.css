@@ -1,0 +1,53 @@
+/*
+ * GitHub 中文 · 原型 — 响应式适配
+ * @file prototype/assets/prototype.responsive.css
+ * @version 1.9.24
+ */
+/* ========== 响应式 ========== */
+@media (max-width: 900px) {
+  .proto-shell {
+    grid-template-columns: 1fr;
+  }
+  .proto-nav {
+    position: relative;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--c-border-subtle);
+    max-height: 60px;
+    overflow: hidden;
+    transition: max-height var(--t-base) var(--ease-out);
+  }
+  .proto-nav.is-open {
+    max-height: 100vh;
+  }
+  .proto-nav-brand {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    height: 60px;
+  }
+  .proto-nav-toggle {
+    display: block;
+    background: transparent;
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+    color: var(--c-text);
+    padding: var(--sp-2);
+    cursor: pointer;
+  }
+  .proto-main {
+    padding: var(--sp-8) var(--sp-6);
+  }
+  .proto-title {
+    font-size: var(--fs-4xl);
+  }
+}
+
+@media (min-width: 901px) {
+  .proto-nav-toggle {
+    display: none;
+  }
+}

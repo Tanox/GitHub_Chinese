@@ -1,7 +1,7 @@
 /*
  * GitHub 中文 · 采集工作台 — 侧边栏
- * @file web/css/sidebar.css
- * @version 1.9.22
+ * @file public/css/sidebar.css
+ * @version 1.9.24
  */
 .rail {
   width: 16rem;
@@ -86,6 +86,16 @@
   background: rgba(46, 164, 79, .12);
   color: #fff;
   box-shadow: inset 0 0 0 1px rgba(46, 164, 79, .25);
+}
+
+.rail-link.is-disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.rail-link.is-disabled:hover {
+  background: transparent;
+  color: var(--rail-muted);
 }
 
 .rail-link svg {
