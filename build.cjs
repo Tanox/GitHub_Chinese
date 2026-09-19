@@ -122,11 +122,13 @@ function writeUserScript(version, files) {
   const content =
     USER_SCRIPT_HEADER.replace('{VERSION}', version) + mergedCode + USER_SCRIPT_FOOTER;
 
-  fs.writeFileSync(
-    OUTPUT_FILE,
-    content.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+\n/g, '\n'),
-    'utf-8',
-  );
+  // 统一为 LF：源码在 Windows 上为 CRLF，产物需与仓库换行约定一致
+  const normalized = content
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[ \t]+\n/g, '\n');
+
+  fs.writeFileSync(OUTPUT_FILE, normalized, 'utf-8');
 }
 
 /**

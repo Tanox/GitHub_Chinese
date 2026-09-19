@@ -263,7 +263,6 @@ const pagePatternsConfig = {
  * @file config.js
  */
 
-
 // 定义greasemonkeyInfo以避免未定义错误
 const greasemonkeyInfo = typeof window === 'undefined' ? {} : (window.GM_info ?? {});
 
@@ -846,7 +845,6 @@ async function sha256Hash(data) {
  * @description 包含各种通用的辅助函数，从子模块整合导出
  */
 
-
 const utils = {
   throttle,
   debounce,
@@ -934,7 +932,6 @@ const recoveryManager = {
  * 错误处理模块
  * @file errorHandler.js
  */
-
 
 const ErrorHandler = {
   // 错误计数器
@@ -1821,7 +1818,6 @@ const miscDictionary = {
  * @file common.js
  */
 
-
 const commonDictionary = {
   ...navDictionary,
   ...repoDictionary,
@@ -2193,7 +2189,6 @@ const partialTranslator = {
 // 词典管理常量
 const DEFAULT_MAX_DICT_SIZE = 2000; // 默认最大词典大小
 const MAX_KEY_LENGTH_FOR_CASE_VARIANTS = 100; // 生成大小写变体的最大键长度
-
 
 const dictionaryManager = {
   dictionary: {},
@@ -3173,10 +3168,7 @@ const SKIP_ID_TECHNICAL_PATTERNS = [
  */
 
 /** id 命中任一模式即跳过（实体标识在前、技术设施在后，保持匹配优先级） */
-const SKIP_ID_PATTERNS = [
-  ...SKIP_ID_ENTITY_PATTERNS,
-  ...SKIP_ID_TECHNICAL_PATTERNS,
-];
+const SKIP_ID_PATTERNS = [...SKIP_ID_ENTITY_PATTERNS, ...SKIP_ID_TECHNICAL_PATTERNS];
 
 /**
  * 翻译元素选择匹配模块
@@ -4421,7 +4413,6 @@ const buttonStyles = `
  * @file configUI.styles.js
  */
 
-
 /**
  * 获取配置界面的完整样式
  * @returns {string} CSS样式字符串
@@ -4447,7 +4438,6 @@ function addConfigUIStyles() {
  * @author Sut
  * @description 性能监控区域组件
  */
-
 
 /**
  * 创建性能监控区域
@@ -4949,7 +4939,6 @@ const configBootstrap = {
  * GitHub 中文翻译配置界面模块
  * @file configUI.js
  */
-
 
 class ConfigUI {
   constructor() {
@@ -6485,7 +6474,6 @@ function detectImportantChanges(mutations, pageMode) {
  * @file pageMonitor/domObserver.js
  */
 
-
 const domObserver = {
   observer: null,
   onTranslationTrigger: null,
@@ -6857,7 +6845,6 @@ const lifecycleManager = {
  * @file main.js
  */
 
-
 // 初始化函数
 const init = () => lifecycleManager.init();
 const cleanup = () => lifecycleManager.cleanup();
@@ -6994,7 +6981,6 @@ class DictionaryProcessor {
  * 开发工具模块
  * @file tools.js
  */
-
 
 /**
  * 加载工具类
