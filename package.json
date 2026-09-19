@@ -5,7 +5,9 @@
   "main": "src/main.js",
   "type": "module",
   "scripts": {
-    "build": "node build.cjs",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint src/ build.cjs collect-dict.cjs",
     "lint:fix": "eslint src/ build.cjs collect-dict.cjs --fix",
     "format": "prettier --write \"src/**/*.js\" \"build.cjs\" \"collect-dict.cjs\"",
@@ -13,8 +15,7 @@
     "validate": "node -e \"const fs=require('fs');const path=require('path');const buildFile=path.join('build','GitHub_i18n.user.js');if(!fs.existsSync(buildFile)){console.error('构建产物不存在');process.exit(1)}const content=fs.readFileSync(buildFile,'utf8');if(content.length<1000){console.error('构建产物过小');process.exit(1)}console.log('验证通过');process.exit(0)\"",
     "test": "npm run lint && npm run build && npm run validate",
     "clean": "node -e \"const fs=require('fs');const path=require('path');['build','dist','coverage'].forEach(dir=>{if(fs.existsSync(dir)){fs.rmSync(dir,{recursive:true});console.log('已清理:',dir)}})\"",
-    "dict:collect": "node collect-dict.cjs",
-    "start": "node server.js"
+    "dict:collect": "node collect-dict.cjs"
   },
   "keywords": [
     "github",
@@ -57,7 +58,10 @@
   "dependencies": {
     "chokidar": "^5.0.0",
     "express": "^5.2.1",
+    "next": "^16.3.5",
     "puppeteer": "^25.11.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "ws": "^8.21.3"
   }
 }

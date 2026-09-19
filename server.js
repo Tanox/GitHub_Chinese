@@ -51,7 +51,8 @@ app.use('/prototype', async (req, res, next) => {
       const hmrScript = `
       <script>
         (function() {
-          const ws = new WebSocket('ws://' + window.location.host);
+          const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+          const ws = new WebSocket(protocol + window.location.host);
           ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
             if (data.type === 'reload') {
