@@ -1,0 +1,55 @@
+/*
+ * GitHub 中文 · 采集工作台 — 卡片
+ * @file web/css/cards.css
+ * @version 1.9.22
+ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.step-badge {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: .9rem;
+  flex-shrink: 0;
+}
+
+.card-desc {
+  color: var(--muted);
+  font-size: .88rem;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+}
+
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

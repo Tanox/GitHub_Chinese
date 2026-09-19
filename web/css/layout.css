@@ -1,0 +1,119 @@
+/*
+ * GitHub 中文 · 采集工作台 — 布局（顶栏 / 内容 / 步骤条 / 栅格 / 响应式）
+ * @file web/css/layout.css
+ * @version 1.9.22
+ */
+.workspace {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.topbar {
+  height: 5rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, .85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 5;
+}
+
+.topbar h1 {
+  font-size: 1.35rem;
+}
+
+.topbar-sub {
+  margin: .15rem 0 0;
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .4rem .75rem;
+  background: var(--brand-soft);
+  border: 1px solid rgba(46, 164, 79, .25);
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--brand-strong);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.content-inner {
+  max-width: 64rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.steps {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .82rem;
+  color: var(--muted);
+}
+
+.step-node {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.step-num {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-node.done .step-num {
+  background: var(--brand);
+}
+
+.step-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  min-width: 1.5rem;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 880px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .rail {
+    display: none;
+  }
+}

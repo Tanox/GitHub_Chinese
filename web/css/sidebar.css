@@ -1,0 +1,141 @@
+/*
+ * GitHub 中文 · 采集工作台 — 侧边栏
+ * @file web/css/sidebar.css
+ * @version 1.9.22
+ */
+.rail {
+  width: 16rem;
+  flex-shrink: 0;
+  background: var(--rail);
+  color: var(--rail-muted);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--rail-border);
+}
+
+.rail-brand {
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--rail-border);
+}
+
+.rail-mark {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 0 0 1px rgba(46, 164, 79, .35), 0 4px 14px rgba(46, 164, 79, .35);
+}
+
+.rail-name {
+  color: var(--rail-ink);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -.01em;
+}
+
+.rail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.rail-section-title {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--rail-muted);
+  margin: 0 0 .75rem .5rem;
+}
+
+.rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.rail-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem .75rem;
+  border-radius: 8px;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--rail-muted);
+  transition: background .15s, color .15s;
+}
+
+.rail-link:hover {
+  background: var(--rail-2);
+  color: var(--rail-ink);
+}
+
+.rail-link.active {
+  background: rgba(46, 164, 79, .12);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(46, 164, 79, .25);
+}
+
+.rail-link svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.rail-stat {
+  margin: .25rem .5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: var(--rail-2);
+  border: 1px solid var(--rail-border);
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.rail-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .78rem;
+}
+
+.rail-stat-row .k {
+  color: var(--rail-muted);
+}
+
+.rail-stat-row .v {
+  font-family: var(--mono);
+  color: var(--term);
+  font-weight: 600;
+}
+
+.rail-foot {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--rail-border);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .8rem;
+  color: var(--rail-muted);
+}
+
+.dot {
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--term);
+  box-shadow: 0 0 0 3px rgba(63, 185, 80, .18);
+}
