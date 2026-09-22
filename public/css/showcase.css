@@ -1,0 +1,122 @@
+/*
+ * GitHub 中文 · 采集工作台 — 概览与设计系统
+ * 仅服务 /overview 与 /design 两个信息型页面，复用 base.css 的设计令牌
+ * @file public/css/showcase.css
+ * @version 1.9.26
+ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--faint);
+  margin: 0 0 .35rem;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.stat-hint {
+  margin: .35rem 0 0;
+  font-size: .72rem;
+  color: var(--muted);
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.section-desc {
+  margin: .2rem 0 0;
+  font-size: .85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: .75rem;
+}
+
+.swatch {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.swatch .chip {
+  height: 3.25rem;
+}
+
+.swatch .meta {
+  padding: .5rem .7rem;
+  font-size: .72rem;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+}
+
+.swatch .meta strong {
+  color: var(--ink);
+  font-size: .75rem;
+}
+
+.swatch .meta code,
+.spec-list code {
+  font-family: var(--mono);
+  font-size: .68rem;
+}
+
+.spec-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: .85rem;
+}
+
+.spec-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: .5rem .75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.spec-list li code {
+  color: var(--brand-strong);
+}
+
+.demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+}

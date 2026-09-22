@@ -68,3 +68,25 @@ table.terms {
   color: var(--brand-strong);
   border: 1px solid rgba(46, 164, 79, .2);
 }
+
+/* 词条状态徽标 */
+.badge {
+  display: inline-block;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  font-size: .65rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.badge.untranslated {
+  background: #fff8c5;
+  color: #7d4e00;
+  border-color: rgba(125, 78, 0, .2);
+}
+
+.badge.translated {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  border-color: rgba(46, 164, 79, .2);
+}

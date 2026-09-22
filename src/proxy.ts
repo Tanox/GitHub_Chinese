@@ -1,12 +1,14 @@
 /**
- * 全局 Edge 中间件
- * 为所有响应附加基础安全响应头；逻辑收敛在 src/middleware.ts，与根配置解耦
- * @file src/middleware.ts
+ * 全局 Proxy（Next.js 16 起取代 middleware 约定）
+ * 为所有响应附加基础安全响应头
+ * @file src/proxy.ts
+ * @version 1.9.26
  */
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   response.headers.set('X-Content-Type-Options', 'nosniff');

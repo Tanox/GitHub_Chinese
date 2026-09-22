@@ -3,6 +3,15 @@
  * @file public/css/layout.css
  * @version 1.9.24
  */
+/* 应用外壳：侧栏 + 主区（横向排布） */
+.app-shell {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .workspace {
   flex: 1;
   min-width: 0;
