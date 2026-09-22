@@ -1,6 +1,6 @@
 {
   "name": "github-chinese",
-  "version": "1.9.25",
+  "version": "1.9.26",
   "description": "GitHub Chinese 简体中文 - GitHub 中文本地化解决方案",
   "main": "src/main.js",
   "type": "module",

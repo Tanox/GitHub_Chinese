@@ -6,25 +6,13 @@
  */
 
 import fs from 'fs/promises';
-import os from 'os';
-import path from 'path';
 import { createRequire } from 'module';
-import { spawn } from 'child_process';
+import { RAW_TERMS_FILE, runDictionaryProcessor } from './dictionary-processor.js';
 
 /**
- * 采集事件
- * @typedef {Object} CollectEvent
- * @property {'log'|'error'|'progress'|'done'} type - 事件类型
- * @property {string} [message] - 文本消息
- * @property {Record<string, unknown>} [data] - 结构化数据（进度信息）
- * @property {number|null} [code] - 子进程退出码
+ * @typedef {import('./dictionary-processor.js').CollectEvent} CollectEvent
  */
 
-/** 采集原始文本落在系统临时目录，避免污染仓库工作区 */
-const RAW_TERMS_FILE = path.join(os.tmpdir(), 'github-i18n-raw-terms.txt');
-/** 词典清洗脚本（相对项目根解析） */
-const PROCESSOR_SCRIPT = path.join(process.cwd(), 'collect-dict.cjs');
-const QUEUE_POLL_INTERVAL_MS = 100;
 const NAVIGATION_TIMEOUT_MS = 30_000;
 const MIN_TEXT_LENGTH = 2;
 const MAX_TEXT_LENGTH = 300;
@@ -59,62 +47,24 @@ function describeError(error) {
 }
 
 /**
- * 等待指定毫秒
- * @param {number} ms - 毫秒数
- * @returns {Promise<void>} 等待完成的 Promise
+ * 提取页面正文中的有效文本块（在浏览器上下文中执行，须自包含）
+ * @param {number} minLength - 最短长度
+ * @param {number} maxLength - 最长长度
+ * @returns {string[]} 文本块列表
  */
-function delay(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
+function extractPageText(minLength, maxLength) {
+  const collected = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
 
-/**
- * 调用 collect-dict.cjs 并把子进程输出转为事件流
- * @returns {AsyncGenerator<CollectEvent>} 采集事件流
- */
-async function* runDictionaryProcessor() {
-  const child = spawn(process.execPath, [PROCESSOR_SCRIPT, RAW_TERMS_FILE], {
-    cwd: process.cwd(),
-  });
-
-  /** @type {CollectEvent[]} */
-  const queue = [];
-  let finished = false;
-
-  /**
-   * 将子进程输出按行入队
-   * @param {Buffer} chunk - 输出块
-   * @param {'log'|'error'} type - 事件类型
-   */
-  const pushLines = (chunk, type) => {
-    chunk
-      .toString()
-      .split('\n')
-      .forEach((line) => {
-        if (line.trim()) {
-          queue.push({ type, message: line });
-        }
-      });
-  };
-
-  child.stdout?.on('data', (chunk) => pushLines(chunk, 'log'));
-  child.stderr?.on('data', (chunk) => pushLines(chunk, 'error'));
-  child.on('close', (code) => {
-    queue.push({ type: 'done', code });
-    finished = true;
-  });
-
-  for (;;) {
-    if (queue.length > 0) {
-      yield queue.shift();
-      continue;
+  while (node) {
+    const text = node.textContent?.trim() ?? '';
+    if (text.length > minLength && text.length <= maxLength) {
+      collected.push(text);
     }
-    if (finished) {
-      break;
-    }
-    await delay(QUEUE_POLL_INTERVAL_MS);
+    node = walker.nextNode();
   }
+  return collected;
 }
 
 /**
@@ -148,30 +98,7 @@ export async function* collectFromUrls(urls) {
       try {
         await page.goto(url, { waitUntil: 'networkidle2', timeout: NAVIGATION_TIMEOUT_MS });
 
-        const texts = await page.evaluate(
-          /**
-           * 提取页面正文中的有效文本块
-           * @param {number} minLength - 最短长度
-           * @param {number} maxLength - 最长长度
-           * @returns {string[]} 文本块列表
-           */
-          (minLength, maxLength) => {
-            const collected = [];
-            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-            let node = walker.nextNode();
-
-            while (node) {
-              const text = node.textContent?.trim() ?? '';
-              if (text.length > minLength && text.length <= maxLength) {
-                collected.push(text);
-              }
-              node = walker.nextNode();
-            }
-            return collected;
-          },
-          MIN_TEXT_LENGTH,
-          MAX_TEXT_LENGTH,
-        );
+        const texts = await page.evaluate(extractPageText, MIN_TEXT_LENGTH, MAX_TEXT_LENGTH);
 
         texts.forEach((text) => allTexts.add(text));
         yield { type: 'log', message: `成功从 ${url} 提取 ${texts.length} 条文本` };

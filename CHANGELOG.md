@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.9.26] - 2026-09-22
+
+### Added
+- 工作台新增「项目概览」页（`/overview`）：服务端在模块加载时一次性统计版本、词典词条、源码规模、产物大小与原型页面数，不再手工维护数字
+- 工作台新增「设计系统」页（`/design`）：展示 `public/css/base.css` 的颜色/尺寸令牌与按钮、徽标、步骤条、词条表等组件样式
+- 新增 `src/components/Rail.tsx` 与 `src/components/Shell.tsx`：服务端组件承载侧栏与外壳，导航改用 `next/link` 预取，移除 `aria-disabled` 占位
+- 新增 `src/components/CollectorConsole.tsx`：采集交互收敛为最小客户端岛
+- 新增 `src/lib/collector-core.js` 与 `src/lib/dictionary-processor.js`：采集流水线的唯一实现，Next 路由与原型服务器共用
+- 新增 `src/lib/project-metrics.ts`：服务端静态指标采集
+- 新增 `public/css/showcase.css`：概览/设计页专用样式模块
+
+### Fixed
+- 修复工作台外壳布局错误：外层容器误用 `.workspace`（`flex-direction: column`）导致侧栏与主区上下堆叠，新增 `.app-shell` 横向外壳
+- 修复词条状态徽标无样式：`.badge` / `.badge.untranslated` / `.badge.translated` 此前从未定义，状态一直以裸文本展示；同时本地化为「待翻译 / 已翻译」
+- 修复构建期循环引用 `dictionaryManager → partialTranslator → dictionaryManager`：改为由调用方注入查询上下文，构建输出恢复无循环告警
+- 修复 `next.config.mjs` 失效键：移除 Next 16 已不支持的 `eslint` 配置项
+- 修复 `src/middleware.ts` 使用已弃用约定：迁移为 `src/proxy.ts`（具名导出 `proxy`）
+- 修复原型服务器把采集临时文件写入仓库根目录的问题（统一改用系统临时目录）
+- 修复 `src/lib/collector-core.js` 超出「单文件 ≤ 200 行」约定（206 行）的问题
+
+### Changed
+- `src/app/page.tsx` 由整页客户端组件改为服务端页面 + 客户端岛，静态外壳不再进入客户端包
+- 开启 TypeScript 严格模式（`tsconfig.json` 的 `strict: true`），零类型错误
+- 删除 `src/server/collector.js`（Express 侧重复实现），关闭 P1-5
+- 采集子进程路径与输出流解析逻辑收敛到 `dictionary-processor.js`
+- `npm run build:web` 构建告警由 4 条降至 1 条，仅剩未安装可选依赖 `puppeteer`（见 P0-2）
+
+### Known Issues
+- `puppeteer` 仍未安装（P0-2），批量 URL 采集降级为明确错误提示；`next build` 会输出一条无法解析该可选依赖的告警
+- `src/i18n/*`（9 个模块）仍未被入口引用，构建时报告为孤立模块，待决策接入或移除（P1-2）
+
+---
+
 ## [1.9.25] - 2026-09-22
 
 ### Fixed

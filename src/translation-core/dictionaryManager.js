@@ -1,8 +1,8 @@
 /**
  * 翻译词典管理模块
- * @file translationCore/dictionaryManager.js
- * @version 1.9.21
- * @date 2026-06-10
+ * @file src/translation-core/dictionaryManager.js
+ * @version 1.9.26
+ * @date 2026-09-22
  * @author Sut
  * @description 管理翻译词典的加载和查询
  */
@@ -96,9 +96,13 @@ export const dictionaryManager = {
       result = this.dictionaryHash.get(lowerCaseText) || this.dictionaryHash.get(upperCaseText);
     }
 
-    // 精确匹配仍无结果时，按配置启用 Trie 部分匹配
+    // 精确匹配仍无结果时，按配置启用 Trie 部分匹配（上下文由本模块注入，避免循环依赖）
     if (result === null && CONFIG.performance?.enablePartialMatch) {
-      result = partialTranslator.performPartialTranslation(normalizedText, true);
+      result = partialTranslator.performPartialTranslation(normalizedText, true, {
+        dictionary: this.dictionary,
+        dictionaryTrie: this.dictionaryTrie,
+        regexCache: this.regexCache,
+      });
     }
 
     // 清理文本中的潜在危险内容

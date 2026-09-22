@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.9.24** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.26** ｜ 版本权威源：`src/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -71,6 +71,9 @@ GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitH
   - 预检查翻译匹配优化
   - 无匹配时返回 false，不修改 DOM
 - **partialTranslator.js**：使用 Trie 树进行部分匹配翻译
+  - 查询上下文（`dictionary` / `dictionaryTrie` / `regexCache`）由 `dictionaryManager` 在调用时注入，
+    本模块**不反向依赖** `dictionaryManager`，以避免循环引用
+- **batchProcessor.js / cacheController.js / lifecycle.js**：分批执行、缓存治理与卸载清理
 - **pageModeDetector.js**：检测当前页面的模式
 - **performanceMonitor.js**：监控翻译性能数据
 - **index.js**：翻译核心主入口
@@ -383,9 +386,12 @@ GitHub_Chinese/
 │   ├── config.js + config/           # 全局配置与配置分片
 │   ├── version.js                    # 单一版本源
 │   ├── versionUtils.js / versionChecker/ / updateNotification/
-│   ├── app/                          # Next.js App Router（采集工作台）
-│   ├── components/ hooks/ lib/ types/# 工作台组件、Hook、服务端逻辑、类型声明
-│   └── middleware.ts                 # Edge 安全响应头
+│   ├── app/                          # Next.js App Router：page / overview / design + api/*
+│   ├── components/                   # Shell / Rail（服务端外壳）、CollectorConsole（客户端岛）、叶组件
+│   ├── hooks/useCollector.ts         # 采集状态管理
+│   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts
+│   ├── types/                        # puppeteer.d.ts 等最小类型声明
+│   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
 ├── public/                           # 静态资源（css 模块化 / js 向导）
 ├── prototype/                        # 设计系统与高保真原型
 ├── scripts/build/                    # moduleGraph.cjs / transform.cjs
@@ -427,25 +433,38 @@ GitHub_Chinese/
 采集工作台是与用户脚本解耦的独立 Next.js 16 应用，复用同一份词典数据。
 
 ```
-浏览器（src/app/page.tsx）
+浏览器（src/app/page.tsx 服务端页面 + CollectorConsole 客户端岛）
   └─ useCollector（src/hooks/useCollector.ts）
       ├─ POST /api/collect        → processRawData(data)
       └─ POST /api/batch-collect  → collectFromUrls(urls)
-            └─ src/lib/collector-logic.ts
-                ├─ puppeteer（可选依赖）抓取页面文本
-                └─ spawn(collect-dict.cjs) ← 与用户脚本共享词典
-                      └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
+            └─ src/lib/collector-logic.ts（类型门面）
+                └─ src/lib/collector-core.js（抓取与编排，链路唯一实现）
+                    ├─ puppeteer（可选依赖）抓取页面文本
+                    └─ src/lib/dictionary-processor.js
+                          └─ spawn(collect-dict.cjs) ← 与用户脚本共享同一份词典
+                                └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
 ```
+
+页面结构（服务端渲染外壳 + 最小客户端岛）：
+
+| 路由 | 类型 | 说明 |
+|------|------|------|
+| `/` | 静态 | 采集控制台；仅 `CollectorConsole` 及其叶组件为客户端组件 |
+| `/overview` | 静态 | 项目概览；由 `src/lib/project-metrics.ts` 在模块加载时一次性统计磁盘指标 |
+| `/design` | 静态 | 设计系统；展示 `public/css/base.css` 的令牌与核心组件样式 |
 
 要点：
 
 - 两条 API 路由均声明 `runtime = 'nodejs'`（需要 `child_process` 与文件系统）
 - 采集原始文本写入系统临时目录（`os.tmpdir()`），不污染仓库工作区
-- `puppeteer` 为**可选运行时依赖**：未安装时批量采集返回明确错误提示，而非崩溃
-- `src/middleware.ts` 为所有响应附加 `X-Content-Type-Options`、`X-Frame-Options` 等基础安全头
+- `puppeteer` 为**可选运行时依赖**：已列入 `serverExternalPackages` 并以运行时 `createRequire` 解析，
+  未安装时批量采集返回明确错误提示，而非崩溃
+- `src/proxy.ts` 为所有响应附加 `X-Content-Type-Options`、`X-Frame-Options` 等基础安全头
+- `server.js`（原型热更新预览）复用 `collector-core.js` + `dictionary-processor.js`，仅保留 SSE 适配层
 
-架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `middleware.ts`；
-用户脚本核心 `.js` 由 `build.cjs` 独立构建，二者互不打包。
+架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `proxy.ts`；
+用户脚本核心 `.js` 由 `build.cjs` 独立构建，二者互不打包
+（`build.cjs` 依 `NEXT_ONLY_SEGMENTS` 跳过 `app`/`components`/`lib`/`hooks`/`server` 目录）。
 
 ---
 
@@ -453,6 +472,8 @@ GitHub_Chinese/
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.26 | 2026-09-22 | 修复工作台外壳布局与词条状态徽标样式；新增「项目概览」「设计系统」页与服务端指标；`middleware`→`proxy` 迁移；采集服务端逻辑去重为 `collector-core` + `dictionary-processor`；部分匹配改为上下文注入以消除循环引用；开启 TS 严格模式 |
+| 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配；采集接口非法 JSON 返回 400 |
 | 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节、`configUI` 未导出、部分匹配空转、版本号不一致等阻塞缺陷；新增产物校验脚本与进度文档 |
 | 1.9.23 | 2026-09-19 | 采集演示页升级为 Next.js 16（App Router），新增 Tailwind / ESLint / Husky 配置 |
 | 1.9.22 | 2026-09-18 | 重构词典采集向导样式，统一品牌绿主题 |

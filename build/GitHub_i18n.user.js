@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_i18n
-// @version      1.9.24
+// @version      1.9.26
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,8 +27,8 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.9.24
- * @date 2026-09-19
+ * @version 1.9.26
+ * @date 2026-09-22
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
  */
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.9.24';
+const VERSION = '1.9.26';
 
 /**
  * GitHub 元素选择器列表配置
@@ -2062,16 +2062,23 @@ class Trie {
 
 /**
  * 部分匹配翻译模块
- * @file translationCore/partialTranslator.js
- * @version 1.9.21
- * @date 2026-06-10
+ * @file src/translation-core/partialTranslator.js
+ * @version 1.9.26
+ * @date 2026-09-22
  * @author Sut
- * @description 使用Trie树进行部分匹配翻译
+ * @description 使用 Trie 树进行部分匹配翻译；查询上下文由调用方注入，避免与 dictionaryManager 形成循环依赖
  */
 
 const partialTranslator = {
-  performPartialTranslation(text, enablePartialMatch = false) {
-    if (!enablePartialMatch) {
+  /**
+   * 基于 Trie 树的长词优先部分替换
+   * @param {string} text - 待处理文本
+   * @param {boolean} [enablePartialMatch] - 是否启用部分匹配
+   * @param {{dictionary: Object, dictionaryTrie: Object, regexCache: Map}} [store] - 词典上下文
+   * @returns {string|null} 替换结果，无可替换内容时返回 null
+   */
+  performPartialTranslation(text, enablePartialMatch = false, store = null) {
+    if (!enablePartialMatch || !store || !store.dictionaryTrie) {
       return null;
     }
 
@@ -2082,18 +2089,18 @@ const partialTranslator = {
 
     const matches = [];
     const minKeyLength = Math.min(4, Math.floor(textLen / 2));
-    const potentialMatches = dictionaryManager.dictionaryTrie.findAllMatches(text, minKeyLength);
+    const potentialMatches = store.dictionaryTrie.findAllMatches(text, minKeyLength);
 
     for (const match of potentialMatches) {
       const key = match.key;
       if (
-        !Object.prototype.hasOwnProperty.call(dictionaryManager.dictionary, key) ||
-        dictionaryManager.dictionary[key].startsWith('待翻译: ')
+        !Object.prototype.hasOwnProperty.call(store.dictionary, key) ||
+        store.dictionary[key].startsWith('待翻译: ')
       ) {
         continue;
       }
 
-      const value = dictionaryManager.dictionary[key];
+      const value = store.dictionary[key];
 
       if (/^[0-9.,\s()[\]{}/*^$#@!~`|:;"'?>+-]+$/i.test(key)) {
         continue;
@@ -2102,12 +2109,12 @@ const partialTranslator = {
       const wordRegexKey = `word_${key}`;
       let wordRegex;
 
-      if (dictionaryManager.regexCache.has(wordRegexKey)) {
-        wordRegex = dictionaryManager.regexCache.get(wordRegexKey);
+      if (store.regexCache.has(wordRegexKey)) {
+        wordRegex = store.regexCache.get(wordRegexKey);
       } else {
         wordRegex = utils.safeRegExp('\\b' + utils.escapeRegExp(key) + '\\b', 'gi');
         if (wordRegex) {
-          dictionaryManager.regexCache.set(wordRegexKey, wordRegex);
+          store.regexCache.set(wordRegexKey, wordRegex);
         } else {
           continue;
         }
@@ -2127,12 +2134,12 @@ const partialTranslator = {
         const nonWordRegexKey = `nonword_${key}`;
         let nonWordRegex;
 
-        if (dictionaryManager.regexCache.has(nonWordRegexKey)) {
-          nonWordRegex = dictionaryManager.regexCache.get(nonWordRegexKey);
+        if (store.regexCache.has(nonWordRegexKey)) {
+          nonWordRegex = store.regexCache.get(nonWordRegexKey);
         } else {
           nonWordRegex = utils.safeRegExp(utils.escapeRegExp(key), 'g');
           if (nonWordRegex) {
-            dictionaryManager.regexCache.set(nonWordRegexKey, nonWordRegex);
+            store.regexCache.set(nonWordRegexKey, nonWordRegex);
           } else {
             continue;
           }
@@ -2179,9 +2186,9 @@ const partialTranslator = {
 
 /**
  * 翻译词典管理模块
- * @file translationCore/dictionaryManager.js
- * @version 1.9.21
- * @date 2026-06-10
+ * @file src/translation-core/dictionaryManager.js
+ * @version 1.9.26
+ * @date 2026-09-22
  * @author Sut
  * @description 管理翻译词典的加载和查询
  */
@@ -2269,9 +2276,13 @@ const dictionaryManager = {
       result = this.dictionaryHash.get(lowerCaseText) || this.dictionaryHash.get(upperCaseText);
     }
 
-    // 精确匹配仍无结果时，按配置启用 Trie 部分匹配
+    // 精确匹配仍无结果时，按配置启用 Trie 部分匹配（上下文由本模块注入，避免循环依赖）
     if (result === null && CONFIG.performance?.enablePartialMatch) {
-      result = partialTranslator.performPartialTranslation(normalizedText, true);
+      result = partialTranslator.performPartialTranslation(normalizedText, true, {
+        dictionary: this.dictionary,
+        dictionaryTrie: this.dictionaryTrie,
+        regexCache: this.regexCache,
+      });
     }
 
     // 清理文本中的潜在危险内容

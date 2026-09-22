@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.24** ｜ 更新日期：2026-09-19 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.26** ｜ 更新日期：2026-09-22 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -11,9 +11,9 @@
 
 | 项目 | 说明 |
 |------|------|
-| 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js） |
+| 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_i18n.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.9.24 |
+| 当前版本 | v1.9.26 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（注意：仓库同时存在 `bun.lock`，存在双锁文件漂移风险） |
@@ -22,19 +22,24 @@
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 116 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 9058 | 同上 |
+| `src/` 源码文件数 | 123 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 9393 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
-| 用户脚本产物大小 | 198.88 KB | `build/GitHub_i18n.user.js`（字节数） |
+| 用户脚本孤立模块数 | 9（全部为 `src/i18n/*`） | 同上 |
+| 构建期循环引用 | 0 | 同上 |
+| 用户脚本产物大小 | 198,352 字节（193.70 KB） | `build/GitHub_i18n.user.js` |
 | 翻译词典词条数 | 459 | `node collect-dict.cjs` 输出 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 16 个 HTML + 10 个 CSS | `prototype/` |
+| 工作台页面路由 | 3（`/`、`/overview`、`/design`） | `next build` 路由表 |
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
-| 类型检查 | 通过 | `tsc --noEmit -p tsconfig.json` |
+| 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
 | 产物校验 | 通过 | `npm run validate` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
+| Next 构建告警 | 1（可选依赖 `puppeteer` 未安装） | `npm run build:web` |
 
 > 上述数字为数据型指标，发版时应重新执行对应命令实算，禁止手改。
+> 工作台「项目概览」页（`/overview`）已把其中多数指标改为服务端实时统计，不再依赖本文档的手工数字。
 
 ---
 
@@ -57,29 +62,46 @@ src/main.js                        ← 唯一入口
 
 支持模块：
 
-- `core/`：`cacheManager`（LRU）、`errorHandler`（+`constants`/`recovery`）、`trie`（Trie 树）、`virtualDom`（+`manager`/`constants`）、`virtualNode`
+- `core/`：`cacheManager`（LRU）、`errorHandler`（+`constants`/`recovery`）、`trie`（Trie 树）、`virtualDom`（+`manager`/`cleanup`/`nodes`/`lifecycle`/`constants`）、`virtualNode`
 - `translation-core/`：`dictionaryManager`、`pageModeDetector`、`elementSelector`（+`selectorUtils`）、`elementTranslator`（+`stats`/`critical`）、`partialTranslator`、`performanceMonitor`、`batchProcessor`、`cacheController`、`lifecycle`、`translator`
 - `page-monitor/`：`domObserver`（+`utils`/`config`/`setup`/`trigger`/`elementChecker`/`mutationAnalyzer`/`constants`）、`pageAnalyzer`、`pathListener`、`translationTrigger`、`cacheManager`
-- `dictionaries/`：`codespaces`、`explore`、`common`（`nav`/`repo`/`pr`/`issue`/`misc`）
+- `dictionaries/`：`codespaces`、`explore`、`common`（`nav`/`repo`/`pr`/`issue`/`misc*`）
 - `ui/`：`configUI`（`store`/`renderer`/`bootstrap`）、`components/performanceMonitor`、`styles/configUI`（`base`/`buttons`/`components`）
 - `utils/`：`functionUtils`、`stringUtils`（`json`/`regex`/`object`/`security`）、`domUtils`、`urlUtils`、`securityUtils`、`tools`
 - 顶层：`config`（+`config/`）、`version`、`versionUtils`、`updateNotification`
+
+依赖方向约定：`partialTranslator` **不反向依赖** `dictionaryManager`，查询上下文由调用方注入
+（v1.9.26 借此消除构建期循环引用）。
 
 ### 2.2 链路 B：词典采集工作台（Next.js 16）
 
 | 组成 | 路径 |
 |------|------|
-| App Router | `src/app/`（`layout.tsx`、`page.tsx`、`globals.css`） |
+| App Router 页面 | `src/app/page.tsx`（采集控制台）、`src/app/overview/page.tsx`、`src/app/design/page.tsx` |
 | API 路由 | `src/app/api/collect/route.ts`、`src/app/api/batch-collect/route.ts` |
-| 客户端组件 | `src/components/`（`Dashboard`、`DataCenter`、`PreviewTable`、`ScriptInjector`） |
-| 服务端逻辑 | `src/lib/collector-logic.ts` |
+| 服务端外壳 | `src/components/Shell.tsx`、`src/components/Rail.tsx`（侧栏导航，`next/link` 预取） |
+| 客户端岛 | `src/components/CollectorConsole.tsx`；叶组件 `DataCenter` / `PreviewTable` / `Dashboard` / `ScriptInjector` |
+| 服务端逻辑 | `src/lib/collector-core.js`、`src/lib/dictionary-processor.js`、`src/lib/project-metrics.ts` |
+| 类型门面 | `src/lib/collector-logic.ts`（为 Route Handler 提供 `CollectEvent` 类型） |
 | 状态 Hook | `src/hooks/useCollector.ts` |
-| Edge 中间件 | `src/middleware.ts`（安全响应头） |
-| 类型声明 | `src/types/puppeteer.d.ts` |
-| 样式 | `public/css/`（10 个自包含模块）+ `src/app/globals.css`（Tailwind 入口） |
+| Proxy（原 middleware） | `src/proxy.ts`（安全响应头，Next 16 约定） |
+| 类型声明 | `src/types/puppeteer.d.ts`、`src/version.d.ts` |
+| 样式 | `public/css/`（11 个自包含模块）+ `src/app/globals.css`（Tailwind 入口） |
 
-> 两链路互不污染：用户脚本核心 `.js` 由 `build.cjs` 处理，Next 仅处理 `app`/`components`/`lib`/`hooks`。
-> 工作台通过 `child_process` 调用 `collect-dict.cjs`，与用户脚本共享同一份词典数据。
+```
+浏览器（服务端页面 Shell + 客户端岛 CollectorConsole）
+  └─ useCollector
+      ├─ POST /api/collect        → processRawData(data)
+      └─ POST /api/batch-collect  → collectFromUrls(urls)
+            └─ src/lib/collector-core.js
+                ├─ puppeteer（可选依赖）抓取页面文本
+                └─ src/lib/dictionary-processor.js
+                      └─ spawn(collect-dict.cjs) ← 与用户脚本共享同一份词典
+                            └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
+```
+
+> `server.js`（原型热更新预览服务器）复用同一套 `collector-core.js` + `dictionary-processor.js`，
+> 仅保留 SSE 适配层；v1.9.26 前的 Express 重复实现已删除。
 
 ---
 
@@ -103,65 +125,64 @@ src/main.js                        ← 唯一入口
 
 - [x] 探针脚本一键复制（带复制反馈）
 - [x] 文本粘贴采集 → SSE 实时流式日志
-- [x] 批量 URL 采集（Headless 抓取）
+- [x] 批量 URL 采集（Headless 抓取，未装依赖时明确降级提示）
 - [x] 词条预览表 + 实时处理中心（进度条 / 终端日志）
 - [x] 智能清洗（调用服务端清洗）、导出 JSON
-- [x] 词条状态区分（待翻译 / 已翻译）
+- [x] 词条状态区分（待翻译 / 已翻译，样式与文案齐备）
+- [x] 侧栏导航三页互通：采集控制台 / 项目概览 / 设计系统
+- [x] 项目概览页：服务端实时统计版本、词条数、源码规模、产物大小
+- [x] 设计系统页：颜色/尺寸令牌与核心组件样式展示
 
 ### 3.3 工程化
 
 - [x] 构建脚本自动解析依赖图（不再维护手工文件清单）
 - [x] 打包前跨模块顶层重名冲突检测（构建即失败并列出冲突）
 - [x] 孤立模块报告（提示未被入口引用、不参与打包的文件）
+- [x] 循环引用检测（v1.9.26 起为 0 处）
 - [x] 产物校验 `scripts/validate-bundle.cjs`：存在性 + 体积 + 语法 + 未定义引用扫描
-- [x] ESLint（Flat Config，整合 `eslint-config-next`）+ Prettier + Husky + lint-staged
+- [x] ESLint（Flat Config，规则拆分到 `eslint/rules/`）+ Prettier + Husky + lint-staged
 - [x] CI/CD（`.github/workflows/ci-cd.yml`）：lint → build → validate → artifact → release
 - [x] GitHub Pages 静态部署工作流（`static.yml`）
+- [x] TypeScript 严格模式（`strict: true`，零错误）
+- [x] Next 16 约定对齐：`middleware` → `proxy`、移除失效 `eslint` 配置键
 - [x] 语义化 `id` 覆盖主要容器与交互控件
 - [x] 全部代码文件符合「单文件 ≤ 200 行」约定（0 处超出）
 
 ---
 
-## 4. 本次迭代（v1.9.23 → v1.9.24）
+## 4. 本次迭代（v1.9.25 → v1.9.26）
 
-### 4.1 阻塞级缺陷修复
+### 4.1 缺陷修复
 
 | 编号 | 问题 | 影响 | 处置 |
 |------|------|------|------|
-| B1 | `build.cjs` 手工模块清单严重脱节：缺失 `main/lifecycle.js`、`i18n/*`、`core/errorHandler/*`、`core/virtualDom/*`、`page-monitor/domObserver/*`、`translation-core/*` 等 40+ 模块 | 构建产物存在大量未定义引用，**用户脚本运行即报错** | 改为从入口递归解析依赖图并拓扑排序；新增重名冲突与孤立模块检测 |
-| B2 | 跨模块顶层重名：`translateCriticalElementsOnly`（`elementTranslator/critical.js` 与 `translator.js`）、`PARSE_INT_RADIX`（`versionUtils.js` 与 `versionChecker.js`） | 单作用域拼接时后者覆盖前者，行为不确定 | `critical.js` 重命名为 `translateCriticalElements`；清理 `versionUtils.js` 未使用的导出常量 |
-| B3 | `ui/configUI.js` 仅导出 `ConfigUI` 类，未导出 `configUI` 实例；且类缺少 `init()` | `lifecycle.js` 中 `configUI.init()` 永不执行，**浮动按钮与菜单命令从未生效** | 新增 `configUI` 单例与 `init()`，抽离 `configUI/bootstrap.js` 承载按钮与菜单 |
-| B4 | `npm run build` 被改写为 `next build` | CI 的 `build → validate → artifact` 链路必然失败 | `build` 恢复为用户脚本构建，新增 `build:web`；`validate` 指向真实校验脚本 |
-| B5 | `partialTranslator` 依赖 `dictionaryManager.dictionaryTrie` / `regexCache`，二者从未创建 | 「启用部分匹配」开关为**空转** | 在 `dictionaryManager.init()` 构建 Trie 树与正则缓存，并接入查询回退链路 |
-| B6 | `collect-dict.cjs` 引用已不存在的词典文件（`pull_requests.js`/`issues.js`/`settings.js`/`repository.js`） | 词典加载近乎为空，采集结果假阴性 | 改为递归扫描 `src/dictionaries/**/*.js`，词条数由残缺提升至完整 **459** 条 |
-| B7 | 版本号三处不一致：`package.json` 1.9.23 / `src/version.js` 1.9.22 / `src/app/page.tsx` 硬编码 1.9.22 | 版本展示与更新检查判断错乱 | 统一为 **1.9.24**；工作台改为从 `src/version.js` 读取（新增 `src/version.d.ts` 类型声明） |
+| C1 | 工作台外壳外层容器误用 `.workspace`（`flex-direction: column`） | 侧栏与主区**上下堆叠**，侧栏导航布局完全错位 | 新增 `.app-shell` 横向外壳，`Shell.tsx` 改用它 |
+| C2 | `.badge` / `.badge.untranslated` / `.badge.translated` **从未定义样式** | 词条状态一直以裸英文文本展示 | 在 `terms.css` 补齐样式，并把文案本地化为「待翻译 / 已翻译」 |
+| C3 | 构建期循环引用 `dictionaryManager → partialTranslator → dictionaryManager` | 拼接顺序依赖启发式，构建输出持续告警 | `partialTranslator` 改为接收调用方注入的查询上下文 |
+| C4 | `next.config.mjs` 保留 Next 16 已不支持的 `eslint` 键 | 每次构建输出 2 条无效配置告警 | 移除该键；`typescript.ignoreBuildErrors` 保留 |
+| C5 | `src/middleware.ts` 使用 Next 16 已弃用的 `middleware` 约定 | 构建输出迁移提示 | 迁移为 `src/proxy.ts`（具名导出 `proxy`），路由表显示 `ƒ Proxy` |
+| C6 | 原型服务器把采集临时文件写入仓库根目录 | 污染工作区，与 Next 侧行为不一致 | 统一走 `dictionary-processor.js` 的系统临时目录 |
+| C7 | `src/lib/collector-core.js` 达 206 行 | 违反「单代码文件 ≤ 200 行」约定 | 拆出 `dictionary-processor.js`（子进程桥接） |
 
-### 4.2 质量与规范改进
+### 4.2 架构与性能改进
 
-- `src/lib/collector-logic.ts`：移除 `eval('require(...)')` hack 与死代码，改用 `spawn` 直接引用；采集临时文件由仓库根改到系统临时目录；消除 `any` 类型。
-- `src/hooks/useCollector.ts`：消除 `any` 捕获、重复正则匹配；新增非 2xx 响应与事件流解析失败的显式错误提示。
-- `src/components/DataCenter.tsx`：补齐此前无 `onClick` 的「智能清洗」「导出 JSON」按钮；导出改为真实 JSON 文件下载。
-- `src/components/ScriptInjector.tsx`：补齐复制反馈（`已复制`）与失败降级，清理定时器。
-- `src/app/page.tsx`：移除 `href="#"` 死链（改为 `aria-disabled` 的规划中占位），补齐语义化 `id`。
-- `src/utils/securityUtils.js`：用 `TextEncoder`/`TextDecoder` 替换已废弃的 `escape`/`unescape`，保持存储格式向后兼容。
-- `eslint.config.js`：CommonJS 规则块由仅 `build.cjs` 扩展到全部 `**/*.cjs`；忽略项补 `.next`/`prototype`/`public`。
-- `server.js`：静态目录由不存在的 `web/` 修正为 `public/`；移除未使用导入。
-- `public/` 下 16 个源码文件的头注释路径由 `web/...` 修正为 `public/...`，并同步版本号。
-- 新增 `scripts/build/moduleGraph.cjs`、`scripts/build/transform.cjs`、`scripts/validate-bundle.cjs`。
-- 按「单代码文件 ≤ 200 行」约定拆分 6 处超长文件（拆分后外部导出契约不变，构建与词典词条数经比对无差异）：
-  - `eslint.config.js`（304 行）→ 规则拆分到 `eslint/rules/{core,bestPractices,quality}.js`
-  - `src/i18n/manager.js`（308 行）→ 拆出 `constants` / `storage` / `observers` / `formatters` / `lookup` / `loader`
-  - `src/core/virtualDom/manager.js`（237 行）→ 拆出 `cleanup` / `nodes` / `lifecycle`
-  - `src/dictionaries/common/misc.js`（228 行）→ 拆为 `miscOrganization` / `miscMarketing` / `miscActions`
-  - `src/translation-core/selectorUtils/patterns.js`（221 行）→ 拆出 `skipTags` / `skipIdsEntity` / `skipIdsTechnical`
-  - `prototype/assets/prototype.css`（1165 行）→ 拆为 9 个模块 + `@import` 聚合入口（HTML 引用方式不变）
-- 构建产物体积改为按字节统计（原按字符统计，中文内容会低估约 9%）。
+- **客户端边界收敛**：`src/app/page.tsx` 原为整页 `'use client'`，现改为服务端页面 + `CollectorConsole` 客户端岛；
+  侧栏、顶栏、步骤条等静态结构不再进入客户端包。
+- **导航真实化**：侧栏三个入口由 `aria-disabled` 占位改为 `next/link` 真实路由（`prefetch` + `aria-current`）。
+- **新增页面**：`/overview`（服务端读取磁盘指标）、`/design`（设计令牌与组件展示），均静态预渲染。
+- **采集逻辑去重（P1-5）**：删除 `src/server/collector.js`，Next 路由与原型服务器共用
+  `collector-core.js`（抓取编排）+ `dictionary-processor.js`（子进程桥接）；SSE 适配各自保留。
+- **可选依赖处理**：`puppeteer` 改为运行时解析（`createRequire` + 变量说明符），并加入
+  `serverExternalPackages`；未安装时返回明确提示而非崩溃。
+- **类型安全**：`tsconfig.json` 开启 `strict: true`，零错误（与「避免 any」约定对齐）。
 
 ### 4.3 文档完善
 
-- 新增 `docs/PROGRESS.md`（本文档）。
-- 修正 `docs/config.yaml` 中 `specDirectories` 指向不存在的 `../spec` 的问题。
-- README、架构文档、开发指南、项目规范同步至 v1.9.24 的实际结构。
+- 重写 `docs/PROGRESS.md`：指标实算、任务状态、架构图与变更记录同步至 v1.9.26。
+- `docs/architecture.md` 同步工作台架构与目录结构。
+- `CHANGELOG.md` 新增 1.9.26 小节。
+- 版本同步范围：`src/version.js`、`package.json`、`README.md` 徽章、`CHANGELOG.md`、
+  以及**本次实际改动文件**的头注释版本号。
 
 ---
 
@@ -171,28 +192,30 @@ src/main.js                        ← 唯一入口
 
 | 编号 | 任务 | 现状 | 验收标准 |
 |------|------|------|---------|
-| P0-1 | 提交 `build/GitHub_i18n.user.js` 产物 | 产物已重建，但工作区尚未提交；README「一键安装」链接指向 `main/build/...` | `git ls-files build/` 能列出产物，且 raw 链接可下载 |
-| P0-2 | 安装 `puppeteer` 依赖或改为 `puppeteer-core` + 外部浏览器 | `package.json` 已声明 `puppeteer@^25.11.0`，但 `node_modules` 中缺失 | 批量 URL 采集可实际抓取页面；当前已降级为返回明确提示 |
+| ~~P0-1~~ | ~~提交 `build/GitHub_i18n.user.js` 产物~~ | **已完成**（v1.9.24）：`git ls-files build/` 已能列出产物 | — |
+| P0-2 | 安装 `puppeteer` 依赖，或改为 `puppeteer-core` + 外部浏览器 | `package.json` 声明 `puppeteer@^25.11.0`，`node_modules` 中缺失。已改为运行时解析并加入 `serverExternalPackages`，未安装时返回明确提示；`npm run build:web` 仍输出 1 条无法解析该可选依赖的告警 | 批量 URL 采集可实际抓取页面，且构建无告警 |
 
 ### P1 — 重要质量项
 
 | 编号 | 任务 | 现状 | 验收标准 |
 |------|------|------|---------|
-| ~~P1-1~~ | ~~拆分超过 200 行的代码文件~~ | **已完成**（v1.9.24）：6 处超长文件全部拆分，当前 0 个代码文件超过 200 行 | — |
-| P1-2 | 决策 `i18n` 框架去留 | `src/i18n/*` 已实现但无任何调用方，不参与打包（构建时报告为 9 个孤立模块） | 要么接入 UI 文案，要么移除，消除孤立模块报告 |
-| P1-3 | 清理或启用 Jest 测试体系 | `jest.config.js` / `jest.setup.js` 存在，但 `jest`、`jest-environment-jsdom`、`babel-jest` 均未安装，且无任何测试用例；`npm test` 实际不跑单测 | 安装依赖并补充核心模块用例，或将配置移除并在文档中说明 |
+| ~~P1-1~~ | ~~拆分超过 200 行的代码文件~~ | **已完成**（v1.9.24 / v1.9.26）：当前 0 个代码文件超过 200 行 | — |
+| P1-2 | 决策 `i18n` 框架去留 | `src/i18n/*`（9 个模块）已实现但无任何调用方，不参与打包，构建时报告为 9 个孤立模块。**待用户决策**：A 接入配置面板文案；B 移除（推荐，产品本身即中文工具） | 构建孤立模块报告为 0 |
+| P1-3 | 清理或启用 Jest 测试体系 | `jest.config.js` / `jest.setup.js` 存在，但 `jest`、`jest-environment-jsdom`、`babel-jest` 均未安装，且无任何测试用例；`npm test` 实际不跑单测 | 安装依赖并补充核心模块用例，或移除配置并在文档中说明 |
 | P1-4 | 消除双锁文件漂移 | `package-lock.json` 与 `bun.lock` 并存，`puppeteer` 缺失即为漂移实证 | 保留单一锁文件并重新安装校验 |
-| P1-5 | 消除采集服务端逻辑重复 | `src/server/collector.js`（Express）与 `src/lib/collector-logic.ts`（Next Route）为同一功能的两份实现 | 抽取共享实现或明确废弃其一 |
+| ~~P1-5~~ | ~~消除采集服务端逻辑重复~~ | **已完成**（v1.9.26）：`src/server/collector.js` 已删除，统一为 `collector-core.js` + `dictionary-processor.js` | — |
 
 ### P2 — 体验与规范
 
 | 编号 | 任务 | 现状 |
 |------|------|------|
-| P2-1 | 开启 TypeScript 严格模式 | `tsconfig.json` 为 `strict: false`，与「避免 `any`」约定不一致 |
-| P2-2 | 补齐采集工作台次级页面 | 侧栏「项目概览」「设计系统」为规划中占位（`aria-disabled`），暂无路由 |
+| ~~P2-1~~ | ~~开启 TypeScript 严格模式~~ | **已完成**（v1.9.26）：`strict: true`，零类型错误 |
+| ~~P2-2~~ | ~~补齐采集工作台次级页面~~ | **已完成**（v1.9.26）：新增 `/overview` 与 `/design` |
 | P2-3 | 词典采集支持增量与去重统计 | 当前每次采集覆盖 `docs/untranslated-terms.txt`，无历史对比 |
 | P2-4 | 性能监控面板数据导出 | `performanceMonitor` 提供 `exportPerformanceData()`，配置面板尚未接入导出按钮 |
 | P2-5 | 补充 E2E / 冒烟测试 | 当前仅有构建产物静态校验，缺少运行时加载验证 |
+| P2-6 | 工作台移动端导航缺失 | `@media (max-width: 1024px)` 直接 `display: none` 隐藏侧栏，窄屏下三个页面无法互相跳转 |
+| P2-7 | 采集流程缺少错误码约定 | SSE 事件仅有 `type`，失败原因以文本形式返回，前端难以按类型分流处理 |
 
 ---
 
@@ -221,10 +244,10 @@ src/main.js                        ← 唯一入口
 2. `package.json` 的 `version`
 3. `CHANGELOG.md` 新增对应版本小节
 4. `README.md` 中的版本相关描述与结构说明
-5. `docs/` 下结构调整文档（`project.md`／`architecture.md`／`development.md`／`coding-style.md`／`prototype.md`／`PROGRESS.md`）
-6. `openspec/` 下规范索引与 `config.yaml` 的「当前版本」
-7. `prototype/` 中原型展示的版本号
-8. 本次**实际改动**文件的头注释版本号（未改动文件保持不变，禁止全仓库批量刷写）
+5. **本次实际编辑**的文档版本行（`docs/*.md`，含本文档）；未编辑的文档不批量刷写版本行，避免无意义 diff
+6. `docs/` 下结构调整文档（`project.md`／`architecture.md`／`development.md`／`coding-style.md`／`prototype.md`）
+7. 本次**实际改动**文件的头注释版本号（未改动文件保持不变）
+8. 发版后重新执行 `node build.cjs` 并确认 `git status` 干净（产物须可复现）
 
 ---
 
@@ -232,7 +255,9 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节、`configUI` 未导出、部分匹配空转、版本号不一致等 7 项阻塞缺陷；对齐 CI 脚本；补齐采集工作台交互；拆分 6 处超长文件；新增产物校验脚本与本文档 |
+| 1.9.26 | 2026-09-22 | 工作台外壳布局与状态徽标修复；新增「项目概览」「设计系统」页；`middleware`→`proxy` 迁移；采集服务端逻辑去重（P1-5）；开启 TS 严格模式（P2-1）；消除构建期循环引用；拆分超长文件 |
+| 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配导致清洗步骤失败；`req.json()` 异常改返回 400 |
+| 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节等 7 项阻塞缺陷；对齐 CI 脚本；补齐采集工作台交互；拆分 6 处超长文件；新增产物校验脚本与本文档 |
 | 1.9.23 | 2026-09-19 | 采集演示页升级为 Next.js 16（App Router）；新增 Tailwind/PostCSS/ESLint/Husky 配置 |
 | 1.9.22 | 2026-09-18 | 重构词典采集向导样式，统一品牌绿主题，去除无效 Tailwind 依赖 |
 | 1.9.21 | 2026-07-18 | 项目更名为 GitHub Chinese 简体中文 |

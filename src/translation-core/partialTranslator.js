@@ -1,17 +1,23 @@
 /**
  * 部分匹配翻译模块
- * @file translationCore/partialTranslator.js
- * @version 1.9.21
- * @date 2026-06-10
+ * @file src/translation-core/partialTranslator.js
+ * @version 1.9.26
+ * @date 2026-09-22
  * @author Sut
- * @description 使用Trie树进行部分匹配翻译
+ * @description 使用 Trie 树进行部分匹配翻译；查询上下文由调用方注入，避免与 dictionaryManager 形成循环依赖
  */
 import { utils } from '../utils/utils.js';
-import { dictionaryManager } from './dictionaryManager.js';
 
 export const partialTranslator = {
-  performPartialTranslation(text, enablePartialMatch = false) {
-    if (!enablePartialMatch) {
+  /**
+   * 基于 Trie 树的长词优先部分替换
+   * @param {string} text - 待处理文本
+   * @param {boolean} [enablePartialMatch] - 是否启用部分匹配
+   * @param {{dictionary: Object, dictionaryTrie: Object, regexCache: Map}} [store] - 词典上下文
+   * @returns {string|null} 替换结果，无可替换内容时返回 null
+   */
+  performPartialTranslation(text, enablePartialMatch = false, store = null) {
+    if (!enablePartialMatch || !store || !store.dictionaryTrie) {
       return null;
     }
 
@@ -22,18 +28,18 @@ export const partialTranslator = {
 
     const matches = [];
     const minKeyLength = Math.min(4, Math.floor(textLen / 2));
-    const potentialMatches = dictionaryManager.dictionaryTrie.findAllMatches(text, minKeyLength);
+    const potentialMatches = store.dictionaryTrie.findAllMatches(text, minKeyLength);
 
     for (const match of potentialMatches) {
       const key = match.key;
       if (
-        !Object.prototype.hasOwnProperty.call(dictionaryManager.dictionary, key) ||
-        dictionaryManager.dictionary[key].startsWith('待翻译: ')
+        !Object.prototype.hasOwnProperty.call(store.dictionary, key) ||
+        store.dictionary[key].startsWith('待翻译: ')
       ) {
         continue;
       }
 
-      const value = dictionaryManager.dictionary[key];
+      const value = store.dictionary[key];
 
       if (/^[0-9.,\s()[\]{}/*^$#@!~`|:;"'?>+-]+$/i.test(key)) {
         continue;
@@ -42,12 +48,12 @@ export const partialTranslator = {
       const wordRegexKey = `word_${key}`;
       let wordRegex;
 
-      if (dictionaryManager.regexCache.has(wordRegexKey)) {
-        wordRegex = dictionaryManager.regexCache.get(wordRegexKey);
+      if (store.regexCache.has(wordRegexKey)) {
+        wordRegex = store.regexCache.get(wordRegexKey);
       } else {
         wordRegex = utils.safeRegExp('\\b' + utils.escapeRegExp(key) + '\\b', 'gi');
         if (wordRegex) {
-          dictionaryManager.regexCache.set(wordRegexKey, wordRegex);
+          store.regexCache.set(wordRegexKey, wordRegex);
         } else {
           continue;
         }
@@ -67,12 +73,12 @@ export const partialTranslator = {
         const nonWordRegexKey = `nonword_${key}`;
         let nonWordRegex;
 
-        if (dictionaryManager.regexCache.has(nonWordRegexKey)) {
-          nonWordRegex = dictionaryManager.regexCache.get(nonWordRegexKey);
+        if (store.regexCache.has(nonWordRegexKey)) {
+          nonWordRegex = store.regexCache.get(nonWordRegexKey);
         } else {
           nonWordRegex = utils.safeRegExp(utils.escapeRegExp(key), 'g');
           if (nonWordRegex) {
-            dictionaryManager.regexCache.set(nonWordRegexKey, nonWordRegex);
+            store.regexCache.set(nonWordRegexKey, nonWordRegex);
           } else {
             continue;
           }
