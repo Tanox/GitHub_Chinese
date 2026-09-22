@@ -12,7 +12,7 @@
      不要再把整页写成 `'use client'`。
 - **不存在 `web/` 目录**（v1.9.23 起由 `public/` 取代：`public/css/` 11 个模块 + `public/js/wizard/`）。
   旧文档/注释中的 `web/css/*`、`web/js/*` 均为过期路径。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.26）。工作台页面通过 `@/version` +
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.27）。工作台页面通过 `@/version` +
   `src/version.d.ts` 读取，不再硬编码。
 - **构建脚本已自动化**：`scripts/build/moduleGraph.cjs`（依赖图 + 循环检测，`NEXT_ONLY_SEGMENTS` 跳过
   `app/components/lib/hooks/server`）、`scripts/build/transform.cjs`（ESM→单作用域 + 跨模块顶层重名冲突检测）、
@@ -29,7 +29,11 @@
   未安装时返回明确提示。`npm run build:web` 仍会输出 **1 条**无法解析该可选依赖的 Turbopack 告警（属 P0-2）。
 - 质量现状：`npm run lint` 0 error/0 warning；`tsc --noEmit -p tsconfig.json` 通过且
   **`strict: true`**；**全部代码文件 ≤ 200 行**；构建期**循环引用 0 处、孤立模块 0 处**；
-  `src/` 114 个文件 / 8752 行；`node build.cjs` 连续两次产物 md5 一致（可复现）。
+  `src/` 116 个文件 / 8801 行；`node build.cjs` 连续两次产物 md5 一致（可复现）。
+- **工作台导航是「响应式单源」**：`src/components/navItems.ts` 为导航唯一数据源，
+  `Rail.tsx`（>1024px 左侧栏）与 `MobileNav.tsx`（≤1024px 顶栏下方横向标签条）共同消费；
+  `Shell`/`Rail`/`MobileNav` **均为服务端组件**，仅靠 CSS 媒体查询切换可见性——
+  **不要引入汉堡菜单状态机**（会凭空增加客户端包）。断点：1024（切换导航）/ 880（栅格改单列）/ 640（顶栏转纵向）。
 - **Next 16 约定**：安全响应头文件是 `src/proxy.ts`（具名导出 `proxy`），`middleware` 约定已弃用；
   `next.config.mjs` **不支持 `eslint` 键**（写了会告警），用 CLI 的 `npm run lint`。
 - **文档权威性**：`docs/` 是唯一权威正文，进度看 `docs/PROGRESS.md`；`openspec/*.md` 仅是指向 `docs/` 的索引。
@@ -75,3 +79,11 @@
   **全部为 LF**，但检出后的工作区副本是 CRLF；`.prettierrc` 要求 `endOfLine: lf`，于是
   `format:check` 会对约 70 个**未改动**文件报错。这是本地视图差异，**不是仓库缺陷**——
   **不要为此执行 `npm run format`**（会把行尾就地改成 LF，产生全仓假 diff）。只需确认自己新建的文件通过检查即可。
+- **Prettier 的 JSX 引号规则**：`.prettierrc` 同时设 `singleQuote: true` 与 `jsxSingleQuote: true`，
+  因此 **JSX 属性必须用单引号**。手写新组件若用双引号会被 `format:check` 拒绝
+  （自动提交的 lint-staged 会 `prettier --write` 修正，但不要依赖它）。既有组件如 `Dashboard.tsx`
+  多为双引号历史遗留，不必顺手改。
+- **构建清理的 ENOENT 竞态**：`build.cjs` 的 `prepareBuildDir()` 已改为
+  `fs.rmSync(BUILD_DIR, { recursive: true, force: true })`。本机存在外部「safe-delete」拦截
+  （报错呈 Rust 风格 `Os { code: -2147024894 }`），删目录偶发「文件不存在」竞态并导致整次构建失败，
+  `force` 即为此设——不要退回带 `existsSync` 判断的旧写法。
