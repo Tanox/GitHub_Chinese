@@ -41,7 +41,6 @@ GitHub_Chinese/
 │   │   └── common/                   # 通用词典（nav / repo / pr / issue / misc）
 │   ├── ui/                           # 配置界面与样式
 │   ├── utils/                        # 通用工具函数
-│   ├── i18n/                         # 国际化框架（已实现，暂未接入）
 │   ├── config.js                     # 全局配置
 │   ├── config/                       # 配置分片（performance / selectors / elements）
 │   ├── version.js                    # 版本信息（单一版本源）
@@ -49,13 +48,16 @@ GitHub_Chinese/
 │   ├── versionChecker/               # 远程版本抓取
 │   ├── updateNotification/           # 更新通知 UI
 │   ├── app/                          # Next.js App Router（采集工作台）
+│   │   ├── page.tsx                  # 采集控制台（服务端外壳 + 客户端岛）
+│   │   ├── overview/page.tsx         # 项目概览（服务端实时指标）
+│   │   ├── design/page.tsx           # 设计系统（令牌与组件展示）
 │   │   ├── api/collect/route.ts      # 文本粘贴采集
 │   │   └── api/batch-collect/route.ts# 批量 URL 采集
-│   ├── components/                   # 工作台客户端组件
+│   ├── components/                   # Shell / Rail（服务端）+ CollectorConsole（客户端岛）
 │   ├── hooks/useCollector.ts         # 采集状态 Hook
-│   ├── lib/collector-logic.ts        # 采集服务端逻辑
+│   ├── lib/                          # collector-core.js / dictionary-processor.js / project-metrics.ts
 │   ├── types/puppeteer.d.ts          # 可选依赖类型声明
-│   └── middleware.ts                 # Edge 安全响应头
+│   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
 ├── public/                           # Next 静态资源（css / js）
 │   ├── css/                          # 采集工作台样式（模块化，单文件 ≤200 行）
 │   └── js/                           # 采集向导脚本（wizard/*）
@@ -126,11 +128,15 @@ GitHub_Chinese/
 
 ### 5. 采集工作台（Next.js）
 
-- `src/app/page.tsx`：工作台主页面，组合探针、数据中心、预览与处理中心
+- `src/app/page.tsx`：服务端页面外壳；交互收敛在 `src/components/CollectorConsole.tsx` 客户端岛
+- `src/app/overview/page.tsx` / `src/app/design/page.tsx`：项目概览与设计系统（均为静态预渲染）
+- `src/components/Shell.tsx` / `Rail.tsx`：服务端外壳与侧栏导航
 - `src/hooks/useCollector.ts`：采集状态与 SSE 事件流解析
-- `src/lib/collector-logic.ts`：Headless 抓取与调用 `collect-dict.cjs`
+- `src/lib/collector-core.js`：Headless 抓取与采集编排（链路唯一实现）
+- `src/lib/dictionary-processor.js`：调用 `collect-dict.cjs` 的子进程桥接
+- `src/lib/project-metrics.ts`：服务端磁盘指标统计（供项目概览页）
 - `src/app/api/*/route.ts`：`text/event-stream` 流式接口
-- `src/middleware.ts`：附加基础安全响应头
+- `src/proxy.ts`：附加基础安全响应头（Next 16 起取代 `middleware`）
 
 ---
 

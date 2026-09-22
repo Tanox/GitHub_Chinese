@@ -76,17 +76,16 @@ src/
 ├── translation-core/        # 翻译核心（词典管理、元素翻译、部分匹配、性能监控）
 ├── ui/                      # UI 组件（配置面板、浮动入口、性能监控）
 ├── utils/                   # 工具函数
-├── i18n/                    # 国际化框架（已实现，暂未接入）
 ├── app/                     # Next.js 采集工作台（App Router）
 │   └── api/                 # collect / batch-collect 流式接口
-├── components/              # 工作台客户端组件
+├── components/              # 工作台组件（服务端外壳 + 客户端岛）
 ├── hooks/                   # 工作台状态 Hook
-├── lib/                     # 工作台服务端逻辑
+├── lib/                     # 工作台服务端逻辑（采集核心 / 指标统计）
 ├── types/                   # 类型声明
 ├── config.js + config/      # 全局配置与配置分片
 ├── main.js                  # 用户脚本入口
 ├── main/                    # 生命周期编排
-├── middleware.ts            # Edge 安全响应头
+├── proxy.ts                 # 安全响应头（Next 16 取代 middleware）
 ├── version.js               # 版本信息（单一版本源）
 ├── versionUtils.js          # 版本工具函数
 ├── versionChecker/          # 版本更新检查

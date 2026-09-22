@@ -100,7 +100,7 @@ feature/* (功能分支) ← 从这里开始开发
 - `translationCore` - 翻译核心模块
 - `pageMonitor` - 页面监控模块
 - `dictionaries` - 词典模块
-- `i18n` - 国际化框架
+- `collector` - 采集工作台（Next.js 侧）
 - `utils` - 工具函数
 
 **示例**：

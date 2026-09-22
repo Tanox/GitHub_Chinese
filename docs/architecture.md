@@ -43,12 +43,6 @@ GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitH
          │
          │
 ┌────────▼───────────┐
-│   国际化框架        │
-│   (i18n)           │
-└─────────────────────┘
-         │
-         │
-┌────────▼───────────┐
 │   核心工具模块      │
 │   (core/*, utils/*)│
 └─────────────────────┘
@@ -277,7 +271,6 @@ main.js
 │   ├── pageAnalyzer
 │   └── cacheManager
 ├── configUI (ui/)
-└── i18n
 └── dictionaries
 └── core (cache, trie, virtualDom, etc)
 ```
@@ -382,7 +375,6 @@ GitHub_Chinese/
 │   ├── dictionaries/                 # codespaces / explore / common(nav,repo,pr,issue,misc)
 │   ├── ui/                           # configUI(+store,renderer,bootstrap) / components / styles
 │   ├── utils/                        # functionUtils / stringUtils(+string/) / domUtils / urlUtils / securityUtils / tools
-│   ├── i18n/                         # 国际化框架（已实现，暂未接入）
 │   ├── config.js + config/           # 全局配置与配置分片
 │   ├── version.js                    # 单一版本源
 │   ├── versionUtils.js / versionChecker/ / updateNotification/
@@ -472,7 +464,7 @@ GitHub_Chinese/
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| 1.9.26 | 2026-09-22 | 修复工作台外壳布局与词条状态徽标样式；新增「项目概览」「设计系统」页与服务端指标；`middleware`→`proxy` 迁移；采集服务端逻辑去重为 `collector-core` + `dictionary-processor`；部分匹配改为上下文注入以消除循环引用；开启 TS 严格模式 |
+| 1.9.26 | 2026-09-22 | 修复工作台外壳布局与词条状态徽标样式；新增「项目概览」「设计系统」页与服务端指标；`middleware`→`proxy` 迁移；采集服务端逻辑去重为 `collector-core` + `dictionary-processor`；移除未引用的 i18n 框架；部分匹配改为上下文注入以消除循环引用；开启 TS 严格模式 |
 | 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配；采集接口非法 JSON 返回 400 |
 | 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节、`configUI` 未导出、部分匹配空转、版本号不一致等阻塞缺陷；新增产物校验脚本与进度文档 |
 | 1.9.23 | 2026-09-19 | 采集演示页升级为 Next.js 16（App Router），新增 Tailwind / ESLint / Husky 配置 |
