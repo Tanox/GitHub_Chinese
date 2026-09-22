@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.25] - 2026-09-22
+
+### Fixed
+- 修复词典清洗子进程输入路径不匹配：`collector-logic.ts` 仅传 `basename` 给 `collect-dict.cjs`，而临时文件写在 `os.tmpdir()`，子进程按 `process.cwd()` 相对路径读取报「文件不存在」导致清洗步骤失败；改为传递完整路径 `RAW_TERMS_FILE`
+- 修复 `/api/collect` 与 `/api/batch-collect` 未捕获 `req.json()` 异常，非法 JSON 直接 500，改为返回 400
+
 ## [1.9.24] - 2026-09-19
 
 ### Fixed

@@ -1,7 +1,7 @@
 /**
  * 词典采集服务端逻辑
  * @file src/lib/collector-logic.ts
- * @version 1.9.24
+ * @version 1.9.25
  * @description 为 Next.js Route Handler 提供采集能力：Headless 抓取页面文本 + 调用词典清洗脚本
  */
 
@@ -129,11 +129,9 @@ function describeError(error: unknown): string {
  * @returns 采集事件流
  */
 async function* runDictionaryProcessor(): AsyncGenerator<CollectEvent> {
-  const child: ChildProcess = spawn(
-    process.execPath,
-    [PROCESSOR_SCRIPT, path.basename(RAW_TERMS_FILE)],
-    { cwd: process.cwd() },
-  );
+  const child: ChildProcess = spawn(process.execPath, [PROCESSOR_SCRIPT, RAW_TERMS_FILE], {
+    cwd: process.cwd(),
+  });
 
   const queue: CollectEvent[] = [];
   let finished = false;

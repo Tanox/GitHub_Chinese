@@ -1,8 +1,8 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.9.24
- * @date 2026-09-19
+ * @version 1.9.25
+ * @date 2026-09-22
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
  */
@@ -12,4 +12,4 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-export const VERSION = '1.9.24';
+export const VERSION = '1.9.25';
