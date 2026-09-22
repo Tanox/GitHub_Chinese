@@ -65,11 +65,10 @@ function readCurrentVersion() {
 
 /**
  * 清理并重建构建目录
+ * force: true 用于容忍「检查时存在、删除时已被移除」的竞态（如外部进程/文件系统延迟）
  */
 function prepareBuildDir() {
-  if (fs.existsSync(BUILD_DIR)) {
-    fs.rmSync(BUILD_DIR, { recursive: true });
-  }
+  fs.rmSync(BUILD_DIR, { recursive: true, force: true });
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 }
 

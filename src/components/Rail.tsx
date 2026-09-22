@@ -1,27 +1,14 @@
 /**
  * 工作台侧栏
  * @file src/components/Rail.tsx
- * @version 1.9.26
- * @description 服务端组件：品牌标识、页面导航（Next Link 预取）与引擎状态
+ * @version 1.9.27
+ * @description 服务端组件：品牌标识、页面导航（Next Link 预取）与引擎状态，仅桌面端展示
  */
 
 import Link from 'next/link';
 import { VERSION } from '@/version';
-
-export type RailSection = 'console' | 'overview' | 'design';
-
-interface NavItem {
-  key: RailSection;
-  label: string;
-  href: string;
-}
-
-/** 侧栏导航项（静态常量，模块级只创建一次） */
-const NAV_ITEMS: NavItem[] = [
-  { key: 'console', label: '采集控制台', href: '/' },
-  { key: 'overview', label: '项目概览', href: '/overview' },
-  { key: 'design', label: '设计系统', href: '/design' },
-];
+import { NAV_ITEMS } from './navItems';
+import type { RailSection } from './navItems';
 
 interface RailProps {
   active: RailSection;

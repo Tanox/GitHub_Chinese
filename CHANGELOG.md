@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.9.27] - 2026-09-22
+
+### Fixed
+- 修复窄屏（≤1024px）下侧栏被 `display: none` 隐藏后，采集控制台 / 项目概览 / 设计系统三个页面**无法互相跳转**的问题
+
+### Added
+- 新增 `src/components/MobileNav.tsx`：窄屏横向导航条，替代侧栏承担页面跳转
+- 新增 `src/components/navItems.ts`：侧栏与移动端导航共用的唯一导航数据源，避免两处各写一份而漂移
+
+### Changed
+- `src/components/Rail.tsx` 与 `Shell.tsx` 改为消费共享导航定义；`Shell.tsx` 在顶栏下方渲染移动端导航
+- `public/css/layout.css` 新增 `.mobile-nav` 响应式样式；≤640px 时顶栏改为纵向堆叠、内容区收窄内边距
+
+---
+
 ## [1.9.26] - 2026-09-22
 
 ### Added

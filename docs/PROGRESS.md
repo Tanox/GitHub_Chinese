@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.26** ｜ 更新日期：2026-09-22 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.27** ｜ 更新日期：2026-09-22 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -22,8 +22,8 @@
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 114 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 8752 | 同上 |
+| `src/` 源码文件数 | 116 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 8801 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
@@ -79,7 +79,8 @@ src/main.js                        ← 唯一入口
 |------|------|
 | App Router 页面 | `src/app/page.tsx`（采集控制台）、`src/app/overview/page.tsx`、`src/app/design/page.tsx` |
 | API 路由 | `src/app/api/collect/route.ts`、`src/app/api/batch-collect/route.ts` |
-| 服务端外壳 | `src/components/Shell.tsx`、`src/components/Rail.tsx`（侧栏导航，`next/link` 预取） |
+| 服务端外壳 | `src/components/Shell.tsx`、`Rail.tsx`（侧栏）、`MobileNav.tsx`（≤1024px 横向导航条） |
+| 导航数据源 | `src/components/navItems.ts`（侧栏与移动端共用，避免两处各写一份） |
 | 客户端岛 | `src/components/CollectorConsole.tsx`；叶组件 `DataCenter` / `PreviewTable` / `Dashboard` / `ScriptInjector` |
 | 服务端逻辑 | `src/lib/collector-core.js`、`src/lib/dictionary-processor.js`、`src/lib/project-metrics.ts` |
 | 类型门面 | `src/lib/collector-logic.ts`（为 Route Handler 提供 `CollectEvent` 类型） |
@@ -130,6 +131,7 @@ src/main.js                        ← 唯一入口
 - [x] 智能清洗（调用服务端清洗）、导出 JSON
 - [x] 词条状态区分（待翻译 / 已翻译，样式与文案齐备）
 - [x] 侧栏导航三页互通：采集控制台 / 项目概览 / 设计系统
+- [x] 响应式导航：≤1024px 自动切换为横向导航条，窄屏下三页仍可互通
 - [x] 项目概览页：服务端实时统计版本、词条数、源码规模、产物大小
 - [x] 设计系统页：颜色/尺寸令牌与核心组件样式展示
 
@@ -150,9 +152,9 @@ src/main.js                        ← 唯一入口
 
 ---
 
-## 4. 本次迭代（v1.9.25 → v1.9.26）
+## 4. 迭代记录
 
-### 4.1 缺陷修复
+### 4.1 v1.9.26 · 缺陷修复
 
 | 编号 | 问题 | 影响 | 处置 |
 |------|------|------|------|
@@ -164,7 +166,7 @@ src/main.js                        ← 唯一入口
 | C6 | 原型服务器把采集临时文件写入仓库根目录 | 污染工作区，与 Next 侧行为不一致 | 统一走 `dictionary-processor.js` 的系统临时目录 |
 | C7 | `src/lib/collector-core.js` 达 206 行 | 违反「单代码文件 ≤ 200 行」约定 | 拆出 `dictionary-processor.js`（子进程桥接） |
 
-### 4.2 架构与性能改进
+### 4.2 v1.9.26 · 架构与性能改进
 
 - **客户端边界收敛**：`src/app/page.tsx` 原为整页 `'use client'`，现改为服务端页面 + `CollectorConsole` 客户端岛；
   侧栏、顶栏、步骤条等静态结构不再进入客户端包。
@@ -183,13 +185,20 @@ src/main.js                        ← 唯一入口
   4. `loader.js` 提供远程拉取翻译 JSON 的能力，与「本地优先 · 离线可用」定位相悖。
   内容仍完整保留在 git 历史中，如需恢复可整体还原。
 
-### 4.3 文档完善
+### 4.3 v1.9.26 · 文档完善
 
 - 重写 `docs/PROGRESS.md`：指标实算、任务状态、架构图与变更记录同步至 v1.9.26。
 - `docs/architecture.md` 同步工作台架构与目录结构。
 - `CHANGELOG.md` 新增 1.9.26 小节。
 - 版本同步范围：`src/version.js`、`package.json`、`README.md` 徽章、`CHANGELOG.md`、
   以及**本次实际改动文件**的头注释版本号。
+
+### 4.4 v1.9.27 · 移动端可用性
+
+| 编号 | 问题 | 影响 | 处置 |
+|------|------|------|------|
+| D1 | `@media (max-width: 1024px)` 直接 `display: none` 隐藏侧栏 | 窄屏下**三个页面无法互相跳转**（新增概览/设计页后影响放大） | 新增 `MobileNav.tsx` 横向导航条替代侧栏；导航定义抽为 `navItems.ts` 单一来源 |
+| D2 | ≤640px 顶栏固定 `height: 5rem` 且横向排列 | 标题与状态徽标在窄屏被挤压、内容区内边距过大 | 顶栏改为纵向堆叠（`height: auto`），内容区内边距收到 `1rem` |
 
 ---
 
@@ -221,7 +230,7 @@ src/main.js                        ← 唯一入口
 | P2-3 | 词典采集支持增量与去重统计 | 当前每次采集覆盖 `docs/untranslated-terms.txt`，无历史对比 |
 | P2-4 | 性能监控面板数据导出 | `performanceMonitor` 提供 `exportPerformanceData()`，配置面板尚未接入导出按钮 |
 | P2-5 | 补充 E2E / 冒烟测试 | 当前仅有构建产物静态校验，缺少运行时加载验证 |
-| P2-6 | 工作台移动端导航缺失 | `@media (max-width: 1024px)` 直接 `display: none` 隐藏侧栏，窄屏下三个页面无法互相跳转 |
+| ~~P2-6~~ | ~~工作台移动端导航缺失~~ | **已完成**（v1.9.27）：新增 `MobileNav` 横向导航条替代侧栏，导航定义抽为 `navItems.ts` 单一来源 |
 | P2-7 | 采集流程缺少错误码约定 | SSE 事件仅有 `type`，失败原因以文本形式返回，前端难以按类型分流处理 |
 
 ---
@@ -262,6 +271,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.27 | 2026-09-22 | 修复窄屏下三页无法互跳：新增移动端导航（`MobileNav` + 共享 `navItems`）；≤640px 顶栏与内容区响应式调整 |
 | 1.9.26 | 2026-09-22 | 工作台外壳布局与状态徽标修复；新增「项目概览」「设计系统」页；`middleware`→`proxy` 迁移；采集服务端逻辑去重（P1-5）；移除未引用的 i18n 框架（P1-2）；开启 TS 严格模式（P2-1）；消除构建期循环引用；拆分超长文件 |
 | 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配导致清洗步骤失败；`req.json()` 异常改返回 400 |
 | 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节等 7 项阻塞缺陷；对齐 CI 脚本；补齐采集工作台交互；拆分 6 处超长文件；新增产物校验脚本与本文档 |

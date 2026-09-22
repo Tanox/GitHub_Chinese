@@ -53,7 +53,7 @@ GitHub_Chinese/
 │   │   ├── design/page.tsx           # 设计系统（令牌与组件展示）
 │   │   ├── api/collect/route.ts      # 文本粘贴采集
 │   │   └── api/batch-collect/route.ts# 批量 URL 采集
-│   ├── components/                   # Shell / Rail（服务端）+ CollectorConsole（客户端岛）
+│   ├── components/                   # Shell / Rail / MobileNav（服务端）+ navItems（导航源）+ CollectorConsole（客户端岛）
 │   ├── hooks/useCollector.ts         # 采集状态 Hook
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / project-metrics.ts
 │   ├── types/puppeteer.d.ts          # 可选依赖类型声明

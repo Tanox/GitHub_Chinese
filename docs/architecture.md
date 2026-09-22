@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.9.26** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.27** ｜ 版本权威源：`src/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -379,7 +379,7 @@ GitHub_Chinese/
 │   ├── version.js                    # 单一版本源
 │   ├── versionUtils.js / versionChecker/ / updateNotification/
 │   ├── app/                          # Next.js App Router：page / overview / design + api/*
-│   ├── components/                   # Shell / Rail（服务端外壳）、CollectorConsole（客户端岛）、叶组件
+│   ├── components/                   # Shell / Rail / MobileNav（服务端）、navItems（导航源）、CollectorConsole（客户端岛）、叶组件
 │   ├── hooks/useCollector.ts         # 采集状态管理
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts
 │   ├── types/                        # puppeteer.d.ts 等最小类型声明
@@ -445,6 +445,17 @@ GitHub_Chinese/
 | `/overview` | 静态 | 项目概览；由 `src/lib/project-metrics.ts` 在模块加载时一次性统计磁盘指标 |
 | `/design` | 静态 | 设计系统；展示 `public/css/base.css` 的令牌与核心组件样式 |
 
+响应式导航（无额外客户端 JS）：
+
+```
+> 1024px : Shell → Rail（左侧栏，含品牌 / 导航 / 引擎状态）
+≤ 1024px : Shell → MobileNav（顶栏下方横向标签条，rail 隐藏）
+导航数据  : navItems.ts 单一来源，Rail 与 MobileNav 共同消费
+```
+
+`Shell` / `Rail` / `MobileNav` 均为**服务端组件**——移动端导航由 CSS 媒体查询切换可见性，
+不引入汉堡菜单状态机，因此窄屏不增加客户端包体积。
+
 要点：
 
 - 两条 API 路由均声明 `runtime = 'nodejs'`（需要 `child_process` 与文件系统）
@@ -464,6 +475,7 @@ GitHub_Chinese/
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.27 | 2026-09-22 | 修复窄屏（≤1024px）隐藏侧栏导致三页无法互跳：新增服务端组件 `MobileNav`（CSS 媒体查询切换，不增加客户端包）与共享导航源 `navItems.ts`；≤640px 顶栏转纵向、内容区收窄内边距 |
 | 1.9.26 | 2026-09-22 | 修复工作台外壳布局与词条状态徽标样式；新增「项目概览」「设计系统」页与服务端指标；`middleware`→`proxy` 迁移；采集服务端逻辑去重为 `collector-core` + `dictionary-processor`；移除未引用的 i18n 框架；部分匹配改为上下文注入以消除循环引用；开启 TS 严格模式 |
 | 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配；采集接口非法 JSON 返回 400 |
 | 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节、`configUI` 未导出、部分匹配空转、版本号不一致等阻塞缺陷；新增产物校验脚本与进度文档 |

@@ -1,7 +1,7 @@
 /*
  * GitHub 中文 · 采集工作台 — 布局（顶栏 / 内容 / 步骤条 / 栅格 / 响应式）
  * @file public/css/layout.css
- * @version 1.9.26
+ * @version 1.9.27
  */
 /* 应用外壳：侧栏 + 主区（横向排布） */
 .app-shell {
@@ -115,6 +115,34 @@
   gap: 1.5rem;
 }
 
+/* 移动端导航条：默认隐藏，窄屏时替代侧栏 */
+.mobile-nav {
+  display: none;
+  flex-shrink: 0;
+  gap: .25rem;
+  padding: .5rem 1rem;
+  overflow-x: auto;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-nav .rail-link {
+  white-space: nowrap;
+  padding: .5rem .75rem;
+  color: var(--muted);
+}
+
+.mobile-nav .rail-link:hover {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.mobile-nav .rail-link.active {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  box-shadow: inset 0 0 0 1px rgba(46, 164, 79, .25);
+}
+
 @media (max-width: 880px) {
   .grid-2 {
     grid-template-columns: 1fr;
@@ -124,5 +152,23 @@
 @media (max-width: 1024px) {
   .rail {
     display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: 1rem;
+  }
+
+  .content {
+    padding: 1rem;
   }
 }

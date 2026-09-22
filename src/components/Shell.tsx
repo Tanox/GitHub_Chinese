@@ -1,13 +1,14 @@
 /**
  * 工作台外壳
  * @file src/components/Shell.tsx
- * @version 1.9.26
- * @description 服务端组件：侧栏 + 顶栏 + 内容区的公共骨架，供三个页面复用
+ * @version 1.9.27
+ * @description 服务端组件：侧栏 + 顶栏 + 移动端导航 + 内容区的公共骨架，供三个页面复用
  */
 
 import type { ReactNode } from 'react';
 import Rail from './Rail';
-import type { RailSection } from './Rail';
+import MobileNav from './MobileNav';
+import type { RailSection } from './navItems';
 
 interface ShellProps {
   /** 当前激活的侧栏导航项 */
@@ -39,6 +40,9 @@ export default function Shell({ active, title, subtitle, badge, children }: Shel
             </div>
           )}
         </header>
+
+        {/* 窄屏替代侧栏，保证三个页面互通 */}
+        <MobileNav active={active} />
 
         <div id='collector-content' className='content scroll'>
           <div className='content-inner'>{children}</div>
