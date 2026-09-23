@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.9.41** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
 
 面向开发者与贡献者的文档入口。设计规范与高保真原型由 `prototype/` 目录统一维护。
 
@@ -8,7 +8,7 @@
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| 开发进度 | [PROGRESS.md](./PROGRESS.md) | 进度报告、遗留任务清单与后续计划 |
+| 开发进度 | [PROGRESS.md](./PROGRESS.md) | 进度报告与后续计划 |
 | 项目结构与规范 | [project.md](./project.md) | 项目概述、目录结构、核心模块说明 |
 | 架构设计 | [architecture.md](./architecture.md) | 系统架构、技术选型、采集工作台架构 |
 | 代码风格 | [coding-style.md](./coding-style.md) | 命名约定、注释规范、最佳实践 |

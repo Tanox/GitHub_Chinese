@@ -1,6 +1,6 @@
 # 项目规范（索引）
 
-> 版本：**v1.9.41** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
 >
 > 本文件为索引。项目规范文档的**唯一权威正文位于 [`docs/`](../docs/)**，
 > 此处不再重复维护正文，以避免同一内容出现两份副本而长期脱节。
@@ -8,7 +8,7 @@
 ## 项目概述
 
 GitHub Chinese 简体中文是一个浏览器用户脚本项目，为 GitHub 网站提供中文本地化翻译支持，
-并附带基于 Next.js 16 的词典采集工作台。当前版本 **1.9.41**，许可证 GPL-2.0。
+并附带基于 Next.js 16 的词典采集工作台。当前版本 **1.9.42**，许可证 GPL-2.0。
 
 完整概述、目录结构、核心模块说明与项目信息请见 **[docs/project.md](../docs/project.md)**。
 
@@ -18,7 +18,7 @@ GitHub Chinese 简体中文是一个浏览器用户脚本项目，为 GitHub 网
 
 | 文档 | 权威正文 | 说明 |
 |------|---------|------|
-| 开发进度 | [docs/PROGRESS.md](../docs/PROGRESS.md) | 进度报告、遗留任务清单与后续计划 |
+| 开发进度 | [docs/PROGRESS.md](../docs/PROGRESS.md) | 进度报告与后续计划 |
 | 项目规范 | [docs/project.md](../docs/project.md) | 项目概述、目录结构、核心模块 |
 | 架构设计 | [docs/architecture.md](../docs/architecture.md) | 系统架构、技术选型、采集工作台架构 |
 | 开发指南 | [docs/development.md](../docs/development.md) | 分支策略、提交规范、发布流程、测试要求 |

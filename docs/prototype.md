@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文脚本原型设计
 
-> 版本：**v1.9.41** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
 >
 > 说明：本文档描述用户脚本与配置面板的原型规格。可交互高保真原型位于
 > [`prototype/`](../prototype/)，入口为 [`prototype/index.html`](../prototype/index.html)。

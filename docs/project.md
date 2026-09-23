@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.9.41** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
 
 ## 项目概述
 
@@ -207,7 +207,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.9.41 |
+| **当前版本** | 1.9.42 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
@@ -223,4 +223,4 @@ npm test               # lint → build → validate
 | [development.md](./development.md) | 开发流程、分支策略、发布规范 |
 | [coding-style.md](./coding-style.md) | 命名规范、代码格式、注释要求 |
 | [prototype.md](./prototype.md) | 原型设计、交互规格与数据结构 |
-| [PROGRESS.md](./PROGRESS.md) | 开发进度、遗留任务与后续计划 |
+| [PROGRESS.md](./PROGRESS.md) | 开发进度报告与后续计划 |
