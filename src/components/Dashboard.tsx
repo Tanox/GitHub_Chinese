@@ -9,7 +9,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
-  const terminalRef = useRef<HTMLPreElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -48,7 +48,14 @@ export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
         </div>
       </div>
 
-      <div className='progress-track'>
+      <div
+        className='progress-track'
+        role='progressbar'
+        aria-label='采集进度'
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={progress.percent}
+      >
         <div className='progress-fill' style={{ width: `${progress.percent}%` }}></div>
       </div>
 
@@ -58,7 +65,7 @@ export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
 
       <div className='terminal'>
         <div className='term-bar'>
-          <div className='term-dots'>
+          <div className='term-dots' aria-hidden='true'>
             <i className='r'></i>
             <i className='y'></i>
             <i className='g'></i>
@@ -68,7 +75,13 @@ export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
             Clear
           </button>
         </div>
-        <pre className='term-body' ref={terminalRef}>
+        <div
+          className='term-body'
+          ref={terminalRef}
+          role='log'
+          aria-live='polite'
+          aria-label='引擎实时日志'
+        >
           {logs.map((log, i) => (
             <div key={i} className={`log-line ${log.type}`}>
               <span className='log-time'>[{new Date(log.timestamp).toLocaleTimeString()}]</span>
@@ -76,7 +89,7 @@ export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
               {log.code !== undefined && <span className='log-code'>E{log.code}</span>}
             </div>
           ))}
-        </pre>
+        </div>
       </div>
     </section>
   );

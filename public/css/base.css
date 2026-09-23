@@ -66,6 +66,19 @@ h3 {
   letter-spacing: -.01em;
 }
 
+/* 无障碍：视觉隐藏但对屏幕阅读器可见 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* JS 控制的原子类 */
 .hidden {
   display: none !important;

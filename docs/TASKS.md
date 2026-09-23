@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.9.39** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.40** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**唯一任务清单**，由 `docs/PROGRESS.md`（遗留任务）与 `docs/IMPROVEMENT-TASKS.md` 合并而来。
 > 已完成任务归档至第 2 节；活动任务按优先级排列于第 1 节。PROGRESS.md 仅保留进度报告，不再重复维护任务表。
@@ -26,12 +26,7 @@
 
 ### P3 — 可选 / 前瞻
 
-- [ ] **T8 · 可访问性（a11y）走查**（M）
-  - 现状：项目约定主要容器加语义化 `id`（已实现），但未做 WCAG 走查。
-  - 验收：关键页（`/`、`/overview`、`/design`）无 axe 严重/高危问题。
-- [ ] **T10 · 词典来源与采集趋势可视化**（L）
-  - 现状：459 词条来自 `src/dictionaries/**`；采集仅文本粘贴/URL 两种入口；`/overview` 已展示静态指标。
-  - 验收：新增 ≥1 个词典来源通道；`/overview` 含趋势视图（结合 `collect-dict.cjs` 增量去重报告）。
+- （暂无活动任务）
 
 ---
 
@@ -49,6 +44,8 @@
 - [x] **T6** 近 200 行文件防回潮门禁（v1.9.38）：新增 `scripts/check-file-length.cjs`，扫描 `src`/`scripts`/`tests`，任一文件 >200 行即失败并输出 TOP 5；`npm run lint:length` 纳入 `npm test` 与 CI
 - [x] **T7** 依赖审计纳入 CI（v1.9.38）：CI 安全审计由 `--audit-level=moderate || true` 改为 `npm audit --audit-level=high`（高危阻塞、低危放行）；本地实测 0 漏洞
 - [x] **T9** 仓库命名一致性澄清（v1.9.39）：README 新增「命名与兼容性说明」，明确产品名为「GitHub Chinese 简体中文」，并说明旧名 `GitHub_i18n` 因 `@updateURL` / 一键安装链接依赖而刻意保留
+- [x] **T8** 可访问性（a11y）走查（v1.9.40）：新增 `tests/a11y.test.mjs`（axe-core + jsdom）检查 `/`、`/overview`、`/design` 三页静态产物，阻断 serious / critical 违规；同步修复输入框 label、tab `aria-controls`、进度条 `progressbar`、日志 `role="log"`、toast `role="status"`、装饰元素 `aria-hidden`、表格 `<caption>`
+- [x] **T10** 词典来源与采集趋势可视化（v1.9.40）：新增 `scripts/collect-history.cjs` 记录每次采集统计到 `docs/collect-history.json`，`/overview` 展示最近 8 次「采集趋势」；采集报告逻辑抽至 `scripts/dict-report.cjs`
 
 ### 来自 PROGRESS.md（v1.9.x）
 

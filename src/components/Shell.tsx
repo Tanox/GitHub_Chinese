@@ -26,7 +26,13 @@ export default function Shell({ active, title, subtitle, badge, children }: Shel
       <Rail active={active} />
 
       <main id='collector-main' className='workspace'>
-        <div id='toastContainer' className='toast-wrap'></div>
+        <div
+          id='toastContainer'
+          className='toast-wrap'
+          role='status'
+          aria-live='polite'
+          aria-atomic='true'
+        ></div>
 
         <header className='topbar'>
           <div>
@@ -35,7 +41,7 @@ export default function Shell({ active, title, subtitle, badge, children }: Shel
           </div>
           {badge ?? (
             <div className='status-pill'>
-              <span className='dot'></span>
+              <span className='dot' aria-hidden='true'></span>
               本地优先 · 离线可用
             </div>
           )}

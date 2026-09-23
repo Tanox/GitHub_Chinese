@@ -6,7 +6,7 @@
  */
 
 import Shell from '@/components/Shell';
-import { projectMetrics } from '@/lib/project-metrics';
+import { projectMetrics, collectHistory } from '@/lib/project-metrics';
 
 interface StatItem {
   label: string;
@@ -19,6 +19,9 @@ interface SpecGroup {
   desc: string;
   items: string[];
 }
+
+/** 趋势展示的最大条目数 */
+const MAX_TREND = 8;
 
 /** 指标卡片数据（静态，模块级只构造一次） */
 const STATS: StatItem[] = [
@@ -114,6 +117,30 @@ export default function OverviewPage() {
           </div>
         ))}
       </section>
+
+      {collectHistory.length > 0 && (
+        <section className='card' aria-label='采集趋势'>
+          <h2 className='section-title'>采集趋势</h2>
+          <p className='section-desc'>
+            由 collect-dict.cjs 记录，展示最近 {Math.min(collectHistory.length, MAX_TREND)}{' '}
+            次采集的待翻译词条变化。
+          </p>
+          <ul className='trend-list'>
+            {collectHistory
+              .slice(-MAX_TREND)
+              .reverse()
+              .map((record) => (
+                <li key={record.time} className='trend-item'>
+                  <span className='trend-time'>{record.time.replace('T', ' ').slice(0, 16)}</span>
+                  <span className='trend-total'>{record.total} 条</span>
+                  <span className='trend-delta'>
+                    新增 {record.added} · 移除 {record.removed}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </section>
+      )}
 
       {SPEC_GROUPS.map((group) => (
         <section key={group.title} className='card'>

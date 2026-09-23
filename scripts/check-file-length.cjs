@@ -12,8 +12,10 @@ const path = require('path');
 const MAX_LINES = 200;
 /** 报告的最大文件数量 */
 const TOP_COUNT = 5;
-/** 扫描根目录 */
+/** 扫描的目录 */
 const ROOTS = ['src', 'scripts', 'tests'];
+/** 仓库根目录下的独立代码文件（不在上述目录内，一并纳入门禁） */
+const ROOT_FILES = ['collect-dict.cjs', 'build.cjs', 'server.js'];
 /** 计入行数的代码扩展名 */
 const EXTENSIONS = new Set(['.js', '.cjs', '.mjs', '.ts', '.tsx']);
 /** 跳过的目录 */
@@ -39,7 +41,13 @@ function walk(dir, acc = []) {
   return acc;
 }
 
-const all = ROOTS.filter((root) => fs.existsSync(root)).flatMap((root) => walk(root));
+const all = [
+  ...ROOTS.filter((root) => fs.existsSync(root)).flatMap((root) => walk(root)),
+  ...ROOT_FILES.filter((file) => fs.existsSync(file)).map((file) => ({
+    file,
+    lines: fs.readFileSync(file, 'utf-8').split('\n').length - 1,
+  })),
+];
 all.sort((a, b) => b.lines - a.lines);
 
 console.log(`[行数门禁] 扫描 ${all.length} 个代码文件，上限 ${MAX_LINES} 行`);

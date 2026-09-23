@@ -26,6 +26,7 @@ export default function PreviewTable({ terms }: PreviewTableProps) {
       <div className='preview'>
         <div className='preview-scroll scroll'>
           <table className='terms'>
+            <caption className='sr-only'>清洗结果词条列表（序号 / 词条 / 状态）</caption>
             <thead>
               <tr>
                 <th>序号</th>

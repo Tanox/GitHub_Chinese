@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.38 / 2026-09-23，经实地核查刷新）
+## 项目事实（稳定，截至 v1.9.40 / 2026-09-23，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -9,16 +9,19 @@
   2. **词典采集工作台**：Next.js 16（App Router，`src/` 模式），路由 `/`、`/overview`、`/design`；
      API `src/app/api/collect/route.ts`、`batch-collect/route.ts`；`src/proxy.ts`（Next 16 约定的 proxy）；
      `src/lib/collector-core.js` + `dictionary-processor.js`（spawn `collect-dict.cjs`，与用户脚本共享词典）。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.38）。全局展示位须同步：
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.40）。全局展示位须同步：
   `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
 - **npm 脚本语义**：`build`=用户脚本构建；`build:web`=`next build`；`dev`=Next 工作台；
   `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
   `test:unit`=`node --test`（Node 内置 runner，零新增依赖）；`test`=lint→build→test:unit→validate。
-- **测试**：Node 内置 `node --test`（零依赖，v1.9.30 起替代未启用的 Jest）。`tests/` 共 6 文件 / 17 用例
-  （collect-codes 2、collect-dict 3、smoke 3、url-guard 4、request-body 3、collector-core 2）。
-  **未直接测 route.ts**：其 `@/` 路径别名在纯 Node 下不可解析，故把可测逻辑抽为纯函数（如 `request-body.js`）。
-- **质量现状**（v1.9.38 核查）：`npm run lint` 0/0；`npm run lint:length`（T6 门禁，>200 行即失败，
-  当前最大 `src/ui/configUI.js` 191）；`tsc --noEmit` 通过（strict:true）；`src/` 120 文件 / 9145 行。
+- **测试**：Node 内置 `node --test`（v1.9.30 起替代未启用的 Jest）。`tests/` 共 7 文件 / **20 用例**
+  （collect-codes 2、collect-dict 3、smoke 3、url-guard 4、request-body 3、collector-core 2、**a11y 3**）。
+  a11y 用 `axe-core` + `jsdom`（devDeps）检查 `next build` 的静态 HTML（仅 serious/critical 阻断；无产物则 skip；
+  **axe 返回 jsdom realm 数组，须 `Array.from` 后再断言**）。
+  **未直接测 route.ts**：其 `@/` 别名在纯 Node 下不可解析，故把可测逻辑抽为纯函数（如 `request-body.js`）。
+- **质量现状**（v1.9.40 核查）：`npm run lint` 0/0；`npm run lint:length`（T6 门禁，>200 行即失败，
+  **已覆盖根脚本** `collect-dict.cjs`/`build.cjs`/`server.js`，当前最大 `src/ui/configUI.js` 191）；
+  `tsc --noEmit` 通过（strict:true）；`src/` 120 文件 / 9230 行。
 - **npm 脚本**：`test` = lint → **lint:length** → build → test:unit → validate；
   CI `security` 作业跑 `npm audit --audit-level=high`（T7，高危阻塞、低危放行；本地实测 0 漏洞）。
 - **依赖**：`puppeteer-core@^25.11.0` **已安装**；`browser-resolver.js` 解析系统 Chrome/Edge
@@ -32,8 +35,8 @@
   `CollectErrorCode.INVALID_URL`（采集前逐项校验；不做 DNS 解析，已知不防 DNS rebinding）；
   ② CSP → `src/proxy.ts` 基于 nonce（script-src nonce + strict-dynamic；**CSP 须同时写请求头**，Next 据此给自身脚本注入 nonce）；
   ③ OG/Twitter → `src/app/layout.tsx` 的 metadataBase / openGraph / twitter；④ PROGRESS 文档漂移已清理。
-- **剩余待办（见 `docs/TASKS.md`）**：T8 a11y 走查（需 axe/浏览器）、T9 仓库命名一致性澄清、
-  T10 词典来源与趋势可视化（L）。
+- **任务状态（v1.9.40）**：`docs/TASKS.md` 活动任务 **T1–T10 全部完成**，均已归档至该文档第 2 节；
+  新增事项请按 `Txx` 追加到 §1。采集趋势数据在 `docs/collect-history.json`（由 `collect-dict.cjs` / `dict-report.cjs` 写入）。
 - **已健康项**（勿重复处理）：req.json 容错已落地（v1.9.25）、构建可复现（无 Date/random 嵌入）、无 >200 行文件、双锁已消除。
 
 ## 编码约定（本项目）

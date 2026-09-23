@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.9.40] - 2026-09-23
+
+### Added
+- 新增可访问性自动化检查（T8）：`tests/a11y.test.mjs` 用 axe-core + jsdom 检查 `index` / `overview` / `design` 三页静态产物，仅将 serious / critical 违规视为失败（无产物时自动跳过）
+- 新增采集趋势可视化（T10）：`scripts/collect-history.cjs` 将每次采集统计写入 `docs/collect-history.json`，`/overview` 展示最近 8 次「采集趋势」
+
+### Changed
+- 拆分 `collect-dict.cjs`（211 行）：报告生成 / 增量对比逻辑移至 `scripts/dict-report.cjs`，主文件回归编排职责并满足「单文件 ≤200 行」
+- `scripts/check-file-length.cjs` 门禁扩展到仓库根脚本（`collect-dict.cjs` / `build.cjs` / `server.js`）
+
+### Fixed
+- a11y 修复：`DataCenter` 输入框补关联 `<label>` 与 tab 的 `aria-controls`；`Dashboard` 进度条改 `role="progressbar"`、日志容器由 `<pre>` 改语义化 `role="log"`；`Shell` 的 toast 容器加 `role="status"`；装饰元素补 `aria-hidden`；`PreviewTable` 补 `<caption>`
+
+---
+
 ## [1.9.39] - 2026-09-23
 
 ### Docs

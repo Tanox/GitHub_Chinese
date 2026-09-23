@@ -77,6 +77,7 @@ export default function DataCenter({
             type='button'
             role='tab'
             aria-selected={isManual}
+            aria-controls='data-center-input'
             className={`tab ${isManual ? 'active' : ''}`}
             onClick={() => setActiveTab('manual')}
           >
@@ -87,6 +88,7 @@ export default function DataCenter({
             type='button'
             role='tab'
             aria-selected={!isManual}
+            aria-controls='data-center-input'
             className={`tab ${!isManual ? 'active' : ''}`}
             onClick={() => setActiveTab('url')}
           >
@@ -96,6 +98,9 @@ export default function DataCenter({
       </div>
 
       <div className='field-stack'>
+        <label htmlFor='data-center-input' className='sr-only'>
+          {isManual ? '待清洗文本' : '待抓取 URL 列表'}
+        </label>
         <textarea
           id='data-center-input'
           className='field'

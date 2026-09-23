@@ -18,7 +18,9 @@ export default function Rail({ active }: RailProps) {
   return (
     <aside id='collector-rail' className='rail'>
       <div className='rail-brand'>
-        <div className='rail-mark'>中</div>
+        <div className='rail-mark' aria-hidden='true'>
+          中
+        </div>
         <span className='rail-name'>GitHub 中文</span>
       </div>
 
@@ -60,7 +62,7 @@ export default function Rail({ active }: RailProps) {
       </div>
 
       <div className='rail-foot'>
-        <span className='dot'></span>
+        <span className='dot' aria-hidden='true'></span>
         <span>采集服务运行中</span>
       </div>
     </aside>

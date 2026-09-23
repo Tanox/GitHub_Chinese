@@ -34,6 +34,18 @@ export interface ProjectMetrics {
   prototypePages: number;
 }
 
+/** 单次采集记录（由 `collect-dict.cjs` 写入 docs/collect-history.json） */
+export interface CollectRecord {
+  /** ISO 时间戳 */
+  time: string;
+  /** 本轮待翻译词条总数 */
+  total: number;
+  /** 相比上一轮新增数 */
+  added: number;
+  /** 相比上一轮移除数 */
+  removed: number;
+}
+
 /**
  * 递归收集匹配扩展名的文件
  * @param dir - 起始目录
@@ -88,6 +100,22 @@ function readArtifactKB(): number {
 const ROOT = process.cwd();
 const SOURCE_FILES = listFiles(path.join(ROOT, 'src'), SOURCE_EXT_RE);
 
+/** 采集历史文件（与 collect-dict.cjs 的写入路径一致） */
+const HISTORY_FILE = path.join(ROOT, 'docs', 'collect-history.json');
+
+/**
+ * 读取采集历史（文件缺失或损坏时返回空数组）
+ * @returns 采集记录列表（旧 → 新）
+ */
+function readCollectHistory(): CollectRecord[] {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf-8'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 /** 静态指标：同一进程内只计算一次 */
 export const projectMetrics: ProjectMetrics = {
   version: VERSION,
@@ -98,3 +126,6 @@ export const projectMetrics: ProjectMetrics = {
   artifactKB: readArtifactKB(),
   prototypePages: listFiles(path.join(ROOT, 'prototype'), HTML_EXT_RE).length,
 };
+
+/** 采集历史：供「项目概览」页展示采集趋势 */
+export const collectHistory: CollectRecord[] = readCollectHistory();
