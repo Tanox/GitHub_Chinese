@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.29 / 2026-09-23）
+## 项目事实（稳定，截至 v1.9.30 / 2026-09-23）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -12,7 +12,7 @@
      不要再把整页写成 `'use client'`。
 - **不存在 `web/` 目录**（v1.9.23 起由 `public/` 取代：`public/css/` 11 个模块 + `public/js/wizard/`）。
   旧文档/注释中的 `web/css/*`、`web/js/*` 均为过期路径。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.29）。工作台页面通过 `@/version` +
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.30）。工作台页面通过 `@/version` +
   `src/version.d.ts` 读取，不再硬编码。
 - **构建脚本已自动化**：`scripts/build/moduleGraph.cjs`（依赖图 + 循环检测，`NEXT_ONLY_SEGMENTS` 跳过
   `app/components/lib/hooks/server`）、`scripts/build/transform.cjs`（ESM→单作用域 + 跨模块顶层重名冲突检测）、
@@ -42,8 +42,10 @@
 - **Next 16 约定**：安全响应头文件是 `src/proxy.ts`（具名导出 `proxy`），`middleware` 约定已弃用；
   `next.config.mjs` **不支持 `eslint` 键**（写了会告警），用 CLI 的 `npm run lint`。
 - **文档权威性**：`docs/` 是唯一权威正文，进度看 `docs/PROGRESS.md`；`openspec/*.md` 仅是指向 `docs/` 的索引。
-- `jest.config.js` / `jest.setup.js` 存在但**未启用**（jest/jest-environment-jsdom/babel-jest 未安装，
-  无测试用例）；`npm test` 不跑单测。
+- **测试体系（P1-3，v1.9.30）**：`jest.config.js` / `jest.setup.js` 已删除，改用 **Node 内置 test runner**
+  （`node --test`，零依赖）；`tests/` 覆盖错误码契约与采集纯函数（5 用例）；
+  `npm test` = lint → **test:unit** → build → validate。
+  ⚠️ `node --test tests/`（传目录）在 Node 26 会报 `Cannot find module`，必须用**无参 `node --test`**。
 - **`src/i18n/*` 已于 v1.9.26 整体移除（P1-2 决策 B）**：9 个文件 / 641 行，精确检索确认零外部引用。
   移除理由：① 产品单语言，其自身 UI 固定中文，无语言切换需求；② `translations.js` 的 `github.*` 键
   与词典职责重叠（双翻译源易分叉）；③ `loader.js` 支持远程拉取翻译 JSON，与「本地优先 · 离线可用」相悖。

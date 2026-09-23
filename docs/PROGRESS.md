@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.30** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.31** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_i18n.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.9.30 |
+| 当前版本 | v1.9.31 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（注意：仓库同时存在 `bun.lock`，存在双锁文件漂移风险） |
@@ -35,7 +35,7 @@
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
 | 产物校验 | 通过 | `npm run validate` |
-| 单元测试 | 5 用例通过 | `npm run test:unit` |
+| 单元测试 | 8 用例通过（含产物冒烟） | `npm run test:unit` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
 | Next 构建告警 | 1（可选依赖 `puppeteer` 未安装） | `npm run build:web` |
 
@@ -150,7 +150,8 @@ src/main.js                        ← 唯一入口
 - [x] Next 16 约定对齐：`middleware` → `proxy`、移除失效 `eslint` 配置键
 - [x] 语义化 `id` 覆盖主要容器与交互控件
 - [x] 全部代码文件符合「单文件 ≤ 200 行」约定（0 处超出）
-- [x] 单元测试：Node 内置 test runner（`node --test`），覆盖错误码契约与词典采集纯函数（5 用例）
+- [x] 单元测试：Node 内置 test runner（`node --test`），覆盖错误码契约、词典采集纯函数（5 用例）与产物冒烟（3 用例）
+- [x] 用户脚本产物冒烟：存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性（P2-5）
 
 ---
 
@@ -239,7 +240,7 @@ src/main.js                        ← 唯一入口
 | ~~P2-2~~ | ~~补齐采集工作台次级页面~~ | **已完成**（v1.9.26）：新增 `/overview` 与 `/design` |
 | ~~P2-3~~ | ~~词典采集支持增量与去重统计~~ | **已完成**（v1.9.29）：`collect-dict.cjs` 的 `generateReport` 对比历史 `docs/untranslated-terms.txt`，输出新增 / 移除 / 净增统计并展示新增词条样例，经 SSE 透传至「处理中心」 | — |
 | ~~P2-4~~ | ~~性能监控面板数据导出~~ | **已完成**（v1.9.28）：`刷新`/`导出` 按钮绑定事件；导出无数据时给出「暂无数据」轻量反馈 |
-| P2-5 | 补充 E2E / 冒烟测试 | 当前仅有构建产物静态校验，缺少运行时加载验证 |
+| ~~P2-5~~ | ~~补充 E2E / 冒烟测试~~ | **已完成**（v1.9.31）：新增 `tests/smoke.test.cjs`（产物存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性），与 `validate-bundle.cjs` 共同覆盖运行时加载前的冒烟校验 | — |
 | ~~P2-6~~ | ~~工作台移动端导航缺失~~ | **已完成**（v1.9.27）：新增 `MobileNav` 横向导航条替代侧栏，导航定义抽为 `navItems.ts` 单一来源 |
 | ~~P2-7~~ | ~~采集流程缺少错误码约定~~ | **已完成**（v1.9.28）：`collect-codes.js` 共用 `CollectErrorCode`；服务端 `error` 事件带 `code`，前端渲染 `E<code>` 徽标，可按类型分流 |
 
@@ -257,7 +258,7 @@ src/main.js                        ← 唯一入口
 | `npm run lint` / `lint:fix` | ESLint 检查 / 自动修复 |
 | `npm run format` / `format:check` | Prettier 格式化 / 格式校验 |
 | `npm run test:unit` | 运行单元测试（Node 内置 test runner，零依赖） |
-| `npm run test` | 完整流水线：lint → test:unit → build → validate |
+| `npm run test` | 完整流水线：lint → build → test:unit → validate |
 | `npm run dict:collect -- <文件>` | 采集指定文本文件中的待翻译词条 |
 | `npm run clean` | 清理 `build`/`dist`/`coverage`/`.next` |
 
@@ -282,6 +283,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.31 | 2026-09-23 | 新增用户脚本产物冒烟测试（P2-5）：`tests/smoke.test.cjs` 校验产物存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性 |
 | 1.9.30 | 2026-09-23 | 清理未启用的 Jest 配置并改用 Node 内置 test runner（P1-3）；新增 `tests/` 用例覆盖错误码契约与采集纯函数；`npm test` 串联 `test:unit` |
 | 1.9.29 | 2026-09-23 | 消除双锁文件漂移（P1-4）：删除 `bun.lock`，保留 npm 单一锁（`package-lock.json`）；词典采集支持增量与去重统计（P2-3）：`collect-dict.cjs` 的 `generateReport` 对比历史 `docs/untranslated-terms.txt`，输出新增 / 移除 / 净增统计 |
 | 1.9.28 | 2026-09-23 | 修复配置面板性能监控按钮为死按钮（P2-4）；新增采集错误码约定（P2-7）：`collect-codes.js` 共用 `CollectErrorCode`、服务端错误事件带 `code`、前端渲染错误码徽标；空输入/空 URL 返回 `INPUT_INVALID` |

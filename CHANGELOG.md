@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.31] - 2026-09-23
+
+### Changed
+- 调整 `npm test` 顺序为 `lint → build → test:unit → validate`，确保冒烟测试针对最新构建产物
+
+### Added
+- 新增用户脚本产物冒烟测试 `tests/smoke.test.cjs`（P2-5）：校验产物存在性与体积、UserScript 元数据与当前版本号、`vm` 语法合法性
+
+---
+
 ## [1.9.30] - 2026-09-23
 
 ### Changed
