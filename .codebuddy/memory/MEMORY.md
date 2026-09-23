@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.26 / 2026-09-22）
+## 项目事实（稳定，截至 v1.9.29 / 2026-09-23）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -12,7 +12,7 @@
      不要再把整页写成 `'use client'`。
 - **不存在 `web/` 目录**（v1.9.23 起由 `public/` 取代：`public/css/` 11 个模块 + `public/js/wizard/`）。
   旧文档/注释中的 `web/css/*`、`web/js/*` 均为过期路径。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.28）。工作台页面通过 `@/version` +
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.29）。工作台页面通过 `@/version` +
   `src/version.d.ts` 读取，不再硬编码。
 - **构建脚本已自动化**：`scripts/build/moduleGraph.cjs`（依赖图 + 循环检测，`NEXT_ONLY_SEGMENTS` 跳过
   `app/components/lib/hooks/server`）、`scripts/build/transform.cjs`（ESM→单作用域 + 跨模块顶层重名冲突检测）、
@@ -48,7 +48,8 @@
   移除理由：① 产品单语言，其自身 UI 固定中文，无语言切换需求；② `translations.js` 的 `github.*` 键
   与词典职责重叠（双翻译源易分叉）；③ `loader.js` 支持远程拉取翻译 JSON，与「本地优先 · 离线可用」相悖。
   **不要再新建同类的「工具自身 UI 国际化」抽象**；内容保留在 git 历史中可恢复。
-- 仓库同时存在 `package-lock.json` 与 `bun.lock`（双锁漂移风险，P1-4）。
+- **双锁漂移已消除（P1-4，v1.9.29）**：删除 `bun.lock`，保留 npm 单一锁 `package-lock.json`；
+  `.gitignore` 已忽略 `bun.lock`（防再生）。P1-4 校验用 `npm install --dry-run --ignore-scripts`（避免真装 puppeteer 下载 Chromium）。
 - 词典：`src/dictionaries/**` 共 12 个模块 / 459 个词条；`collect-dict.cjs` 递归扫描加载词典，
   结果写入 `docs/untranslated-terms.txt`。
 - 原型资产：`prototype/` 共 16 个 HTML + 10 个 CSS。
@@ -65,6 +66,9 @@
 - **构建产物须可复现**：`build.cjs` 先 `\r\n`→`\n` 再折叠空行（顺序颠倒会因 Windows CRLF 残留空行，
   导致每次构建都产生 diff）。验证方式：连续 `node build.cjs` 两次比对 md5。
 - `build/GitHub_i18n.user.js` 随仓库提交（README 一键安装与 `@updateURL` 都指向它）。
+- **husky/lint-staged 与 HEAD 竞态（实测）**：提交偶报 `fatal: cannot lock ref 'HEAD'`，但提交其实已落盘；
+  lint-staged 的 automatic backup `stash@{0}` 可能残留（内含 pre-commit 时未纳入提交的改动，如被 dry-run 改动的 `package-lock.json`），
+  保留即可（不丢数据），需要时再 drop。**PowerShell 中 `stash@{0}` 必须加引号**，否则 `@{0}` 被解析为哈希表字面量导致参数错乱。
 
 ## 编码约定（本项目）
 - 单代码文件 ≤ 200 行，超长须按职责拆分（文档 .md 不适用，须保持完整）。

@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.9.30] - 2026-09-23
+
+### Changed
+- 清理未启用的 Jest 配置（删除 `jest.config.js` / `jest.setup.js`），改用 Node 内置 test runner（P1-3）
+
+### Added
+- 新增 `tests/` 单元测试：`collect-codes.test.mjs`（错误码契约）、`collect-dict.test.cjs`（采集纯函数）
+- `package.json` 新增 `test:unit` 脚本；`npm test` 流水线串联单测（lint → test:unit → build → validate）
+
+---
+
 ## [1.9.29] - 2026-09-23
 
 ### Changed

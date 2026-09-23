@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.29** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.30** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_i18n.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.9.29 |
+| 当前版本 | v1.9.30 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（注意：仓库同时存在 `bun.lock`，存在双锁文件漂移风险） |
@@ -35,6 +35,7 @@
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
 | 产物校验 | 通过 | `npm run validate` |
+| 单元测试 | 5 用例通过 | `npm run test:unit` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
 | Next 构建告警 | 1（可选依赖 `puppeteer` 未安装） | `npm run build:web` |
 
@@ -149,6 +150,7 @@ src/main.js                        ← 唯一入口
 - [x] Next 16 约定对齐：`middleware` → `proxy`、移除失效 `eslint` 配置键
 - [x] 语义化 `id` 覆盖主要容器与交互控件
 - [x] 全部代码文件符合「单文件 ≤ 200 行」约定（0 处超出）
+- [x] 单元测试：Node 内置 test runner（`node --test`），覆盖错误码契约与词典采集纯函数（5 用例）
 
 ---
 
@@ -225,7 +227,7 @@ src/main.js                        ← 唯一入口
 |------|------|------|---------|
 | ~~P1-1~~ | ~~拆分超过 200 行的代码文件~~ | **已完成**（v1.9.24 / v1.9.26）：当前 0 个代码文件超过 200 行 | — |
 | ~~P1-2~~ | ~~决策 `i18n` 框架去留~~ | **已完成**（v1.9.26，决策 B：移除。依据见 4.2） | — |
-| P1-3 | 清理或启用 Jest 测试体系 | `jest.config.js` / `jest.setup.js` 存在，但 `jest`、`jest-environment-jsdom`、`babel-jest` 均未安装，且无任何测试用例；`npm test` 实际不跑单测 | 安装依赖并补充核心模块用例，或移除配置并在文档中说明 |
+| ~~P1-3~~ | ~~清理或启用 Jest 测试体系~~ | **已完成**（v1.9.30）：移除未启用的 `jest.config.js` / `jest.setup.js`，改用 Node 内置 test runner（`node --test`，零新增依赖）；新增 `tests/` 用例覆盖错误码契约与采集纯函数；`npm test` 已串联 `test:unit` | — |
 | P1-4 | 消除双锁文件漂移 | `package-lock.json` 与 `bun.lock` 并存，`puppeteer` 缺失即为漂移实证 | 保留单一锁文件并重新安装校验 |
 | ~~P1-5~~ | ~~消除采集服务端逻辑重复~~ | **已完成**（v1.9.26）：`src/server/collector.js` 已删除，统一为 `collector-core.js` + `dictionary-processor.js` | — |
 
@@ -254,7 +256,8 @@ src/main.js                        ← 唯一入口
 | `npm run build:web` | 构建 Next.js 工作台 |
 | `npm run lint` / `lint:fix` | ESLint 检查 / 自动修复 |
 | `npm run format` / `format:check` | Prettier 格式化 / 格式校验 |
-| `npm run test` | 完整流水线：lint → build → validate |
+| `npm run test:unit` | 运行单元测试（Node 内置 test runner，零依赖） |
+| `npm run test` | 完整流水线：lint → test:unit → build → validate |
 | `npm run dict:collect -- <文件>` | 采集指定文本文件中的待翻译词条 |
 | `npm run clean` | 清理 `build`/`dist`/`coverage`/`.next` |
 
@@ -279,6 +282,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.30 | 2026-09-23 | 清理未启用的 Jest 配置并改用 Node 内置 test runner（P1-3）；新增 `tests/` 用例覆盖错误码契约与采集纯函数；`npm test` 串联 `test:unit` |
 | 1.9.29 | 2026-09-23 | 消除双锁文件漂移（P1-4）：删除 `bun.lock`，保留 npm 单一锁（`package-lock.json`）；词典采集支持增量与去重统计（P2-3）：`collect-dict.cjs` 的 `generateReport` 对比历史 `docs/untranslated-terms.txt`，输出新增 / 移除 / 净增统计 |
 | 1.9.28 | 2026-09-23 | 修复配置面板性能监控按钮为死按钮（P2-4）；新增采集错误码约定（P2-7）：`collect-codes.js` 共用 `CollectErrorCode`、服务端错误事件带 `code`、前端渲染错误码徽标；空输入/空 URL 返回 `INPUT_INVALID` |
 | 1.9.27 | 2026-09-22 | 修复窄屏下三页无法互跳：新增移动端导航（`MobileNav` + 共享 `navItems`）；≤640px 顶栏与内容区响应式调整 |
