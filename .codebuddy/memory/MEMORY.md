@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.30 / 2026-09-23）
+## 项目事实（稳定，截至 v1.9.32 / 2026-09-23）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -12,7 +12,7 @@
      不要再把整页写成 `'use client'`。
 - **不存在 `web/` 目录**（v1.9.23 起由 `public/` 取代：`public/css/` 11 个模块 + `public/js/wizard/`）。
   旧文档/注释中的 `web/css/*`、`web/js/*` 均为过期路径。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.30）。工作台页面通过 `@/version` +
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.32）。工作台页面通过 `@/version` +
   `src/version.d.ts` 读取，不再硬编码。
 - **构建脚本已自动化**：`scripts/build/moduleGraph.cjs`（依赖图 + 循环检测，`NEXT_ONLY_SEGMENTS` 跳过
   `app/components/lib/hooks/server`）、`scripts/build/transform.cjs`（ESM→单作用域 + 跨模块顶层重名冲突检测）、
@@ -29,12 +29,15 @@
   服务端 `error` 事件填充 `code`，前端 `useCollector`（`LogEntry.code`）与 `Dashboard` 渲染 `E<code>` 徽标，便于按类型分流。
 - **配置面板性能监控按钮曾是死按钮（P2-4，v1.9.28）**：`refresh`/`export` 此前只建 DOM 未绑 `click`；
   现已在 `performanceMonitor.js` 内绑定 `updatePerformanceStats`/`exportPerformanceStats`，导出无数据时按钮短显「暂无数据」。
-- **可选依赖 `puppeteer` 未安装**（package.json 声明 ^25.11.0，node_modules 只有 `puppeteer-core`）：
-  已列入 `next.config.mjs` 的 `serverExternalPackages`，并以 `createRequire` + 变量说明符做运行时解析，
-  未安装时返回明确提示。`npm run build:web` 仍会输出 **1 条**无法解析该可选依赖的 Turbopack 告警（属 P0-2）。
+- **批量采集（P0-2，v1.9.32）**：依赖 `puppeteer-core@^25.11.0`（已安装）+ 系统 Chrome / Edge；
+  `src/lib/browser-resolver.js` 用**动态 `import()` + `/* turbopackIgnore: true */`** 运行期加载，
+  并解析浏览器路径（`PUPPETEER_EXECUTABLE_PATH` 优先，其次各平台常见安装路径）。
+  **切勿声明 `serverExternalPackages: ['puppeteer-core']`**——该包为 ESM，会被 Turbopack 默认外部化并报
+  「Package puppeteer-core can't be external」告警；`npm run build:web` 现已 **0 告警**。
+  实测：`loadPuppeteerCore()` 动态 import 成功并驱动系统 Chrome 完成 `evaluate`。
 - 质量现状：`npm run lint` 0 error/0 warning；`tsc --noEmit -p tsconfig.json` 通过且
   **`strict: true`**；**全部代码文件 ≤ 200 行**；构建期**循环引用 0 处、孤立模块 0 处**；
-  `src/` 117 个文件 / 8889 行；`node build.cjs` 连续两次产物 md5 一致（可复现）。
+  `src/` 118 个文件 / 8967 行；`node build.cjs` 连续两次产物 md5 一致（可复现）。
 - **工作台导航是「响应式单源」**：`src/components/navItems.ts` 为导航唯一数据源，
   `Rail.tsx`（>1024px 左侧栏）与 `MobileNav.tsx`（≤1024px 顶栏下方横向标签条）共同消费；
   `Shell`/`Rail`/`MobileNav` **均为服务端组件**，仅靠 CSS 媒体查询切换可见性——
@@ -42,9 +45,9 @@
 - **Next 16 约定**：安全响应头文件是 `src/proxy.ts`（具名导出 `proxy`），`middleware` 约定已弃用；
   `next.config.mjs` **不支持 `eslint` 键**（写了会告警），用 CLI 的 `npm run lint`。
 - **文档权威性**：`docs/` 是唯一权威正文，进度看 `docs/PROGRESS.md`；`openspec/*.md` 仅是指向 `docs/` 的索引。
-- **测试体系（P1-3，v1.9.30）**：`jest.config.js` / `jest.setup.js` 已删除，改用 **Node 内置 test runner**
-  （`node --test`，零依赖）；`tests/` 覆盖错误码契约与采集纯函数（5 用例）；
-  `npm test` = lint → **test:unit** → build → validate。
+- **测试体系（P1-3 / P2-5，v1.9.32）**：`jest.config.js` / `jest.setup.js` 已删除，改用 **Node 内置 test runner**
+  （`node --test`，零依赖）；`tests/` 共 **8 用例**（错误码契约 2 + 采集纯函数 3 + 产物冒烟 3）；
+  `npm test` = lint → **build** → test:unit → validate（**先构建**，冒烟测试才能校验最新产物）。
   ⚠️ `node --test tests/`（传目录）在 Node 26 会报 `Cannot find module`，必须用**无参 `node --test`**。
 - **`src/i18n/*` 已于 v1.9.26 整体移除（P1-2 决策 B）**：9 个文件 / 641 行，精确检索确认零外部引用。
   移除理由：① 产品单语言，其自身 UI 固定中文，无语言切换需求；② `translations.js` 的 `github.*` 键
@@ -81,7 +84,7 @@
 - **模型 / 工具请求失败后的恢复偏好**：单次请求或工具调用失败后，等待约 **30 秒**自动重试并继续推进，不因此停滞等待人工确认（除非确属无法绕过的阻塞）。
 - 对话保持中文、输出精简直奔要点（用户显式重申，全局规则已覆盖）。
 - `eslint.config.js` 规则已拆分到 `eslint/rules/{core,bestPractices,quality}.js`，新增规则改对应文件。
-- 工作台 TS：禁止 `any`（用 `unknown` + 收窄）；外部可选依赖写最小 `declare module`（见 `src/types/puppeteer.d.ts`）。
+- 工作台 TS：禁止 `any`（用 `unknown` + 收窄）；外部可选依赖写最小 `declare module`（见 `src/types/puppeteer-core.d.ts`）。
 
 ## 工具链陷阱（Windows / PowerShell）
 - PowerShell 不支持 `dir /a`、`tail`、`>/dev/null`、`2>$null`；`Get-Content` 读 UTF-8 中文会乱码——
