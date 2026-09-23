@@ -14,10 +14,7 @@
 
 ### P0 — 阻塞 / 高危
 
-- [ ] **T1 · 批量采集 SSRF 加固**（L）
-  - 现状：`src/app/api/batch-collect/route.ts:17-28` 仅 `Array.isArray` 校验；`src/lib/collector-core.js:101-107` 直接 `page.goto(url)`，无协议/主机/私网白名单。
-  - 验收：新增 `src/lib/url-guard.js` 纯函数，单测覆盖合法 `https://github.com/*` 通过、`file://`/`localhost`/`169.254.169.254`/`10.x`/`ftp://` 被拒；非法 URL 经 SSE 透传 `INVALID_URL` 错误码。
-  - 理由：服务端出网抓取，SSRF 可致内网探测与云元数据泄露，当前最高风险项。
+- （暂无活动任务）
 
 ### P1 — 重要质量项
 
@@ -62,6 +59,11 @@
 ## 2. 已完成（历史归档）
 
 > 以下任务来自 `docs/PROGRESS.md` 遗留任务清单，已实际落地，归档备查。
+
+### 来自 TASKS.md 活动任务（v1.9.35）
+
+- [x] **T1** 批量采集 SSRF 加固（v1.9.35）：新增 `src/lib/url-guard.js` 纯函数（http(s) 协议白名单 + 本机/内网/回环/链路本地/云元数据地址拦截）；`collector-core.js` 在 `page.goto` 前逐项校验并透传 `CollectErrorCode.INVALID_URL`；单测 4 组覆盖
+- [x] **T3** 清理 PROGRESS.md 文档漂移（v1.9.35）：修正 `:19` 「双锁并存」错误陈述，补全版本行与 §8 变更记录（1.9.33–1.9.35）
 
 ### 来自 PROGRESS.md（v1.9.x）
 

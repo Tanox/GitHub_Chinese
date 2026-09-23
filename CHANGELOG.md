@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.35] - 2026-09-23
+
+### Added
+- 新增 `src/lib/url-guard.js`（T1）：SSRF 防护纯函数，仅放行 `http(s)`，拦截 `localhost` / 私网 / 回环 / 链路本地 / 云元数据地址（`10/8`、`172.16/12`、`192.168/16`、`127/8`、`169.254/16`、`100.64/10`、`::1`、`fc00::/7`、`fe80::/10`）
+- 新增错误码 `CollectErrorCode.INVALID_URL`（3002）：批量采集对非法目标跳过并经 SSE 透传该错误码
+
+### Changed
+- `src/lib/collector-core.js` 在 `page.goto` 前逐个校验目标 URL，非法项不再进入浏览器抓取
+
+### Docs
+- 清理 `docs/PROGRESS.md` 文档漂移（T3）：修正「双锁并存」错误陈述，补全版本行与变更记录
+
+---
+
 ## [1.9.34] - 2026-09-23
 
 ### Docs

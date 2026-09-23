@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.32** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.35** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -16,14 +16,14 @@
 | 当前版本 | v1.9.32 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
-| 包管理器 | npm（注意：仓库同时存在 `bun.lock`，存在双锁文件漂移风险） |
+| 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
 
 ### 1.1 当前量化指标
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 118 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 8967 | 同上 |
+| `src/` 源码文件数 | 119 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 9059 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
@@ -211,6 +211,14 @@ src/main.js                        ← 唯一入口
 | E2 | 采集错误仅以文本消息返回，前端难以按类型分流处理（P2-7） | 所有失败在 UI 里都是无差别红字，无法区分依赖缺失 / 抓取失败 / 子进程失败 | 新增 `collect-codes.js`（纯数据、客户端可安全导入）定义 `CollectErrorCode`；服务端 `error` 事件填充 `code`，`Dashboard` 渲染 `E<code>` 徽标 |
 | E3 | 空文本 / 空 URL 会进入子进程并以晦涩方式失败 | 错误提示不可读 | `processRawData` / `collectFromUrls` 入口直接返回 `INPUT_INVALID` |
 
+### 4.6 v1.9.33–1.9.35 · 任务清单与安全加固
+
+| 版本 | 变更 |
+|------|------|
+| 1.9.33 | 新增 `docs/IMPROVEMENT-TASKS.md` 改进建议任务文档（代码审查 + 实地核查） |
+| 1.9.34 | 新增 `docs/TASKS.md` 作为**唯一任务清单**，合并 PROGRESS 遗留任务与改进建议文档；本文档 §5 改为指向 TASKS 的指针 |
+| 1.9.35 | **T1 SSRF 加固**：新增 `src/lib/url-guard.js` 纯函数（协议白名单 + 私网 / 回环 / 链路本地 / 云元数据拦截）与 `CollectErrorCode.INVALID_URL`，`collector-core.js` 抓取前逐项校验；**T3** 清理文档漂移（双锁陈述、版本行、变更记录） |
+
 ---
 
 ## 5. 任务清单
@@ -256,6 +264,9 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.35 | 2026-09-23 | 新增 SSRF 防护（T1）：`src/lib/url-guard.js` 纯函数 + `CollectErrorCode.INVALID_URL`，采集前逐项校验目标 URL；清理文档漂移（T3） |
+| 1.9.34 | 2026-09-23 | 新增 `docs/TASKS.md` 作为唯一任务清单，合并 PROGRESS 遗留任务与 `IMPROVEMENT-TASKS.md`（文档） |
+| 1.9.33 | 2026-09-23 | 新增 `docs/IMPROVEMENT-TASKS.md` 改进建议任务文档（v1.9.34 已合并入 `TASKS.md`） |
 | 1.9.32 | 2026-09-23 | 修复 P0-2：批量采集改用 `puppeteer-core` + 系统 Chrome / Edge（`browser-resolver.js` 解析可执行路径，支持 `PUPPETEER_EXECUTABLE_PATH`），`next build` 告警降为 0 |
 | 1.9.31 | 2026-09-23 | 新增用户脚本产物冒烟测试（P2-5）：`tests/smoke.test.cjs` 校验产物存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性 |
 | 1.9.30 | 2026-09-23 | 清理未启用的 Jest 配置并改用 Node 内置 test runner（P1-3）；新增 `tests/` 用例覆盖错误码契约与采集纯函数；`npm test` 串联 `test:unit` |

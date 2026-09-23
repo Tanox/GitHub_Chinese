@@ -1,13 +1,14 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.9.28
+ * @version 1.9.35
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
 import fs from 'fs/promises';
 import { RAW_TERMS_FILE, runDictionaryProcessor } from './dictionary-processor.js';
 import { CollectErrorCode } from './collect-codes.js';
+import { guardUrl } from './url-guard.js';
 import { loadPuppeteerCore, resolveBrowserExecutable } from './browser-resolver.js';
 
 /**
@@ -99,21 +100,35 @@ export async function* collectFromUrls(urls) {
 
     for (let i = 0; i < total; i += 1) {
       const url = urls[i];
-      yield { type: 'log', message: `[${i + 1}/${total}] 正在访问: ${url}` };
-      yield { type: 'progress', data: { type: 'fetch', current: i + 1, total, url } };
+      const guard = guardUrl(url);
+      if (!guard.ok) {
+        yield {
+          type: 'error',
+          message: `已跳过非法 URL（${guard.reason}）：${String(url)}`,
+          code: CollectErrorCode.INVALID_URL,
+        };
+        yield {
+          type: 'progress',
+          data: { type: 'fetch', current: i + 1, total, url: String(url) },
+        };
+        continue;
+      }
+      const target = guard.url;
+      yield { type: 'log', message: `[${i + 1}/${total}] 正在访问: ${target}` };
+      yield { type: 'progress', data: { type: 'fetch', current: i + 1, total, url: target } };
 
       const page = await browser.newPage();
       try {
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: NAVIGATION_TIMEOUT_MS });
+        await page.goto(target, { waitUntil: 'networkidle2', timeout: NAVIGATION_TIMEOUT_MS });
 
         const texts = await page.evaluate(extractPageText, MIN_TEXT_LENGTH, MAX_TEXT_LENGTH);
 
         texts.forEach((text) => allTexts.add(text));
-        yield { type: 'log', message: `成功从 ${url} 提取 ${texts.length} 条文本` };
+        yield { type: 'log', message: `成功从 ${target} 提取 ${texts.length} 条文本` };
       } catch (error) {
         yield {
           type: 'error',
-          message: `处理 ${url} 时失败: ${describeError(error)}`,
+          message: `处理 ${target} 时失败: ${describeError(error)}`,
           code: CollectErrorCode.FETCH_FAILED,
         };
       } finally {
