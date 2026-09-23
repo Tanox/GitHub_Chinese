@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.38** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.39** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -211,7 +211,7 @@ src/main.js                        ← 唯一入口
 | E2 | 采集错误仅以文本消息返回，前端难以按类型分流处理（P2-7） | 所有失败在 UI 里都是无差别红字，无法区分依赖缺失 / 抓取失败 / 子进程失败 | 新增 `collect-codes.js`（纯数据、客户端可安全导入）定义 `CollectErrorCode`；服务端 `error` 事件填充 `code`，`Dashboard` 渲染 `E<code>` 徽标 |
 | E3 | 空文本 / 空 URL 会进入子进程并以晦涩方式失败 | 错误提示不可读 | `processRawData` / `collectFromUrls` 入口直接返回 `INPUT_INVALID` |
 
-### 4.6 v1.9.33–1.9.38 · 任务清单与安全加固
+### 4.6 v1.9.33–1.9.39 · 任务清单与安全加固
 
 | 版本 | 变更 |
 |------|------|
@@ -221,6 +221,7 @@ src/main.js                        ← 唯一入口
 | 1.9.36 | **T2 CSP**：`src/proxy.ts` 注入基于 nonce 的 Content-Security-Policy；**T4** OG/Twitter 元信息：`src/app/layout.tsx` 补全 `metadataBase` / `openGraph` / `twitter` |
 | 1.9.37 | **T5 API 集成测试**：新增 `src/lib/request-body.js` 纯函数及 `tests/request-body.test.mjs`、`tests/collector-core.test.mjs`；SSRF 校验前移至浏览器启动前（全部非法则不启动浏览器） |
 | 1.9.38 | **T6 行数门禁**：新增 `scripts/check-file-length.cjs`（>200 行即失败）并纳入 `npm test` 与 CI；**T7 依赖审计**：CI 改为 `npm audit --audit-level=high`（高危阻塞、低危放行） |
+| 1.9.39 | **T9 命名澄清**：README 新增「命名与兼容性说明」，说明旧名 `GitHub_i18n` 因 `@updateURL` 依赖刻意保留 |
 
 ---
 
@@ -268,6 +269,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.39 | 2026-09-23 | 文档：README 新增「命名与兼容性说明」（T9），澄清产品名与仓库旧名 `GitHub_i18n` 的保留原因 |
 | 1.9.38 | 2026-09-23 | 新增代码文件行数门禁（T6，`lint:length` + CI）与高优先级依赖审计（T7，`npm audit --audit-level=high`） |
 | 1.9.37 | 2026-09-23 | 新增 API 路由集成测试（T5）：`request-body.js` 纯函数 + `request-body`/`collector-core` 用例；SSRF 校验前移至浏览器启动前 |
 | 1.9.36 | 2026-09-23 | 新增基于 nonce 的 CSP（T2，`src/proxy.ts`）与 OG / Twitter 元信息（T4，`src/app/layout.tsx`） |

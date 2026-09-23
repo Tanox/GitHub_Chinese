@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.39] - 2026-09-23
+
+### Docs
+- README 新增「命名与兼容性说明」（T9）：明确产品名为「GitHub Chinese 简体中文」，并说明仓库旧名 `GitHub_i18n` / 脚本名 `GitHub_i18n.user.js` 因 `@updateURL` 与一键安装链接依赖而刻意保留，消除命名歧义
+
+---
+
 ## [1.9.38] - 2026-09-23
 
 ### Added

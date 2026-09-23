@@ -5,7 +5,14 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.9.38**（版本单一来源：`src/version.js`）
+> 当前版本：**v1.9.39**（版本单一来源：`src/version.js`）
+
+## 命名与兼容性说明
+
+- **产品名**：GitHub Chinese 简体中文（文档与界面统一使用此名）。
+- **仓库名（历史保留）**：仓库地址仍为 `github.com/Tanox/GitHub_i18n`，用户脚本文件名为 `GitHub_i18n.user.js`。
+  该命名为**历史遗留并刻意保持不变**——`@updateURL` / `@downloadURL` 与「一键安装」链接均依赖此路径，
+  改名会导致已安装用户无法自动更新。因此文档中出现 `GitHub_i18n` 时，均指本项目的仓库 / 脚本标识，而非另一个产品。
 
 ## 功能介绍
 
