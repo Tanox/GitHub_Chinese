@@ -7,7 +7,7 @@ context: |
   领域: GitHub 中文本地化插件（用户脚本）+ 词典采集工作台
   规范文档: docs/ 目录存放正式规范文档（唯一权威正文）
   设计系统: prototype/ 目录存放设计系统和高保真原型
-  当前版本: 1.9.24
+  当前版本: 1.9.41
   版本单一来源: src/version.js
 
 # Per-artifact rules

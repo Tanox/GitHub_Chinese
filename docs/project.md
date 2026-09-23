@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.9.24** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.41** ｜ 版本权威源：`src/version.js`
 
 ## 项目概述
 
@@ -207,7 +207,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.9.24 |
+| **当前版本** | 1.9.41 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

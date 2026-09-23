@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.41] - 2026-09-23
+
+### Docs
+- 清理 `docs/TASKS.md`：第 1 节四个空优先级小节合并为单条说明；第 2 节已完成任务改为紧凑索引表（T1–T10、P0-1–P2-7），详细改动交由 `CHANGELOG.md` 承载
+- 同步文档版本行至 v1.9.41：`docs/`（README / project / architecture / development / coding-style / prototype / PROGRESS）与 `openspec/`（README / project / architecture / development / coding-style / prototype / config.yaml）
+
+---
+
 ## [1.9.40] - 2026-09-23
 
 ### Added

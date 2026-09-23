@@ -1,73 +1,63 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.9.40** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.41** ｜ 版本权威源：`src/version.js`
 >
-> 本文件是项目**唯一任务清单**，由 `docs/PROGRESS.md`（遗留任务）与 `docs/IMPROVEMENT-TASKS.md` 合并而来。
-> 已完成任务归档至第 2 节；活动任务按优先级排列于第 1 节。PROGRESS.md 仅保留进度报告，不再重复维护任务表。
+> 本文件是项目**唯一任务清单**：活动任务列于第 1 节，已完成任务归档于第 2 节（精简列表，详细改动见 `CHANGELOG.md`）。
+> `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
 
 ---
 
 ## 1. 活动任务（进行中 / 待办）
 
-> 状态用 `- [ ]` 表示未完成；完成后改为 `- [x]` 并补入 `CHANGELOG.md`。
+> 状态用 `- [ ]` 表示未完成；完成后改为 `- [x]` 并在 `CHANGELOG.md` 记录，随后归档至第 2 节。
 > 优先级沿用 P0/P1/P2/P3；工作量标签：S（<0.5d）/ M（0.5–2d）/ L（>2d）。
 
-### P0 — 阻塞 / 高危
-
-- （暂无活动任务）
-
-### P1 — 重要质量项
-
-- （暂无活动任务）
-
-### P2 — 体验与规范
-
-- （暂无活动任务）
-
-### P3 — 可选 / 前瞻
-
-- （暂无活动任务）
+**（暂无活动任务）**——新增任务按 `Txx` 编号追加到本节，并按 P0–P3 分节列出。
 
 ---
 
 ## 2. 已完成（历史归档）
 
-> 以下任务来自 `docs/PROGRESS.md` 遗留任务清单，已实际落地，归档备查。
+> 仅保留索引；每项的详细改动见 `CHANGELOG.md` 对应版本小节。
 
-### 来自 TASKS.md 活动任务（v1.9.35–v1.9.36）
+### 2.1 任务清单（Txx，v1.9.35–v1.9.40）
 
-- [x] **T1** 批量采集 SSRF 加固（v1.9.35）：新增 `src/lib/url-guard.js` 纯函数（http(s) 协议白名单 + 本机/内网/回环/链路本地/云元数据地址拦截）；`collector-core.js` 在 `page.goto` 前逐项校验并透传 `CollectErrorCode.INVALID_URL`；单测 4 组覆盖
-- [x] **T2** 补充 Content-Security-Policy（v1.9.36）：`src/proxy.ts` 注入基于 nonce 的 CSP（`script-src 'self' 'nonce-…' 'strict-dynamic'`、`object-src 'none'`、`frame-ancestors 'none'` 等）
-- [x] **T3** 清理 PROGRESS.md 文档漂移（v1.9.35）：修正 `:19` 「双锁并存」错误陈述，补全版本行与 §8 变更记录（1.9.33–1.9.35）
-- [x] **T4** 补充 OG / Twitter 元信息（v1.9.36）：`src/app/layout.tsx` 增加 `metadataBase` / `openGraph` / `twitter` 配置
-- [x] **T5** API 路由与错误码集成测试（v1.9.37）：新增 `src/lib/request-body.js` 纯函数（路由据此对无效 `urls` 返回 400）与 `tests/request-body.test.mjs`、`tests/collector-core.test.mjs`，覆盖空输入 `INPUT_INVALID`、非法 URL `INVALID_URL`；SSRF 校验前移，全部非法时不启动浏览器
-- [x] **T6** 近 200 行文件防回潮门禁（v1.9.38）：新增 `scripts/check-file-length.cjs`，扫描 `src`/`scripts`/`tests`，任一文件 >200 行即失败并输出 TOP 5；`npm run lint:length` 纳入 `npm test` 与 CI
-- [x] **T7** 依赖审计纳入 CI（v1.9.38）：CI 安全审计由 `--audit-level=moderate || true` 改为 `npm audit --audit-level=high`（高危阻塞、低危放行）；本地实测 0 漏洞
-- [x] **T9** 仓库命名一致性澄清（v1.9.39）：README 新增「命名与兼容性说明」，明确产品名为「GitHub Chinese 简体中文」，并说明旧名 `GitHub_i18n` 因 `@updateURL` / 一键安装链接依赖而刻意保留
-- [x] **T8** 可访问性（a11y）走查（v1.9.40）：新增 `tests/a11y.test.mjs`（axe-core + jsdom）检查 `/`、`/overview`、`/design` 三页静态产物，阻断 serious / critical 违规；同步修复输入框 label、tab `aria-controls`、进度条 `progressbar`、日志 `role="log"`、toast `role="status"`、装饰元素 `aria-hidden`、表格 `<caption>`
-- [x] **T10** 词典来源与采集趋势可视化（v1.9.40）：新增 `scripts/collect-history.cjs` 记录每次采集统计到 `docs/collect-history.json`，`/overview` 展示最近 8 次「采集趋势」；采集报告逻辑抽至 `scripts/dict-report.cjs`
+| 编号 | 任务 | 版本 |
+|------|------|------|
+| T1 | 批量采集 SSRF 加固（`url-guard.js` + `INVALID_URL`） | 1.9.35 |
+| T2 | 补充 Content-Security-Policy（基于 nonce） | 1.9.36 |
+| T3 | 清理 `PROGRESS.md` 文档漂移 | 1.9.35 |
+| T4 | 补充 OG / Twitter 元信息 | 1.9.36 |
+| T5 | API 路由与错误码集成测试（`request-body.js` + 用例） | 1.9.37 |
+| T6 | 近 200 行文件防回潮门禁（`lint:length`） | 1.9.38 |
+| T7 | 依赖审计纳入 CI（`npm audit --audit-level=high`） | 1.9.38 |
+| T8 | 可访问性（a11y）走查（axe-core + jsdom） | 1.9.40 |
+| T9 | 仓库命名一致性澄清（README 命名说明） | 1.9.39 |
+| T10 | 词典来源与采集趋势可视化（`/overview` 趋势） | 1.9.40 |
 
-### 来自 PROGRESS.md（v1.9.x）
+### 2.2 遗留任务清单（Pxx，v1.9.24–v1.9.32）
 
-- [x] **P0-1** 提交 `build/GitHub_i18n.user.js` 产物（v1.9.24）
-- [x] **P0-2** 批量采集改用 `puppeteer-core` + 系统 Chrome/Edge（v1.9.32）
-- [x] **P1-1** 拆分超过 200 行的代码文件（v1.9.24 / v1.9.26，当前 0 个超 200 行）
-- [x] **P1-2** 决策 i18n 框架去留 → 移除（v1.9.26，依据见 PROGRESS 4.2）
-- [x] **P1-3** 清理未启用的 Jest，改用 Node 内置 test runner（v1.9.30）
-- [x] **P1-4** 消除双锁文件漂移：删除 `bun.lock`，统一 npm 单一锁（v1.9.29 已修复；PROGRESS 曾误标 OPEN，T3 负责清理该漂移）
-- [x] **P1-5** 采集服务端逻辑去重：删除 `src/server/collector.js`，统一 `collector-core.js` + `dictionary-processor.js`（v1.9.26）
-- [x] **P2-1** 开启 TypeScript 严格模式（v1.9.26，`strict: true`，零错误）
-- [x] **P2-2** 补齐采集工作台次级页面 `/overview`、`/design`（v1.9.26）
-- [x] **P2-3** 词典采集支持增量与去重统计（v1.9.29）
-- [x] **P2-4** 性能监控面板数据导出（v1.9.28）
-- [x] **P2-5** 补充 E2E / 冒烟测试 `tests/smoke.test.cjs`（v1.9.31）
-- [x] **P2-6** 工作台移动端导航 `MobileNav`（v1.9.27）
-- [x] **P2-7** 采集流程错误码约定 `collect-codes.js`（v1.9.28）
+| 编号 | 任务 | 版本 |
+|------|------|------|
+| P0-1 | 提交 `build/GitHub_i18n.user.js` 产物 | 1.9.24 |
+| P0-2 | 批量采集改用 `puppeteer-core` + 系统 Chrome / Edge | 1.9.32 |
+| P1-1 | 拆分超过 200 行的代码文件 | 1.9.24 / 1.9.26 |
+| P1-2 | 决策 i18n 框架去留 → 移除 | 1.9.26 |
+| P1-3 | 清理未启用的 Jest，改用 Node 内置 test runner | 1.9.30 |
+| P1-4 | 消除双锁文件漂移（删除 `bun.lock`） | 1.9.29 |
+| P1-5 | 采集服务端逻辑去重（`collector-core` + `dictionary-processor`） | 1.9.26 |
+| P2-1 | 开启 TypeScript 严格模式（`strict: true`） | 1.9.26 |
+| P2-2 | 补齐采集工作台次级页面 `/overview`、`/design` | 1.9.26 |
+| P2-3 | 词典采集增量与去重统计 | 1.9.29 |
+| P2-4 | 性能监控面板数据导出 | 1.9.28 |
+| P2-5 | 补充 E2E / 冒烟测试（`tests/smoke.test.cjs`） | 1.9.31 |
+| P2-6 | 工作台移动端导航 `MobileNav` | 1.9.27 |
+| P2-7 | 采集流程错误码约定 `collect-codes.js` | 1.9.28 |
 
 ---
 
 ## 3. 推进说明
 
-- **单一来源**：项目任务以本文件为准；`docs/PROGRESS.md` 仅作进度/架构/指标报告。
-- **流转规则**：活动任务完成后勾选 `[x]`，在 `CHANGELOG.md` 对应版本小节记录；大规模改动同步更新 `docs/PROGRESS.md` 的迭代记录。
-- **新增任务**：直接追加到对应优先级小节，编号沿用 `Txx`；文档准确性类问题优先以 T3 模式处理。
+- **单一来源**：项目任务以本文件为准；`docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告。
+- **流转规则**：活动任务完成后勾选 `[x]`，在 `CHANGELOG.md` 对应版本小节记录，并归档至第 2 节（表格新增一行）。
+- **新增任务**：按 `Txx` 编号追加到第 1 节对应优先级；文档准确性类问题优先以 T3 模式处理。

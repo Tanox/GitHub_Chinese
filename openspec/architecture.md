@@ -1,6 +1,6 @@
 # 架构文档（索引）
 
-> 版本：**v1.9.24** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.41** ｜ 版本权威源：`src/version.js`
 >
 > 本文件为索引。架构文档的**唯一权威正文位于 [docs/architecture.md](../docs/architecture.md)**，
 > 此处不再重复维护正文，以避免同一内容出现两份副本而长期脱节。
