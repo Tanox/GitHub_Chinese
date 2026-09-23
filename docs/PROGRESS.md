@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.35** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.36** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -23,7 +23,7 @@
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
 | `src/` 源码文件数 | 119 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 9059 | 同上 |
+| `src/` 源码总行数 | 9114 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
@@ -211,13 +211,14 @@ src/main.js                        ← 唯一入口
 | E2 | 采集错误仅以文本消息返回，前端难以按类型分流处理（P2-7） | 所有失败在 UI 里都是无差别红字，无法区分依赖缺失 / 抓取失败 / 子进程失败 | 新增 `collect-codes.js`（纯数据、客户端可安全导入）定义 `CollectErrorCode`；服务端 `error` 事件填充 `code`，`Dashboard` 渲染 `E<code>` 徽标 |
 | E3 | 空文本 / 空 URL 会进入子进程并以晦涩方式失败 | 错误提示不可读 | `processRawData` / `collectFromUrls` 入口直接返回 `INPUT_INVALID` |
 
-### 4.6 v1.9.33–1.9.35 · 任务清单与安全加固
+### 4.6 v1.9.33–1.9.36 · 任务清单与安全加固
 
 | 版本 | 变更 |
 |------|------|
 | 1.9.33 | 新增 `docs/IMPROVEMENT-TASKS.md` 改进建议任务文档（代码审查 + 实地核查） |
 | 1.9.34 | 新增 `docs/TASKS.md` 作为**唯一任务清单**，合并 PROGRESS 遗留任务与改进建议文档；本文档 §5 改为指向 TASKS 的指针 |
 | 1.9.35 | **T1 SSRF 加固**：新增 `src/lib/url-guard.js` 纯函数（协议白名单 + 私网 / 回环 / 链路本地 / 云元数据拦截）与 `CollectErrorCode.INVALID_URL`，`collector-core.js` 抓取前逐项校验；**T3** 清理文档漂移（双锁陈述、版本行、变更记录） |
+| 1.9.36 | **T2 CSP**：`src/proxy.ts` 注入基于 nonce 的 Content-Security-Policy；**T4** OG/Twitter 元信息：`src/app/layout.tsx` 补全 `metadataBase` / `openGraph` / `twitter` |
 
 ---
 
@@ -264,6 +265,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.36 | 2026-09-23 | 新增基于 nonce 的 CSP（T2，`src/proxy.ts`）与 OG / Twitter 元信息（T4，`src/app/layout.tsx`） |
 | 1.9.35 | 2026-09-23 | 新增 SSRF 防护（T1）：`src/lib/url-guard.js` 纯函数 + `CollectErrorCode.INVALID_URL`，采集前逐项校验目标 URL；清理文档漂移（T3） |
 | 1.9.34 | 2026-09-23 | 新增 `docs/TASKS.md` 作为唯一任务清单，合并 PROGRESS 遗留任务与 `IMPROVEMENT-TASKS.md`（文档） |
 | 1.9.33 | 2026-09-23 | 新增 `docs/IMPROVEMENT-TASKS.md` 改进建议任务文档（v1.9.34 已合并入 `TASKS.md`） |

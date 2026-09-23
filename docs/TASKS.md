@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.9.34** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.36** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**唯一任务清单**，由 `docs/PROGRESS.md`（遗留任务）与 `docs/IMPROVEMENT-TASKS.md` 合并而来。
 > 已完成任务归档至第 2 节；活动任务按优先级排列于第 1 节。PROGRESS.md 仅保留进度报告，不再重复维护任务表。
@@ -18,20 +18,10 @@
 
 ### P1 — 重要质量项
 
-- [ ] **T2 · 补充 Content-Security-Policy**（M）
-  - 现状：`src/proxy.ts:11-20` 仅 nosniff / frame-deny / referrer / x-dns，无 CSP。
-  - 验收：响应头含 CSP；浏览器对当前页面/采集流无 CSP 违规（`script-src 'self'`；`style-src` 因自包含 CSS 需 `'unsafe-inline'`）。
-  - 理由：降低 XSS/注入影响面，安全基线。
-- [ ] **T3 · 清理 PROGRESS.md 文档漂移**（S）
-  - 现状：`docs/PROGRESS.md:232` 的 P1-4（双锁漂移）未划线仍标 OPEN；`:19` 仍写"双锁并存"；但 `bun.lock` 已于 v1.9.29 删除（CHANGELOG 已记录）。
-  - 验收：P1-4 标记完成；全仓 `grep "bun.lock"` 的错误陈述清除；核对 `project.md`/`architecture.md` 是否仍提双锁或已移除的 i18n。
-  - 理由：文档准确性是项目硬约定，误导性表述会让维护者误判漂移仍在。
+- （暂无活动任务）
 
 ### P2 — 体验与规范
 
-- [ ] **T4 · 补充 OG / Twitter 元信息**（S）
-  - 现状：`src/app/layout.tsx:11-14` 仅 `title`/`description`。
-  - 验收：`<head>` 含 `og:`/`twitter:` 标签；社交分享预览正常。
 - [ ] **T5 · API 路由与错误码集成测试**（M）
   - 现状：`tests/` 仅 8 用例，无 `/api/collect`、`/api/batch-collect` 的路由/SSE/错误码覆盖（v1.9.25 的 `req.json` 容错曾靠人工回归）。
   - 验收：新增 ≥3 用例（非法 JSON→400、空输入→`INPUT_INVALID`、非法 URL→`INVALID_URL`）；`npm run test:unit` 全绿。
@@ -60,10 +50,12 @@
 
 > 以下任务来自 `docs/PROGRESS.md` 遗留任务清单，已实际落地，归档备查。
 
-### 来自 TASKS.md 活动任务（v1.9.35）
+### 来自 TASKS.md 活动任务（v1.9.35–v1.9.36）
 
 - [x] **T1** 批量采集 SSRF 加固（v1.9.35）：新增 `src/lib/url-guard.js` 纯函数（http(s) 协议白名单 + 本机/内网/回环/链路本地/云元数据地址拦截）；`collector-core.js` 在 `page.goto` 前逐项校验并透传 `CollectErrorCode.INVALID_URL`；单测 4 组覆盖
+- [x] **T2** 补充 Content-Security-Policy（v1.9.36）：`src/proxy.ts` 注入基于 nonce 的 CSP（`script-src 'self' 'nonce-…' 'strict-dynamic'`、`object-src 'none'`、`frame-ancestors 'none'` 等）
 - [x] **T3** 清理 PROGRESS.md 文档漂移（v1.9.35）：修正 `:19` 「双锁并存」错误陈述，补全版本行与 §8 变更记录（1.9.33–1.9.35）
+- [x] **T4** 补充 OG / Twitter 元信息（v1.9.36）：`src/app/layout.tsx` 增加 `metadataBase` / `openGraph` / `twitter` 配置
 
 ### 来自 PROGRESS.md（v1.9.x）
 

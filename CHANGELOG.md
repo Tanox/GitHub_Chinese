@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.36] - 2026-09-23
+
+### Added
+- 新增基于 nonce 的 Content-Security-Policy（T2）：`src/proxy.ts` 注入 CSP（`default-src 'self'`、`script-src 'self' 'nonce-…' 'strict-dynamic'`、`style-src 'self' 'unsafe-inline'`、`img-src 'self' data: blob:`、`object-src 'none'`、`base-uri 'self'`、`form-action 'self'`、`frame-ancestors 'none'`、`upgrade-insecure-requests`）
+- 补充 Open Graph / Twitter 元信息（T4）：`src/app/layout.tsx` 增加 `metadataBase`、`openGraph`、`twitter` 配置
+
+---
+
 ## [1.9.35] - 2026-09-23
 
 ### Added
