@@ -2,7 +2,7 @@
  * Next.js 配置（根级，与 src/ 源码解耦）
  * 采用 src/ 目录模式：src/app、src/components、src/lib、src/proxy.ts
  * @file next.config.mjs
- * @version 1.9.26
+ * @version 1.9.32
  */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -11,8 +11,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // puppeteer 为可选运行时依赖：不参与打包，未安装时由业务代码捕获并给出提示
-  serverExternalPackages: ['puppeteer'],
+  // puppeteer-core 为可选运行时依赖：由 browser-resolver.js 在运行期通过 createRequire（变量说明符）解析。
+  // 不声明 serverExternalPackages——该包为 ESM，显式外部化会触发 Turbopack「can't be external」告警。
 };
 
 export default nextConfig;

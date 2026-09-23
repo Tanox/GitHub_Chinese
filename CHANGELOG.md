@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.32] - 2026-09-23
+
+### Fixed
+- 修复 P0-2：批量 URL 采集此前因 `puppeteer` 未安装而不可用；现改用已安装的 `puppeteer-core` 配合系统 Chrome / Edge
+
+### Changed
+- `package.json` 依赖由 `puppeteer` 改为 `puppeteer-core`；移除 `next.config.mjs` 的 `serverExternalPackages` 声明（该包为 ESM，显式外部化会触发告警），改由 `browser-resolver.js` 动态 `import()` + `turbopackIgnore` 运行期解析，`next build` 告警由 1 条降为 0
+
+### Added
+- 新增 `src/lib/browser-resolver.js`：解析 `puppeteer-core` 与浏览器可执行路径（优先 `PUPPETEER_EXECUTABLE_PATH`，其次各平台常见安装路径）
+- 新增 `src/types/puppeteer-core.d.ts`（替代原 `puppeteer.d.ts`，补充 `executablePath` 声明）
+
+---
+
 ## [1.9.31] - 2026-09-23
 
 ### Changed

@@ -560,7 +560,7 @@ function createUser(name, email, age, address, phone) {
 - 禁止 `any`：使用 `unknown` + 类型收窄，或定义明确的接口
 - 捕获异常统一走 `describeError(error: unknown): string`
 - 服务端逻辑（`src/lib/*`）与客户端组件（`src/components/*`）分离，客户端组件需 `'use client'`
-- 外部可选依赖若无类型，使用最小 `declare module` 声明（见 `src/types/puppeteer.d.ts`）
+- 外部可选依赖若无类型，使用最小 `declare module` 声明（见 `src/types/puppeteer-core.d.ts`）
 
 ### 5.11 复杂度控制
 

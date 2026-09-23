@@ -1,9 +1,9 @@
 /**
  * 采集流程错误码约定（服务端与前端共用）
  * @file src/lib/collect-codes.js
- * @version 1.9.28
+ * @version 1.9.32
  * @description 错误码便于前端按类型分流处理，避免仅靠文本消息判定。
- *   该模块**不含任何服务端运行时依赖**（`fs` / `child_process` / `puppeteer`），
+ *   该模块**不含任何服务端运行时依赖**（`fs` / `child_process` / `puppeteer-core`），
  *   可被客户端组件安全导入，不会把服务端代码带入客户端包。
  */
 

@@ -382,7 +382,7 @@ GitHub_Chinese/
 │   ├── components/                   # Shell / Rail / MobileNav（服务端）、navItems（导航源）、CollectorConsole（客户端岛）、叶组件
 │   ├── hooks/useCollector.ts         # 采集状态管理
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts
-│   ├── types/                        # puppeteer.d.ts 等最小类型声明
+│   ├── types/                        # puppeteer-core.d.ts 等最小类型声明
 │   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
 ├── public/                           # 静态资源（css 模块化 / js 向导）
 ├── prototype/                        # 设计系统与高保真原型
@@ -431,7 +431,7 @@ GitHub_Chinese/
       └─ POST /api/batch-collect  → collectFromUrls(urls)
             └─ src/lib/collector-logic.ts（类型门面）
                 └─ src/lib/collector-core.js（抓取与编排，链路唯一实现）
-                    ├─ puppeteer（可选依赖）抓取页面文本
+                    ├─ puppeteer-core（可选依赖）+ 系统浏览器抓取页面文本
                     └─ src/lib/dictionary-processor.js
                           └─ spawn(collect-dict.cjs) ← 与用户脚本共享同一份词典
                                 └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
@@ -460,8 +460,9 @@ GitHub_Chinese/
 
 - 两条 API 路由均声明 `runtime = 'nodejs'`（需要 `child_process` 与文件系统）
 - 采集原始文本写入系统临时目录（`os.tmpdir()`），不污染仓库工作区
-- `puppeteer` 为**可选运行时依赖**：已列入 `serverExternalPackages` 并以运行时 `createRequire` 解析，
-  未安装时批量采集返回明确错误提示，而非崩溃
+- `puppeteer-core` 为**可选运行时依赖**（配合系统已安装的 Chrome / Edge）：由 `browser-resolver.js` 以
+  动态 `import()`（`turbopackIgnore`）在运行期解析；不声明 `serverExternalPackages`（该包为 ESM，显式外部化会触发
+  Turbopack 告警）；未安装依赖或未找到可用浏览器时批量采集返回明确错误提示，而非崩溃
 - `src/proxy.ts` 为所有响应附加 `X-Content-Type-Options`、`X-Frame-Options` 等基础安全头
 - **采集错误码约定（P2-7）**：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
   （纯数据模块，不含 `fs`/`child_process`，可安全被客户端导入）；服务端 `error` 事件均携带 `code`，

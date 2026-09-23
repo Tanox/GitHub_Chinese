@@ -21,7 +21,7 @@ GitHub Chinese 简体中文是一个浏览器用户脚本项目，为 GitHub 网
 |------|------|
 | 用户脚本 | JavaScript (ES6+)、ES Modules、Tampermonkey / Greasemonkey API |
 | 采集工作台 | Next.js 16（App Router）、React 19、TypeScript、Tailwind CSS |
-| 采集内核 | puppeteer（可选依赖，Headless 抓取） |
+| 采集内核 | puppeteer-core（可选依赖）+ 系统 Chrome / Edge（Headless 抓取） |
 | 构建 | 自研 ESM 依赖图拼接（`build.cjs`）+ Next 构建 |
 | 质量 | ESLint（Flat Config）、Prettier、Husky + lint-staged |
 
@@ -56,7 +56,7 @@ GitHub_Chinese/
 │   ├── components/                   # Shell / Rail / MobileNav（服务端）+ navItems（导航源）+ CollectorConsole（客户端岛）
 │   ├── hooks/useCollector.ts         # 采集状态 Hook
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / project-metrics.ts
-│   ├── types/puppeteer.d.ts          # 可选依赖类型声明
+│   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
 │   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
 ├── public/                           # Next 静态资源（css / js）
 │   ├── css/                          # 采集工作台样式（模块化，单文件 ≤200 行）

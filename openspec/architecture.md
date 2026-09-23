@@ -29,7 +29,7 @@ src/main.js → main/lifecycle.js
 ```
 src/app/page.tsx → src/hooks/useCollector.ts
   ├─ POST /api/collect        → lib/collector-logic.ts → spawn(collect-dict.cjs)
-  └─ POST /api/batch-collect  → lib/collector-logic.ts → puppeteer 抓取 → spawn(collect-dict.cjs)
+  └─ POST /api/batch-collect  → lib/collector-logic.ts → puppeteer-core 抓取 → spawn(collect-dict.cjs)
         └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
 ```
 

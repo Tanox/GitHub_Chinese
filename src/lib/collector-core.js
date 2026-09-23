@@ -6,9 +6,9 @@
  */
 
 import fs from 'fs/promises';
-import { createRequire } from 'module';
 import { RAW_TERMS_FILE, runDictionaryProcessor } from './dictionary-processor.js';
 import { CollectErrorCode } from './collect-codes.js';
+import { loadPuppeteerCore, resolveBrowserExecutable } from './browser-resolver.js';
 
 /**
  * @typedef {import('./dictionary-processor.js').CollectEvent} CollectEvent
@@ -18,25 +18,12 @@ const NAVIGATION_TIMEOUT_MS = 30_000;
 const MIN_TEXT_LENGTH = 2;
 const MAX_TEXT_LENGTH = 300;
 
-/** 未安装可选依赖时的提示（批量抓取依赖 puppeteer 提供的浏览器内核） */
+/** 未安装 puppeteer-core 时的提示 */
 const MISSING_PUPPETEER_MESSAGE =
-  '未检测到 puppeteer 依赖，无法启动批量抓取。请先执行 npm install puppeteer 后重试。';
-
-/** 可选依赖名以变量形式传入，避免打包器在构建期静态解析未安装的包 */
-const PUPPETEER_PACKAGE = 'puppeteer';
-const nodeRequire = createRequire(import.meta.url);
-
-/**
- * 运行时加载可选的 puppeteer 依赖
- * @returns {any|null} puppeteer 模块对象，未安装时返回 null
- */
-function loadPuppeteer() {
-  try {
-    return nodeRequire(PUPPETEER_PACKAGE);
-  } catch {
-    return null;
-  }
-}
+  '未检测到 puppeteer-core 依赖，无法启动批量抓取。请先执行 npm install 后重试。';
+/** 未找到可用浏览器时的提示（puppeteer-core 不自带内核） */
+const MISSING_BROWSER_MESSAGE =
+  '未找到可用的 Chrome / Edge 浏览器，无法启动批量抓取。可通过环境变量 PUPPETEER_EXECUTABLE_PATH 指定浏览器路径。';
 
 /**
  * 将错误转换为可读消息
@@ -79,7 +66,7 @@ export async function* collectFromUrls(urls) {
     return;
   }
 
-  const puppeteer = loadPuppeteer();
+  const puppeteer = await loadPuppeteerCore();
   if (!puppeteer) {
     yield {
       type: 'error',
@@ -89,10 +76,21 @@ export async function* collectFromUrls(urls) {
     return;
   }
 
+  const executablePath = resolveBrowserExecutable();
+  if (!executablePath) {
+    yield {
+      type: 'error',
+      message: MISSING_BROWSER_MESSAGE,
+      code: CollectErrorCode.MISSING_DEPENDENCY,
+    };
+    return;
+  }
+
   const allTexts = new Set();
   const total = urls.length;
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 

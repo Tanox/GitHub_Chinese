@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.31** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.32** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_i18n.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.9.31 |
+| 当前版本 | v1.9.32 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（注意：仓库同时存在 `bun.lock`，存在双锁文件漂移风险） |
@@ -37,7 +37,7 @@
 | 产物校验 | 通过 | `npm run validate` |
 | 单元测试 | 8 用例通过（含产物冒烟） | `npm run test:unit` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
-| Next 构建告警 | 1（可选依赖 `puppeteer` 未安装） | `npm run build:web` |
+| Next 构建告警 | 0 | `npm run build:web` |
 
 > 上述数字为数据型指标，发版时应重新执行对应命令实算，禁止手改。
 > 工作台「项目概览」页（`/overview`）已把其中多数指标改为服务端实时统计，不再依赖本文档的手工数字。
@@ -87,7 +87,7 @@ src/main.js                        ← 唯一入口
 | 类型门面 | `src/lib/collector-logic.ts`（为 Route Handler 提供 `CollectEvent` 类型） |
 | 状态 Hook | `src/hooks/useCollector.ts` |
 | Proxy（原 middleware） | `src/proxy.ts`（安全响应头，Next 16 约定） |
-| 类型声明 | `src/types/puppeteer.d.ts`、`src/version.d.ts` |
+| 类型声明 | `src/types/puppeteer-core.d.ts`、`src/version.d.ts` |
 | 样式 | `public/css/`（11 个自包含模块）+ `src/app/globals.css`（Tailwind 入口） |
 
 ```
@@ -96,7 +96,7 @@ src/main.js                        ← 唯一入口
       ├─ POST /api/collect        → processRawData(data)
       └─ POST /api/batch-collect  → collectFromUrls(urls)
             └─ src/lib/collector-core.js
-                ├─ puppeteer（可选依赖）抓取页面文本
+                ├─ puppeteer-core（可选依赖）+ 系统浏览器抓取页面文本
                 └─ src/lib/dictionary-processor.js
                       └─ spawn(collect-dict.cjs) ← 与用户脚本共享同一份词典
                             └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
@@ -220,7 +220,7 @@ src/main.js                        ← 唯一入口
 | 编号 | 任务 | 现状 | 验收标准 |
 |------|------|------|---------|
 | ~~P0-1~~ | ~~提交 `build/GitHub_i18n.user.js` 产物~~ | **已完成**（v1.9.24）：`git ls-files build/` 已能列出产物 | — |
-| P0-2 | 安装 `puppeteer` 依赖，或改为 `puppeteer-core` + 外部浏览器 | `package.json` 声明 `puppeteer@^25.11.0`，`node_modules` 中缺失。已改为运行时解析并加入 `serverExternalPackages`，未安装时返回明确提示；`npm run build:web` 仍输出 1 条无法解析该可选依赖的告警 | 批量 URL 采集可实际抓取页面，且构建无告警 |
+| ~~P0-2~~ | ~~安装 `puppeteer` 依赖，或改为 `puppeteer-core` + 外部浏览器~~ | **已完成**（v1.9.32）：改用 `puppeteer-core@^25.11.0`（已安装）+ 系统 Chrome / Edge；新增 `browser-resolver.js` 解析浏览器路径（支持 `PUPPETEER_EXECUTABLE_PATH` 覆盖）；`next build` 告警由 1 条降为 0 | — |
 
 ### P1 — 重要质量项
 
@@ -283,6 +283,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.32 | 2026-09-23 | 修复 P0-2：批量采集改用 `puppeteer-core` + 系统 Chrome / Edge（`browser-resolver.js` 解析可执行路径，支持 `PUPPETEER_EXECUTABLE_PATH`），`next build` 告警降为 0 |
 | 1.9.31 | 2026-09-23 | 新增用户脚本产物冒烟测试（P2-5）：`tests/smoke.test.cjs` 校验产物存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性 |
 | 1.9.30 | 2026-09-23 | 清理未启用的 Jest 配置并改用 Node 内置 test runner（P1-3）；新增 `tests/` 用例覆盖错误码契约与采集纯函数；`npm test` 串联 `test:unit` |
 | 1.9.29 | 2026-09-23 | 消除双锁文件漂移（P1-4）：删除 `bun.lock`，保留 npm 单一锁（`package-lock.json`）；词典采集支持增量与去重统计（P2-3）：`collect-dict.cjs` 的 `generateReport` 对比历史 `docs/untranslated-terms.txt`，输出新增 / 移除 / 净增统计 |
