@@ -30,13 +30,13 @@
 - **锁文件**：仅 `package-lock.json`（v1.9.29 已删除 `bun.lock`，**无双锁漂移**）。
 - **文档权威性**：`docs/` 是唯一权威正文；`openspec/*.md` 仅是指向 `docs/` 的简短索引。
   新增/修改规范文档只改 `docs/`，`openspec/` 只维护索引与 config.yaml。
-- **任务清单单一来源 = `docs/TASKS.md`**（v1.9.34 起）：由 `docs/PROGRESS.md` 遗留任务与 `docs/IMPROVEMENT-TASKS.md` 合并而来，含活动任务 T1–T10 与「已完成（历史归档）」；`PROGRESS.md` 第 5 节仅指向该文件。`docs/code-review/*`（STANDARDS/PROCESS/CHECKLIST/SETUP_GUIDE）是审查流程标准套件、非任务追踪，独立保留不合并。
+- **任务清单单一来源 = `docs/TASKS.md`**（v1.9.34 起）：由 `docs/PROGRESS.md` 遗留任务与 `docs/IMPROVEMENT-TASKS.md` 合并而来；第 1 节为活动任务（当前为空），第 2 节「历史归档（已完成）」以**紧凑编号索引**列出 T1–T11 与 P0-1–P2-7（详细改动见 `CHANGELOG.md`）；`PROGRESS.md` 第 5 节仅指向该文件。`docs/code-review/*`（STANDARDS/PROCESS/CHECKLIST/SETUP_GUIDE）是审查流程标准套件、非任务追踪，独立保留不合并。
 - **安全 / 文档加固（v1.9.35–36 已完成，勿重复）**：① SSRF → `src/lib/url-guard.js` 纯函数 +
   `CollectErrorCode.INVALID_URL`（采集前逐项校验；不做 DNS 解析，已知不防 DNS rebinding）；
   ② CSP → `src/proxy.ts` 基于 nonce（script-src nonce + strict-dynamic；**CSP 须同时写请求头**，Next 据此给自身脚本注入 nonce）；
   ③ OG/Twitter → `src/app/layout.tsx` 的 metadataBase / openGraph / twitter；④ PROGRESS 文档漂移已清理。
-- **任务状态（v1.9.40）**：`docs/TASKS.md` 活动任务 **T1–T10 全部完成**，均已归档至该文档第 2 节；
-  新增事项请按 `Txx` 追加到 §1。采集趋势数据在 `docs/collect-history.json`（由 `collect-dict.cjs` / `dict-report.cjs` 写入）。
+- **任务状态（v1.9.42）**：`docs/TASKS.md` 活动任务 **全部完成（T1–T11 + 遗留 P0-1–P2-7）**，均已归档至该文档第 2 节「历史归档（已完成）」；
+  第 2 节为紧凑编号索引，详细改动见 `CHANGELOG.md`。新增事项从 `T12` 起按 `Txx` 追加到 §1。采集趋势数据在 `docs/collect-history.json`（由 `collect-dict.cjs` / `dict-report.cjs` 写入）。
 - **已健康项**（勿重复处理）：req.json 容错已落地（v1.9.25）、构建可复现（无 Date/random 嵌入）、无 >200 行文件、双锁已消除。
 
 ## 编码约定（本项目）

@@ -145,7 +145,7 @@ src/main.js                        ← 唯一入口
 - [x] 产物校验 `scripts/validate-bundle.cjs`：存在性 + 体积 + 语法 + 未定义引用扫描
 - [x] ESLint（Flat Config，规则拆分到 `eslint/rules/`）+ Prettier + Husky + lint-staged
 - [x] CI/CD（`.github/workflows/ci-cd.yml`）：lint → build → validate → artifact → release
-- [x] ~~GitHub Pages 静态部署工作流（`static.yml`）~~ —— 已于 v1.9.42 移除（项目无需 Pages 托管，仅保留 `ci-cd.yml` CI 流水线）
+- [x] GitHub Pages 部署（合并至 `ci-cd.yml` 的 `deploy-pages` job，取代独立的 `static.yml`，消除重复工作流；`push` 到 `main` 即部署整个仓库到 Pages）
 - [x] TypeScript 严格模式（`strict: true`，零错误）
 - [x] Next 16 约定对齐：`middleware` → `proxy`、移除失效 `eslint` 配置键
 - [x] 语义化 `id` 覆盖主要容器与交互控件
