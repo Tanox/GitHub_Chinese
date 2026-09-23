@@ -11,6 +11,7 @@
 ### Docs
 - 清理 `docs/TASKS.md`：删除已完成任务的归档表格，改为紧凑编号索引（T1–T11、P0-1–P2-7），第 2 节由「已完成」更名为「历史归档（已完成）」
 - 同步文档版本行至 v1.9.42：`docs/`（README / project / architecture / development / coding-style / prototype / PROGRESS / README 索引）与 `openspec/`（README / project / architecture / development / coding-style / prototype / config.yaml）
+- 移除 `.github/workflows/static.yml` GitHub Pages 部署工作流（项目无需 Pages 托管，仅保留 `ci-cd.yml` CI 流水线）；同步 `docs/PROGRESS.md` §3.3 相关描述
 
 ---
 
