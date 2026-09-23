@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.33 / 2026-09-23，经实地核查刷新）
+## 项目事实（稳定，截至 v1.9.34 / 2026-09-23，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -25,6 +25,7 @@
 - **锁文件**：仅 `package-lock.json`（v1.9.29 已删除 `bun.lock`，**无双锁漂移**）。
 - **文档权威性**：`docs/` 是唯一权威正文；`openspec/*.md` 仅是指向 `docs/` 的简短索引。
   新增/修改规范文档只改 `docs/`，`openspec/` 只维护索引与 config.yaml。
+- **任务清单单一来源 = `docs/TASKS.md`**（v1.9.34 起）：由 `docs/PROGRESS.md` 遗留任务与 `docs/IMPROVEMENT-TASKS.md` 合并而来，含活动任务 T1–T10 与「已完成（历史归档）」；`PROGRESS.md` 第 5 节仅指向该文件。`docs/code-review/*`（STANDARDS/PROCESS/CHECKLIST/SETUP_GUIDE）是审查流程标准套件、非任务追踪，独立保留不合并。
 - **已知真实短板（待办，见 docs/IMPROVEMENT-TASKS.md）**：
   1. **SSRF（高危）**：`batch-collect` 对用户 URL 仅 `Array.isArray` 校验，`collector-core.js:107`
      `page.goto(url)` 无协议/主机/私网白名单 → 内网探测风险。

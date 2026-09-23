@@ -1,9 +1,15 @@
 # Changelog
 
+## [1.9.34] - 2026-09-23
+
+### Docs
+- 新增 `docs/TASKS.md`：项目**唯一任务清单**，合并 `docs/PROGRESS.md` 遗留任务与 `docs/IMPROVEMENT-TASKS.md`；已完成任务归档至第 2 节，活动任务为 T1–T10
+- `docs/PROGRESS.md` 第 5 节由任务表改为指向 `docs/TASKS.md` 的指针；删除 `docs/IMPROVEMENT-TASKS.md`（内容已合并）
+
 ## [1.9.33] - 2026-09-23
 
 ### Docs
-- 新增 `docs/IMPROVEMENT-TASKS.md`：完善改进建议任务文档（代码审查 + 实地核查，覆盖 SSRF 加固、CSP、文档漂移清理、OG 元信息、API 路由测试、超长文件门禁、依赖审计等 P0–P3 任务）
+- 新增 `docs/IMPROVEMENT-TASKS.md`：完善改进建议任务文档（代码审查 + 实地核查，覆盖 SSRF 加固、CSP、文档漂移清理、OG 元信息、API 路由测试、超长文件门禁、依赖审计等 P0–P3 任务）——该文档于 v1.9.34 合并入 `docs/TASKS.md`
 
 ## [1.9.32] - 2026-09-23
 
