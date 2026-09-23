@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.42] - 2026-09-23
+
+### Added
+- `package.json` 新增 `typecheck` 脚本（`tsc --noEmit -p tsconfig.json`）
+
+### Changed
+- CI 质量门禁补齐（T11）：`lint` 作业新增**类型检查**，`build` 作业新增**单元测试**（`npm run test:unit`，20 用例）
+
+### Docs
+- `docs/TASKS.md`：T11 完成后从活动清单移除并归档至第 2 节
+
+---
+
 ## [1.9.41] - 2026-09-23
 
 ### Docs

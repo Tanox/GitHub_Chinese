@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.40** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.42** ｜ 更新日期：2026-09-23 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、遗留任务与后续计划。
 > 每次发版后需同步更新「本次迭代」与「遗留任务」两节。
@@ -211,7 +211,7 @@ src/main.js                        ← 唯一入口
 | E2 | 采集错误仅以文本消息返回，前端难以按类型分流处理（P2-7） | 所有失败在 UI 里都是无差别红字，无法区分依赖缺失 / 抓取失败 / 子进程失败 | 新增 `collect-codes.js`（纯数据、客户端可安全导入）定义 `CollectErrorCode`；服务端 `error` 事件填充 `code`，`Dashboard` 渲染 `E<code>` 徽标 |
 | E3 | 空文本 / 空 URL 会进入子进程并以晦涩方式失败 | 错误提示不可读 | `processRawData` / `collectFromUrls` 入口直接返回 `INPUT_INVALID` |
 
-### 4.6 v1.9.33–1.9.41 · 任务清单与安全加固
+### 4.6 v1.9.33–1.9.42 · 任务清单与安全加固
 
 | 版本 | 变更 |
 |------|------|
@@ -224,6 +224,7 @@ src/main.js                        ← 唯一入口
 | 1.9.39 | **T9 命名澄清**：README 新增「命名与兼容性说明」，说明旧名 `GitHub_i18n` 因 `@updateURL` 依赖刻意保留 |
 | 1.9.40 | **T8 a11y**：axe-core + jsdom 检查三页静态产物（serious / critical 阻断）+ 语义修复；**T10 采集趋势**：`scripts/collect-history.cjs` 记录统计、`/overview` 展示趋势；拆分 `collect-dict.cjs`（211 行）至 `scripts/dict-report.cjs`；行数门禁扩展至根脚本 |
 | 1.9.41 | **文档整理**：清理 `docs/TASKS.md`（第 1 节空节合并、第 2 节归档改紧凑索引表）；同步 `docs/` 与 `openspec/` 全部文档版本行至 v1.9.41；PROGRESS 指标实算刷新（产物字节 / 用例数） |
+| 1.9.42 | **T11 CI 门禁补齐**：CI `lint` 作业新增类型检查（`typecheck`）、`build` 作业新增单元测试（`test:unit`，20 用例） |
 
 ---
 
@@ -244,6 +245,7 @@ src/main.js                        ← 唯一入口
 | `npm run build:web` | 构建 Next.js 工作台 |
 | `npm run lint` / `lint:fix` | ESLint 检查 / 自动修复 |
 | `npm run lint:length` | 代码文件行数门禁（任一 >200 行即失败） |
+| `npm run typecheck` | TypeScript 类型检查（`tsc --noEmit`，strict） |
 | `npm run format` / `format:check` | Prettier 格式化 / 格式校验 |
 | `npm run test:unit` | 运行单元测试（Node 内置 test runner，零依赖） |
 | `npm run test` | 完整流水线：lint → build → test:unit → validate |
@@ -271,6 +273,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.42 | 2026-09-23 | CI 门禁补齐（T11）：`lint` 作业新增类型检查、`build` 作业新增单元测试；新增 `npm run typecheck` 脚本 |
 | 1.9.41 | 2026-09-23 | 文档整理：清理 `docs/TASKS.md`（归档表格化）、同步 `docs/` 与 `openspec/` 版本行、刷新 PROGRESS 指标 |
 | 1.9.40 | 2026-09-23 | 新增 a11y 自动化检查（T8，axe-core + jsdom）与采集趋势可视化（T10，`collect-history.json` + `/overview`）；拆分 `collect-dict.cjs`，门禁覆盖根脚本 |
 | 1.9.39 | 2026-09-23 | 文档：README 新增「命名与兼容性说明」（T9），澄清产品名与仓库旧名 `GitHub_i18n` 的保留原因 |

@@ -34,6 +34,9 @@ jobs:
     - name: 检查代码文件行数
       run: npm run lint:length
 
+    - name: 类型检查
+      run: npm run typecheck
+
   # 构建项目
   build:
     runs-on: ubuntu-latest
@@ -54,6 +57,9 @@ jobs:
 
     - name: 构建项目
       run: npm run build
+
+    - name: 运行单元测试
+      run: npm run test:unit
 
     - name: 验证构建产物
       run: npm run validate
