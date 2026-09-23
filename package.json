@@ -1,6 +1,6 @@
 {
   "name": "github-chinese",
-  "version": "1.9.37",
+  "version": "1.9.38",
   "description": "GitHub Chinese 简体中文 - GitHub 中文本地化解决方案",
   "main": "src/main.js",
   "type": "module",
@@ -12,11 +12,12 @@
     "start": "next start",
     "lint": "eslint src/ scripts/ tests/ build.cjs collect-dict.cjs server.js",
     "lint:fix": "eslint src/ scripts/ tests/ build.cjs collect-dict.cjs server.js --fix",
+    "lint:length": "node scripts/check-file-length.cjs",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\" \"scripts/**/*.cjs\" \"tests/**/*.{js,cjs,mjs}\" \"build.cjs\" \"collect-dict.cjs\"",
     "format:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"scripts/**/*.cjs\" \"tests/**/*.{js,cjs,mjs}\" \"build.cjs\" \"collect-dict.cjs\"",
     "validate": "node scripts/validate-bundle.cjs",
     "test:unit": "node --test",
-    "test": "npm run lint && npm run build && npm run test:unit && npm run validate",
+    "test": "npm run lint && npm run lint:length && npm run build && npm run test:unit && npm run validate",
     "clean": "node -e \"const fs=require('fs');['build','dist','coverage','.next'].forEach(dir=>{if(fs.existsSync(dir)){fs.rmSync(dir,{recursive:true});console.log('已清理:',dir)}})\"",
     "dict:collect": "node collect-dict.cjs",
     "prepare": "husky"

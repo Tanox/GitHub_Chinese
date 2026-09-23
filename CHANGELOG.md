@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.9.38] - 2026-09-23
+
+### Added
+- 新增代码文件行数门禁 `scripts/check-file-length.cjs`（T6）：扫描 `src` / `scripts` / `tests`，任一代码文件 >200 行即失败，并输出最大行数 TOP 5
+- `package.json` 新增 `lint:length` 脚本并纳入 `npm test`（`lint → lint:length → build → test:unit → validate`）；CI lint 作业新增该检查
+
+### Changed
+- CI 安全审计由 `npm audit --audit-level=moderate || true` 改为 `npm audit --audit-level=high`（T7）：高危依赖会阻塞构建，低危不再视为失败
+
+---
+
 ## [1.9.37] - 2026-09-23
 
 ### Added

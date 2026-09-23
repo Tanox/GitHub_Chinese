@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.9.37** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.38** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**唯一任务清单**，由 `docs/PROGRESS.md`（遗留任务）与 `docs/IMPROVEMENT-TASKS.md` 合并而来。
 > 已完成任务归档至第 2 节；活动任务按优先级排列于第 1 节。PROGRESS.md 仅保留进度报告，不再重复维护任务表。
@@ -22,12 +22,7 @@
 
 ### P2 — 体验与规范
 
-- [ ] **T6 · 近 200 行文件防回潮门禁**（S）
-  - 现状：`configUI.js`(191)/`virtualDom/manager.js`(190)/`useCollector.ts`(189)/`performanceMonitor.js`(186) 贴线；`scripts/` 最大 179；`public/js` 最大 147。
-  - 验收：CI 在新增超长文件时失败；或 `npm run lint` 报告最大行数并随发版刷新。
-- [ ] **T7 · 依赖审计纳入 CI**（S）
-  - 现状：含可选 `puppeteer-core`（运行期 `createRequire` 解析）、`express`/`ws`/`next`；未见 `npm audit` 门禁。
-  - 验收：CI 跑 `npm audit --audit-level=high` 且不阻塞低危；无未声明却打进产物的依赖。
+- （暂无活动任务）
 
 ### P3 — 可选 / 前瞻
 
@@ -54,6 +49,8 @@
 - [x] **T3** 清理 PROGRESS.md 文档漂移（v1.9.35）：修正 `:19` 「双锁并存」错误陈述，补全版本行与 §8 变更记录（1.9.33–1.9.35）
 - [x] **T4** 补充 OG / Twitter 元信息（v1.9.36）：`src/app/layout.tsx` 增加 `metadataBase` / `openGraph` / `twitter` 配置
 - [x] **T5** API 路由与错误码集成测试（v1.9.37）：新增 `src/lib/request-body.js` 纯函数（路由据此对无效 `urls` 返回 400）与 `tests/request-body.test.mjs`、`tests/collector-core.test.mjs`，覆盖空输入 `INPUT_INVALID`、非法 URL `INVALID_URL`；SSRF 校验前移，全部非法时不启动浏览器
+- [x] **T6** 近 200 行文件防回潮门禁（v1.9.38）：新增 `scripts/check-file-length.cjs`，扫描 `src`/`scripts`/`tests`，任一文件 >200 行即失败并输出 TOP 5；`npm run lint:length` 纳入 `npm test` 与 CI
+- [x] **T7** 依赖审计纳入 CI（v1.9.38）：CI 安全审计由 `--audit-level=moderate || true` 改为 `npm audit --audit-level=high`（高危阻塞、低危放行）；本地实测 0 漏洞
 
 ### 来自 PROGRESS.md（v1.9.x）
 
