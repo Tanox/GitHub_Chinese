@@ -12,7 +12,7 @@
      不要再把整页写成 `'use client'`。
 - **不存在 `web/` 目录**（v1.9.23 起由 `public/` 取代：`public/css/` 11 个模块 + `public/js/wizard/`）。
   旧文档/注释中的 `web/css/*`、`web/js/*` 均为过期路径。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.27）。工作台页面通过 `@/version` +
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.28）。工作台页面通过 `@/version` +
   `src/version.d.ts` 读取，不再硬编码。
 - **构建脚本已自动化**：`scripts/build/moduleGraph.cjs`（依赖图 + 循环检测，`NEXT_ONLY_SEGMENTS` 跳过
   `app/components/lib/hooks/server`）、`scripts/build/transform.cjs`（ESM→单作用域 + 跨模块顶层重名冲突检测）、
@@ -24,12 +24,17 @@
   `src/lib/dictionary-processor.js`（spawn `collect-dict.cjs` 的子进程桥接）；
   `src/lib/collector-logic.ts` 仅为类型门面；Next Route 与 `server.js` 共用，只各自保留 SSE 适配层。
   旧的 `src/server/collector.js` 已删除，**不要重新引入第二份实现**。
+- **采集错误码约定（P2-7，v1.9.28）**：`src/lib/collect-codes.js` 是**纯数据模块**（不含 `fs`/`child_process`），
+  服务端与客户端共用 `CollectErrorCode`（MISSING_DEPENDENCY/FETCH_FAILED/SUBPROCESS_FAILED/INPUT_INVALID/UNKNOWN）；
+  服务端 `error` 事件填充 `code`，前端 `useCollector`（`LogEntry.code`）与 `Dashboard` 渲染 `E<code>` 徽标，便于按类型分流。
+- **配置面板性能监控按钮曾是死按钮（P2-4，v1.9.28）**：`refresh`/`export` 此前只建 DOM 未绑 `click`；
+  现已在 `performanceMonitor.js` 内绑定 `updatePerformanceStats`/`exportPerformanceStats`，导出无数据时按钮短显「暂无数据」。
 - **可选依赖 `puppeteer` 未安装**（package.json 声明 ^25.11.0，node_modules 只有 `puppeteer-core`）：
   已列入 `next.config.mjs` 的 `serverExternalPackages`，并以 `createRequire` + 变量说明符做运行时解析，
   未安装时返回明确提示。`npm run build:web` 仍会输出 **1 条**无法解析该可选依赖的 Turbopack 告警（属 P0-2）。
 - 质量现状：`npm run lint` 0 error/0 warning；`tsc --noEmit -p tsconfig.json` 通过且
   **`strict: true`**；**全部代码文件 ≤ 200 行**；构建期**循环引用 0 处、孤立模块 0 处**；
-  `src/` 116 个文件 / 8801 行；`node build.cjs` 连续两次产物 md5 一致（可复现）。
+  `src/` 117 个文件 / 8889 行；`node build.cjs` 连续两次产物 md5 一致（可复现）。
 - **工作台导航是「响应式单源」**：`src/components/navItems.ts` 为导航唯一数据源，
   `Rail.tsx`（>1024px 左侧栏）与 `MobileNav.tsx`（≤1024px 顶栏下方横向标签条）共同消费；
   `Shell`/`Rail`/`MobileNav` **均为服务端组件**，仅靠 CSS 媒体查询切换可见性——
@@ -80,9 +85,11 @@
   `format:check` 会对约 70 个**未改动**文件报错。这是本地视图差异，**不是仓库缺陷**——
   **不要为此执行 `npm run format`**（会把行尾就地改成 LF，产生全仓假 diff）。只需确认自己新建的文件通过检查即可。
 - **Prettier 的 JSX 引号规则**：`.prettierrc` 同时设 `singleQuote: true` 与 `jsxSingleQuote: true`，
-  因此 **JSX 属性必须用单引号**。手写新组件若用双引号会被 `format:check` 拒绝
-  （自动提交的 lint-staged 会 `prettier --write` 修正，但不要依赖它）。既有组件如 `Dashboard.tsx`
-  多为双引号历史遗留，不必顺手改。
+  因此 **JSX 属性必须用单引号**。手写新组件若用双引号会被 `format:check` 拒绝。
+  ⚠️ 实测**自动提交的 lint-staged 并不能可靠修正双引号 JSX**——`src/components/Dashboard.tsx` 与
+  `src/hooks/useCollector.ts` 在本轮（1.9.28）被自动提交后仍以双引号存于工作区，直到我手动
+  `prettier --write` 才合规。**收尾前务必对自己本轮编辑过的文件运行 `prettier --write` 并复检**，
+  不要依赖 lint-staged。
 - **构建清理的 ENOENT 竞态**：`build.cjs` 的 `prepareBuildDir()` 已改为
   `fs.rmSync(BUILD_DIR, { recursive: true, force: true })`。本机存在外部「safe-delete」拦截
   （报错呈 Rust 风格 `Os { code: -2147024894 }`），删目录偶发「文件不存在」竞态并导致整次构建失败，

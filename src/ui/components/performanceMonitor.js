@@ -1,13 +1,16 @@
 /**
  * GitHub 中文翻译性能监控组件
  * @file performanceMonitor.js
- * @version 1.9.21
- * @date 2026-06-10
+ * @version 1.9.28
+ * @date 2026-09-23
  * @author Sut
  * @description 性能监控区域组件
  */
 
 import { VERSION } from '../../version.js';
+
+/** 无数据时按钮反馈文案的自动复位时长（毫秒） */
+const NO_DATA_FEEDBACK_MS = 1500;
 
 /**
  * 创建性能监控区域
@@ -90,10 +93,23 @@ export function createPerformanceMonitoringSection() {
   const refreshBtn = document.createElement('button');
   refreshBtn.id = 'github-i18n-refresh-stats';
   refreshBtn.textContent = '刷新性能数据';
+  refreshBtn.addEventListener('click', updatePerformanceStats);
 
   const exportBtn = document.createElement('button');
   exportBtn.id = 'github-i18n-export-stats';
   exportBtn.textContent = '导出性能数据';
+  exportBtn.addEventListener('click', () => {
+    const data = exportPerformanceStats();
+    if (!data) {
+      const original = exportBtn.textContent;
+      exportBtn.textContent = '暂无数据';
+      exportBtn.disabled = true;
+      setTimeout(() => {
+        exportBtn.textContent = original;
+        exportBtn.disabled = false;
+      }, NO_DATA_FEEDBACK_MS);
+    }
+  });
 
   actionsDiv.appendChild(refreshBtn);
   actionsDiv.appendChild(exportBtn);

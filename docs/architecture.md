@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.9.27** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.28** ｜ 版本权威源：`src/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -463,6 +463,9 @@ GitHub_Chinese/
 - `puppeteer` 为**可选运行时依赖**：已列入 `serverExternalPackages` 并以运行时 `createRequire` 解析，
   未安装时批量采集返回明确错误提示，而非崩溃
 - `src/proxy.ts` 为所有响应附加 `X-Content-Type-Options`、`X-Frame-Options` 等基础安全头
+- **采集错误码约定（P2-7）**：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
+  （纯数据模块，不含 `fs`/`child_process`，可安全被客户端导入）；服务端 `error` 事件均携带 `code`，
+  前端 `useCollector` 与终端日志据此渲染 `E<code>` 徽标，便于按类型分流处理
 - `server.js`（原型热更新预览）复用 `collector-core.js` + `dictionary-processor.js`，仅保留 SSE 适配层
 
 架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `proxy.ts`；
@@ -475,6 +478,7 @@ GitHub_Chinese/
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.28 | 2026-09-23 | 修复配置面板性能监控按钮为死按钮（P2-4）；新增采集错误码约定（P2-7）：`collect-codes.js` 共用 `CollectErrorCode`、服务端错误事件带 `code`、前端渲染错误码徽标；空输入/空 URL 直接返回 `INPUT_INVALID` |
 | 1.9.27 | 2026-09-22 | 修复窄屏（≤1024px）隐藏侧栏导致三页无法互跳：新增服务端组件 `MobileNav`（CSS 媒体查询切换，不增加客户端包）与共享导航源 `navItems.ts`；≤640px 顶栏转纵向、内容区收窄内边距 |
 | 1.9.26 | 2026-09-22 | 修复工作台外壳布局与词条状态徽标样式；新增「项目概览」「设计系统」页与服务端指标；`middleware`→`proxy` 迁移；采集服务端逻辑去重为 `collector-core` + `dictionary-processor`；移除未引用的 i18n 框架；部分匹配改为上下文注入以消除循环引用；开启 TS 严格模式 |
 | 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配；采集接口非法 JSON 返回 400 |

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.9.28] - 2026-09-23
+
+### Fixed
+- 修复配置面板「性能监控」区两个按钮均为死按钮：`刷新性能数据` 与 `导出性能数据` 此前仅创建 DOM、`addEventListener` 从未绑定（P2-4）
+
+### Added
+- 新增采集流程错误码约定（P2-7）：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
+  （`MISSING_DEPENDENCY` / `FETCH_FAILED` / `SUBPROCESS_FAILED` / `INPUT_INVALID` / `UNKNOWN`）。
+  该模块**不含任何服务端运行时依赖**，可被客户端组件安全导入而不带入 `fs`/`child_process`
+- 新增输入校验：空文本粘贴、空 URL 列表直接返回 `INPUT_INVALID` 错误，不再进入无意义的子进程
+
+### Changed
+- `src/lib/collector-core.js` 与 `dictionary-processor.js` 的 `error` 事件填充 `code`；
+  `useCollector.ts` 的 `LogEntry` 新增 `code` 字段；`Dashboard.tsx` 错误行渲染 `E<code>` 徽标
+
+---
+
 ## [1.9.27] - 2026-09-22
 
 ### Fixed

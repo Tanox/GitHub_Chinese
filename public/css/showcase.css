@@ -2,7 +2,7 @@
  * GitHub 中文 · 采集工作台 — 概览与设计系统
  * 仅服务 /overview 与 /design 两个信息型页面，复用 base.css 的设计令牌
  * @file public/css/showcase.css
- * @version 1.9.26
+ * @version 1.9.28
  */
 .stat-grid {
   display: grid;
@@ -119,4 +119,18 @@
   flex-wrap: wrap;
   align-items: center;
   gap: .75rem;
+}
+
+/* 终端错误行的错误码徽标：服务端按类型分流的依据，前端可视化展示 */
+.log-code {
+  display: inline-block;
+  margin-left: .5rem;
+  padding: .02rem .4rem;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: .65rem;
+  font-weight: 700;
+  color: #ffb4ac;
+  background: rgba(248, 81, 73, .16);
+  border: 1px solid rgba(248, 81, 73, .35);
 }

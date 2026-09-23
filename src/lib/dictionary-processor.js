@@ -1,13 +1,14 @@
 /**
  * 词典清洗子进程桥接
  * @file src/lib/dictionary-processor.js
- * @version 1.9.26
+ * @version 1.9.28
  * @description 调用 collect-dict.cjs 清洗原始词条文件，并把子进程输出转为采集事件流
  */
 
 import os from 'os';
 import path from 'path';
 import { spawn } from 'child_process';
+import { CollectErrorCode } from './collect-codes.js';
 
 /**
  * 采集事件
@@ -59,7 +60,11 @@ export async function* runDictionaryProcessor() {
       .split('\n')
       .forEach((line) => {
         if (line.trim()) {
-          queue.push({ type, message: line });
+          queue.push({
+            type,
+            message: line,
+            code: type === 'error' ? CollectErrorCode.SUBPROCESS_FAILED : undefined,
+          });
         }
       });
   };

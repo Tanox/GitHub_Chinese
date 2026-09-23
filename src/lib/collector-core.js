@@ -1,13 +1,14 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.9.26
+ * @version 1.9.28
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
 import fs from 'fs/promises';
 import { createRequire } from 'module';
 import { RAW_TERMS_FILE, runDictionaryProcessor } from './dictionary-processor.js';
+import { CollectErrorCode } from './collect-codes.js';
 
 /**
  * @typedef {import('./dictionary-processor.js').CollectEvent} CollectEvent
@@ -73,9 +74,18 @@ function extractPageText(minLength, maxLength) {
  * @returns {AsyncGenerator<CollectEvent>} 采集事件流
  */
 export async function* collectFromUrls(urls) {
+  if (!Array.isArray(urls) || urls.length === 0) {
+    yield { type: 'error', message: '未提供有效的抓取 URL', code: CollectErrorCode.INPUT_INVALID };
+    return;
+  }
+
   const puppeteer = loadPuppeteer();
   if (!puppeteer) {
-    yield { type: 'error', message: MISSING_PUPPETEER_MESSAGE };
+    yield {
+      type: 'error',
+      message: MISSING_PUPPETEER_MESSAGE,
+      code: CollectErrorCode.MISSING_DEPENDENCY,
+    };
     return;
   }
 
@@ -103,7 +113,11 @@ export async function* collectFromUrls(urls) {
         texts.forEach((text) => allTexts.add(text));
         yield { type: 'log', message: `成功从 ${url} 提取 ${texts.length} 条文本` };
       } catch (error) {
-        yield { type: 'error', message: `处理 ${url} 时失败: ${describeError(error)}` };
+        yield {
+          type: 'error',
+          message: `处理 ${url} 时失败: ${describeError(error)}`,
+          code: CollectErrorCode.FETCH_FAILED,
+        };
       } finally {
         await page.close();
       }
@@ -115,7 +129,11 @@ export async function* collectFromUrls(urls) {
     await fs.writeFile(RAW_TERMS_FILE, Array.from(allTexts).join('\n'), 'utf-8');
     yield* runDictionaryProcessor();
   } catch (error) {
-    yield { type: 'error', message: describeError(error) };
+    yield {
+      type: 'error',
+      message: `保存或清洗失败: ${describeError(error)}`,
+      code: CollectErrorCode.SUBPROCESS_FAILED,
+    };
   } finally {
     await browser.close();
   }
@@ -127,6 +145,15 @@ export async function* collectFromUrls(urls) {
  * @returns {AsyncGenerator<CollectEvent>} 采集事件流
  */
 export async function* processRawData(data) {
+  if (!data || data.trim() === '') {
+    yield {
+      type: 'error',
+      message: '粘贴内容为空，请提供待提取的页面文本',
+      code: CollectErrorCode.INPUT_INVALID,
+    };
+    return;
+  }
+
   await fs.writeFile(RAW_TERMS_FILE, data, 'utf-8');
   yield* runDictionaryProcessor();
 }

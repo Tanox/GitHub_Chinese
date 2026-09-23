@@ -1,11 +1,12 @@
 /**
  * 采集状态管理 Hook
  * @file src/hooks/useCollector.ts
- * @version 1.9.24
+ * @version 1.9.28
  * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态
  */
 
 import { useCallback, useState } from 'react';
+import { CollectErrorCode } from '@/lib/collect-codes.js';
 
 export type LogType = 'log' | 'error' | 'progress' | 'done';
 
@@ -13,6 +14,8 @@ export interface LogEntry {
   type: LogType;
   message: string;
   timestamp: number;
+  /** 错误码（`type === 'error'` 时由服务端给出，见 `CollectErrorCode`） */
+  code?: number;
 }
 
 export interface ProgressState {
@@ -33,6 +36,7 @@ export interface TermEntry {
 interface StreamEvent {
   type: LogType;
   message?: string;
+  code?: number;
   data?: { type?: string; current?: number; total?: number; url?: string };
 }
 
@@ -55,8 +59,11 @@ export function useCollector() {
   const [progress, setProgress] = useState<ProgressState>(IDLE_PROGRESS);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const addLog = useCallback((type: LogType, message: string) => {
-    setLogs((prev) => [...prev, { type, message, timestamp: Date.now() }]);
+  const addLog = useCallback((type: LogType, message: string, code?: number) => {
+    setLogs((prev) => [
+      ...prev,
+      { type, message, timestamp: Date.now(), ...(code !== undefined ? { code } : {}) },
+    ]);
 
     const matched = message.match(TERM_LINE_RE);
     if (matched) {
@@ -77,7 +84,7 @@ export function useCollector() {
         return;
       }
       if (event.type === 'error' && event.message) {
-        addLog('error', event.message);
+        addLog('error', event.message, event.code);
         return;
       }
       if (event.type === 'done') {
