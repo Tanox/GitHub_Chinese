@@ -71,7 +71,9 @@
 - 每次修改至少 bump patch 版本；**仅同步被改动文件的头注释版本号**，禁止全仓库批量刷写。
   版本展示位只同步：`src/version.js`、`package.json`、`README.md` 徽章、`CHANGELOG.md`，
   以及**本次实际编辑过**的文档版本行（未编辑的文档不动，避免无意义 diff）。
-- 主要容器与交互控件须带语义化 kebab-case `id`。
+- 主要容器与交互控件须带语义化 kebab-case `id`（所有容器：页面级 / 区块 / 卡片 / 主要区域 / 关键控件都加，便于调试定位、测试与无障碍）。
+- **模型 / 工具请求失败后的恢复偏好**：单次请求或工具调用失败后，等待约 **30 秒**自动重试并继续推进，不因此停滞等待人工确认（除非确属无法绕过的阻塞）。
+- 对话保持中文、输出精简直奔要点（用户显式重申，全局规则已覆盖）。
 - `eslint.config.js` 规则已拆分到 `eslint/rules/{core,bestPractices,quality}.js`，新增规则改对应文件。
 - 工作台 TS：禁止 `any`（用 `unknown` + 收窄）；外部可选依赖写最小 `declare module`（见 `src/types/puppeteer.d.ts`）。
 

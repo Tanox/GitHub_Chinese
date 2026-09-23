@@ -28,3 +28,6 @@ github_string_fetcher.js
 /docs/_templates
 /docs/_fragments
 
+# 仅保留 npm 单一锁文件，避免 bun/pnpm 锁漂移
+bun.lock
+

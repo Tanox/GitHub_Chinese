@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.29] - 2026-09-23
+
+### Changed
+- 消除双锁文件漂移（P1-4）：删除 `bun.lock`，保留 npm 单一锁（`package-lock.json`）；`.gitignore` 追加 `bun.lock` 防止再生
+
+### Added
+- 词典采集支持增量与去重统计（P2-3）：`collect-dict.cjs` 的 `generateReport` 对比历史 `docs/untranslated-terms.txt`，输出新增 / 移除 / 净增统计并展示新增词条样例，经 SSE 透传至采集工作台「处理中心」
+
+---
+
 ## [1.9.28] - 2026-09-23
 
 ### Fixed

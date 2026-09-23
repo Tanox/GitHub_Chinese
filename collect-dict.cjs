@@ -1,7 +1,7 @@
 /**
  * 词典采集工具
  * @file collect-dict.cjs
- * @version 1.9.20
+ * @version 1.9.29
  * @date 2026-06-10
  * @author Sut
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表
@@ -13,8 +13,6 @@ const babel = require('@babel/core');
 
 const PROJECT_ROOT = path.resolve(__dirname);
 const DICT_DIR = path.join(PROJECT_ROOT, 'src', 'dictionaries');
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * 递归收集词典目录下的全部模块文件（避免手工清单与源码结构脱节）
@@ -43,8 +41,6 @@ async function mergeDictionaries() {
 
   for (const filePath of dictFiles) {
     const file = path.relative(PROJECT_ROOT, filePath);
-    console.log(`[模块分析] 正在解析模块: ${file}`);
-    await sleep(20);
     const content = fs.readFileSync(filePath, 'utf-8');
     try {
       const ast = babel.parseSync(content, {
@@ -107,10 +103,34 @@ function findUntranslated(texts, dictionary) {
 }
 
 /**
- * 生成待翻译报告
+ * 计算与历史报告的增量对比
+ * @param {Set<string>} oldSet - 上一轮待翻译词条集合
+ * @param {Set<string>} newSet - 本轮待翻译词条集合
+ * @returns {{added:string[],removed:string[],net:number}}
+ */
+function computeDelta(oldSet, newSet) {
+  const added = [...newSet].filter((t) => !oldSet.has(t));
+  const removed = [...oldSet].filter((t) => !newSet.has(t));
+  return { added, removed, net: newSet.size - oldSet.size };
+}
+
+/**
+ * 生成待翻译报告（含与历史报告的增量对比）
  */
 function generateReport(untranslated) {
   const uniqueUntranslated = [...new Set(untranslated)].sort();
+  const outputPath = path.join(PROJECT_ROOT, 'docs', 'untranslated-terms.txt');
+
+  const oldSet = new Set();
+  if (fs.existsSync(outputPath)) {
+    fs.readFileSync(outputPath, 'utf-8')
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .forEach((t) => oldSet.add(t));
+  }
+  const newSet = new Set(uniqueUntranslated);
+  const { added, removed, net } = computeDelta(oldSet, newSet);
 
   console.log('\n========================================');
   console.log('  GitHub 中文翻译 - 词典采集报告');
@@ -118,31 +138,33 @@ function generateReport(untranslated) {
   console.log(`📊 发现 ${uniqueUntranslated.length} 个待翻译词条\n`);
 
   if (uniqueUntranslated.length > 0) {
-    console.log('待翻译词条列表：');
-    console.log('---');
-
-    uniqueUntranslated.slice(0, 50).forEach((text, index) => {
-      console.log(`${index + 1}. "${text}"`);
-    });
-
-    if (uniqueUntranslated.length > 50) {
-      console.log(`\n... 还有 ${uniqueUntranslated.length - 50} 个词条`);
-    }
-
-    console.log('---\n');
-
-    // 生成可复制到词典文件的格式
-    console.log('可复制到 common.js 的格式：');
-    console.log('---');
-    uniqueUntranslated.slice(0, 20).forEach((text) => {
-      const escapedKey = text.replace(/'/g, "\\'");
-      console.log(`  '${escapedKey}': '待翻译: ${escapedKey}',`);
-    });
-    console.log('---\n');
+    console.log(
+      '待翻译词条列表（前 50）：\n' +
+        uniqueUntranslated
+          .slice(0, 50)
+          .map((t, i) => `${i + 1}. "${t}"`)
+          .join('\n'),
+    );
+    if (uniqueUntranslated.length > 50)
+      console.log(`... 还有 ${uniqueUntranslated.length - 50} 个词条\n`);
+    console.log('💡 将上述词条按 \'"词条": "待翻译: 词条"\' 形式加入词典文件即可生效\n');
   }
 
-  // 输出到文件
-  const outputPath = path.join(PROJECT_ROOT, 'docs', 'untranslated-terms.txt');
+  console.log('📈 增量统计（对比历史 docs/untranslated-terms.txt）：');
+  console.log(
+    `   新增 ${added.length} / 移除 ${removed.length} / 净增 ${net >= 0 ? '+' : ''}${net}（历史 ${oldSet.size} → 当前 ${newSet.size}）`,
+  );
+  if (added.length > 0) {
+    console.log(
+      '   新增词条：' +
+        added
+          .slice(0, 10)
+          .map((t) => `"${t}"`)
+          .join('、') +
+        (added.length > 10 ? ' …' : ''),
+    );
+  }
+
   const reportContent = uniqueUntranslated.map((text) => `"${text}"`).join('\n');
   fs.writeFileSync(outputPath, reportContent, 'utf-8');
   console.log(`✅ 报告已保存到: ${outputPath}\n`);
