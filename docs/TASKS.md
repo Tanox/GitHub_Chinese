@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.9.36** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.37** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**唯一任务清单**，由 `docs/PROGRESS.md`（遗留任务）与 `docs/IMPROVEMENT-TASKS.md` 合并而来。
 > 已完成任务归档至第 2 节；活动任务按优先级排列于第 1 节。PROGRESS.md 仅保留进度报告，不再重复维护任务表。
@@ -22,9 +22,6 @@
 
 ### P2 — 体验与规范
 
-- [ ] **T5 · API 路由与错误码集成测试**（M）
-  - 现状：`tests/` 仅 8 用例，无 `/api/collect`、`/api/batch-collect` 的路由/SSE/错误码覆盖（v1.9.25 的 `req.json` 容错曾靠人工回归）。
-  - 验收：新增 ≥3 用例（非法 JSON→400、空输入→`INPUT_INVALID`、非法 URL→`INVALID_URL`）；`npm run test:unit` 全绿。
 - [ ] **T6 · 近 200 行文件防回潮门禁**（S）
   - 现状：`configUI.js`(191)/`virtualDom/manager.js`(190)/`useCollector.ts`(189)/`performanceMonitor.js`(186) 贴线；`scripts/` 最大 179；`public/js` 最大 147。
   - 验收：CI 在新增超长文件时失败；或 `npm run lint` 报告最大行数并随发版刷新。
@@ -56,6 +53,7 @@
 - [x] **T2** 补充 Content-Security-Policy（v1.9.36）：`src/proxy.ts` 注入基于 nonce 的 CSP（`script-src 'self' 'nonce-…' 'strict-dynamic'`、`object-src 'none'`、`frame-ancestors 'none'` 等）
 - [x] **T3** 清理 PROGRESS.md 文档漂移（v1.9.35）：修正 `:19` 「双锁并存」错误陈述，补全版本行与 §8 变更记录（1.9.33–1.9.35）
 - [x] **T4** 补充 OG / Twitter 元信息（v1.9.36）：`src/app/layout.tsx` 增加 `metadataBase` / `openGraph` / `twitter` 配置
+- [x] **T5** API 路由与错误码集成测试（v1.9.37）：新增 `src/lib/request-body.js` 纯函数（路由据此对无效 `urls` 返回 400）与 `tests/request-body.test.mjs`、`tests/collector-core.test.mjs`，覆盖空输入 `INPUT_INVALID`、非法 URL `INVALID_URL`；SSRF 校验前移，全部非法时不启动浏览器
 
 ### 来自 PROGRESS.md（v1.9.x）
 

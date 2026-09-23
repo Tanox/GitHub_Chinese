@@ -1,12 +1,13 @@
 import { NextRequest } from 'next/server';
 import { collectFromUrls } from '@/lib/collector-logic';
+import { extractUrls } from '@/lib/request-body';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
-  let urls: unknown;
+  let body: unknown;
   try {
-    ({ urls } = await req.json());
+    body = await req.json();
   } catch {
     return new Response(JSON.stringify({ error: '请求体不是合法的 JSON' }), {
       status: 400,
@@ -14,8 +15,9 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  if (!Array.isArray(urls) || urls.length === 0) {
-    return new Response(JSON.stringify({ error: '没有提供有效的 URL 列表' }), {
+  const parsed = extractUrls(body);
+  if (!parsed.ok) {
+    return new Response(JSON.stringify({ error: parsed.error }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -25,7 +27,7 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        for await (const event of collectFromUrls(urls)) {
+        for await (const event of collectFromUrls(parsed.urls)) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
         }
       } catch (err: unknown) {

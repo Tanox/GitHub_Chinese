@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.9.37] - 2026-09-23
+
+### Added
+- 新增 `src/lib/request-body.js`（T5）：请求体归一化纯函数 `extractUrls`，`batch-collect` 路由据此对缺失 / 无效 `urls` 返回 400
+- 新增集成测试：`tests/request-body.test.mjs`（3 用例）与 `tests/collector-core.test.mjs`（2 用例），覆盖空输入 `INPUT_INVALID`、非法 URL `INVALID_URL`（不启动浏览器）
+
+### Changed
+- `src/lib/collector-core.js` 将 SSRF 校验前移至浏览器启动之前：全部 URL 非法时不再启动浏览器，非法项逐个经 SSE 透传 `INVALID_URL`
+
+---
+
 ## [1.9.36] - 2026-09-23
 
 ### Added

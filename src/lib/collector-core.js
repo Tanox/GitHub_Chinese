@@ -1,7 +1,7 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.9.35
+ * @version 1.9.37
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
@@ -67,6 +67,24 @@ export async function* collectFromUrls(urls) {
     return;
   }
 
+  // 先做 SSRF 校验：非法项直接透传 INVALID_URL；若全部非法则不启动浏览器
+  const targets = [];
+  for (const raw of urls) {
+    const guard = guardUrl(raw);
+    if (guard.ok) {
+      targets.push(guard.url);
+    } else {
+      yield {
+        type: 'error',
+        message: `已跳过非法 URL（${guard.reason}）：${String(raw)}`,
+        code: CollectErrorCode.INVALID_URL,
+      };
+    }
+  }
+  if (targets.length === 0) {
+    return;
+  }
+
   const puppeteer = await loadPuppeteerCore();
   if (!puppeteer) {
     yield {
@@ -88,7 +106,7 @@ export async function* collectFromUrls(urls) {
   }
 
   const allTexts = new Set();
-  const total = urls.length;
+  const total = targets.length;
   const browser = await puppeteer.launch({
     headless: true,
     executablePath,
@@ -99,21 +117,7 @@ export async function* collectFromUrls(urls) {
     yield { type: 'log', message: '正在初始化 Headless 浏览器...' };
 
     for (let i = 0; i < total; i += 1) {
-      const url = urls[i];
-      const guard = guardUrl(url);
-      if (!guard.ok) {
-        yield {
-          type: 'error',
-          message: `已跳过非法 URL（${guard.reason}）：${String(url)}`,
-          code: CollectErrorCode.INVALID_URL,
-        };
-        yield {
-          type: 'progress',
-          data: { type: 'fetch', current: i + 1, total, url: String(url) },
-        };
-        continue;
-      }
-      const target = guard.url;
+      const target = targets[i];
       yield { type: 'log', message: `[${i + 1}/${total}] 正在访问: ${target}` };
       yield { type: 'progress', data: { type: 'fetch', current: i + 1, total, url: target } };
 
