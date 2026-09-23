@@ -1,107 +1,53 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.32 / 2026-09-23）
+## 项目事实（稳定，截至 v1.9.33 / 2026-09-23，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
-     → 拓扑排序 → 剥离 import/export → 拼接为单文件 IIFE，产物 `build/GitHub_i18n.user.js`
-     （约 194 KB，92 个模块）。`build/` 未被 .gitignore 忽略（README「一键安装」指向它），**必须纳入版本控制**。
-  2. **词典采集工作台**：Next.js 16（App Router，`src/` 模式），根级 `next.config.mjs`。
-     页面：`/`（采集控制台）、`/overview`（项目概览）、`/design`（设计系统），均为静态预渲染；
-     结构为**服务端外壳（`components/Shell.tsx` + `Rail.tsx`）+ 最小客户端岛（`components/CollectorConsole.tsx`）**，
-     不要再把整页写成 `'use client'`。
-- **不存在 `web/` 目录**（v1.9.23 起由 `public/` 取代：`public/css/` 11 个模块 + `public/js/wizard/`）。
-  旧文档/注释中的 `web/css/*`、`web/js/*` 均为过期路径。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.32）。工作台页面通过 `@/version` +
-  `src/version.d.ts` 读取，不再硬编码。
-- **构建脚本已自动化**：`scripts/build/moduleGraph.cjs`（依赖图 + 循环检测，`NEXT_ONLY_SEGMENTS` 跳过
-  `app/components/lib/hooks/server`）、`scripts/build/transform.cjs`（ESM→单作用域 + 跨模块顶层重名冲突检测）、
-  `scripts/validate-bundle.cjs`（产物存在性/体积/语法/未定义引用）。**不要再手工维护模块清单**。
-- **npm 脚本语义（关键，勿混用）**：`build` = 用户脚本构建（CI 依赖它产出 artifact）；
-  `build:web` = `next build`；`dev` = Next 工作台；`dev:prototype` = `server.js`（原型热更新预览）；
-  `validate` = `node scripts/validate-bundle.cjs`；`test` = lint → build → validate。
-- **采集服务端逻辑已去重（v1.9.26）**：唯一实现在 `src/lib/collector-core.js`（抓取与编排）+
-  `src/lib/dictionary-processor.js`（spawn `collect-dict.cjs` 的子进程桥接）；
-  `src/lib/collector-logic.ts` 仅为类型门面；Next Route 与 `server.js` 共用，只各自保留 SSE 适配层。
-  旧的 `src/server/collector.js` 已删除，**不要重新引入第二份实现**。
-- **采集错误码约定（P2-7，v1.9.28）**：`src/lib/collect-codes.js` 是**纯数据模块**（不含 `fs`/`child_process`），
-  服务端与客户端共用 `CollectErrorCode`（MISSING_DEPENDENCY/FETCH_FAILED/SUBPROCESS_FAILED/INPUT_INVALID/UNKNOWN）；
-  服务端 `error` 事件填充 `code`，前端 `useCollector`（`LogEntry.code`）与 `Dashboard` 渲染 `E<code>` 徽标，便于按类型分流。
-- **配置面板性能监控按钮曾是死按钮（P2-4，v1.9.28）**：`refresh`/`export` 此前只建 DOM 未绑 `click`；
-  现已在 `performanceMonitor.js` 内绑定 `updatePerformanceStats`/`exportPerformanceStats`，导出无数据时按钮短显「暂无数据」。
-- **批量采集（P0-2，v1.9.32）**：依赖 `puppeteer-core@^25.11.0`（已安装）+ 系统 Chrome / Edge；
-  `src/lib/browser-resolver.js` 用**动态 `import()` + `/* turbopackIgnore: true */`** 运行期加载，
-  并解析浏览器路径（`PUPPETEER_EXECUTABLE_PATH` 优先，其次各平台常见安装路径）。
-  **切勿声明 `serverExternalPackages: ['puppeteer-core']`**——该包为 ESM，会被 Turbopack 默认外部化并报
-  「Package puppeteer-core can't be external」告警；`npm run build:web` 现已 **0 告警**。
-  实测：`loadPuppeteerCore()` 动态 import 成功并驱动系统 Chrome 完成 `evaluate`。
-- 质量现状：`npm run lint` 0 error/0 warning；`tsc --noEmit -p tsconfig.json` 通过且
-  **`strict: true`**；**全部代码文件 ≤ 200 行**；构建期**循环引用 0 处、孤立模块 0 处**；
-  `src/` 118 个文件 / 8967 行；`node build.cjs` 连续两次产物 md5 一致（可复现）。
-- **工作台导航是「响应式单源」**：`src/components/navItems.ts` 为导航唯一数据源，
-  `Rail.tsx`（>1024px 左侧栏）与 `MobileNav.tsx`（≤1024px 顶栏下方横向标签条）共同消费；
-  `Shell`/`Rail`/`MobileNav` **均为服务端组件**，仅靠 CSS 媒体查询切换可见性——
-  **不要引入汉堡菜单状态机**（会凭空增加客户端包）。断点：1024（切换导航）/ 880（栅格改单列）/ 640（顶栏转纵向）。
-- **Next 16 约定**：安全响应头文件是 `src/proxy.ts`（具名导出 `proxy`），`middleware` 约定已弃用；
-  `next.config.mjs` **不支持 `eslint` 键**（写了会告警），用 CLI 的 `npm run lint`。
-- **文档权威性**：`docs/` 是唯一权威正文，进度看 `docs/PROGRESS.md`；`openspec/*.md` 仅是指向 `docs/` 的索引。
-- **测试体系（P1-3 / P2-5，v1.9.32）**：`jest.config.js` / `jest.setup.js` 已删除，改用 **Node 内置 test runner**
-  （`node --test`，零依赖）；`tests/` 共 **8 用例**（错误码契约 2 + 采集纯函数 3 + 产物冒烟 3）；
-  `npm test` = lint → **build** → test:unit → validate（**先构建**，冒烟测试才能校验最新产物）。
-  ⚠️ `node --test tests/`（传目录）在 Node 26 会报 `Cannot find module`，必须用**无参 `node --test`**。
-- **`src/i18n/*` 已于 v1.9.26 整体移除（P1-2 决策 B）**：9 个文件 / 641 行，精确检索确认零外部引用。
-  移除理由：① 产品单语言，其自身 UI 固定中文，无语言切换需求；② `translations.js` 的 `github.*` 键
-  与词典职责重叠（双翻译源易分叉）；③ `loader.js` 支持远程拉取翻译 JSON，与「本地优先 · 离线可用」相悖。
-  **不要再新建同类的「工具自身 UI 国际化」抽象**；内容保留在 git 历史中可恢复。
-- **双锁漂移已消除（P1-4，v1.9.29）**：删除 `bun.lock`，保留 npm 单一锁 `package-lock.json`；
-  `.gitignore` 已忽略 `bun.lock`（防再生）。P1-4 校验用 `npm install --dry-run --ignore-scripts`（避免真装 puppeteer 下载 Chromium）。
-- 词典：`src/dictionaries/**` 共 12 个模块 / 459 个词条；`collect-dict.cjs` 递归扫描加载词典，
-  结果写入 `docs/untranslated-terms.txt`。
-- 原型资产：`prototype/` 共 16 个 HTML + 10 个 CSS。
-
-## 仓库与提交
-- 远程：`https://github.com/Tanox/GitHub_Chinese.git`（分支 `main`）。
-  文档/package.json/用户脚本头中的旧名 `Tanox/GitHub_i18n` 两条 raw 路径实测均 200 且内容一致，
-  自动更新不受影响；改名需谨慎（`@updateURL` 依赖 raw 路径）。
-- **提交钩子是真的**：`.husky/pre-commit` → `lint-staged`（eslint --fix + prettier --write）。
-  ⚠️ lint-staged v15 **不支持顶层 `ignore` 键**，写了会导致 pre-commit 直接失败、提交中断；
-  排除目录请用 `.prettierignore` 或 eslint `ignores`。
-- **仓库可能出现会话外自动提交**：工作途中 `git log` 可能多出提交（已实测发生）。
-  收尾前务必先 `git status` + `git log` 核对真实 HEAD，不要假设工作区仍是你上次留下的样子。
-- **构建产物须可复现**：`build.cjs` 先 `\r\n`→`\n` 再折叠空行（顺序颠倒会因 Windows CRLF 残留空行，
-  导致每次构建都产生 diff）。验证方式：连续 `node build.cjs` 两次比对 md5。
-- `build/GitHub_i18n.user.js` 随仓库提交（README 一键安装与 `@updateURL` 都指向它）。
-- **husky/lint-staged 与 HEAD 竞态（实测）**：提交偶报 `fatal: cannot lock ref 'HEAD'`，但提交其实已落盘；
-  lint-staged 的 automatic backup `stash@{0}` 可能残留（内含 pre-commit 时未纳入提交的改动，如被 dry-run 改动的 `package-lock.json`），
-  保留即可（不丢数据），需要时再 drop。**PowerShell 中 `stash@{0}` 必须加引号**，否则 `@{0}` 被解析为哈希表字面量导致参数错乱。
+     → 拓扑排序 → 剥离 import/export → 拼接为单文件 IIFE，产物 `build/GitHub_i18n.user.js`（约 193 KB）。
+     `build/` 未被 .gitignore 忽略，必须纳入版本控制。当前纳入模块 ~92，孤立 0，循环引用 0。
+  2. **词典采集工作台**：Next.js 16（App Router，`src/` 模式），路由 `/`、`/overview`、`/design`；
+     API `src/app/api/collect/route.ts`、`batch-collect/route.ts`；`src/proxy.ts`（Next 16 约定的 proxy）；
+     `src/lib/collector-core.js` + `dictionary-processor.js`（spawn `collect-dict.cjs`，与用户脚本共享词典）。
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.33）。全局展示位须同步：
+  `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
+- **npm 脚本语义**：`build`=用户脚本构建；`build:web`=`next build`；`dev`=Next 工作台；
+  `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
+  `test:unit`=`node --test`（Node 内置 runner，零新增依赖）；`test`=lint→build→test:unit→validate。
+- **测试**：v1.9.30 移除未启用的 Jest，改用 Node 内置 `node --test`。`tests/` 共 3 文件 / 8 用例
+  （collect-codes 2、collect-dict 3、smoke 3）。**无 API 路由/SSE/错误码集成测试**。
+- **质量现状**（v1.9.33 核查）：`npm run lint` 0 error/0 warning；`tsc --noEmit` 通过（strict:true）；
+  **全部代码文件 ≤200 行**（0 超出，但 configUI.js 191 / virtualDom/manager.js 190 / useCollector.ts 189 /
+  performanceMonitor.js 186 贴线，需防回潮）。
+- **依赖**：`puppeteer-core@^25.11.0` **已安装**；`browser-resolver.js` 解析系统 Chrome/Edge
+  （支持 `PUPPETEER_EXECUTABLE_PATH`），运行期 `createRequire`/变量说明符动态加载；`next.config.mjs` **不**声明
+  `serverExternalPackages`（该包为 ESM，显式外部化会触发 Turbopack 告警）。`dependencies` 含 express/ws/next/react。
+- **锁文件**：仅 `package-lock.json`（v1.9.29 已删除 `bun.lock`，**无双锁漂移**）。
+- **文档权威性**：`docs/` 是唯一权威正文；`openspec/*.md` 仅是指向 `docs/` 的简短索引。
+  新增/修改规范文档只改 `docs/`，`openspec/` 只维护索引与 config.yaml。
+- **已知真实短板（待办，见 docs/IMPROVEMENT-TASKS.md）**：
+  1. **SSRF（高危）**：`batch-collect` 对用户 URL 仅 `Array.isArray` 校验，`collector-core.js:107`
+     `page.goto(url)` 无协议/主机/私网白名单 → 内网探测风险。
+  2. **proxy 缺 CSP**：`src/proxy.ts` 仅 3 个安全头（nosniff/frame-deny/referrer/x-dns），无 Content-Security-Policy。
+  3. **缺 OG/Twitter 元信息**：`src/app/layout.tsx` 仅 title/description。
+  4. **PROGRESS.md 文档漂移**：P1-4（双锁）仍标 OPEN，但 bun.lock 已删、CHANGELOG 1.9.29 已记录修复；第 19 行仍写"双锁并存"。
+- **已健康项**（勿重复处理）：req.json 容错已落地（v1.9.25）、构建可复现（无 Date/random 嵌入）、无 >200 行文件、双锁已消除。
 
 ## 编码约定（本项目）
 - 单代码文件 ≤ 200 行，超长须按职责拆分（文档 .md 不适用，须保持完整）。
-- 每次修改至少 bump patch 版本；**仅同步被改动文件的头注释版本号**，禁止全仓库批量刷写。
-  版本展示位只同步：`src/version.js`、`package.json`、`README.md` 徽章、`CHANGELOG.md`，
-  以及**本次实际编辑过**的文档版本行（未编辑的文档不动，避免无意义 diff）。
-- 主要容器与交互控件须带语义化 kebab-case `id`（所有容器：页面级 / 区块 / 卡片 / 主要区域 / 关键控件都加，便于调试定位、测试与无障碍）。
-- **模型 / 工具请求失败后的恢复偏好**：单次请求或工具调用失败后，等待约 **30 秒**自动重试并继续推进，不因此停滞等待人工确认（除非确属无法绕过的阻塞）。
-- 对话保持中文、输出精简直奔要点（用户显式重申，全局规则已覆盖）。
-- `eslint.config.js` 规则已拆分到 `eslint/rules/{core,bestPractices,quality}.js`，新增规则改对应文件。
-- 工作台 TS：禁止 `any`（用 `unknown` + 收窄）；外部可选依赖写最小 `declare module`（见 `src/types/puppeteer-core.d.ts`）。
+- 每次修改至少 bump patch 版本；仅同步被改动文件的头注释版本号，禁止全仓库批量刷写。
+- 主要容器与交互控件须带语义化 kebab-case `id`。
+- `eslint.config.js` 规则拆分到 `eslint/rules/{core,bestPractices,quality}.js`。
 
 ## 工具链陷阱（Windows / PowerShell）
-- PowerShell 不支持 `dir /a`、`tail`、`>/dev/null`、`2>$null`；`Get-Content` 读 UTF-8 中文会乱码——
-  判断文件内容一律用读取文件工具，不信终端回显；输出过滤用 `Select-String`。
+- PowerShell 不支持 `dir /a`、`tail`、`>/dev/null`；`Get-Content` 读 UTF-8 中文会乱码——判断文件内容一律用读取文件工具。
 - `node -e "..."` 中的 `$`、`[`、引号易被 PowerShell 吞掉；复杂脚本写成临时 `.mjs`/`.cjs` 文件执行后删除。
 - 统计/校验类任务用 `node` 脚本跑（递归 walk + 行数统计），比 PowerShell 管道可靠。
-- **`npm run format:check` 的 CRLF 误报（重要，别踩）**：本机 `core.autocrlf=true`，git 索引里
-  **全部为 LF**，但检出后的工作区副本是 CRLF；`.prettierrc` 要求 `endOfLine: lf`，于是
-  `format:check` 会对约 70 个**未改动**文件报错。这是本地视图差异，**不是仓库缺陷**——
-  **不要为此执行 `npm run format`**（会把行尾就地改成 LF，产生全仓假 diff）。只需确认自己新建的文件通过检查即可。
-- **Prettier 的 JSX 引号规则**：`.prettierrc` 同时设 `singleQuote: true` 与 `jsxSingleQuote: true`，
-  因此 **JSX 属性必须用单引号**。手写新组件若用双引号会被 `format:check` 拒绝。
-  ⚠️ 实测**自动提交的 lint-staged 并不能可靠修正双引号 JSX**——`src/components/Dashboard.tsx` 与
-  `src/hooks/useCollector.ts` 在本轮（1.9.28）被自动提交后仍以双引号存于工作区，直到我手动
-  `prettier --write` 才合规。**收尾前务必对自己本轮编辑过的文件运行 `prettier --write` 并复检**，
-  不要依赖 lint-staged。
-- **构建清理的 ENOENT 竞态**：`build.cjs` 的 `prepareBuildDir()` 已改为
-  `fs.rmSync(BUILD_DIR, { recursive: true, force: true })`。本机存在外部「safe-delete」拦截
-  （报错呈 Rust 风格 `Os { code: -2147024894 }`），删目录偶发「文件不存在」竞态并导致整次构建失败，
-  `force` 即为此设——不要退回带 `existsSync` 判断的旧写法。
+- `npm test` 之类长任务直接跑，输出用 `Select-String` 过滤，避免依赖 `tail`。
+- 搜代码用 `search_content` 的 `ignore_globs`（勿用 `!{negated}` glob，会静默 0 匹配）。
+- 会话间隙项目常被外部高频自行 bump 版本，**任何写文档动作前务必先读 `src/version.js` + `git log` 确认真实 HEAD 版本**，勿按旧记忆盲写。
+
+## 仓库与提交
+- 远程：`https://github.com/Tanox/GitHub_i18n.git`（分支 `main`）。产品名 "GitHub Chinese 简体中文"，但仓库旧名 `GitHub_i18n` 仍用于 URL/raw 路径（@updateURL 依赖），命名一致性待澄清（见 IMPROVEMENT-TASKS T9）。
+- Husky + lint-staged 已启用；`lint-staged` v15 不支持顶层 `ignore` 键。
+- `build/GitHub_i18n.user.js` 随仓库提交（README 一键安装与 `@updateURL` 指向它）。
