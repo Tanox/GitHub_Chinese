@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_i18n
-// @version      1.9.42
+// @version      1.9.43
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,8 +27,8 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.9.42
- * @date 2026-09-23
+ * @version 1.9.43
+ * @date 2026-09-24
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
  */
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.9.42';
+const VERSION = '1.9.43';
 
 /**
  * GitHub 元素选择器列表配置
@@ -713,7 +713,7 @@ function getAllQueryParams(url = window.location.href) {
     }
   } catch (error) {
     console.warn('[GitHub 中文翻译] 解析URL参数失败:', error);
-    }
+  }
   return params;
 }
 
@@ -925,7 +925,7 @@ const recoveryManager = {
         );
       }
     }
-  }
+  },
 };
 
 /**
@@ -3775,7 +3775,7 @@ const cacheController = {
     } catch (error) {
       console.error('[GitHub 中文翻译] 缓存预热失败:', error);
     }
-  }
+  },
 };
 
 /**
@@ -3901,39 +3901,36 @@ async function translate(targetElements = null, translationCore) {
           resolve();
         })
         .catch((batchError) => {
-          ErrorHandler.handleError(
-            '批处理过程',
-            batchError,
-            ErrorHandler.ERROR_TYPES.TRANSLATION,
-            {
-              retryable: true,
-              recoveryFn: () => {
-                translationCore.translateCriticalElementsOnly()
-                  .then(() => {
-                    elementTranslator.performanceData.translateEndTime = Date.now();
-                    performanceMonitor.logPerformanceData();
-                    resolve();
-                  })
-                  .catch((recoverError) => {
-                    ErrorHandler.handleError(
-                      '错误恢复',
-                      recoverError,
-                      ErrorHandler.ERROR_TYPES.TRANSLATION,
-                    );
-                    elementTranslator.performanceData.translateEndTime = Date.now();
-                    performanceMonitor.logPerformanceData();
-                    reject(recoverError);
-                  });
-              },
-              maxRetries: 2,
+          ErrorHandler.handleError('批处理过程', batchError, ErrorHandler.ERROR_TYPES.TRANSLATION, {
+            retryable: true,
+            recoveryFn: () => {
+              translationCore
+                .translateCriticalElementsOnly()
+                .then(() => {
+                  elementTranslator.performanceData.translateEndTime = Date.now();
+                  performanceMonitor.logPerformanceData();
+                  resolve();
+                })
+                .catch((recoverError) => {
+                  ErrorHandler.handleError(
+                    '错误恢复',
+                    recoverError,
+                    ErrorHandler.ERROR_TYPES.TRANSLATION,
+                  );
+                  elementTranslator.performanceData.translateEndTime = Date.now();
+                  performanceMonitor.logPerformanceData();
+                  reject(recoverError);
+                });
             },
-          );
+            maxRetries: 2,
+          });
         });
     } catch (error) {
       ErrorHandler.handleError('翻译过程', error, ErrorHandler.ERROR_TYPES.TRANSLATION, {
         retryable: true,
         recoveryFn: () => {
-          translationCore.translateCriticalElementsOnly()
+          translationCore
+            .translateCriticalElementsOnly()
             .then(() => {
               performanceMonitor.logPerformanceData();
               resolve();
@@ -4692,7 +4689,7 @@ const configStore = {
     };
 
     return merge(target, source);
-  }
+  },
 };
 
 /**
@@ -4848,7 +4845,7 @@ const configRenderer = {
     content.appendChild(monitoringSection);
 
     return content;
-  }
+  },
 };
 
 /**
@@ -5261,7 +5258,7 @@ const updateStore = {
     } catch (_error) {
       // 忽略存储错误
     }
-  }
+  },
 };
 
 /**
@@ -5297,10 +5294,7 @@ const updateRenderer = {
     pathElement.setAttribute('stroke-linecap', 'round');
     pathElement.setAttribute('stroke-linejoin', 'round');
     pathElement.setAttribute('stroke-width', '2');
-    pathElement.setAttribute(
-      'd',
-      'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-    );
+    pathElement.setAttribute('d', 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
     svgIcon.appendChild(pathElement);
 
     const contentContainer = document.createElement('div');
@@ -5352,7 +5346,7 @@ const updateRenderer = {
     buttonsContainer.appendChild(dismissButton);
 
     return notification;
-  }
+  },
 };
 
 /**
@@ -5531,7 +5525,7 @@ const versionFetcher = {
       }
       return false;
     }
-  }
+  },
 };
 
 /**
@@ -6345,7 +6339,7 @@ const domObserverConfig = {
     }
 
     return baseConfig;
-  }
+  },
 };
 
 /**
@@ -6819,7 +6813,10 @@ const lifecycleManager = {
         translationCore.init();
       }
 
-      if (typeof translationCore !== 'undefined' && typeof translationCore.translate === 'function') {
+      if (
+        typeof translationCore !== 'undefined' &&
+        typeof translationCore.translate === 'function'
+      ) {
         translationCore.translate();
       }
 
@@ -6864,7 +6861,7 @@ const lifecycleManager = {
         console.error('[GitHub 中文翻译] 直接初始化失败:', error);
       }
     }
-  }
+  },
 };
 
 /**
