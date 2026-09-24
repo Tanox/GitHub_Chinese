@@ -57,7 +57,7 @@ function getAllQueryParams(url = window.location.href) {
     }
   } catch (error) {
     console.warn('[GitHub 中文翻译] 解析URL参数失败:', error);
-    }
+  }
   return params;
 }
 

@@ -114,5 +114,5 @@ export const domObserverConfig = {
     }
 
     return baseConfig;
-  }
+  },
 };

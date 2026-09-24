@@ -3,10 +3,7 @@
  * @file src/core/errorHandler/recovery.js
  */
 import { CONFIG } from '../../config.js';
-import {
-  RECOVERY_BASE_DELAY_MS,
-  RECOVERY_MAX_DELAY_MS
-} from './constants.js';
+import { RECOVERY_BASE_DELAY_MS, RECOVERY_MAX_DELAY_MS } from './constants.js';
 
 export const recoveryManager = {
   attemptRecovery(context, recoveryFn, maxRetries, currentAttempt = 0) {
@@ -35,5 +32,5 @@ export const recoveryManager = {
         );
       }
     }
-  }
+  },
 };

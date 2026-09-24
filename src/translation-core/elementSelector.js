@@ -9,7 +9,7 @@ import {
   hasSkipClass,
   hasSkipId,
   isHiddenElement,
-  isNumericOrSpecialOnly
+  isNumericOrSpecialOnly,
 } from './selectorUtils.js';
 
 export const elementSelector = {

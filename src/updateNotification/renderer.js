@@ -32,10 +32,7 @@ export const updateRenderer = {
     pathElement.setAttribute('stroke-linecap', 'round');
     pathElement.setAttribute('stroke-linejoin', 'round');
     pathElement.setAttribute('stroke-width', '2');
-    pathElement.setAttribute(
-      'd',
-      'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-    );
+    pathElement.setAttribute('d', 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
     svgIcon.appendChild(pathElement);
 
     const contentContainer = document.createElement('div');
@@ -87,5 +84,5 @@ export const updateRenderer = {
     buttonsContainer.appendChild(dismissButton);
 
     return notification;
-  }
+  },
 };

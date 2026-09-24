@@ -120,5 +120,5 @@ export const cacheController = {
     } catch (error) {
       console.error('[GitHub 中文翻译] 缓存预热失败:', error);
     }
-  }
+  },
 };

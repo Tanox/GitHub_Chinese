@@ -58,5 +58,5 @@ export const updateStore = {
     } catch (_error) {
       // 忽略存储错误
     }
-  }
+  },
 };

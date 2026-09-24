@@ -3,9 +3,7 @@
  * @file src/ui/configUI/renderer.js
  */
 import { VERSION } from '../../version.js';
-import {
-  createPerformanceMonitoringSection,
-} from '../components/performanceMonitor.js';
+import { createPerformanceMonitoringSection } from '../components/performanceMonitor.js';
 
 export const configRenderer = {
   createHeader() {
@@ -155,5 +153,5 @@ export const configRenderer = {
     content.appendChild(monitoringSection);
 
     return content;
-  }
+  },
 };

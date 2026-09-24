@@ -66,5 +66,5 @@ export const configStore = {
     };
 
     return merge(target, source);
-  }
+  },
 };

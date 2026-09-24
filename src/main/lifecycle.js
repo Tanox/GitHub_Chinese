@@ -51,7 +51,10 @@ export const lifecycleManager = {
         translationCore.init();
       }
 
-      if (typeof translationCore !== 'undefined' && typeof translationCore.translate === 'function') {
+      if (
+        typeof translationCore !== 'undefined' &&
+        typeof translationCore.translate === 'function'
+      ) {
         translationCore.translate();
       }
 
@@ -96,5 +99,5 @@ export const lifecycleManager = {
         console.error('[GitHub 中文翻译] 直接初始化失败:', error);
       }
     }
-  }
+  },
 };

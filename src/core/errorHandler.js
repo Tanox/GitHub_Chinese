@@ -11,7 +11,7 @@ import {
   BATCH_DELAY_MIN_MS,
   NETWORK_INTERVAL_MIN_MS,
   NETWORK_INTERVAL_MAX_MS,
-  BATCH_DELAY_FALLBACK_MS
+  BATCH_DELAY_FALLBACK_MS,
 } from './errorHandler/constants.js';
 import { recoveryManager } from './errorHandler/recovery.js';
 

@@ -89,5 +89,5 @@ export const versionFetcher = {
       }
       return false;
     }
-  }
+  },
 };

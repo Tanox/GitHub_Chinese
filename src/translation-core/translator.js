@@ -57,39 +57,36 @@ export async function translate(targetElements = null, translationCore) {
           resolve();
         })
         .catch((batchError) => {
-          ErrorHandler.handleError(
-            '批处理过程',
-            batchError,
-            ErrorHandler.ERROR_TYPES.TRANSLATION,
-            {
-              retryable: true,
-              recoveryFn: () => {
-                translationCore.translateCriticalElementsOnly()
-                  .then(() => {
-                    elementTranslator.performanceData.translateEndTime = Date.now();
-                    performanceMonitor.logPerformanceData();
-                    resolve();
-                  })
-                  .catch((recoverError) => {
-                    ErrorHandler.handleError(
-                      '错误恢复',
-                      recoverError,
-                      ErrorHandler.ERROR_TYPES.TRANSLATION,
-                    );
-                    elementTranslator.performanceData.translateEndTime = Date.now();
-                    performanceMonitor.logPerformanceData();
-                    reject(recoverError);
-                  });
-              },
-              maxRetries: 2,
+          ErrorHandler.handleError('批处理过程', batchError, ErrorHandler.ERROR_TYPES.TRANSLATION, {
+            retryable: true,
+            recoveryFn: () => {
+              translationCore
+                .translateCriticalElementsOnly()
+                .then(() => {
+                  elementTranslator.performanceData.translateEndTime = Date.now();
+                  performanceMonitor.logPerformanceData();
+                  resolve();
+                })
+                .catch((recoverError) => {
+                  ErrorHandler.handleError(
+                    '错误恢复',
+                    recoverError,
+                    ErrorHandler.ERROR_TYPES.TRANSLATION,
+                  );
+                  elementTranslator.performanceData.translateEndTime = Date.now();
+                  performanceMonitor.logPerformanceData();
+                  reject(recoverError);
+                });
             },
-          );
+            maxRetries: 2,
+          });
         });
     } catch (error) {
       ErrorHandler.handleError('翻译过程', error, ErrorHandler.ERROR_TYPES.TRANSLATION, {
         retryable: true,
         recoveryFn: () => {
-          translationCore.translateCriticalElementsOnly()
+          translationCore
+            .translateCriticalElementsOnly()
             .then(() => {
               performanceMonitor.logPerformanceData();
               resolve();
