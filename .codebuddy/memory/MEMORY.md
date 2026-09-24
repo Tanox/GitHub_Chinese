@@ -27,6 +27,7 @@
 - **依赖**：`puppeteer-core@^25.11.0` **已安装**；`browser-resolver.js` 解析系统 Chrome/Edge
   （支持 `PUPPETEER_EXECUTABLE_PATH`），运行期 `createRequire`/变量说明符动态加载；`next.config.mjs` **不**声明
   `serverExternalPackages`（该包为 ESM，显式外部化会触发 Turbopack 告警）。`dependencies` 含 express/ws/next/react。
+- **Node 版本**：dev 工具链**要求 Node >=22.22.2**。`devDependency` 的 `jsdom@30` / `undici@8` 均要求 Node 22+（`util.markAsUncloneable` 为 Node 22 才加入的 API）；CI（`ci-cd.yml`）`setup-node` 已升到 `node-version: '22'`，`package.json` `engines.node` 同步为 `>=22.22.2`。**本地若用 Node 20 跑 `node --test` 会因 `jsdom` 导入即崩溃**（`tests/a11y.test.mjs` 第 12 行 `import { JSDOM } from 'jsdom'`）。
 - **锁文件**：仅 `package-lock.json`（v1.9.29 已删除 `bun.lock`，**无双锁漂移**）。
 - **文档权威性**：`docs/` 是唯一权威正文；`openspec/*.md` 仅是指向 `docs/` 的简短索引。
   新增/修改规范文档只改 `docs/`，`openspec/` 只维护索引与 config.yaml。

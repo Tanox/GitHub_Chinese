@@ -8,6 +8,9 @@
 ### Changed
 - CI 质量门禁补齐（T11）：`lint` 作业新增**类型检查**，`build` 作业新增**单元测试**（`npm run test:unit`，20 用例）
 
+### Fixed
+- CI 节点版本升至 Node 22（`actions/setup-node` `node-version: '22'`）：`devDependency` 的 `jsdom@30` / `undici@8` 要求 Node ≥ 22.19，`tests/a11y.test.mjs` 在 Node 20 下因 `undici` 的 `markAsUncloneable` 缺失而导入即崩溃；同步 `package.json` `engines.node` 至 `>=22.22.2`
+
 ### Docs
 - 清理 `docs/TASKS.md`：删除已完成任务的归档表格，改为紧凑编号索引（T1–T11、P0-1–P2-7），第 2 节由「已完成」更名为「历史归档（已完成）」
 - 同步文档版本行至 v1.9.42：`docs/`（README / project / architecture / development / coding-style / prototype / PROGRESS / README 索引）与 `openspec/`（README / project / architecture / development / coding-style / prototype / config.yaml）
