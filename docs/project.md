@@ -61,11 +61,9 @@ GitHub_Chinese/
 ├── public/                           # Next 静态资源（css / js）
 │   ├── css/                          # 采集工作台样式（模块化，单文件 ≤200 行）
 │   └── js/                           # 采集向导脚本（wizard/*）
-├── prototype/                        # 设计系统与高保真原型
-│   ├── design-system/                # 色彩 / 字体 / 间距 / 图标 / 动效
-│   ├── components/                   # 基础 / 复合 / 业务组件
-│   ├── interaction/                  # 交互模式 / 反馈 / 空状态
-│   └── prototypes/                   # 桌面端 / 移动端
+├── prototype/                        # 高保真原型
+│   ├── assets/                       # 原型样式（CSS）
+│   └── prototypes/                   # index.html（唯一原型入口）
 ├── scripts/
 │   ├── build/moduleGraph.cjs         # 模块依赖图（拓扑排序 / 孤立检测）
 │   ├── build/transform.cjs           # ESM → 单作用域拼接

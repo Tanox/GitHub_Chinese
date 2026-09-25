@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.9.43**（版本单一来源：`src/version.js`）
+> 当前版本：**v1.9.45**（版本单一来源：`src/version.js`）
 
 ## 命名与兼容性说明
 
@@ -59,19 +59,16 @@ npm run dev     # 打开 http://localhost:3000
 
 > 批量 URL 采集依赖可选依赖 `puppeteer-core` 与系统已安装的 Chrome / Edge 浏览器。未满足条件时该功能会返回明确提示，其余功能不受影响。
 
-## 设计系统与原型
+## 高保真原型
 
-本项目维护一套统一的设计系统与高保真原型，方便设计师与开发者协作：
+本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
 
 | 模块 | 路径 | 说明 |
 |------|------|------|
-| 设计系统 | [prototype/design-system/](prototype/design-system/) | 色彩 / 字体 / 间距 / 图标 / 动效 |
-| 组件库 | [prototype/components/](prototype/components/) | 基础组件 / 复合组件 / 业务组件 |
-| 交互标准 | [prototype/interaction/](prototype/interaction/) | 交互模式 / 反馈 / 错误处理 / 空状态 |
-| 高保真原型 | [prototype/prototypes/](prototype/prototypes/) | 桌面端 / 移动端 |
+| 高保真原型 | [prototype/prototypes/index.html](prototype/prototypes/index.html) | 采集流程 / 探针脚本 / 数据中心 / 清洗预览 / 实时处理中心 |
 
-**快速入口**：在浏览器中打开 [prototype/index.html](prototype/index.html) 即可浏览完整的原型设计，
-或执行 `npm run dev:prototype` 启动带热更新的本地预览。
+**快速入口**：执行 `npm run dev:prototype` 启动带热更新的本地预览，默认打开高保真原型；
+或直接用浏览器打开 [prototype/prototypes/index.html](prototype/prototypes/index.html)。
 
 ## 项目结构
 

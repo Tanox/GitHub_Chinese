@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>高保真原型 · GitHub 页面字符串采集工具</title>
+    <link rel="stylesheet" href="../assets/prototype.css" />
+    <style>
+      /* 采集工具原型局部样式，不影响设计系统 */
+      .ct-steps {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 20px 0;
+      }
+      .ct-step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .ct-step-num {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--c-primary, #2ea44f);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .ct-step span:last-child {
+        font-size: 14px;
+        color: var(--c-text, #1c2128);
+        font-weight: 600;
+      }
+      .ct-step-line {
+        flex: 1;
+        height: 2px;
+        background: var(--c-border, #d1d9e0);
+        margin: 0 16px;
+        min-width: 40px;
+      }
+
+      .ct-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .ct-card {
+        background: var(--c-bg-elevated, #fff);
+        border: 1px solid var(--c-border, #d1d9e0);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .ct-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .ct-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--c-text, #1c2128);
+        margin: 0;
+      }
+      .ct-step-badge {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--c-primary, #2ea44f);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .ct-card-desc {
+        color: var(--c-text-muted, #59636e);
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 0 0 12px;
+      }
+      .ct-code {
+        background: #0d1117;
+        border-radius: 8px;
+        padding: 14px;
+        overflow: auto;
+      }
+      .ct-code pre {
+        margin: 0;
+        font-family: var(--font-mono, ui-monospace, monospace);
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #c9d1d9;
+        white-space: pre;
+      }
+
+      .ct-tabbar {
+        display: flex;
+        gap: 4px;
+        border-bottom: 1px solid var(--c-border-subtle, #eaeef2);
+        margin-bottom: 12px;
+      }
+      .ct-tab {
+        padding: 8px 14px;
+        font-size: 13px;
+        color: var(--c-text-muted, #59636e);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+      }
+      .ct-tab.active {
+        color: var(--c-text, #1c2128);
+        border-bottom-color: var(--c-primary, #2ea44f);
+        font-weight: 600;
+      }
+      .ct-field {
+        width: 100%;
+        min-height: 120px;
+        resize: vertical;
+        border: 1px solid var(--c-border, #d1d9e0);
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 13px;
+        font-family: var(--font-mono, monospace);
+        color: var(--c-text, #1c2128);
+        background: var(--c-bg, #f6f8fa);
+        box-sizing: border-box;
+      }
+      .ct-btn-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        align-items: center;
+      }
+      .ct-btn-row .btn:last-child {
+        flex: 1;
+      }
+
+      .ct-term-badge {
+        background: #dafbe1;
+        color: #1a7f37;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .ct-terms {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .ct-terms thead th {
+        text-align: left;
+        color: var(--c-text-muted, #59636e);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--c-border, #d1d9e0);
+      }
+      .ct-terms thead th.right,
+      .ct-terms td.right {
+        text-align: right;
+      }
+      .ct-terms tbody td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--c-border-subtle, #eaeef2);
+        color: var(--c-text, #1c2128);
+      }
+      .ct-terms .ct-term-index {
+        color: var(--c-text-dim, #6e7781);
+        width: 48px;
+        font-family: var(--font-mono, monospace);
+      }
+      .ct-terms .ct-term-text {
+        font-family: var(--font-mono, monospace);
+      }
+      .ct-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .ct-badge.unt {
+        background: #fff8c5;
+        color: #9a6700;
+      }
+      .ct-badge.tr {
+        background: #dafbe1;
+        color: #1a7f37;
+      }
+
+      .ct-progress-card {
+        background: var(--c-bg-elevated, #fff);
+        border: 1px solid var(--c-border, #d1d9e0);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .ct-progress-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .ct-progress-head h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--c-text, #1c2128);
+      }
+      .ct-status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--c-text-dim, #6e7781);
+      }
+      .ct-status-indicator.active {
+        color: var(--c-primary, #2ea44f);
+        font-weight: 600;
+      }
+      .ct-ping {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--c-primary, #2ea44f);
+        box-shadow: 0 0 0 0 rgba(46, 164, 79, 0.5);
+        animation: ct-ping 1.4s infinite;
+      }
+      @keyframes ct-ping {
+        0% { box-shadow: 0 0 0 0 rgba(46, 164, 79, 0.5); }
+        70% { box-shadow: 0 0 0 7px rgba(46, 164, 79, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(46, 164, 79, 0); }
+      }
+      .ct-progress-meta {
+        margin: 14px 0 6px;
+      }
+      .ct-progress-meta .lbl {
+        font-size: 12px;
+        color: var(--c-text-muted, #59636e);
+        margin-bottom: 4px;
+      }
+      .ct-progress-meta .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+      .ct-progress-meta .task {
+        font-size: 13px;
+        color: var(--c-text, #1c2128);
+      }
+      .ct-progress-meta .pct {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--c-primary, #2ea44f);
+        font-family: var(--font-mono, monospace);
+      }
+      .ct-progress-track {
+        width: 100%;
+        height: 8px;
+        background: var(--c-border-subtle, #eaeef2);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .ct-progress-fill {
+        height: 100%;
+        width: 68%;
+        background: linear-gradient(90deg, #2ea44f, #4fd17a);
+        border-radius: 999px;
+      }
+      .ct-backup-pill {
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--c-text-dim, #6e7781);
+        background: var(--c-bg-inset, #f6f8fa);
+        border: 1px solid var(--c-border-subtle, #eaeef2);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+      .ct-terminal {
+        margin-top: 14px;
+        background: #0d1117;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .ct-term-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-bottom: 1px solid #21262d;
+      }
+      .ct-term-dots {
+        display: flex;
+        gap: 6px;
+      }
+      .ct-term-dots i {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .ct-term-dots .r { background: #ff5f56; }
+      .ct-term-dots .y { background: #ffbd2e; }
+      .ct-term-dots .g { background: #27c93f; }
+      .ct-term-title {
+        font-family: var(--font-mono, monospace);
+        font-size: 12px;
+        color: #8b949e;
+      }
+      .ct-term-clear {
+        margin-left: auto;
+        background: transparent;
+        border: 1px solid #30363d;
+        color: #8b949e;
+        border-radius: 6px;
+        font-size: 11px;
+        padding: 2px 8px;
+        cursor: pointer;
+      }
+      .ct-term-body {
+        padding: 12px;
+        font-family: var(--font-mono, monospace);
+        font-size: 12px;
+        line-height: 1.7;
+        color: #c9d1d9;
+        height: 168px;
+        overflow: auto;
+      }
+      .ct-log-line {
+        display: flex;
+        gap: 8px;
+        white-space: pre-wrap;
+      }
+      .ct-log-line .t {
+        color: #6e7781;
+        flex-shrink: 0;
+      }
+      .ct-log-line.info .m { color: #3fb950; }
+      .ct-log-line.warn .m { color: #d29922; }
+      .ct-log-line.error .m { color: #f85149; }
+      .ct-log-line .code {
+        color: #f85149;
+        margin-left: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="proto-shell">
+      <aside class="proto-nav">
+        <div class="proto-nav-brand">GitHub 字符串采集工具 · 高保真原型</div>
+
+        <div class="proto-nav-group">
+          <h4>高保真原型</h4>
+          <ul>
+            <li><span class="is-active">字符串采集工具</span></li>
+          </ul>
+        </div>
+      </aside>
+
+      <main class="proto-main">
+        <span class="proto-eyebrow">PROTOTYPE · COLLECTOR</span>
+        <h1 class="proto-title">GitHub 页面字符串采集工具</h1>
+        <p class="proto-lede">
+          从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典。原型覆盖探针植入、文本 / 批量 URL 采集、实时处理中心与 JSON 导出全流程。
+        </p>
+
+        <!-- Section 1: 采集流程 -->
+        <section class="proto-section">
+          <h2>采集流程</h2>
+          <p class="meta">三步闭环：植入探针 → 归集词条 → 解析入库</p>
+
+          <div class="ct-steps">
+            <div class="ct-step">
+              <span class="ct-step-num">1</span>
+              <span>植入探针</span>
+            </div>
+            <span class="ct-step-line"></span>
+            <div class="ct-step">
+              <span class="ct-step-num">2</span>
+              <span>归集词条</span>
+            </div>
+            <span class="ct-step-line"></span>
+            <div class="ct-step">
+              <span class="ct-step-num">3</span>
+              <span>解析入库</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 2: 采集入口（探针脚本 + 数据中心） -->
+        <section class="proto-section">
+          <h2>采集入口 · 探针脚本 + 数据中心</h2>
+          <p class="meta">左侧注入探针提取文本，右侧粘贴文本或批量导入 URL 后智能清洗</p>
+
+          <div class="ct-grid-2">
+            <div class="ct-card">
+              <div class="ct-card-head">
+                <h3 class="ct-card-title">
+                  <span class="ct-step-badge">1</span>探针脚本
+                </h3>
+                <button class="btn btn-sm is-copied">已复制</button>
+              </div>
+              <p class="ct-card-desc">
+                在 GitHub 页面控制台执行下方脚本，引擎会提取当前视图中的全部有效 UI 文本块。
+              </p>
+              <div class="ct-code">
+                <pre>const textNodes = [];
+const walker = document.createTreeWalker(
+  document.body, NodeFilter.SHOW_TEXT, null, false
+);
+while (walker.nextNode()) {
+  const text = walker.currentNode.textContent.trim();
+  if (text.length &gt; 2 &amp;&amp; !/^\s*$/.test(text)) {
+    textNodes.push(text);
+  }
+}
+console.log(textNodes.join('\n'));
+copy(textNodes.join('\n'));</pre>
+              </div>
+            </div>
+
+            <div class="ct-card">
+              <div class="ct-card-head">
+                <h3 class="ct-card-title">
+                  <span class="ct-step-badge">2</span>数据中心
+                </h3>
+                <div class="ct-tabbar">
+                  <span class="ct-tab active">文本粘贴</span>
+                  <span class="ct-tab">批量 URL</span>
+                </div>
+              </div>
+              <p class="ct-card-desc">两种采集入口，智能清洗后一键导出 JSON。</p>
+              <textarea class="ct-field" disabled>Pull requests
+Sign in
+Open a pull request
+Compare changes
+Actions
+Settings
+Notifications
+Your repositories</textarea>
+              <div class="ct-btn-row">
+                <button class="btn">智能清洗</button>
+                <button class="btn">导出 JSON</button>
+                <button class="btn btn-primary">开始分析</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: 清洗结果预览 -->
+        <section class="proto-section">
+          <h2>清洗结果预览</h2>
+          <p class="meta">实时归集词条，标注待翻译 / 已翻译状态</p>
+
+          <div class="ct-card">
+            <div class="ct-card-head">
+              <h3 class="ct-card-title">清洗结果预览</h3>
+              <span class="ct-term-badge">8 词条</span>
+            </div>
+            <table class="ct-terms">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>采集词条</th>
+                  <th class="right">状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="ct-term-index">1</td><td class="ct-term-text">Pull requests</td><td class="right"><span class="ct-badge unt">待翻译</span></td></tr>
+                <tr><td class="ct-term-index">2</td><td class="ct-term-text">Sign in</td><td class="right"><span class="ct-badge tr">已翻译</span></td></tr>
+                <tr><td class="ct-term-index">3</td><td class="ct-term-text">Open a pull request</td><td class="right"><span class="ct-badge unt">待翻译</span></td></tr>
+                <tr><td class="ct-term-index">4</td><td class="ct-term-text">Compare changes</td><td class="right"><span class="ct-badge unt">待翻译</span></td></tr>
+                <tr><td class="ct-term-index">5</td><td class="ct-term-text">Actions</td><td class="right"><span class="ct-badge tr">已翻译</span></td></tr>
+                <tr><td class="ct-term-index">6</td><td class="ct-term-text">Settings</td><td class="right"><span class="ct-badge tr">已翻译</span></td></tr>
+                <tr><td class="ct-term-index">7</td><td class="ct-term-text">Notifications</td><td class="right"><span class="ct-badge unt">待翻译</span></td></tr>
+                <tr><td class="ct-term-index">8</td><td class="ct-term-text">Your repositories</td><td class="right"><span class="ct-badge unt">待翻译</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Section 4: 引擎实时处理中心 -->
+        <section class="proto-section">
+          <h2>引擎实时处理中心</h2>
+          <p class="meta">SSE 流式日志、进度与自动备份状态</p>
+
+          <div class="ct-progress-card">
+            <div class="ct-progress-head">
+              <h2>引擎实时处理中心</h2>
+              <div class="ct-status-indicator active">
+                <span class="ct-ping"></span>Processing
+              </div>
+            </div>
+
+            <div class="ct-progress-meta">
+              <div class="lbl">当前任务</div>
+              <div class="row">
+                <span class="task">分析并清洗词典…</span>
+                <span class="pct">68%</span>
+              </div>
+            </div>
+            <div class="ct-progress-track" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100">
+              <div class="ct-progress-fill"></div>
+            </div>
+            <span class="ct-backup-pill">系统自动备份已开启</span>
+
+            <div class="ct-terminal">
+              <div class="ct-term-bar">
+                <div class="ct-term-dots" aria-hidden="true">
+                  <i class="r"></i><i class="y"></i><i class="g"></i>
+                </div>
+                <span class="ct-term-title">i18n-engine --stream</span>
+                <button class="ct-term-clear">Clear</button>
+              </div>
+              <div class="ct-term-body" role="log" aria-live="polite">
+                <div class="ct-log-line info"><span class="t">[10:24:01]</span><span class="m">探针已注入，提取文本节点 1,248 个</span></div>
+                <div class="ct-log-line info"><span class="t">[10:24:02]</span><span class="m">正在清洗：去除空白与重复…</span></div>
+                <div class="ct-log-line info"><span class="t">[10:24:03]</span><span class="m">命中词典 612 条，新增 36 条</span></div>
+                <div class="ct-log-line warn"><span class="t">[10:24:04]</span><span class="m">抓取超时，回退到文本粘贴通道</span></div>
+                <div class="ct-log-line info"><span class="t">[10:24:05]</span><span class="m">解析入库完成，待翻译 36 条</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

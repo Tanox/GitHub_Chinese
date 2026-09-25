@@ -1,15 +1,15 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.43 / 2026-09-24，经实地核查刷新）
+## 项目事实（稳定，截至 v1.9.45 / 2026-09-25，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
-     → 拓扑排序 → 剥离 import/export → 拼接为单文件 IIFE，产物 `build/GitHub_i18n.user.js`（约 193 KB）。
+     → 拓扑排序 → 剥离 import/export → 拼接为单文件 IIFE，产物 `build/GitHub_zh-cn.user.js`（约 194 KB，v1.9.43 由 `GitHub_i18n.user.js` 更名）。
      `build/` 未被 .gitignore 忽略，必须纳入版本控制。当前纳入模块 ~92，孤立 0，循环引用 0。
   2. **词典采集工作台**：Next.js 16（App Router，`src/` 模式），路由 `/`、`/overview`、`/design`；
      API `src/app/api/collect/route.ts`、`batch-collect/route.ts`；`src/proxy.ts`（Next 16 约定的 proxy）；
      `src/lib/collector-core.js` + `dictionary-processor.js`（spawn `collect-dict.cjs`，与用户脚本共享词典）。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.43）。全局展示位须同步：
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.45）。全局展示位须同步：
   `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
 - **npm 脚本语义**：`build`=用户脚本构建；`build:web`=`next build`；`dev`=Next 工作台；
   `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
@@ -58,3 +58,12 @@
 - 远程：`https://github.com/Tanox/GitHub_i18n.git`（分支 `main`）。产品名 "GitHub Chinese 简体中文"，但仓库旧名 `GitHub_i18n` 仍用于 URL/raw 路径（@updateURL 依赖），命名一致性待澄清（见 IMPROVEMENT-TASKS T9）。
 - Husky + lint-staged 已启用；`lint-staged` v15 不支持顶层 `ignore` 键。
 - `build/GitHub_i18n.user.js` 随仓库提交（README 一键安装与 `@updateURL` 指向它）。
+
+## 受保护文件（勿清理 / 勿删除）
+- 根目录 **`GEMINI.md`** 与 **`metadata.json`** 是 **Google AI Studio 必需文件**。即便它们与项目构建/交付物无直接代码引用，也**绝对不能清理或删除**——即使在「减少根目录文件 / 去除冗余」类任务中也须保留。
+  - `GEMINI.md`：Gemini 自定义指令（"对话 Suggestions 保持中文"）。
+  - `metadata.json`：含 `MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API`，AI Studio 项目元数据。
+  - 备注：本会话（2026-09-25）曾误删二者，已 `git checkout HEAD --` 恢复；此后须显式跳过这两个路径。
+
+## 原型结构（v1.9.46 起）
+- 高保真原型现为**单一文件** `prototype/prototypes/index.html`（桌面版「GitHub 页面字符串采集工具」采集工作台，2026-09-25 由 `desktop.html` 重命名而来，并删除 `mobile.html`）。`server.js` 的 `/prototype` 默认页指向它。样式复用 `prototype/assets/prototype.css`。

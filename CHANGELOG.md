@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.9.46] - 2026-09-25
+
+### Docs
+- 仅保留桌面版高保真原型：删除 `prototype/prototypes/mobile.html`，将 `prototype/prototypes/desktop.html` 重命名为 `prototype/prototypes/index.html` 作为唯一原型入口
+- 同步 `server.js` 预览默认页指向 `prototypes/index.html`；更新侧边导航移除移动端入口
+- 更新引用原型页面的文档与版本展示位至 v1.9.46：`README.md`、`docs/README.md`、`docs/prototype.md`、`docs/project.md`、`openspec/README.md`、`openspec/prototype.md`、`server.js`
+
+---
+
+## [1.9.45] - 2026-09-25
+
+### Docs
+- 高保真原型重定向为「GitHub 页面字符串采集工具」：重写 `prototype/prototypes/desktop.html` 与 `mobile.html`，呈现采集流程（植入探针 → 归集词条 → 解析入库）、探针脚本一键复制、数据中心（文本粘贴 / 批量 URL）、清洗结果预览表与引擎实时处理中心（进度 + SSE 终端日志）
+- 更新 `README.md` 高保真原型表说明，由「仓库浏览 / 配置面板」改为采集工具相关描述
+- 同步版本展示位至 v1.9.45：`src/version.js`、`package.json`、`README.md`、`docs/prototype.md`、`openspec/prototype.md`
+
+---
+
+## [1.9.44] - 2026-09-25
+
+### Docs
+- 简化项目原型：移除设计系统/组件库/交互标准文档站点与 landing 页（`prototype/index.html`、`prototype/design-system/`、`prototype/components/`、`prototype/interaction/`），仅保留高保真原型 HTML 文件（`prototype/prototypes/desktop.html`、`prototype/prototypes/mobile.html`）及其样式（`prototype/assets/`）
+- 同步 `server.js` 预览默认页由已删除的 `index.html` 改为 `prototypes/desktop.html`；高保真原型侧边导航精简为仅桌面端/移动端切换
+- 更新引用原型页面的文档：`README.md`、`docs/README.md`、`docs/prototype.md`、`docs/project.md`、`openspec/README.md`、`openspec/prototype.md`
+- 同步版本展示位至 v1.9.44：`src/version.js`、`package.json`、`README.md`、`docs/prototype.md`、`openspec/prototype.md`、`server.js`
+
+---
+
 ## [1.9.43] - 2026-09-24
 
 ### Docs

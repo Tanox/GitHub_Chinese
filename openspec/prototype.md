@@ -1,9 +1,9 @@
 # 原型设计（索引）
 
-> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.46** ｜ 版本权威源：`src/version.js`
 >
 > 本文件为索引。原型设计说明的**唯一权威正文位于 [docs/prototype.md](../docs/prototype.md)**，
-> 可交互高保真原型位于 [prototype/](../prototype/)（入口 [prototype/index.html](../prototype/index.html)）。
+> 可交互高保真原型位于 [prototype/prototypes/](../prototype/prototypes/)：[高保真原型](prototype/prototypes/index.html)。
 
 ## 原型要点速览
 

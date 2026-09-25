@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.46** ｜ 版本权威源：`src/version.js`
 
 面向开发者与贡献者的文档入口。设计规范与高保真原型由 `prototype/` 目录统一维护。
 
@@ -21,14 +21,10 @@
 `docs/` 目录是项目规范文档的**唯一权威正文**；`openspec/` 目录仅保留规范索引与
 OpenSpec 配置，索引指向本文档目录，避免同一内容维护两份而产生长期脱节。
 
-## 设计系统与高保真原型
+## 高保真原型
 
-- 设计系统规范：[../prototype/design-system/](../prototype/design-system/)
-- 组件库：[../prototype/components/](../prototype/components/)
-- 交互标准：[../prototype/interaction/](../prototype/interaction/)
-- 高保真原型：[../prototype/prototypes/](../prototype/prototypes/)
-- 统一入口：[../prototype/index.html](../prototype/index.html)
+- 高保真原型：[../prototype/prototypes/index.html](../prototype/prototypes/index.html)
 
 ## 备注
 
-`docs/` 目录保留架构与流程类 Markdown 文档，视觉与组件规范统一在 `prototype/` 中维护，避免重复。
+`docs/` 目录保留架构与流程类 Markdown 文档，高保真原型统一在 `prototype/` 中维护，避免重复。

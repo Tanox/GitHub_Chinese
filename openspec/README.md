@@ -27,12 +27,9 @@
 
 | 模块 | 路径 | 说明 |
 |------|------|------|
-| 设计系统规范 | [prototype/design-system/](../prototype/design-system/) | 色彩、字体、间距、图标、动效 |
-| 组件库规范 | [prototype/components/](../prototype/components/) | 基础组件、复合组件、业务组件 |
-| 交互标准 | [prototype/interaction/](../prototype/interaction/) | 交互模式、反馈、错误处理、空状态 |
-| 高保真原型 | [prototype/prototypes/](../prototype/prototypes/) | 桌面端 UI、移动端 UI |
+| 高保真原型 | [prototype/prototypes/](../prototype/prototypes/) | 采集工具高保真原型（唯一入口） |
 
-打开 [prototype/index.html](../prototype/index.html) 浏览完整的原型与设计系统。
+打开 [prototype/prototypes/index.html](../prototype/prototypes/index.html) 浏览高保真原型。
 
 ## 关键约定（摘要）
 

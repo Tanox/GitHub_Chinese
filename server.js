@@ -1,7 +1,7 @@
 /**
  * 原型预览服务器（Express + WebSocket HMR）
  * @file server.js
- * @version 1.9.26
+ * @version 1.9.46
  * @description 提供 prototype/ 的热更新预览、public/ 静态资源与采集 API；Next 工作台请使用 npm run dev
  */
 
@@ -59,7 +59,7 @@ app.use('/prototype', async (req, res, next) => {
       const filePath = path.join(
         __dirname,
         'prototype',
-        req.path === '/' ? 'index.html' : req.path,
+        req.path === '/' ? 'prototypes/index.html' : req.path,
       );
       let content = await fs.readFile(filePath, 'utf-8');
 
