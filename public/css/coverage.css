@@ -1,0 +1,64 @@
+/*
+ * GitHub 中文 · 采集工作台 — 覆盖率看板（T22）
+ * 复用 showcase.css 设计令牌，仅补充看板专属布局类
+ * @file public/css/coverage.css
+ * @version 1.11.16
+ */
+
+.file-coverage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.file-coverage-row {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.file-coverage-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.file-name {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: .92rem;
+}
+
+.file-rate {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--brand-strong);
+}
+
+.file-detail {
+  font-size: .74rem;
+  color: var(--muted);
+}
+
+.conflict-item {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: .4rem;
+}
+
+.conflict-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.conflict-value {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--brand-strong);
+  background: var(--brand-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: .15rem .6rem;
+}

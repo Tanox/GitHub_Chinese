@@ -1,7 +1,7 @@
 /**
  * 全局布局
  * @file src/app/layout.tsx
- * @version 1.10.1
+ * @version 1.11.16
  * @description 加载 Tailwind 入口与 public/css 下的自包含样式模块，提供全站元数据
  */
 
@@ -49,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel='stylesheet' href='/css/terminal.css' />
         <link rel='stylesheet' href='/css/toast.css' />
         <link rel='stylesheet' href='/css/showcase.css' />
+        <link rel='stylesheet' href='/css/coverage.css' />
         {children}
       </body>
     </html>

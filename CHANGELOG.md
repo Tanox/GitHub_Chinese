@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.16] - 2026-09-25
+
+### Feat（覆盖率 / 缺口看板，T22）
+- **T22 覆盖率/缺口看板**：新增 `src/app/coverage` 页面 + 服务端取数模块 `src/lib/coverage-report.ts`（实时扫描磁盘词典，无需浏览器，规避 W5 架构约束）：
+  - 整体词典覆盖率（已翻译占比）、按词典文件（common/codespaces/explore）细分覆盖率进度条；
+  - Top-N 采集缺口（读取 `docs/untranslated-terms.txt` 最近一次采集未翻译词条）；
+  - 重复/冲突检测：跨模块同键多值冲突、一致重复键计数，以及近似键（大小写/空白/标点差异）聚类。
+  - 复用工作台 `Shell` 外壳与 `progress`/`showcase` 设计令牌，新增 `public/css/coverage.css`；导航新增「覆盖率」项（`src/components/navItems.ts`）。
+
 ## [1.11.15] - 2026-09-25
 
 ### Feat（采集工具重构，参考原型 §3.3，打通 T17/T23 数据层）

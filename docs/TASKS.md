@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.11.15** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.16** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -38,7 +38,7 @@
   - 验收：支持登录态 cookie 注入抓取私有页、HAR/会话导入，覆盖更多 UI 区域
 - [ ] **T21** 翻译建议 `L`
   - 验收：对每条待翻译词条调用 LLM/翻译记忆给出建议译文，人工确认后入库；含失败降级（无 key 时跳过）
-- [ ] **T22** 覆盖率/缺口看板 `M`
+- [x] **T22** 覆盖率/缺口看板 `M` → v1.11.16
   - 验收：按词典文件（nav/repo/pr/issue/misc…）展示覆盖率、Top-N 缺口、重复/冲突检测（同键多值、近似键）
 - [x] **T23** 历史明细与轮次对比（数据层） `M` → v1.11.14
   - 验收：新增 `history-diff.cjs`——`diffDictionaries`(新增/删除/变更词条级 diff)、`buildRoundRecord`(含 diff + 默认 snapshot)、`restoreFromRecord`(从快照回滚)、`compareRounds`(对比历史任意两轮)；扩展 `scripts/collect-history.cjs` 新增 `appendRound` 写入词条级轮次记录（默认含快照）。增补 `tests/history-diff.test.cjs`（4 用例）。采集流程接入（collect-dict.cjs 调用 appendRound）与工作台 UI 对比/回滚面板留后续（受 W5 架构决策影响）
