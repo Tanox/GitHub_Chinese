@@ -9,7 +9,7 @@ const FETCH_TIMEOUT_MS = 8000;
 const EXPONENTIAL_BASE = 2;
 
 const KNOWN_SCRIPT_HASHES = {
-  'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_i18n.user.js':
+  'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_zh-cn.user.js':
     'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
 };
 

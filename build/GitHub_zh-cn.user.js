@@ -16,8 +16,8 @@
 // @connect      github.com
 // @run-at       document-idle
 // @noframes
-// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_i18n.user.js
-// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_i18n.user.js
+// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
+// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
 // @license      GPL-2.0
 // @homepage     https://github.com/Tanox/GitHub_i18n
 // ==/UserScript==
@@ -293,7 +293,7 @@ const CONFIG = {
   updateCheck: {
     enabled: true,
     intervalHours: 24,
-    scriptUrl: 'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_i18n.user.js',
+    scriptUrl: 'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_zh-cn.user.js',
     autoUpdateVersion: true,
   },
   externalTranslation: {
@@ -5445,7 +5445,7 @@ const FETCH_TIMEOUT_MS = 8000;
 const EXPONENTIAL_BASE = 2;
 
 const KNOWN_SCRIPT_HASHES = {
-  'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_i18n.user.js':
+  'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_zh-cn.user.js':
     'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
 };
 

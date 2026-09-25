@@ -1,6 +1,6 @@
 # 开发指南
 
-> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
 
 本文档记录了项目的开发流程、分支策略、提交规范、发布流程和测试要求。
 
@@ -316,7 +316,7 @@ npm run validate
 | `npm run lint:fix` | 自动修复 ESLint 问题 |
 | `npm run format` | 运行 Prettier 格式化 |
 | `npm run format:check` | 检查代码格式 |
-| `npm run build` | 构建用户脚本 → `build/GitHub_i18n.user.js` |
+| `npm run build` | 构建用户脚本 → `build/GitHub_zh-cn.user.js` |
 | `npm run validate` | 验证构建产物 |
 | `npm run dev` | 启动 Next.js 采集工作台 |
 | `npm run dev:prototype` | 启动 `prototype/` 热更新预览（Express + WebSocket） |

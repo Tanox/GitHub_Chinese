@@ -1,6 +1,6 @@
 # 架构文档（索引）
 
-> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
 >
 > 本文件为索引。架构文档的**唯一权威正文位于 [docs/architecture.md](../docs/architecture.md)**，
 > 此处不再重复维护正文，以避免同一内容出现两份副本而长期脱节。
@@ -11,7 +11,7 @@
 
 | 链路 | 交付物 | 构建方式 |
 |------|--------|---------|
-| A. 用户脚本引擎 | `build/GitHub_i18n.user.js` 单文件用户脚本 | `build.cjs` 从 `src/main.js` 递归解析依赖图并拼接为 IIFE |
+| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/main.js` 递归解析依赖图并拼接为 IIFE |
 | B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
 用户脚本调用链：

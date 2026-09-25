@@ -10,9 +10,9 @@
 ## 命名与兼容性说明
 
 - **产品名**：GitHub Chinese 简体中文（文档与界面统一使用此名）。
-- **仓库名（历史保留）**：仓库地址仍为 `github.com/Tanox/GitHub_i18n`，用户脚本文件名为 `GitHub_i18n.user.js`。
-  该命名为**历史遗留并刻意保持不变**——`@updateURL` / `@downloadURL` 与「一键安装」链接均依赖此路径，
-  改名会导致已安装用户无法自动更新。因此文档中出现 `GitHub_i18n` 时，均指本项目的仓库 / 脚本标识，而非另一个产品。
+- **仓库名（历史保留）**：仓库地址仍为 `github.com/Tanox/GitHub_i18n`，全局变量仍为 `window.GitHub_i18n`。
+- **用户脚本文件名**：`GitHub_zh-cn.user.js`（自 v1.9.43 起由旧名 `GitHub_i18n.user.js` 更名，更贴合「简体中文」语义）。
+  注意：更名会使旧安装（指向旧 `@updateURL` 的 `GitHub_i18n.user.js`）无法自动更新，需用户重新一键安装新脚本。
 
 ## 功能介绍
 
@@ -36,9 +36,9 @@
 
 ### 2. 安装脚本
 
-点击 [一键安装](https://github.com/Tanox/GitHub_i18n/raw/refs/heads/main/build/GitHub_i18n.user.js)，然后在 Tampermonkey 中点击「安装」。
+点击 [一键安装](https://github.com/Tanox/GitHub_i18n/raw/refs/heads/main/build/GitHub_zh-cn.user.js)，然后在 Tampermonkey 中点击「安装」。
 
-> 安装链接指向仓库内的构建产物，因此 `build/GitHub_i18n.user.js` **必须纳入版本控制**。
+> 安装链接指向仓库内的构建产物，因此 `build/GitHub_zh-cn.user.js` **必须纳入版本控制**。
 
 ### 3. 开始使用
 
@@ -118,7 +118,7 @@ npm test        # lint → build → validate
 
 | 命令 | 说明 |
 |------|------|
-| `npm run build` | 构建用户脚本 → `build/GitHub_i18n.user.js` |
+| `npm run build` | 构建用户脚本 → `build/GitHub_zh-cn.user.js` |
 | `npm run validate` | 校验构建产物（存在性 / 体积 / 语法 / 未定义引用） |
 | `npm run dev` | 启动 Next.js 采集工作台 |
 | `npm run dev:prototype` | 启动 `prototype/` 热更新预览 |

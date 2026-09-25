@@ -12,8 +12,8 @@
 | 项目 | 说明 |
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
-| 运行形态 | 单文件用户脚本 `build/GitHub_i18n.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.9.42 |
+| 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
+| 当前版本 | v1.9.43 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -27,7 +27,7 @@
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
-| 用户脚本产物大小 | 198,838 字节（194.18 KB） | `build/GitHub_i18n.user.js` |
+| 用户脚本产物大小 | 198,838 字节（194.18 KB） | `build/GitHub_zh-cn.user.js` |
 | 翻译词典词条数 | 459 | `node collect-dict.cjs` 输出 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 16 个 HTML + 10 个 CSS | `prototype/` |
@@ -221,7 +221,7 @@ src/main.js                        ← 唯一入口
 | 1.9.36 | **T2 CSP**：`src/proxy.ts` 注入基于 nonce 的 Content-Security-Policy；**T4** OG/Twitter 元信息：`src/app/layout.tsx` 补全 `metadataBase` / `openGraph` / `twitter` |
 | 1.9.37 | **T5 API 集成测试**：新增 `src/lib/request-body.js` 纯函数及 `tests/request-body.test.mjs`、`tests/collector-core.test.mjs`；SSRF 校验前移至浏览器启动前（全部非法则不启动浏览器） |
 | 1.9.38 | **T6 行数门禁**：新增 `scripts/check-file-length.cjs`（>200 行即失败）并纳入 `npm test` 与 CI；**T7 依赖审计**：CI 改为 `npm audit --audit-level=high`（高危阻塞、低危放行） |
-| 1.9.39 | **T9 命名澄清**：README 新增「命名与兼容性说明」，说明旧名 `GitHub_i18n` 因 `@updateURL` 依赖刻意保留 |
+| 1.9.39 | **T9 命名澄清**：README 新增「命名与兼容性说明」，说明旧名 `GitHub_i18n` 因 `@updateURL` 依赖刻意保留（该保留策略已于 v1.9.43 被脚本更名推翻，新文件名为 `GitHub_zh-cn.user.js`） |
 | 1.9.40 | **T8 a11y**：axe-core + jsdom 检查三页静态产物（serious / critical 阻断）+ 语义修复；**T10 采集趋势**：`scripts/collect-history.cjs` 记录统计、`/overview` 展示趋势；拆分 `collect-dict.cjs`（211 行）至 `scripts/dict-report.cjs`；行数门禁扩展至根脚本 |
 | 1.9.41 | **文档整理**：清理 `docs/TASKS.md`（第 1 节空节合并、第 2 节归档改紧凑索引表）；同步 `docs/` 与 `openspec/` 全部文档版本行至 v1.9.41；PROGRESS 指标实算刷新（产物字节 / 用例数） |
 | 1.9.42 | **T11 CI 门禁补齐**：CI `lint` 作业新增类型检查（`typecheck`）、`build` 作业新增单元测试（`test:unit`，20 用例） |
@@ -238,7 +238,7 @@ src/main.js                        ← 唯一入口
 
 | 命令 | 用途 |
 |------|------|
-| `npm run build` | 构建用户脚本 → `build/GitHub_i18n.user.js` |
+| `npm run build` | 构建用户脚本 → `build/GitHub_zh-cn.user.js` |
 | `npm run validate` | 校验产物（存在性 / 体积 / 语法 / 未定义引用） |
 | `npm run dev` | 启动 Next.js 采集工作台（默认 3000 端口） |
 | `npm run dev:prototype` | 启动 `prototype/` 热更新预览（Express + WebSocket） |
@@ -276,7 +276,7 @@ src/main.js                        ← 唯一入口
 | 1.9.42 | 2026-09-23 | CI 门禁补齐（T11）：`lint` 作业新增类型检查、`build` 作业新增单元测试；新增 `npm run typecheck` 脚本 |
 | 1.9.41 | 2026-09-23 | 文档整理：清理 `docs/TASKS.md`（归档表格化）、同步 `docs/` 与 `openspec/` 版本行、刷新 PROGRESS 指标 |
 | 1.9.40 | 2026-09-23 | 新增 a11y 自动化检查（T8，axe-core + jsdom）与采集趋势可视化（T10，`collect-history.json` + `/overview`）；拆分 `collect-dict.cjs`，门禁覆盖根脚本 |
-| 1.9.39 | 2026-09-23 | 文档：README 新增「命名与兼容性说明」（T9），澄清产品名与仓库旧名 `GitHub_i18n` 的保留原因 |
+| 1.9.39 | 2026-09-23 | 文档：README 新增「命名与兼容性说明」（T9），澄清产品名与仓库旧名 `GitHub_i18n` 的保留原因（该保留策略已于 v1.9.43 被脚本更名推翻） |
 | 1.9.38 | 2026-09-23 | 新增代码文件行数门禁（T6，`lint:length` + CI）与高优先级依赖审计（T7，`npm audit --audit-level=high`） |
 | 1.9.37 | 2026-09-23 | 新增 API 路由集成测试（T5）：`request-body.js` 纯函数 + `request-body`/`collector-core` 用例；SSRF 校验前移至浏览器启动前 |
 | 1.9.36 | 2026-09-23 | 新增基于 nonce 的 CSP（T2，`src/proxy.ts`）与 OG / Twitter 元信息（T4，`src/app/layout.tsx`） |

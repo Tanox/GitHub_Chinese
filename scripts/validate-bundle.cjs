@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
 
-const BUNDLE_PATH = path.join(__dirname, '..', 'build', 'GitHub_i18n.user.js');
+const BUNDLE_PATH = path.join(__dirname, '..', 'build', 'GitHub_zh-cn.user.js');
 const MIN_BUNDLE_BYTES = 1000;
 
 /** 允许出现的运行时全局（浏览器 Web API 与用户脚本管理器 API） */
@@ -108,7 +108,7 @@ function validateBundle() {
 
   let ast;
   try {
-    ast = babel.parseSync(content, { sourceType: 'script', filename: 'GitHub_i18n.user.js' });
+    ast = babel.parseSync(content, { sourceType: 'script', filename: 'GitHub_zh-cn.user.js' });
   } catch (error) {
     return { ok: false, errors: [...errors, `语法解析失败: ${error.message}`] };
   }

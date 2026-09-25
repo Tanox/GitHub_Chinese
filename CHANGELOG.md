@@ -6,6 +6,10 @@
 - 刷新 `docs/PROGRESS.md` §1.1 数据型指标为实算值：`src/` 源码总行数 9230 → 9342、用户脚本产物大小 198,899 → 198,838 字节（194.24 → 194.18 KB）；其余指标（文件数 120 / 纳入模块 92 / 词典 459 条 / 原型 16 HTML + 10 CSS / 测试 20 用例）经实算核对一致
 - 同步版本展示位至 v1.9.43：`src/version.js`、`package.json`、`README.md`、`docs/PROGRESS.md`、`docs/TASKS.md`
 
+### Changed
+- 用户脚本文件名由 `GitHub_i18n.user.js` 更名为 `GitHub_zh-cn.user.js`（更贴合「简体中文」语义）；同步 `build.cjs` 产物名与 `@updateURL`/`@downloadURL`、`ci-cd.yml` 产物名、源码更新检查 URL（`src/config.js`、`src/versionChecker/fetcher.js`）、`src/lib/project-metrics.ts`、`src/app/overview/page.tsx` 及测试/校验脚本；重新生成 `build/GitHub_zh-cn.user.js` 并移除旧产物。注意：更名会使旧安装（指向旧 `@updateURL`）无法自动更新，需重新一键安装新脚本
+- 补同步文档版本横幅至 v1.9.43：`docs/project.md`、`docs/development.md`、`docs/architecture.md`（`v1.9.43` 发布提交的版本同步遗漏了这几处）
+
 ---
 
 ## [1.9.42] - 2026-09-23

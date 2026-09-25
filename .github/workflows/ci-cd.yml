@@ -67,8 +67,8 @@ jobs:
     - name: 上传构建产物
       uses: actions/upload-artifact@v4
       with:
-        name: GitHub_i18n.user.js
-        path: build/GitHub_i18n.user.js
+        name: GitHub_zh-cn.user.js
+        path: build/GitHub_zh-cn.user.js
         retention-days: 30
 
   # 安全扫描
@@ -114,7 +114,7 @@ jobs:
     - name: 下载构建产物
       uses: actions/download-artifact@v4
       with:
-        name: GitHub_i18n.user.js
+        name: GitHub_zh-cn.user.js
         path: build/
 
     - name: 创建发布包

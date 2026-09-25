@@ -90,7 +90,7 @@ function countLines(files: string[]): number {
  * @returns KB 数值，产物缺失时返回 0
  */
 function readArtifactKB(): number {
-  const artifact = path.join(process.cwd(), 'build', 'GitHub_i18n.user.js');
+  const artifact = path.join(process.cwd(), 'build', 'GitHub_zh-cn.user.js');
   if (!fs.existsSync(artifact)) {
     return 0;
   }

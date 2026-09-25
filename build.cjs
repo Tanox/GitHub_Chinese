@@ -1,7 +1,7 @@
 /**
  * GitHub Chinese 简体中文构建脚本
  * @file build.cjs
- * @version 1.9.24
+ * @version 1.9.43
  * @date 2026-09-19
  * @author Sut
  * @description 从入口自动解析模块依赖并拼接为单文件用户脚本（依赖 scripts/build/ 下的图谱与转换模块）
@@ -16,7 +16,7 @@ const { assembleBundle, findConflicts, readModules } = require('./scripts/build/
 const PROJECT_ROOT = path.resolve(__dirname);
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
-const OUTPUT_FILE = path.join(BUILD_DIR, 'GitHub_i18n.user.js');
+const OUTPUT_FILE = path.join(BUILD_DIR, 'GitHub_zh-cn.user.js');
 const ENTRY_FILE = path.join(SRC_DIR, 'main.js');
 
 /** 未被入口引用、但需继续随用户脚本发布的模块 */
@@ -40,8 +40,8 @@ const USER_SCRIPT_HEADER = `// ==UserScript==
 // @connect      github.com
 // @run-at       document-idle
 // @noframes
-// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_i18n.user.js
-// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_i18n.user.js
+// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
+// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
 // @license      GPL-2.0
 // @homepage     https://github.com/Tanox/GitHub_i18n
 // ==/UserScript==

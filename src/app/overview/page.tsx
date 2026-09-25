@@ -43,7 +43,7 @@ const STATS: StatItem[] = [
   {
     label: '用户脚本产物',
     value: `${projectMetrics.artifactKB} KB`,
-    hint: 'build/GitHub_i18n.user.js',
+    hint: 'build/GitHub_zh-cn.user.js',
   },
   {
     label: '原型页面',

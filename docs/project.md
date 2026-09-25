@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
 
 ## 项目概述
 
@@ -182,7 +182,7 @@ docs: 更新项目文档
 ### 命令
 
 ```bash
-npm run build          # 构建用户脚本 → build/GitHub_i18n.user.js
+npm run build          # 构建用户脚本 → build/GitHub_zh-cn.user.js
 npm run validate       # 校验构建产物
 npm run dev            # 启动 Next 采集工作台
 npm run dev:prototype  # 启动 prototype 热更新预览
@@ -196,7 +196,7 @@ npm test               # lint → build → validate
 1. 更新 `src/version.js` 中的 `VERSION`
 2. 同步 `package.json`、`CHANGELOG.md` 与文档中的版本展示位
 3. 运行 `npm test` 验证
-4. 重建并提交 `build/GitHub_i18n.user.js`
+4. 重建并提交 `build/GitHub_zh-cn.user.js`
 5. 创建 Git Tag（`git tag v1.9.24`）并推送，CI 自动产出 Release 资产
 
 ---
@@ -207,7 +207,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.9.42 |
+| **当前版本** | 1.9.43 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

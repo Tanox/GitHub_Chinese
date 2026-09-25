@@ -1,6 +1,6 @@
 # 开发指南（索引）
 
-> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
 >
 > 本文件为索引。开发指南的**唯一权威正文位于 [docs/development.md](../docs/development.md)**，
 > 此处不再重复维护正文，以避免同一内容出现两份副本而长期脱节。
@@ -36,7 +36,7 @@ Next 工作台类型检查：`node node_modules/typescript/bin/tsc --noEmit -p t
 1. 更新单一版本源 `src/version.js` 的 `VERSION`
 2. 同步 `package.json`、`CHANGELOG.md`、`docs/`、`openspec/config.yaml`、`prototype/` 中的版本展示位
 3. 运行 `npm test`
-4. 重建并提交 `build/GitHub_i18n.user.js`
+4. 重建并提交 `build/GitHub_zh-cn.user.js`
 5. 打 Tag（`git tag v1.9.24`）并推送，触发 CI/CD 产出 Release 资产
 
 > 仅同步**实际改动文件**的头注释版本号，禁止全仓库批量刷写。

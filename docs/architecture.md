@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.9.42** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -11,7 +11,7 @@ GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitH
 
 | 链路 | 交付物 | 构建方式 |
 |------|--------|---------|
-| A. 用户脚本引擎 | `build/GitHub_i18n.user.js` 单文件用户脚本 | `build.cjs` 从 `src/main.js` 递归解析依赖图并拼接 |
+| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/main.js` 递归解析依赖图并拼接 |
 | B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
 ### 1.2 架构特点
@@ -390,7 +390,7 @@ GitHub_Chinese/
 ├── scripts/validate-bundle.cjs       # 构建产物校验
 ├── docs/                             # 正式规范文档（权威正文）
 ├── openspec/                         # OpenSpec 规范索引与配置
-├── build/GitHub_i18n.user.js         # 用户脚本构建产物（纳入版本控制）
+├── build/GitHub_zh-cn.user.js         # 用户脚本构建产物（纳入版本控制）
 ├── build.cjs                         # 用户脚本构建入口
 ├── collect-dict.cjs                  # 词典采集工具
 ├── server.js                         # 原型热更新预览服务器

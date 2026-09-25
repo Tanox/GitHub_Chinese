@@ -11,7 +11,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const ROOT = path.join(__dirname, '..');
-const BUNDLE = path.join(ROOT, 'build', 'GitHub_i18n.user.js');
+const BUNDLE = path.join(ROOT, 'build', 'GitHub_zh-cn.user.js');
 /** 产物体积下限（字节）——低于此值通常意味着构建异常 */
 const MIN_BUNDLE_SIZE = 50 * 1024;
 
@@ -42,5 +42,5 @@ test('产物包含 UserScript 元数据与当前版本号', () => {
 
 test('产物为合法 JS（可被 vm 编译，无语法错误）', () => {
   const content = fs.readFileSync(BUNDLE, 'utf-8');
-  assert.doesNotThrow(() => new vm.Script(content, { filename: 'GitHub_i18n.user.js' }));
+  assert.doesNotThrow(() => new vm.Script(content, { filename: 'GitHub_zh-cn.user.js' }));
 });
