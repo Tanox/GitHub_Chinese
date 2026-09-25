@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.11.5** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.6** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -52,6 +52,8 @@
   - 验收：新增 `src/lib/api-guard.ts` `checkApiAccess`；可选 `COLLECT_API_TOKEN` Bearer 鉴权（默认关闭、向后兼容、无 UI 破坏）+ 每 IP 固定窗口限流（默认 60s/30 次，超限 429 + Retry-After）；两路由在解析请求体前接入
 - [x] **T33** 清理 `browser-semaphore.js` lint 警告 `S` → v1.11.5
   - 验收：`no-promise-executor-return` 警告消除，`npm run lint` 0 warning（经核查当前为块级 executor 体、已合规，标记关闭）
+- [x] **T34** `useCollector.ts` 触及 200 行上限重构（T29） `S` → v1.11.6
+  - 验收：按职责拆分为 `collector-types.ts`(类型) / `collector-constants.ts`(IDLE_PROGRESS·TERM_LINE_RE·PERCENT_MAX) / `collector-sse.ts`(纯函数 `readSseStream`)；主文件仅保留编排逻辑并 re-export 原有类型（组件导入契约不变）；顺手移除未使用的 `CollectErrorCode` 死导入；`npm run lint:length` 全部 <200 行、tsc/lint 全绿
 
 **P3（体验打磨）**
 - [ ] **T24** 导入/导出增强 `S`

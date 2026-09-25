@@ -1,54 +1,33 @@
 /**
  * 采集状态管理 Hook
  * @file src/hooks/useCollector.ts
- * @version 1.10.1
+ * @version 1.11.6
  * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CollectErrorCode } from '@/lib/collect-codes.js';
+import { IDLE_PROGRESS, TERM_LINE_RE, PERCENT_MAX } from './collector-constants';
+import { readSseStream } from './collector-sse';
+import type {
+  LogType,
+  LogEntry,
+  ProgressState,
+  TermStatus,
+  TermEntry,
+  StreamEvent,
+} from './collector-types';
 
-export type LogType = 'log' | 'error' | 'progress' | 'done';
+// 保持对外导出契约：组件从本模块导入这些类型
+export type {
+  LogType,
+  LogEntry,
+  ProgressState,
+  TermStatus,
+  TermEntry,
+  StreamEvent,
+} from './collector-types';
 
-export interface LogEntry {
-  type: LogType;
-  message: string;
-  timestamp: number;
-  /** 错误码（`type === 'error'` 时由服务端给出，见 `CollectErrorCode`） */
-  code?: number;
-}
-
-export interface ProgressState {
-  type: 'idle' | 'fetch' | 'analyze';
-  current: number;
-  total: number;
-  url?: string;
-  percent: number;
-}
-
-export type TermStatus = 'untranslated' | 'translated';
-
-export interface TermEntry {
-  text: string;
-  status: TermStatus;
-}
-
-interface StreamEvent {
-  type: LogType;
-  message?: string;
-  code?: number;
-  data?: { type?: string; current?: number; total?: number; url?: string };
-}
-
-const IDLE_PROGRESS: ProgressState = { type: 'idle', current: 0, total: 0, percent: 0 };
-const TERM_LINE_RE = /^\d+\. "(.+)"$/;
-const PERCENT_MAX = 100;
-
-/**
- * 将未知异常转换为可读消息
- * @param error - 捕获到的异常
- * @returns 错误消息
- */
+/** 将未知异常转换为可读消息 */
 function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -113,33 +92,7 @@ export function useCollector() {
 
   const handleStream = useCallback(
     async (response: Response) => {
-      if (!response.ok || !response.body) {
-        addLog('error', `服务端返回异常状态: ${response.status}`);
-        setIsProcessing(false);
-        return;
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const chunks = buffer.split('\n\n');
-        buffer = chunks.pop() ?? '';
-
-        chunks.forEach((chunk) => {
-          if (!chunk.startsWith('data: ')) return;
-          try {
-            applyEvent(JSON.parse(chunk.slice(6)) as StreamEvent);
-          } catch {
-            addLog('error', '收到无法解析的事件流数据');
-          }
-        });
-      }
+      await readSseStream(response, applyEvent, (message) => addLog('error', message));
     },
     [addLog, applyEvent],
   );

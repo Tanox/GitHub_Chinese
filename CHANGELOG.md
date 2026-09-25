@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.6] - 2026-09-25
+
+### Refactor（采集前端重构，行为不变）
+- **T29 / T34** `useCollector.ts` 触及 200 行上限，按职责拆分为 `collector-types.ts`（共享类型）、`collector-constants.ts`（`IDLE_PROGRESS` / `TERM_LINE_RE` / `PERCENT_MAX`）、`collector-sse.ts`（纯函数 `readSseStream`，无 React 依赖、可单测）。主文件仅保留编排逻辑，并通过 `export type` 重新导出原有类型，**组件导入契约不变**。
+- 顺手移除 `useCollector.ts` 中未使用的 `CollectErrorCode` 死导入（消除潜在 lint 警告）。
+
 ## [1.11.5] - 2026-09-25
 
 ### Fixed（采集工具安全加固）
