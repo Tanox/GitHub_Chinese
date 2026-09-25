@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.10.1** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.10.2** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -26,7 +26,7 @@
   - 验收：每条待翻译词条可标记 已翻译/忽略/需复核，状态持久化（localStorage 或 JSON 文件），进入历史可追溯
 - [ ] **T20** 一键合并入库 `M`
   - 验收：审阅通过词条按来源/分类生成词典 stub（`"词条": "待翻译: 词条"`）并渲染 PR 式 diff 预览，支持复制/下载
-- [ ] **T26** 修复 `extractPageText` 序列化丢失辅助（阻断 v1.10.0 批量采集） `M`
+- [x] **T26** 修复 `extractPageText` 序列化丢失辅助（阻断 v1.10.0 批量采集） `M` → v1.10.2
   - 验收：将 `SKIP_TAGS` / `resolveScopeRoot` / `isContentNoise` 内联进 `extractPageText` 使其自包含；补 jsdom 端到端用例，确认批量采集实际提取到文本（非 0）
 
 **P2（度量 / 管理增强）**

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2] - 2026-09-25
+
+### Fixed（T26 序列化回归）
+- 修复 `extractPageText` 经 `page.evaluate` 序列化丢失模块闭包导致 v1.10.0 批量采集整批提取 0 文本的回归：将 `SKIP_TAGS` / `resolveScopeRoot` / `isContentNoise` 全部内联进 `extractPageText`，使其成为自包含纯函数
+- 新增 `tests/extract-page-text.test.mjs`（jsdom 构造 DOM + `vm` 隔离上下文模拟 `page.evaluate` 序列化，断言实际提取到文本且跳过 script / 内容噪声 / 隐藏元素）
+- 另补 `src/lib/browser-semaphore.js` / `src/lib/batch-collector.js` 单元测试（共 4 例）覆盖槽位上限交接与批量聚合/单页失败隔离
+
 ## [1.10.1] - 2026-09-25
 
 ### Docs

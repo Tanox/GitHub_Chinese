@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.10.0 / 2026-09-25，经实地核查刷新）
+## 项目事实（稳定，截至 v1.10.2 / 2026-09-25，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -10,14 +10,14 @@
      API `src/app/api/collect/route.ts`、`batch-collect/route.ts`；`src/proxy.ts`（Next 16 约定的 proxy）；
      `src/lib/collector-core.js` + `dictionary-processor.js` + `page-navigation.js`（导航/重试/滚动辅助，与用户脚本共享词典）；
      `collector-core.js` 仅保留采集编排；`batch-collector.js`（分批并发抓取，单浏览器内 ≤3 并发页）、`browser-semaphore.js`（全局 ≤2 并发无头浏览器信号量）、`page-navigation.js` 可单测、无浏览器依赖。
-- **采集核心模块（v1.10.1 重构，Next.js 审查修复）**：`collector-core.js` 抽出 `batch-collector.js` 与 `browser-semaphore.js`；`dictionary-processor.js` 自 v1.9.47 起每请求用随机临时文件（`createRawTermsPath`）并 finally 清理——**临时文件竞态已修复**；SSRF 静态校验在 `collectFromUrls` 入口（`guardUrl`）。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.10.0）。全局展示位须同步：
+- **采集核心模块（v1.10.1 重构，Next.js 审查修复）**：`collector-core.js` 抽出 `batch-collector.js` 与 `browser-semaphore.js`；`dictionary-processor.js` 自 v1.9.47 起每请求用随机临时文件（`createRawTermsPath`）并 finally 清理——**临时文件竞态已修复**；SSRF 静态校验在 `collectFromUrls` 入口（`guardUrl`）。**T26 回归（v1.10.2 修复）**：`extractPageText` 原引用模块级 `resolveScopeRoot`/`isContentNoise`，经 `page.evaluate` 序列化丢失闭包导致整批提取 0 文本，已将全部辅助内联进函数使其自包含。
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.10.2）。全局展示位须同步：
   `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
 - **npm 脚本语义**：`build`=用户脚本构建；`build:web`=`next build`；`dev`=Next 工作台；
   `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
   `test:unit`=`node --test`（Node 内置 runner，零新增依赖）；`test`=lint→build→test:unit→validate。
-- **测试**：Node 内置 `node --test`（v1.9.30 起替代未启用的 Jest）。`tests/` 共 8 文件 / **24 用例**
-  （collect-codes 2、collect-dict 3、smoke 3、url-guard 4、request-body 3、collector-core 2、page-navigation 4、**a11y 3**）。
+- **测试**：Node 内置 `node --test`（v1.9.30 起替代未启用的 Jest）。`tests/` 共 11 文件 / **30 用例**
+  （collect-codes 2、collect-dict 3、smoke 3、url-guard 4、request-body 3、collector-core 2、page-navigation 4、browser-semaphore 2、batch-collector 2、extract-page-text 2、**a11y 3**）。
   a11y 用 `axe-core` + `jsdom`（devDeps）检查 `next build` 的静态 HTML（仅 serious/critical 阻断；无产物则 skip；
   **axe 返回 jsdom realm 数组，须 `Array.from` 后再断言**）。
   **未直接测 route.ts**：其 `@/` 别名在纯 Node 下不可解析，故把可测逻辑抽为纯函数（如 `request-body.js`）。
@@ -38,7 +38,7 @@
   `CollectErrorCode.INVALID_URL`（采集前逐项校验；不做 DNS 解析，已知不防 DNS rebinding）；
   ② CSP → `src/proxy.ts` 基于 nonce（script-src nonce + strict-dynamic；**CSP 须同时写请求头**，Next 据此给自身脚本注入 nonce）；
   ③ OG/Twitter → `src/app/layout.tsx` 的 metadataBase / openGraph / twitter；④ PROGRESS 文档漂移已清理。
-- **任务状态（v1.10.1）**：`docs/TASKS.md` 活动任务 **T1–T11 + 遗留 P0-1–P2-7 已全部完成归档**；采集 P1 首批 **T12–T15 已实现（v1.10.0）**并标记完成；待办 **T16/T18/T19–T25（匹配增强/采集源扩展/词典管理闭环）+ 审查新增 T26–T29（T26 为 P1 回归缺陷：extractPageText 经 page.evaluate 序列化丢失模块内辅助致批量采集 0 文本；T27 URL 上限不一致；T28 lint 警告；T29 useCollector 触线重构）**，每条附验收要点，按 P1–P3 / S/M/L 推进；
+- **任务状态（v1.10.2）**：`docs/TASKS.md` 活动任务 T1–T11 + P0-1–P2-7 已归档；采集 P1 首批 **T12–T15 已实现（v1.10.0/1.10.1）**并标记完成；**T26 序列化回归已于 v1.10.2 修复**；待办 **T16/T18/T19–T25（匹配增强/采集源扩展/词典管理闭环）+ T27–T29（T27 URL 上限不一致；T28 lint 警告；T29 useCollector 触线重构）**，每条附验收要点，按 P1–P3 / S/M/L 推进；
   第 2 节为紧凑编号索引，详细改动见 `CHANGELOG.md`。新增事项从 `T12` 起按 `Txx` 追加到 §1。采集趋势数据在 `docs/collect-history.json`（由 `collect-dict.cjs` / `dict-report.cjs` 写入）。
 - **已健康项**（勿重复处理）：req.json 容错已落地（v1.9.25）、构建可复现（无 Date/random 嵌入）、无 >200 行文件、双锁已消除。
 
