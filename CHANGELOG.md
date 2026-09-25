@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.11.2] - 2026-09-25
+
+### Chore（清理：移除混入应用的旧采集向导）
+- 删除 `public/js/collector-guide.js` 与 `public/js/wizard/`（constants/processor/renderer/store/stream/utils 共 7 文件）：旧版独立采集向导，功能已被 `src/app` + `src/lib` + `collect-dict.cjs` 取代，当前 Next.js 控制台未加载，属 `public/` 中废弃代码
+- `docs/project.md` 目录树移除 `public/js` 行，将 `public/` 注释改为「Next 静态样式资源（css）」
+- `tailwind.config.ts` 注释去掉对已删 `collector-guide` 的引用，改为「避免重置 public/css 自包含组件样式」
+- 核查确认原型 `prototype/` 独立无混入；`public/css/*` 为应用自有设计系统（被 `layout.tsx` 实际使用），非原型泄漏
+
+---
+
 ## [1.11.1] - 2026-09-25
 
 ### Fixed（EdgeOne 部署构建）

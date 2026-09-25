@@ -8,7 +8,7 @@ import type { Config } from 'tailwindcss';
 const config: Config = {
   content: ['./src/**/*.{ts,tsx,js,jsx}'],
   corePlugins: {
-    // 关闭 preflight，避免重置 web/collector-guide 原有自包含样式（public/css）
+    // 关闭 preflight，避免重置 public/css 自包含组件样式
     preflight: false,
   },
   theme: {

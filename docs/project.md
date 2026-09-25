@@ -58,9 +58,8 @@ GitHub_Chinese/
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / project-metrics.ts
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
 │   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
-├── public/                           # Next 静态资源（css / js）
-│   ├── css/                          # 采集工作台样式（模块化，单文件 ≤200 行）
-│   └── js/                           # 采集向导脚本（wizard/*）
+├── public/                           # Next 静态样式资源（css）
+│   └── css/                          # 采集工作台样式（模块化，单文件 ≤200 行）
 ├── prototype/                        # 高保真原型
 │   ├── assets/                       # 原型样式（CSS）
 │   └── prototypes/                   # index.html（唯一原型入口）
