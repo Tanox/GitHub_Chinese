@@ -1,12 +1,12 @@
 /**
  * 采集状态管理 Hook
  * @file src/hooks/useCollector.ts
- * @version 1.11.6
+ * @version 1.11.7
  * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { IDLE_PROGRESS, TERM_LINE_RE, PERCENT_MAX } from './collector-constants';
+import { IDLE_PROGRESS, PERCENT_MAX } from './collector-constants';
 import { readSseStream } from './collector-sse';
 import type {
   LogType,
@@ -43,11 +43,6 @@ export function useCollector() {
       ...prev,
       { type, message, timestamp: Date.now(), ...(code !== undefined ? { code } : {}) },
     ]);
-
-    const matched = message.match(TERM_LINE_RE);
-    if (matched) {
-      setTerms((prev) => [...prev, { text: matched[1], status: 'untranslated' }]);
-    }
   }, []);
 
   const clearLogs = useCallback(() => {
@@ -58,6 +53,11 @@ export function useCollector() {
 
   const applyEvent = useCallback(
     (event: StreamEvent) => {
+      if (event.type === 'term' && event.data?.text) {
+        const text = event.data.text;
+        setTerms((prev) => [...prev, { text, status: 'untranslated' }]);
+        return;
+      }
       if (event.type === 'log' && event.message) {
         addLog('log', event.message);
         return;

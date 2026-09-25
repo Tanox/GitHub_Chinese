@@ -1,7 +1,7 @@
 /**
  * 词典清洗子进程桥接
  * @file src/lib/dictionary-processor.js
- * @version 1.11.3
+ * @version 1.11.7
  * @description 调用 collect-dict.cjs 清洗原始词条文件，并把子进程输出转为采集事件流。
  *   每请求使用独立临时文件，避免并发请求互相覆盖（竞态，见 v1.9.47）。
  */
@@ -15,9 +15,9 @@ import { CollectErrorCode } from './collect-codes.js';
 /**
  * 采集事件
  * @typedef {Object} CollectEvent
- * @property {'log'|'error'|'progress'|'done'} type - 事件类型
+ * @property {'log'|'error'|'progress'|'done'|'term'} type - 事件类型（term 为结构化词条事件，data.text 为词条文本）
  * @property {string} [message] - 文本消息
- * @property {Record<string, unknown>} [data] - 结构化数据（进度信息）
+ * @property {Record<string, unknown>} [data] - 结构化数据（进度信息 / term 事件的词条文本）
  * @property {number|null} [code] - 子进程退出码（done 事件）或错误码（error 事件）
  */
 
@@ -27,6 +27,8 @@ const PROCESSOR_SCRIPT = path.join(process.cwd(), 'collect-dict.cjs');
 const QUEUE_POLL_INTERVAL_MS = 100;
 /** 子进程告警前缀：此类 stderr 行视为警告而非错误 */
 const WARN_PREFIX = '[WARN]';
+/** 词条行正则：匹配 `dict-report.cjs` 输出的 `N. "term"` 格式，用于下发结构化 term 事件（S1） */
+const TERM_LINE_RE = /^(\d+)\. "(.+)"$/;
 
 /**
  * 为单次采集生成独立的原始文本临时文件路径
@@ -104,7 +106,14 @@ export async function* runDictionaryProcessor(rawTermsFile, { signal } = {}) {
     chunk
       .toString()
       .split('\n')
-      .forEach((line) => pushLine(line, 'log', undefined));
+      .forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        // 后端解析词条行，下发结构化 term 事件，前端不再依赖 dict-report.cjs 输出格式（S1）
+        const m = TERM_LINE_RE.exec(trimmed);
+        if (m) queue.push({ type: 'term', data: { text: m[2] } });
+        pushLine(line, 'log', undefined);
+      });
   });
 
   child.stderr?.on('data', (chunk) => {

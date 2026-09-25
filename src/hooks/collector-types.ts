@@ -1,7 +1,7 @@
 /**
  * 采集 Hook 共享类型定义
  * @file src/hooks/collector-types.ts
- * @version 1.11.6
+ * @version 1.11.7
  * @description `useCollector` 及其拆分模块共用的类型，集中维护避免循环依赖
  */
 
@@ -30,10 +30,13 @@ export interface TermEntry {
   status: TermStatus;
 }
 
+/** SSE 事件类型（含后端下发的结构化词条事件 `term`） */
+export type StreamEventType = LogType | 'term';
+
 /** SSE 事件流中单条 `data:` 负载的结构 */
 export interface StreamEvent {
-  type: LogType;
+  type: StreamEventType;
   message?: string;
   code?: number;
-  data?: { type?: string; current?: number; total?: number; url?: string };
+  data?: { type?: string; current?: number; total?: number; url?: string; text?: string };
 }

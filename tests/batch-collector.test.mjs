@@ -1,7 +1,7 @@
 /**
  * 批量并发抓取测试
  * @file tests/batch-collector.test.mjs
- * @version 1.11.0
+ * @version 1.11.7
  * @description 用假浏览器/页面隔离 puppeteer，验证 `batch-collector.js` 的文本聚合、
  *   并发页上限与单页失败隔离（T15）
  */
@@ -33,6 +33,9 @@ function makeFakeBrowser(opts = {}) {
           return texts;
         },
         async waitForSelector() {},
+        async setRequestInterception() {},
+        on() {},
+        off() {},
         async close() {
           opened -= 1;
         },

@@ -1,7 +1,7 @@
 /**
  * 词典采集服务端入口（类型门面）
  * @file src/lib/collector-logic.ts
- * @version 1.9.28
+ * @version 1.11.7
  * @description 为 Next.js Route Handler 提供带类型的采集入口，实现收敛在 collector-core.js
  */
 
@@ -14,7 +14,7 @@ import { CollectErrorCode } from './collect-codes.js';
 /** 采集流程错误码（服务端与前端共用，便于前端按类型分流） */
 export { CollectErrorCode };
 
-export type CollectEventType = 'log' | 'error' | 'progress' | 'done';
+export type CollectEventType = 'log' | 'error' | 'progress' | 'done' | 'term';
 
 export interface CollectEvent {
   type: CollectEventType;

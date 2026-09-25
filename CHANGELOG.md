@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.7] - 2026-09-25
+
+### Refactor（S1：消除前后端输出格式耦合）
+- **S1 / T35** 前端 `useCollector.ts` 原用 `TERM_LINE_RE` 正则反向解析 `dict-report.cjs` 的 `N. "term"` stdout，两端强耦合。改为后端 `dictionary-processor.js` 在解析子进程输出时直接识别词条行并下发结构化 `term` 事件 `{ type: 'term', data: { text } }`；前端 `applyEvent` 直接消费 `term` 事件填充词条面板，**不再依赖任何输出文本格式**。
+- 类型同步：`collector-types.ts` 的 `StreamEvent`、服务端 `collector-logic.ts` 的 `CollectEventType`、`dictionary-processor.js` 的 `CollectEvent` 均新增 `'term'` 类型。`collector-constants.ts` 移除已无用的 `TERM_LINE_RE`。
+- 词条行仍作为 `log` 事件保留在日志流中，原有 UI 展示不受影响。
+
 ## [1.11.6] - 2026-09-25
 
 ### Refactor（采集前端重构，行为不变）
