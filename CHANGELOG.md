@@ -1,11 +1,26 @@
 # Changelog
 
+## [1.9.47] - 2026-09-25
+
+### Changed
+- 采集 GitHub 字符串工具流程改进：
+  - 文本提取去噪（`extractPageText`）：跳过 `script`/`style`/`noscript`/`template`/`svg`/`code`/`pre`/表单控件与隐藏元素（`aria-hidden`/`hidden`/`display:none`/`visibility:hidden`），避免 JS/CSS 代码与用户正文污染候选词条
+  - 匹配归一化：新增 `normalizeText`（解码 HTML 实体、压缩空白、去除首尾标点）并在大小写不敏感精确匹配之外增加归一化词典索引，降低「仅差标点 / 纯大小写」误判为待翻译
+  - 修复并发竞态：每次采集使用独立随机临时文件（`createRawTermsPath`）替换全局共享的 `RAW_TERMS_FILE`，并用 `finally` 及时清理
+  - 区分告警与错误：`dictionary-processor.js` 不再把子进程全部 stderr 标为 `SUBPROCESS_FAILED`，仅 `[WARN]` 前缀视为警告；子进程非零退出且无错误输出时补明确错误事件
+  - `request-body.js` 增加 `MAX_URLS`（50）上限，防止海量 URL 造成服务端 DoS
+  - `@babel/core` 由 `devDependencies` 移入 `dependencies`，避免生产仅装 dependencies 时采集子进程失败
+
+---
+
 ## [1.9.46] - 2026-09-25
 
 ### Docs
 - 仅保留桌面版高保真原型：删除 `prototype/prototypes/mobile.html`，将 `prototype/prototypes/desktop.html` 重命名为 `prototype/prototypes/index.html` 作为唯一原型入口
 - 同步 `server.js` 预览默认页指向 `prototypes/index.html`；更新侧边导航移除移动端入口
 - 更新引用原型页面的文档与版本展示位至 v1.9.46：`README.md`、`docs/README.md`、`docs/prototype.md`、`docs/project.md`、`openspec/README.md`、`openspec/prototype.md`、`server.js`
+- 移除高保真原型左侧导航侧边栏：删除 `index.html` 的 `<aside class="proto-nav">`，清理 `prototype.base.css` / `prototype.responsive.css` 中 `.proto-nav*` 样式并将 `.proto-shell` 改为单列布局
+- 高保真原型页面内容水平居中：`.proto-main` 增加 `margin: 0 auto`（配合 `max-width: 1200px` 在单列网格中居中）
 
 ---
 

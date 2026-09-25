@@ -1,7 +1,7 @@
 /**
  * 词典采集工具
  * @file collect-dict.cjs
- * @version 1.9.40
+ * @version 1.9.47
  * @author Sut
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表（报告生成见 scripts/dict-report.cjs）
  */
@@ -74,27 +74,58 @@ async function mergeDictionaries() {
 }
 
 /**
+ * 归一化候选文本，降低误判：解码常见 HTML 实体、压缩空白、去除首尾标点
+ * @param {string} raw - 原始文本
+ * @returns {string} 归一化后的文本
+ */
+function normalizeText(raw) {
+  let s = (raw ?? '').trim();
+  s = s
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'");
+  s = s.replace(/\s+/g, ' ');
+  s = s.replace(/^[\s\p{P}]+|[\s\p{P}]+$/gu, '').trim();
+  return s;
+}
+
+/**
  * 从文本列表中找出未翻译的词条
+ * @description 先做归一化（解码实体 / 压缩空白 / 去首尾标点），再按大小写不敏感精确匹配，
+ *   并在精确匹配之外增加归一化词典索引，减少把「已翻译 / 仅差标点」误判为「待翻译」。
  */
 function findUntranslated(texts, dictionary) {
   const untranslated = [];
   const translated = new Set();
 
-  for (const text of texts) {
-    const trimmed = text.trim();
-    // 基础过滤：允许长度 >= 2 的词条（同步前端逻辑）
-    if (trimmed.length < 2 || trimmed.length > 300) continue;
-    if (/^\d+$/.test(trimmed)) continue; // 纯数字
-    if (/^[\s\p{P}]+$/u.test(trimmed)) continue; // 纯标点或空白
-    if (/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(trimmed)) continue; // 不包含字母或中文
+  // 归一化词典键，作为大小写 / 首尾标点不敏感的辅助索引
+  const normalizedDict = {};
+  for (const key of Object.keys(dictionary)) {
+    normalizedDict[normalizeText(key).toLowerCase()] = dictionary[key];
+  }
 
-    // 检查词典（不区分大小写）
+  for (const text of texts) {
+    const norm = normalizeText(text);
+    // 基础过滤（基于归一化结果）
+    if (norm.length < 2 || norm.length > 300) continue;
+    if (/^\d+$/.test(norm)) continue; // 纯数字
+    if (/^[\s\p{P}]+$/u.test(norm)) continue; // 纯标点或空白
+    if (/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(norm)) continue; // 不包含字母或中文
+
+    // 检查词典：精确（含大小写三态）优先，其次归一化索引
+    const key = norm.toLowerCase();
     const matched =
-      dictionary[trimmed] || dictionary[trimmed.toLowerCase()] || dictionary[trimmed.toUpperCase()];
+      dictionary[norm] ||
+      dictionary[key] ||
+      dictionary[norm.toUpperCase()] ||
+      normalizedDict[key];
     if (matched) {
-      translated.add(trimmed);
+      translated.add(norm);
     } else {
-      untranslated.push(trimmed);
+      untranslated.push(norm);
     }
   }
 
@@ -134,4 +165,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { mergeDictionaries, findUntranslated, generateReport };
+module.exports = { mergeDictionaries, findUntranslated, normalizeText, generateReport };

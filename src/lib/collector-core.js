@@ -1,12 +1,13 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.9.37
+ * @version 1.9.47
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
 import fs from 'fs/promises';
-import { RAW_TERMS_FILE, runDictionaryProcessor } from './dictionary-processor.js';
+import { createRawTermsPath, runDictionaryProcessor } from './dictionary-processor.js';
+import { extractPageText } from './extract-page-text.js';
 import { CollectErrorCode } from './collect-codes.js';
 import { guardUrl } from './url-guard.js';
 import { loadPuppeteerCore, resolveBrowserExecutable } from './browser-resolver.js';
@@ -33,27 +34,6 @@ const MISSING_BROWSER_MESSAGE =
  */
 function describeError(error) {
   return error instanceof Error ? error.message : String(error);
-}
-
-/**
- * 提取页面正文中的有效文本块（在浏览器上下文中执行，须自包含）
- * @param {number} minLength - 最短长度
- * @param {number} maxLength - 最长长度
- * @returns {string[]} 文本块列表
- */
-function extractPageText(minLength, maxLength) {
-  const collected = [];
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-  let node = walker.nextNode();
-
-  while (node) {
-    const text = node.textContent?.trim() ?? '';
-    if (text.length > minLength && text.length <= maxLength) {
-      collected.push(text);
-    }
-    node = walker.nextNode();
-  }
-  return collected;
 }
 
 /**
@@ -143,8 +123,14 @@ export async function* collectFromUrls(urls) {
     yield { type: 'log', message: '页面提取完成，开始保存并分析词典...' };
     yield { type: 'progress', data: { type: 'analyze' } };
 
-    await fs.writeFile(RAW_TERMS_FILE, Array.from(allTexts).join('\n'), 'utf-8');
-    yield* runDictionaryProcessor();
+    // 每请求使用独立临时文件，避免并发采集互相覆盖（v1.9.47）
+    const rawFile = createRawTermsPath();
+    try {
+      await fs.writeFile(rawFile, Array.from(allTexts).join('\n'), 'utf-8');
+      yield* runDictionaryProcessor(rawFile);
+    } finally {
+      await fs.rm(rawFile, { force: true }).catch(() => {});
+    }
   } catch (error) {
     yield {
       type: 'error',
@@ -171,6 +157,12 @@ export async function* processRawData(data) {
     return;
   }
 
-  await fs.writeFile(RAW_TERMS_FILE, data, 'utf-8');
-  yield* runDictionaryProcessor();
+  // 每请求使用独立临时文件，避免并发采集互相覆盖（v1.9.47）
+  const rawFile = createRawTermsPath();
+  try {
+    await fs.writeFile(rawFile, data, 'utf-8');
+    yield* runDictionaryProcessor(rawFile);
+  } finally {
+    await fs.rm(rawFile, { force: true }).catch(() => {});
+  }
 }
