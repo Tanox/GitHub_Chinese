@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.11.4** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.5** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -48,6 +48,10 @@
   - 验收：`page-navigation.gotoWithFallback` 启用请求拦截，对所有导航/文档类请求（含重定向目标）二次 `guardUrl` 校验，命中内网/元数据/非公网即 `abort`，阻断重定向 SSRF
 - [x] **T31** 抽离公共 SSE 响应工厂（消除路由样板重复） `S` → v1.11.4
   - 验收：新增 `src/lib/sse-stream.ts` `createSseResponse`，`/api/collect` 与 `/api/batch-collect` 复用同一「断连取消 + 心跳 + 错误兜底 + 收尾关闭」实现，tsc/lint 全绿
+- [x] **T32** 采集端点鉴权与限流（C3） `S` → v1.11.5
+  - 验收：新增 `src/lib/api-guard.ts` `checkApiAccess`；可选 `COLLECT_API_TOKEN` Bearer 鉴权（默认关闭、向后兼容、无 UI 破坏）+ 每 IP 固定窗口限流（默认 60s/30 次，超限 429 + Retry-After）；两路由在解析请求体前接入
+- [x] **T33** 清理 `browser-semaphore.js` lint 警告 `S` → v1.11.5
+  - 验收：`no-promise-executor-return` 警告消除，`npm run lint` 0 warning（经核查当前为块级 executor 体、已合规，标记关闭）
 
 **P3（体验打磨）**
 - [ ] **T24** 导入/导出增强 `S`

@@ -2,10 +2,14 @@ import { NextRequest } from 'next/server';
 import { collectFromUrls } from '@/lib/collector-logic';
 import { extractUrls } from '@/lib/request-body';
 import { createSseResponse } from '@/lib/sse-stream';
+import { checkApiAccess } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
+  const denied = checkApiAccess(req);
+  if (denied) return denied;
+
   let body: unknown;
   try {
     body = await req.json();

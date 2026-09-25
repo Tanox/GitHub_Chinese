@@ -1,10 +1,14 @@
 import { NextRequest } from 'next/server';
 import { processRawData } from '@/lib/collector-logic';
 import { createSseResponse } from '@/lib/sse-stream';
+import { checkApiAccess } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
+  const denied = checkApiAccess(req);
+  if (denied) return denied;
+
   let data: unknown;
   try {
     ({ data } = await req.json());

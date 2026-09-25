@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.5] - 2026-09-25
+
+### Fixed（采集工具安全加固）
+- **C3 采集端点鉴权与限流**：新增 `src/lib/api-guard.ts` 的 `checkApiAccess`，为 `/api/collect` 与 `/api/batch-collect` 提供统一门禁——可选 `COLLECT_API_TOKEN` Bearer 令牌（仅配置后启用，默认开放、向后兼容、无需前端改动）+ 每 IP 固定窗口限流（默认 60s 内 30 次，超限返回 `429` + `Retry-After`）。令牌比对用 `crypto.timingSafeEqual` 恒定时间比较，避免可枚举。
+- **T33** 核查 `browser-semaphore.js`：`acquireBrowserSlot` 的 Promise executor 为块级体、未返回 `waiters.push(...)` 结果，`no-promise-executor-return` 已合规，`npm run lint` 0 warning，标记关闭。
+
 ## [1.11.4] - 2026-09-25
 
 ### Fixed（采集工具安全与去重）
