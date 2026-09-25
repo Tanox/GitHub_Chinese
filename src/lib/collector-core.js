@@ -1,36 +1,21 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.10.0
+ * @version 1.10.1
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
 import fs from 'fs/promises';
 import { createRawTermsPath, runDictionaryProcessor } from './dictionary-processor.js';
-import { extractPageText } from './extract-page-text.js';
 import { CollectErrorCode } from './collect-codes.js';
 import { guardUrl } from './url-guard.js';
 import { loadPuppeteerCore, resolveBrowserExecutable } from './browser-resolver.js';
-import {
-  NAVIGATION_TIMEOUT_MS,
-  RETRY_MAX,
-  gotoWithFallback,
-  waitForHydration,
-  autoScroll,
-  isRetryable,
-  computeBackoffDelay,
-  sleep,
-  RetryableError,
-} from './page-navigation.js';
+import { acquireBrowserSlot, releaseBrowserSlot } from './browser-semaphore.js';
+import { collectBatch } from './batch-collector.js';
 
 /**
  * @typedef {import('./dictionary-processor.js').CollectEvent} CollectEvent
  */
-
-const MIN_TEXT_LENGTH = 2;
-const MAX_TEXT_LENGTH = 300;
-/** HTTP 429 限流状态码（T14 退避触发条件） */
-const HTTP_TOO_MANY_REQUESTS = 429;
 
 /** 未安装 puppeteer-core 时的提示 */
 const MISSING_PUPPETEER_MESSAGE =
@@ -39,6 +24,9 @@ const MISSING_PUPPETEER_MESSAGE =
 const MISSING_BROWSER_MESSAGE =
   '未找到可用的 Chrome / Edge 浏览器，无法启动批量抓取。可通过环境变量 PUPPETEER_EXECUTABLE_PATH 指定浏览器路径。';
 
+/** 单次请求允许的最大抓取 URL 数，防止请求体携带过量目标耗尽资源 */
+const MAX_URLS_PER_REQUEST = 20;
+
 /**
  * 将错误转换为可读消息
  * @param {unknown} error - 捕获到的异常
@@ -46,38 +34,6 @@ const MISSING_BROWSER_MESSAGE =
  */
 function describeError(error) {
   return error instanceof Error ? error.message : String(error);
-}
-
-/**
- * 带指数退避重试的导航（T14）：处理导航超时 / 反爬(429) / 网络错误，
- * 单页失败不影响整批。最多重试 RETRY_MAX 次，不可重试或达上限则向外抛出。
- * @param {import('puppeteer-core').Page} page - puppeteer 页面对象
- * @param {string} target - 目标 URL
- * @returns {AsyncGenerator<CollectEvent>} 日志事件流
- */
-async function* navigateWithRetry(page, target) {
-  let attempt = 0;
-  for (;;) {
-    attempt += 1;
-    try {
-      const response = await gotoWithFallback(page, target, { navigationTimeout: NAVIGATION_TIMEOUT_MS });
-      if (response && response.status() === HTTP_TOO_MANY_REQUESTS) {
-        throw new RetryableError('rate-limited (429)', HTTP_TOO_MANY_REQUESTS);
-      }
-      return;
-    } catch (error) {
-      const retryable = isRetryable(error);
-      if (!retryable || attempt >= RETRY_MAX) {
-        throw error;
-      }
-      const delay = computeBackoffDelay(attempt);
-      yield {
-        type: 'log',
-        message: `访问 ${target} 暂失败（${describeError(error)}），第 ${attempt} 次重试，${delay}ms 后`,
-      };
-      await sleep(delay);
-    }
-  }
 }
 
 /**
@@ -109,6 +65,15 @@ export async function* collectFromUrls(urls) {
     return;
   }
 
+  if (targets.length > MAX_URLS_PER_REQUEST) {
+    yield {
+      type: 'error',
+      message: `单次最多抓取 ${MAX_URLS_PER_REQUEST} 个 URL，已收到 ${targets.length} 个`,
+      code: CollectErrorCode.INPUT_INVALID,
+    };
+    return;
+  }
+
   const puppeteer = await loadPuppeteerCore();
   if (!puppeteer) {
     yield {
@@ -129,42 +94,30 @@ export async function* collectFromUrls(urls) {
     return;
   }
 
-  const allTexts = new Set();
   const total = targets.length;
-  const browser = await puppeteer.launch({
-    headless: true,
-    executablePath,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+
+  // 限制并发浏览器实例，避免多请求同时拉起无头浏览器耗尽资源
+  await acquireBrowserSlot();
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      executablePath,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+  } catch (error) {
+    releaseBrowserSlot();
+    yield {
+      type: 'error',
+      message: `浏览器启动失败: ${describeError(error)}`,
+      code: CollectErrorCode.SUBPROCESS_FAILED,
+    };
+    return;
+  }
 
   try {
     yield { type: 'log', message: '正在初始化 Headless 浏览器...' };
-
-    for (let i = 0; i < total; i += 1) {
-      const target = targets[i];
-      yield { type: 'log', message: `[${i + 1}/${total}] 正在访问: ${target}` };
-      yield { type: 'progress', data: { type: 'fetch', current: i + 1, total, url: target } };
-
-      const page = await browser.newPage();
-      try {
-        yield* navigateWithRetry(page, target);
-        await waitForHydration(page);
-        await autoScroll(page);
-
-        const texts = await page.evaluate(extractPageText, MIN_TEXT_LENGTH, MAX_TEXT_LENGTH);
-
-        texts.forEach((text) => allTexts.add(text));
-        yield { type: 'log', message: `成功从 ${target} 提取 ${texts.length} 条文本` };
-      } catch (error) {
-        yield {
-          type: 'error',
-          message: `处理 ${target} 时失败: ${describeError(error)}`,
-          code: CollectErrorCode.FETCH_FAILED,
-        };
-      } finally {
-        await page.close();
-      }
-    }
+    const allTexts = yield* collectBatch(browser, targets, total);
 
     yield { type: 'log', message: '页面提取完成，开始保存并分析词典...' };
     yield { type: 'progress', data: { type: 'analyze' } };
@@ -185,6 +138,7 @@ export async function* collectFromUrls(urls) {
     };
   } finally {
     await browser.close();
+    releaseBrowserSlot();
   }
 }
 

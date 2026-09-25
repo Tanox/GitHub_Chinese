@@ -1,8 +1,8 @@
 /**
  * 项目指标（服务端）
  * @file src/lib/project-metrics.ts
- * @version 1.9.26
- * @description 磁盘指标在模块加载时一次性计算，供「项目概览」页展示；严禁在客户端组件中引用
+ * @version 1.10.1
+ * @description 磁盘指标按需（每次调用）实时计算，供「项目概览」页展示；严禁在客户端组件中引用
  */
 
 import fs from 'fs';
@@ -98,7 +98,6 @@ function readArtifactKB(): number {
 }
 
 const ROOT = process.cwd();
-const SOURCE_FILES = listFiles(path.join(ROOT, 'src'), SOURCE_EXT_RE);
 
 /** 采集历史文件（与 collect-dict.cjs 的写入路径一致） */
 const HISTORY_FILE = path.join(ROOT, 'docs', 'collect-history.json');
@@ -116,16 +115,27 @@ function readCollectHistory(): CollectRecord[] {
   }
 }
 
-/** 静态指标：同一进程内只计算一次 */
-export const projectMetrics: ProjectMetrics = {
-  version: VERSION,
-  dictionaryEntries: Object.keys(mergeAllDictionaries()).length,
-  dictionaryModules: listFiles(path.join(ROOT, 'src', 'dictionaries'), /\.js$/).length,
-  sourceFiles: SOURCE_FILES.length,
-  sourceLines: countLines(SOURCE_FILES),
-  artifactKB: readArtifactKB(),
-  prototypePages: listFiles(path.join(ROOT, 'prototype'), HTML_EXT_RE).length,
-};
+/**
+ * 实时计算项目指标（每次调用重新扫描磁盘，确保「项目概览」页反映最新状态而非构建期冻结值）
+ * @returns 项目指标
+ */
+export function getProjectMetrics(): ProjectMetrics {
+  const sourceFiles = listFiles(path.join(ROOT, 'src'), SOURCE_EXT_RE);
+  return {
+    version: VERSION,
+    dictionaryEntries: Object.keys(mergeAllDictionaries()).length,
+    dictionaryModules: listFiles(path.join(ROOT, 'src', 'dictionaries'), /\.js$/).length,
+    sourceFiles: sourceFiles.length,
+    sourceLines: countLines(sourceFiles),
+    artifactKB: readArtifactKB(),
+    prototypePages: listFiles(path.join(ROOT, 'prototype'), HTML_EXT_RE).length,
+  };
+}
 
-/** 采集历史：供「项目概览」页展示采集趋势 */
-export const collectHistory: CollectRecord[] = readCollectHistory();
+/**
+ * 读取采集历史（实时，供「项目概览」页展示采集趋势）
+ * @returns 采集记录列表（旧 → 新）
+ */
+export function getCollectHistory(): CollectRecord[] {
+  return readCollectHistory();
+}

@@ -1,7 +1,7 @@
 /**
  * 全局布局
  * @file src/app/layout.tsx
- * @version 1.9.36
+ * @version 1.10.1
  * @description 加载 Tailwind 入口与 public/css 下的自包含样式模块，提供全站元数据
  */
 
@@ -36,7 +36,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='zh-CN'>
-      <head>
+      <body>
+        {/* 静态样式表位于 public/css，由 Next 自动提升到 <head> */}
         <link rel='stylesheet' href='/css/base.css' />
         <link rel='stylesheet' href='/css/layout.css' />
         <link rel='stylesheet' href='/css/sidebar.css' />
@@ -48,8 +49,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel='stylesheet' href='/css/terminal.css' />
         <link rel='stylesheet' href='/css/toast.css' />
         <link rel='stylesheet' href='/css/showcase.css' />
-      </head>
-      <body>{children}</body>
+        {children}
+      </body>
     </html>
   );
 }

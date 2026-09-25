@@ -1,12 +1,19 @@
 /**
  * 项目概览页
  * @file src/app/overview/page.tsx
- * @version 1.9.26
+ * @version 1.10.1
  * @description 服务端页面：展示由磁盘实时统计的项目指标、已交付能力与剩余任务
  */
 
+import type { Metadata } from 'next';
 import Shell from '@/components/Shell';
-import { projectMetrics, collectHistory } from '@/lib/project-metrics';
+import { getProjectMetrics, getCollectHistory } from '@/lib/project-metrics';
+
+export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: '项目概览 · GitHub 中文',
+};
 
 interface StatItem {
   label: string;
@@ -23,39 +30,7 @@ interface SpecGroup {
 /** 趋势展示的最大条目数 */
 const MAX_TREND = 8;
 
-/** 指标卡片数据（静态，模块级只构造一次） */
-const STATS: StatItem[] = [
-  {
-    label: '当前版本',
-    value: `v${projectMetrics.version}`,
-    hint: '单一版本源 src/version.js',
-  },
-  {
-    label: '词典词条',
-    value: String(projectMetrics.dictionaryEntries),
-    hint: `${projectMetrics.dictionaryModules} 个词典模块合并`,
-  },
-  {
-    label: '源码规模',
-    value: `${projectMetrics.sourceFiles} 文件`,
-    hint: `${projectMetrics.sourceLines} 行（src 下 js/ts/tsx/css）`,
-  },
-  {
-    label: '用户脚本产物',
-    value: `${projectMetrics.artifactKB} KB`,
-    hint: 'build/GitHub_zh-cn.user.js',
-  },
-  {
-    label: '原型页面',
-    value: `${projectMetrics.prototypePages} 个`,
-    hint: 'prototype/ 设计系统与高保真原型',
-  },
-  {
-    label: '工作台路由',
-    value: '3 个',
-    hint: '采集控制台 / 项目概览 / 设计系统',
-  },
-];
+
 
 /** 能力清单（静态） */
 const SPEC_GROUPS: SpecGroup[] = [
@@ -96,6 +71,43 @@ const SPEC_GROUPS: SpecGroup[] = [
 ];
 
 export default function OverviewPage() {
+  const projectMetrics = getProjectMetrics();
+  const collectHistory = getCollectHistory();
+
+  /** 指标卡片数据（每次请求实时计算） */
+  const stats: StatItem[] = [
+    {
+      label: '当前版本',
+      value: `v${projectMetrics.version}`,
+      hint: '单一版本源 src/version.js',
+    },
+    {
+      label: '词典词条',
+      value: String(projectMetrics.dictionaryEntries),
+      hint: `${projectMetrics.dictionaryModules} 个词典模块合并`,
+    },
+    {
+      label: '源码规模',
+      value: `${projectMetrics.sourceFiles} 文件`,
+      hint: `${projectMetrics.sourceLines} 行（src 下 js/ts/tsx/css）`,
+    },
+    {
+      label: '用户脚本产物',
+      value: `${projectMetrics.artifactKB} KB`,
+      hint: 'build/GitHub_zh-cn.user.js',
+    },
+    {
+      label: '原型页面',
+      value: `${projectMetrics.prototypePages} 个`,
+      hint: 'prototype/ 设计系统与高保真原型',
+    },
+    {
+      label: '工作台路由',
+      value: '3 个',
+      hint: '采集控制台 / 项目概览 / 设计系统',
+    },
+  ];
+
   return (
     <Shell
       active='overview'
@@ -109,7 +121,7 @@ export default function OverviewPage() {
       }
     >
       <section className='stat-grid' aria-label='项目指标'>
-        {STATS.map((stat) => (
+        {stats.map((stat) => (
           <div key={stat.label} className='stat-card'>
             <p className='stat-label'>{stat.label}</p>
             <p className='stat-value'>{stat.value}</p>

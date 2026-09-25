@@ -5,7 +5,6 @@
  * @description 文本粘贴 / 批量 URL 两种采集入口，并提供本地导出能力
  */
 
-'use client';
 import React, { useState } from 'react';
 import type { TermEntry } from '@/hooks/useCollector';
 

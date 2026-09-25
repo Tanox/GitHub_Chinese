@@ -1,11 +1,11 @@
 /**
  * 采集状态管理 Hook
  * @file src/hooks/useCollector.ts
- * @version 1.9.28
+ * @version 1.10.1
  * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { CollectErrorCode } from '@/lib/collect-codes.js';
 
 export type LogType = 'log' | 'error' | 'progress' | 'done';
@@ -144,8 +144,15 @@ export function useCollector() {
     [addLog, applyEvent],
   );
 
+  const abortRef = useRef<AbortController | null>(null);
+
   const runRequest = useCallback(
     async (endpoint: string, payload: Record<string, unknown>, startMessage: string) => {
+      // 取消上一次可能仍在进行的请求，避免重复点击产生多个并行流
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       setIsProcessing(true);
       clearLogs();
       addLog('log', startMessage);
@@ -155,9 +162,13 @@ export function useCollector() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
+          signal: controller.signal,
         });
         await handleStream(response);
       } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
         addLog('error', `请求失败: ${describeError(error)}`);
       } finally {
         setIsProcessing(false);

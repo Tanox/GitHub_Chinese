@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.49** ｜ 更新日期：2026-09-25 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.10.0** ｜ 更新日期：2026-09-25 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
 > 每次发版后需同步更新「迭代记录」（§4）与「变更记录」（§8），并按 §7 核对版本与文档同步。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.9.48 |
+| 当前版本 | v1.10.0 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -22,8 +22,8 @@
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 121 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 9421 | 同上 |
+| `src/` 源码文件数 | 122 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 9612 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
@@ -236,6 +236,16 @@ src/main.js                        ← 唯一入口
 | 1.9.46 | 原型单一化（删除 `mobile.html`，`desktop.html` → `index.html`）；用户脚本文件名 `GitHub_i18n.user.js` → `GitHub_zh-cn.user.js` |
 | 1.9.47 | 采集流程改进：提取去噪（跳过 `script`/`style`/隐藏元素）、匹配归一化（`normalizeText`）、修复并发竞态（独立临时文件）、区分告警/错误、`request-body` 增加 `MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
 
+### 4.8 v1.10.0 · 采集成功率/覆盖率（P1 首批：T12–T14）
+
+| 编号 | 能力 | 处置 |
+|------|------|------|
+| T12 | 提取精准化：作用域从整页 `body` 收窄为 GitHub SPA 根（`#react-app` / `.application-main` 回退 `body`），跳过 `markdown-body`/`highlight`/`blob-code`/`CodeMirror`/评论等「内容型容器」，进一步降噪、提升信噪比 | `src/lib/extract-page-text.js` 新增 `resolveScopeRoot()` 与内容噪声判定 |
+| T13 | SPA/动态内容适配：导航优先 `networkidle2`，超时降级为 `domcontentloaded` + 固定等待；等待 hydration（`#react-app`）后再提取；滚动触发懒加载（`autoScroll`） | 抽离 `src/lib/page-navigation.js`（gotoWithFallback / waitForHydration / autoScroll） |
+| T14 | 单次采集鲁棒性：逐 URL 错误隔离（单页失败不中断整批、记日志续跑）；导航超时/反爬(429)/网络错误指数退避重试（最多 3 次） | `page-navigation.js` 的 `navigateWithRetry`（RetryableError + computeBackoffDelay） |
+
+> 抽出 `src/lib/page-navigation.js`（Node 侧、无浏览器依赖、可单测）承载全部导航交互辅助，采集核心 `collector-core.js` 仅保留编排；新增 `tests/page-navigation.test.mjs`（4 用例）覆盖退避与可重试判定。
+
 ---
 
 ## 5. 任务清单
@@ -283,6 +293,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.10.0 | 2026-09-25 | 采集成功率 P1 首批（T12–T14）：提取精准化（限定 SPA 容器 + 内容噪声降噪）、SPA/动态适配（hydration 等待 + 滚动懒加载 + 超时降级）、单页鲁棒性（逐 URL 错误隔离 + 指数退避重试）；抽离 `src/lib/page-navigation.js` 并新增 4 例单测 |
 | 1.9.47 | 2026-09-25 | 采集流程改进：提取去噪、匹配归一化、修复并发竞态、区分告警/错误、`MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
 | 1.9.46 | 2026-09-25 | 原型单一化（删除 `mobile.html`，`desktop.html` → `index.html`）；用户脚本文件名 `GitHub_i18n.user.js` → `GitHub_zh-cn.user.js` |
 | 1.9.45 | 2026-09-25 | 高保真原型重定向为「GitHub 页面字符串采集工具」 |
@@ -316,8 +327,9 @@ src/main.js                        ← 唯一入口
 
 ## 9. 规划中（Roadmap）：采集成功率/覆盖率与词典管理增强
 
-> 当前采集链路（v1.9.47）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
-> 但**提取仍偏整页、缺少动态内容适配、无覆盖率度量、采集后仅有「两桶预览 + 导出 JSON」、无词条级管理**。
+> 当前采集链路（v1.10.0）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
+> 其中 **T12 提取精准化、T13 SPA/动态适配、T14 单页鲁棒性已落地**（详见 §4.8）；
+> 但**仍缺少覆盖率度量、无采集后词条级管理**。
 >
 > **规划以任务清单 [docs/TASKS.md](./TASKS.md) T12–T25 为唯一活动清单（含 P1–P3 优先级与 S/M/L 工作量标签、验收要点）；
 > 变更记录以 [CHANGELOG.md](./CHANGELOG.md) §1.9.48 为唯一归处。本文档仅作规划指针，不再复述任务逐条内容，避免多文档重复。**

@@ -5,7 +5,12 @@
  * @description 服务端页面：展示 public/css/base.css 的设计令牌与核心组件样式
  */
 
+import type { Metadata } from 'next';
 import Shell from '@/components/Shell';
+
+export const metadata: Metadata = {
+  title: '设计系统 · GitHub 中文',
+};
 
 interface ColorToken {
   name: string;

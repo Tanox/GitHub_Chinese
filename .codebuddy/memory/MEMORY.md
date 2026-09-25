@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.48 / 2026-09-25，经实地核查刷新）
+## 项目事实（稳定，截至 v1.10.0 / 2026-09-25，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -8,14 +8,16 @@
      `build/` 未被 .gitignore 忽略，必须纳入版本控制。当前纳入模块 ~92，孤立 0，循环引用 0。
   2. **词典采集工作台**：Next.js 16（App Router，`src/` 模式），路由 `/`、`/overview`、`/design`；
      API `src/app/api/collect/route.ts`、`batch-collect/route.ts`；`src/proxy.ts`（Next 16 约定的 proxy）；
-     `src/lib/collector-core.js` + `dictionary-processor.js`（spawn `collect-dict.cjs`，与用户脚本共享词典）。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.48）。全局展示位须同步：
+     `src/lib/collector-core.js` + `dictionary-processor.js` + `page-navigation.js`（导航/重试/滚动辅助，与用户脚本共享词典）；
+     `collector-core.js` 仅保留采集编排；`batch-collector.js`（分批并发抓取，单浏览器内 ≤3 并发页）、`browser-semaphore.js`（全局 ≤2 并发无头浏览器信号量）、`page-navigation.js` 可单测、无浏览器依赖。
+- **采集核心模块（v1.10.1 重构，Next.js 审查修复）**：`collector-core.js` 抽出 `batch-collector.js` 与 `browser-semaphore.js`；`dictionary-processor.js` 自 v1.9.47 起每请求用随机临时文件（`createRawTermsPath`）并 finally 清理——**临时文件竞态已修复**；SSRF 静态校验在 `collectFromUrls` 入口（`guardUrl`）。
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.10.0）。全局展示位须同步：
   `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
 - **npm 脚本语义**：`build`=用户脚本构建；`build:web`=`next build`；`dev`=Next 工作台；
   `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
   `test:unit`=`node --test`（Node 内置 runner，零新增依赖）；`test`=lint→build→test:unit→validate。
-- **测试**：Node 内置 `node --test`（v1.9.30 起替代未启用的 Jest）。`tests/` 共 7 文件 / **20 用例**
-  （collect-codes 2、collect-dict 3、smoke 3、url-guard 4、request-body 3、collector-core 2、**a11y 3**）。
+- **测试**：Node 内置 `node --test`（v1.9.30 起替代未启用的 Jest）。`tests/` 共 8 文件 / **24 用例**
+  （collect-codes 2、collect-dict 3、smoke 3、url-guard 4、request-body 3、collector-core 2、page-navigation 4、**a11y 3**）。
   a11y 用 `axe-core` + `jsdom`（devDeps）检查 `next build` 的静态 HTML（仅 serious/critical 阻断；无产物则 skip；
   **axe 返回 jsdom realm 数组，须 `Array.from` 后再断言**）。
   **未直接测 route.ts**：其 `@/` 别名在纯 Node 下不可解析，故把可测逻辑抽为纯函数（如 `request-body.js`）。

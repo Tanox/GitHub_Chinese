@@ -5,7 +5,6 @@
  * @description 提供在 GitHub 页面控制台执行的文本采集探针脚本与一键复制
  */
 
-'use client';
 import React, { useEffect, useRef, useState } from 'react';
 
 const PROBE_SCRIPT = `const textNodes = [];

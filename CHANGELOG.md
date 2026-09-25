@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.0] - 2026-09-25
+
+### Added（采集成功率 P1 首批：T12–T14）
+- **T12 提取精准化**：`src/lib/extract-page-text.js` 作用域从整页 `body` 收窄为 GitHub SPA 根（`#react-app` / `.application-main` 回退 `body`），并跳过 `markdown-body`/`highlight`/`blob-code`/`CodeMirror`/评论等「内容型容器」降噪
+- **T13 SPA/动态适配**：抽离 `src/lib/page-navigation.js`，导航优先 `networkidle2`、超时降级 `domcontentloaded` + 固定等待；等待 hydration（`#react-app`）后再提取；`autoScroll` 滚动触发懒加载
+- **T14 单页鲁棒性**：`navigateWithRetry` 实现逐 URL 错误隔离（单页失败不中断整批、记日志续跑）+ 导航超时/反爬(429)/网络错误指数退避重试（最多 3 次，1s→2s→4s）
+- 新增 `tests/page-navigation.test.mjs`（4 用例）覆盖退避延迟与可重试判定；采集核心 `collector-core.js` 仅保留编排，门禁 0 超限、lint 0 warning
+
 ## [1.9.49] - 2026-09-25
 
 ### Docs
