@@ -139,3 +139,33 @@
 .input::placeholder {
   color: var(--c-text-dim);
 }
+
+/* ========== 图标按钮（顶栏设置等） ========== */
+.proto-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  border: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out);
+}
+.proto-icon-btn:hover {
+  background: var(--c-surface-hover);
+  color: var(--c-text);
+  border-color: var(--c-divider);
+}
+.proto-icon-btn:active {
+  transform: translateY(1px);
+}
+.proto-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}

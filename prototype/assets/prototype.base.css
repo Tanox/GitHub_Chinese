@@ -44,6 +44,7 @@ samp {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
   gap: 0;
 }
 
@@ -112,4 +113,59 @@ samp {
   height: 1px;
   background: var(--c-border-subtle);
   margin: var(--sp-10) 0;
+}
+
+/* ================== 顶部栏 ================== */
+.proto-topbar {
+  background: var(--c-bg-elevated);
+  border-bottom: 1px solid var(--c-border-subtle);
+}
+.proto-topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  padding: var(--sp-5) var(--sp-12);
+}
+.proto-topbar-brand {
+  font-family: var(--font-ui);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  color: var(--c-text);
+  letter-spacing: var(--ls-tight);
+}
+
+/* ================== 页脚 ================== */
+.proto-footer {
+  background: var(--c-bg-elevated);
+  border-top: 1px solid var(--c-border-subtle);
+}
+.proto-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+  padding: var(--sp-8) var(--sp-12);
+}
+.proto-footer .fnote {
+  color: var(--c-text-dim);
+  font-size: var(--fs-sm);
+}
+.proto-footer .flinks {
+  display: flex;
+  gap: var(--sp-6);
+}
+.proto-footer .flinks a {
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+  transition: color var(--t-fast) var(--ease-out);
+}
+.proto-footer .flinks a:hover {
+  color: var(--c-text);
+  text-decoration: none;
 }
