@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.9] - 2026-09-25
+
+### Feat（覆盖率度量，T17 数据层）
+- **T17 覆盖率度量与报告**：新增 `coverage.cjs`（`computeCoverage` + `isTranslatableCandidate`），复用 `collect-dict.cjs` 的 `findUntranslated` 计算 UI 串翻译覆盖率：
+  - `rate` = 命中词典候选数 / 可翻译候选总数；自动排除纯数字、纯标点、过短（<2）、不含字母/中文的噪声，避免污染分母。
+  - 按页面/路由分类（`byPage`：每页 `total/covered/rate/unmatched`）；`lowCoveragePages` 按覆盖率升序排列便于定位大面缺口；`topUnmatched` 按未命中频率降序输出 Top-N（默认 10）。
+  - 同步复用 T16「去占位符索引」，含 `%s`/`{{var}}` 等的已翻译串仍计入命中。
+  - 增补 `tests/coverage.test.cjs`（5 用例）覆盖命中、页面分类、Top-N、占位符复用与空输入。工作台可视化看板（覆盖率/缺口面板渲染）留作后续独立 UI 任务。
+
 ## [1.11.8] - 2026-09-25
 
 ### Refactor（采集匹配增强，T16）
