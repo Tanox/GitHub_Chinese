@@ -18,9 +18,9 @@ const MAX_ENTRIES = 30;
  * 读取采集历史（旧 → 新）
  * @returns {Array<{time: string, total: number, added: number, removed: number}>} 历史记录
  */
-function readHistory() {
+function readHistory(filePath) {
   try {
-    const parsed = JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf-8'));
+    const parsed = JSON.parse(fs.readFileSync(filePath || HISTORY_FILE, 'utf-8'));
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
@@ -32,15 +32,15 @@ function readHistory() {
  * @param {{total: number, added: number, removed: number}} entry - 本次采集统计
  * @returns {string} 写入的文件路径
  */
-function appendHistory(entry) {
-  const history = readHistory();
+function appendHistory(entry, filePath) {
+  const history = readHistory(filePath);
   history.push({ time: new Date().toISOString(), ...entry });
   fs.writeFileSync(
-    HISTORY_FILE,
+    filePath || HISTORY_FILE,
     `${JSON.stringify(history.slice(-MAX_ENTRIES), null, 2)}\n`,
     'utf-8',
   );
-  return HISTORY_FILE;
+  return filePath || HISTORY_FILE;
 }
 
 /**
@@ -50,15 +50,15 @@ function appendHistory(entry) {
  * @param {{includeSnapshot?:boolean}} [opts]
  * @returns {string} 写入的文件路径
  */
-function appendRound(dictionary, prevDictionary, opts = {}) {
-  const history = readHistory();
+function appendRound(dictionary, prevDictionary, opts = {}, filePath) {
+  const history = readHistory(filePath);
   history.push(buildRoundRecord(dictionary, prevDictionary, { includeSnapshot: opts.includeSnapshot }));
   fs.writeFileSync(
-    HISTORY_FILE,
+    filePath || HISTORY_FILE,
     `${JSON.stringify(history.slice(-MAX_ENTRIES), null, 2)}\n`,
     'utf-8',
   );
-  return HISTORY_FILE;
+  return filePath || HISTORY_FILE;
 }
 
 module.exports = { readHistory, appendHistory, appendRound, HISTORY_FILE };

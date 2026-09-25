@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.11.14** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.15** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -42,6 +42,8 @@
   - 验收：按词典文件（nav/repo/pr/issue/misc…）展示覆盖率、Top-N 缺口、重复/冲突检测（同键多值、近似键）
 - [x] **T23** 历史明细与轮次对比（数据层） `M` → v1.11.14
   - 验收：新增 `history-diff.cjs`——`diffDictionaries`(新增/删除/变更词条级 diff)、`buildRoundRecord`(含 diff + 默认 snapshot)、`restoreFromRecord`(从快照回滚)、`compareRounds`(对比历史任意两轮)；扩展 `scripts/collect-history.cjs` 新增 `appendRound` 写入词条级轮次记录（默认含快照）。增补 `tests/history-diff.test.cjs`（4 用例）。采集流程接入（collect-dict.cjs 调用 appendRound）与工作台 UI 对比/回滚面板留后续（受 W5 架构决策影响）
+- [x] **T36** 采集工具重构（参考原型，打通 T17/T23 数据层） `M` → v1.11.15
+  - 验收：参考 `docs/prototype.md` §3.3 契约重构 `collect-dict.cjs` 解析入库主流程——抽出 `analyzeTexts`(`findUntranslated`+`computeCoverage`) 并 log 覆盖率（T17 消费者）；`scripts/dict-report.cjs` 的 `generateReport` 改用 `appendRound` 写**词条级 diff 历史**（含快照，闭环 T23 数据层接入）；`scripts/collect-history.cjs` 的 `readHistory`/`appendRound` 支持路径注入以便单测；新增 `tests/collect-dict.test.cjs`（3 用例）。保留 stdout `N. "term"` 契约（`dictionary-processor` 兼容），不动 puppeteer/Next.js 抓取栈（受 W5 架构约束）
 - [x] **T27** 统一 URL 数量上限（校验/执行不一致） `S` → v1.11.3
   - 验收：抽离单一 `MAX_COLLECT_URLS` 常量同时被 `request-body.js`（校验 50）与 `collector-core.js`（执行 20）复用，两处上限一致
 - [x] **T30** 修复 SSRF 经 HTTP 重定向绕过 `url-guard` `S` → v1.11.4

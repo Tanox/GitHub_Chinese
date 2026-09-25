@@ -1,54 +1,66 @@
 /**
- * 词典采集纯函数测试
+ * 采集工具集成测试（参考原型重构）
  * @file tests/collect-dict.test.cjs
- * @version 1.11.8
- * @description 校验 findUntranslated 的命中判定、大小写处理、过滤规则与模板占位符归一（T16）
+ * @version 1.11.15
+ * @description 校验 collect-dict.cjs 的 analyzeTexts（findUntranslated + 覆盖率）与
+ *   dict-report.cjs 的 generateReport（写报告 + 词条级采集历史），路径注入避免污染仓库。
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { findUntranslated, stripTemplateTokens } = require('../collect-dict.cjs');
+const os = require('os');
+const path = require('path');
+const fs = require('fs');
 
-test('findUntranslated 命中原样词条，未命中归入待翻译', () => {
-  const dictionary = { 'Sign in': '登录' };
-  const { untranslated, translated } = findUntranslated(['Sign in', 'New issue'], dictionary);
-  assert.ok(translated.has('Sign in'));
-  assert.deepEqual(untranslated, ['New issue']);
+const { analyzeTexts, generateReport } = require('../collect-dict.cjs');
+
+const DICT = { Sign: '登录', Issue: '议题', 'New issue': '新建议题' };
+
+test('analyzeTexts 计算未翻译与覆盖率', () => {
+  const r = analyzeTexts(['Sign', 'Issue', 'Unknown term'], DICT);
+  assert.equal(r.translated.size, 2);
+  assert.deepEqual(r.untranslated, ['Unknown term']);
+  assert.equal(r.coverage.total, 3);
+  assert.equal(r.coverage.covered, 2);
+  assert.ok(Math.abs(r.coverage.rate - 2 / 3) < 1e-9);
 });
 
-test('findUntranslated 支持大写键被小写输入命中（大小写不敏感）', () => {
-  const dictionary = { 'PULL REQUESTS': '拉取请求' };
-  const { translated } = findUntranslated(['pull requests'], dictionary);
-  assert.ok(translated.has('pull requests'));
+test('analyzeTexts 过滤噪声不污染覆盖率分母', () => {
+  const r = analyzeTexts(['123', '!!!', 'Sign'], DICT);
+  // 纯数字/纯标点被 findUntranslated 跳过：候选仅 Sign
+  assert.equal(r.coverage.total, 1);
+  assert.equal(r.coverage.covered, 1);
+  assert.deepEqual(r.untranslated, []);
 });
 
-test('findUntranslated 过滤纯数字 / 纯标点 / 过短词条', () => {
-  const { untranslated } = findUntranslated(['123', '!!!', 'a', 'Valid term'], {});
-  assert.deepEqual(untranslated, ['Valid term']);
-});
+test('generateReport 写报告 + 词条级历史（注入路径，可轮次对比）', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-i18n-ct-'));
+  const reportFile = path.join(tmp, 'untranslated-terms.txt');
+  const historyFile = path.join(tmp, 'collect-history.json');
 
-test('findUntranslated 模板占位符归一：非模板词典命中含占位符候选（T16）', () => {
-  const dictionary = { 'Delete': '删除' };
-  const { untranslated, translated } = findUntranslated(['Delete %s?'], dictionary);
-  assert.ok(translated.has('Delete %s'), '含占位符候选应判为已翻译');
-  assert.deepEqual(untranslated, []);
-});
+  const dict1 = { Sign: '登录', Dashboard: '仪表盘' };
+  const r1 = analyzeTexts(['Sign', 'Dashboard', 'Unknown'], dict1);
+  const stats1 = generateReport(r1.untranslated, {
+    dictionary: dict1,
+    coverage: r1.coverage,
+    reportFile,
+    historyFile,
+  });
+  assert.equal(stats1.total, 1); // 仅 Unknown 待翻译
+  assert.ok(fs.existsSync(reportFile));
 
-test('findUntranslated mustache/命名占位符串可命中非模板词典（T16）', () => {
-  const dictionary = { 'show items': '显示条目', 'hello': '你好' };
-  const { translated } = findUntranslated(['Show {{count}} items', 'hello :name'], dictionary);
-  assert.ok(translated.has('Show {{count}} items'));
-  assert.ok(translated.has('hello :name'));
-});
+  const hist1 = JSON.parse(fs.readFileSync(historyFile, 'utf-8'));
+  assert.equal(hist1.length, 1);
+  assert.equal(hist1[0].diff.added.length, 2); // 首轮 prev={} → 全量新增
+  assert.ok(hist1[0].snapshot && hist1[0].snapshot.Sign === '登录');
 
-test('stripTemplateTokens 去除 printf/mustache/命名占位符（T16）', () => {
-  assert.equal(stripTemplateTokens('Delete %s').trim(), 'Delete');
-  assert.equal(stripTemplateTokens('{{count}} comments').trim(), 'comments');
-  assert.equal(stripTemplateTokens('Copy %1$s to %2$s').trim(), 'Copy to');
-  assert.equal(stripTemplateTokens('hello :name').trim(), 'hello');
-});
+  // 第二轮：新增 Profile，验证基于上一轮快照的 diff
+  const dict2 = { Sign: '登录', Dashboard: '仪表盘', Profile: '个人资料' };
+  const r2 = analyzeTexts(['Sign', 'Dashboard', 'Profile', 'Unknown'], dict2);
+  generateReport(r2.untranslated, { dictionary: dict2, coverage: r2.coverage, reportFile, historyFile });
 
-test('findUntranslated 去占位符匹配不得误伤无关串（T16 回归）', () => {
-  const dictionary = { 'Delete': '删除' };
-  const { untranslated } = findUntranslated(['Delete something else'], dictionary);
-  assert.deepEqual(untranslated, ['Delete something else']);
+  const hist2 = JSON.parse(fs.readFileSync(historyFile, 'utf-8'));
+  assert.equal(hist2.length, 2);
+  assert.equal(hist2[1].diff.added.length, 1);
+  assert.equal(hist2[1].diff.added[0].term, 'Profile');
+  assert.equal(hist2[1].diff.removed.length, 0);
 });

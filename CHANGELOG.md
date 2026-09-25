@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.15] - 2026-09-25
+
+### Feat（采集工具重构，参考原型 §3.3，打通 T17/T23 数据层）
+- **T36 采集工具重构**：`collect-dict.cjs` 抽出 `analyzeTexts`（`findUntranslated` + `computeCoverage`，运行时 require 避免与 `coverage.cjs` 循环依赖），`main` 变薄并 log 覆盖率；`scripts/dict-report.cjs` 的 `generateReport` 改用 `appendRound` 写**词条级 diff 历史**（含快照以支持 T23 回滚/轮次对比，闭环 T23 数据层接入），并输出覆盖率段落；`scripts/collect-history.cjs` 的 `readHistory`/`appendRound` 支持可选 `filePath` 注入以便单测。
+- 保留 stdout `N. "term"` 输出契约（`src/lib/dictionary-processor.js` 解析兼容），不动 puppeteer/Next.js 抓取栈（受 W5 架构约束）。
+- 为压到 200 行上限并提升可测试性，将 `mergeDictionaries`/`listDictionaryFiles` 抽出为独立 `merge-dictionaries.cjs`，`collect-dict.cjs` 改 require 并 re-export（同时移除 `path`/`@babel/core` 顶层依赖）。
+- 增补 `tests/collect-dict.test.cjs`（3 用例）覆盖 `analyzeTexts`（覆盖率/噪声过滤）与 `generateReport` 写报告＋轮次 diff 历史（路径注入）。
+
 ## [1.11.14] - 2026-09-25
 
 ### Feat（历史明细与轮次对比，T23 数据层）

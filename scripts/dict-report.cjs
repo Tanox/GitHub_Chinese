@@ -1,12 +1,12 @@
 /**
  * 词典采集报告
  * @file scripts/dict-report.cjs
- * @version 1.9.40
+ * @version 1.11.15
  * @description 生成待翻译报告（含历史增量对比），并把本次统计写入采集历史
  */
 const fs = require('fs');
 const path = require('path');
-const { appendHistory } = require('./collect-history.cjs');
+const { appendRound, readHistory } = require('./collect-history.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const REPORT_PATH = path.join(PROJECT_ROOT, 'docs', 'untranslated-terms.txt');
@@ -41,11 +41,20 @@ function readPreviousSet() {
 }
 
 /**
- * 生成待翻译报告（含与历史报告的增量对比），并记录采集历史
+ * 生成待翻译报告（含与历史报告的增量对比），并写入词条级采集历史
  * @param {string[]} untranslated - 待翻译词条列表
- * @returns {{total: number, added: number, removed: number}} 本次采集统计
+ * @param {{dictionary?:Object<string,string>, coverage?:object, reportFile?:string, historyFile?:string}} [opts]
+ *   - dictionary：合并后的完整词典（用于写词条级历史快照，支持 T23 轮次对比/回滚）
+ *   - coverage：`analyzeTexts` 计算的覆盖率（T17 数据层消费者，可选输出）
+ *   - reportFile / historyFile：可选路径注入（默认 docs/ 下固定文件），便于单测隔离
+ * @returns {{total:number, added:number, removed:number, coverage?:object}} 本次采集统计
  */
-function generateReport(untranslated) {
+function generateReport(untranslated, opts = {}) {
+  const dictionary = opts.dictionary || {};
+  const coverage = opts.coverage;
+  const reportFile = opts.reportFile || REPORT_PATH;
+  const historyFile = opts.historyFile;
+
   const unique = [...new Set(untranslated)].sort();
   const oldSet = readPreviousSet();
   const newSet = new Set(unique);
@@ -80,12 +89,33 @@ function generateReport(untranslated) {
     );
   }
 
-  fs.writeFileSync(REPORT_PATH, unique.map((text) => `"${text}"`).join('\n'), 'utf-8');
-  console.log(`✅ 报告已保存到: ${REPORT_PATH}\n`);
+  fs.writeFileSync(reportFile, unique.map((text) => `"${text}"`).join('\n'), 'utf-8');
+  console.log(`✅ 报告已保存到: ${reportFile}\n`);
+
+  // 覆盖率（T17 数据层消费者）
+  if (coverage) {
+    console.log('🎯 翻译覆盖率（T17 数据层）：');
+    console.log(
+      `   候选 ${coverage.total} / 覆盖 ${coverage.covered} / 覆盖率为 ${(coverage.rate * 100).toFixed(1)}%`,
+    );
+    if (coverage.topUnmatched.length) {
+      console.log(
+        `   Top 未命中：${coverage.topUnmatched
+          .slice(0, 5)
+          .map((u) => `"${u.term}"(${u.count})`)
+          .join('、')}`,
+      );
+    }
+  }
+
+  // 词条级采集历史（T23 数据层消费者：采集流程接入，含快照以支持回滚）
+  const history = readHistory(historyFile);
+  const prevDictionary = history.length ? history[history.length - 1].snapshot || {} : {};
+  const written = appendRound(dictionary, prevDictionary, { includeSnapshot: true }, historyFile);
+  console.log(`🗂️  词条级采集历史已更新: ${written}\n`);
 
   const stats = { total: newSet.size, added: added.length, removed: removed.length };
-  console.log(`🗂️  采集历史已更新: ${appendHistory(stats)}\n`);
-  return stats;
+  return { ...stats, coverage };
 }
 
 module.exports = { computeDelta, readPreviousSet, generateReport, REPORT_PATH };

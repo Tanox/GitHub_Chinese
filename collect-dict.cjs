@@ -1,77 +1,14 @@
 /**
  * 词典采集工具
  * @file collect-dict.cjs
- * @version 1.11.8
+ * @version 1.11.15
  * @author Sut
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表（报告生成见 scripts/dict-report.cjs）
  */
 
 const fs = require('fs');
-const path = require('path');
-const babel = require('@babel/core');
 const { generateReport } = require('./scripts/dict-report.cjs');
-
-const PROJECT_ROOT = path.resolve(__dirname);
-const DICT_DIR = path.join(PROJECT_ROOT, 'src', 'dictionaries');
-
-/**
- * 递归收集词典目录下的全部模块文件（避免手工清单与源码结构脱节）
- * @param {string} dir - 目录绝对路径
- * @param {string[]} [acc] - 累积结果
- * @returns {string[]} 词典模块绝对路径列表
- */
-function listDictionaryFiles(dir, acc = []) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      listDictionaryFiles(full, acc);
-    } else if (entry.name.endsWith('.js')) {
-      acc.push(full);
-    }
-  }
-  return acc;
-}
-
-/**
- * 合并所有词典
- */
-async function mergeDictionaries() {
-  const merged = {};
-  const dictFiles = listDictionaryFiles(DICT_DIR).sort();
-
-  for (const filePath of dictFiles) {
-    const file = path.relative(PROJECT_ROOT, filePath);
-    const content = fs.readFileSync(filePath, 'utf-8');
-    try {
-      const ast = babel.parseSync(content, {
-        sourceType: 'module',
-        filename: filePath,
-      });
-
-      babel.traverse(ast, {
-        ObjectProperty(propPath) {
-          const keyNode = propPath.node.key;
-          const valueNode = propPath.node.value;
-
-          let key = null;
-          if (keyNode.type === 'StringLiteral') {
-            key = keyNode.value;
-          } else if (keyNode.type === 'Identifier') {
-            key = keyNode.name;
-          }
-
-          if (key && valueNode.type === 'StringLiteral') {
-            merged[key] = valueNode.value;
-          }
-        },
-      });
-    } catch (err) {
-      console.warn(`[WARN] 无法解析词典文件 ${file}: ${err.message}`);
-    }
-  }
-
-  return merged;
-}
+const { mergeDictionaries } = require('./merge-dictionaries.cjs');
 
 /**
  * 归一化候选文本，降低误判：解码常见 HTML 实体、压缩空白、去除首尾标点
@@ -151,6 +88,21 @@ function findUntranslated(texts, dictionary) {
 }
 
 /**
+ * 解析入库分析：在文本列表上执行「未翻译匹配 + 覆盖率度量」一站式分析
+ * @description 合并 `findUntranslated` 与 `coverage.cjs` 的 `computeCoverage`；
+ *   为避免与 `coverage.cjs` 的顶层循环依赖，此处按需（运行时）require。
+ * @param {string[]} texts - 原始文本行
+ * @param {Object<string,string>} dictionary - 合并后的词典
+ * @returns {{untranslated:string[], translated:Set<string>, coverage:ReturnType<typeof computeCoverage>}}
+ */
+function analyzeTexts(texts, dictionary) {
+  const { untranslated, translated } = findUntranslated(texts, dictionary);
+  const { computeCoverage } = require('./coverage.cjs');
+  const coverage = computeCoverage(texts, dictionary);
+  return { untranslated, translated, coverage };
+}
+
+/**
  * 主函数
  */
 async function main() {
@@ -173,14 +125,24 @@ async function main() {
     .readFileSync(inputFile, 'utf-8')
     .split('\n')
     .filter((t) => t.trim());
-  const { untranslated, translated } = findUntranslated(texts, dictionary);
+  const { untranslated, translated, coverage } = analyzeTexts(texts, dictionary);
   console.log(`[词典采集] 已翻译: ${translated.size}, 待翻译: ${untranslated.length}`);
+  console.log(
+    `[覆盖率] 候选 ${coverage.total} / 覆盖 ${coverage.covered} / 覆盖率 ${(coverage.rate * 100).toFixed(1)}%`,
+  );
 
-  generateReport(untranslated);
+  generateReport(untranslated, { dictionary, coverage });
 }
 
 if (require.main === module) {
   main();
 }
 
-module.exports = { mergeDictionaries, findUntranslated, normalizeText, stripTemplateTokens, generateReport };
+module.exports = {
+  mergeDictionaries,
+  findUntranslated,
+  normalizeText,
+  stripTemplateTokens,
+  analyzeTexts,
+  generateReport,
+};
