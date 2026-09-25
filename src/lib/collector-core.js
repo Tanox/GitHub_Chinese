@@ -1,7 +1,7 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.10.1
+ * @version 1.11.3
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
@@ -9,6 +9,7 @@ import fs from 'fs/promises';
 import { createRawTermsPath, runDictionaryProcessor } from './dictionary-processor.js';
 import { CollectErrorCode } from './collect-codes.js';
 import { guardUrl } from './url-guard.js';
+import { MAX_COLLECT_URLS } from './request-body.js';
 import { loadPuppeteerCore, resolveBrowserExecutable } from './browser-resolver.js';
 import { acquireBrowserSlot, releaseBrowserSlot } from './browser-semaphore.js';
 import { collectBatch } from './batch-collector.js';
@@ -24,8 +25,7 @@ const MISSING_PUPPETEER_MESSAGE =
 const MISSING_BROWSER_MESSAGE =
   '未找到可用的 Chrome / Edge 浏览器，无法启动批量抓取。可通过环境变量 PUPPETEER_EXECUTABLE_PATH 指定浏览器路径。';
 
-/** 单次请求允许的最大抓取 URL 数，防止请求体携带过量目标耗尽资源 */
-const MAX_URLS_PER_REQUEST = 20;
+/** 单次请求允许的最大抓取 URL 数（与 request-body.js 共用 MAX_COLLECT_URLS，T27 统一） */
 
 /**
  * 将错误转换为可读消息
@@ -41,7 +41,11 @@ function describeError(error) {
  * @param {string[]} urls - 目标页面 URL 列表
  * @returns {AsyncGenerator<CollectEvent>} 采集事件流
  */
-export async function* collectFromUrls(urls) {
+export async function* collectFromUrls(urls, { signal } = {}) {
+  if (signal?.aborted) {
+    yield { type: 'error', message: '请求已取消', code: CollectErrorCode.INPUT_INVALID };
+    return;
+  }
   if (!Array.isArray(urls) || urls.length === 0) {
     yield { type: 'error', message: '未提供有效的抓取 URL', code: CollectErrorCode.INPUT_INVALID };
     return;
@@ -65,10 +69,10 @@ export async function* collectFromUrls(urls) {
     return;
   }
 
-  if (targets.length > MAX_URLS_PER_REQUEST) {
+  if (targets.length > MAX_COLLECT_URLS) {
     yield {
       type: 'error',
-      message: `单次最多抓取 ${MAX_URLS_PER_REQUEST} 个 URL，已收到 ${targets.length} 个`,
+      message: `单次最多抓取 ${MAX_COLLECT_URLS} 个 URL，已收到 ${targets.length} 个`,
       code: CollectErrorCode.INPUT_INVALID,
     };
     return;
@@ -122,11 +126,16 @@ export async function* collectFromUrls(urls) {
     yield { type: 'log', message: '页面提取完成，开始保存并分析词典...' };
     yield { type: 'progress', data: { type: 'analyze' } };
 
+    if (signal?.aborted) {
+      yield { type: 'error', message: '请求已取消', code: CollectErrorCode.INPUT_INVALID };
+      return;
+    }
+
     // 每请求使用独立临时文件，避免并发采集互相覆盖（v1.9.47）
     const rawFile = createRawTermsPath();
     try {
       await fs.writeFile(rawFile, Array.from(allTexts).join('\n'), 'utf-8');
-      yield* runDictionaryProcessor(rawFile);
+      yield* runDictionaryProcessor(rawFile, { signal });
     } finally {
       await fs.rm(rawFile, { force: true }).catch(() => {});
     }
@@ -147,7 +156,11 @@ export async function* collectFromUrls(urls) {
  * @param {string} data - 粘贴的原始文本
  * @returns {AsyncGenerator<CollectEvent>} 采集事件流
  */
-export async function* processRawData(data) {
+export async function* processRawData(data, { signal } = {}) {
+  if (signal?.aborted) {
+    yield { type: 'error', message: '请求已取消', code: CollectErrorCode.INPUT_INVALID };
+    return;
+  }
   if (!data || data.trim() === '') {
     yield {
       type: 'error',
@@ -161,7 +174,7 @@ export async function* processRawData(data) {
   const rawFile = createRawTermsPath();
   try {
     await fs.writeFile(rawFile, data, 'utf-8');
-    yield* runDictionaryProcessor(rawFile);
+    yield* runDictionaryProcessor(rawFile, { signal });
   } finally {
     await fs.rm(rawFile, { force: true }).catch(() => {});
   }

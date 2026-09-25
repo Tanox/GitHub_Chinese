@@ -11,7 +11,7 @@
      `src/lib/collector-core.js` + `dictionary-processor.js` + `page-navigation.js`（导航/重试/滚动辅助，与用户脚本共享词典）；
      `collector-core.js` 仅保留采集编排；`batch-collector.js`（分批并发抓取，单浏览器内 ≤3 并发页）、`browser-semaphore.js`（全局 ≤2 并发无头浏览器信号量）、`page-navigation.js` 可单测、无浏览器依赖。
 - **采集核心模块（v1.10.1 重构，Next.js 审查修复）**：`collector-core.js` 抽出 `batch-collector.js` 与 `browser-semaphore.js`；`dictionary-processor.js` 自 v1.9.47 起每请求用随机临时文件（`createRawTermsPath`）并 finally 清理——**临时文件竞态已修复**；SSRF 静态校验在 `collectFromUrls` 入口（`guardUrl`）。**T26 回归（v1.10.2 修复）**：`extractPageText` 原引用模块级 `resolveScopeRoot`/`isContentNoise`，经 `page.evaluate` 序列化丢失闭包导致整批提取 0 文本，已将全部辅助内联进函数使其自包含。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.11.1）。全局展示位须同步：
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.11.3）。全局展示位须同步：
   `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
 - **npm 脚本语义**：`build`=`next build && node build.cjs`（先产 Next.js 构建产物 `.next` 供 EdgeOne/OpenNext 部署打包，再构建用户脚本）；`build:userscript`=`node build.cjs`（用户脚本独立构建入口）；`build:web`=`next build`；`dev`=Next 工作台；
   `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
@@ -41,6 +41,7 @@
 - **任务状态（v1.10.2）**：`docs/TASKS.md` 活动任务 T1–T11 + P0-1–P2-7 已归档；采集 P1 首批 **T12–T15 已实现（v1.10.0/1.10.1）**并标记完成；**T26 序列化回归已于 v1.10.2 修复**；待办 **T16/T18/T19–T25（匹配增强/采集源扩展/词典管理闭环）+ T27–T29（T27 URL 上限不一致；T28 lint 警告；T29 useCollector 触线重构）**，每条附验收要点，按 P1–P3 / S/M/L 推进；
   第 2 节为紧凑编号索引，详细改动见 `CHANGELOG.md`。新增事项从 `T12` 起按 `Txx` 追加到 §1。采集趋势数据在 `docs/collect-history.json`（由 `collect-dict.cjs` / `dict-report.cjs` 写入）。
 - **已健康项**（勿重复处理）：req.json 容错已落地（v1.9.25）、构建可复现（无 Date/random 嵌入）、无 >200 行文件、双锁已消除。
+- **采集工具审查整改（v1.11.3）**：nextjs-code-review 技能审查定位 C1–C3/W1–W6/S1–S6；已修 W1/T27（统一 `MAX_COLLECT_URLS=20`）、C1（客户端断连释放浏览器/信号量/子进程）、W2（SSE 心跳）、W3/W6（子进程 120s 超时）。**仍待办**：C2 SSRF 重定向绕过、C3 端点无鉴权/限流、W5 serverless 无 Chrome 部署错配、S1 词条 stdout 正则耦合、S2 路由 SSE 样板重复、T28/T29。
 
 ## 编码约定（本项目）
 - 单代码文件 ≤ 200 行，超长须按职责拆分（文档 .md 不适用，须保持完整）。

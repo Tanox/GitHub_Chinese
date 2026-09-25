@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.10.2** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.3** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -42,7 +42,7 @@
   - 验收：按词典文件（nav/repo/pr/issue/misc…）展示覆盖率、Top-N 缺口、重复/冲突检测（同键多值、近似键）
 - [ ] **T23** 历史明细与轮次对比 `M`
   - 验收：`collect-history.json` 扩展为词条级 diff，工作台可按轮次对比、回滚
-- [ ] **T27** 统一 URL 数量上限（校验/执行不一致） `S`
+- [x] **T27** 统一 URL 数量上限（校验/执行不一致） `S` → v1.11.3
   - 验收：抽离单一 `MAX_COLLECT_URLS` 常量同时被 `request-body.js`（校验 50）与 `collector-core.js`（执行 20）复用，两处上限一致
 
 **P3（体验打磨）**

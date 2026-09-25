@@ -1,7 +1,7 @@
 /**
  * 全局浏览器并发信号量
  * @file src/lib/browser-semaphore.js
- * @version 1.10.1
+ * @version 1.11.2
  * @description 限制同时拉起的 Headless 浏览器实例数量，避免多请求并发耗尽系统资源
  */
 
@@ -20,7 +20,9 @@ export function acquireBrowserSlot() {
     activeBrowsers += 1;
     return Promise.resolve();
   }
-  return new Promise((resolve) => waiters.push(resolve));
+  return new Promise((resolve) => {
+    waiters.push(resolve);
+  });
 }
 
 /** 释放一个浏览器槽位（若有等待者则直接交接，避免计数抖动） */

@@ -30,17 +30,25 @@ export interface CollectEvent {
 /**
  * 批量抓取 URL 页面文本并交由词典清洗
  * @param urls - 目标页面 URL 列表
+ * @param options - 可选取消信号等运行时选项
  * @returns 采集事件流
  */
-export function collectFromUrls(urls: string[]): AsyncGenerator<CollectEvent> {
-  return collectFromUrlsCore(urls);
+export function collectFromUrls(
+  urls: string[],
+  options?: { signal?: AbortSignal },
+): AsyncGenerator<CollectEvent> {
+  return collectFromUrlsCore(urls, options);
 }
 
 /**
  * 处理用户在界面粘贴的文本
  * @param data - 粘贴的原始文本
+ * @param options - 可选取消信号等运行时选项
  * @returns 采集事件流
  */
-export function processRawData(data: string): AsyncGenerator<CollectEvent> {
-  return processRawDataCore(data);
+export function processRawData(
+  data: string,
+  options?: { signal?: AbortSignal },
+): AsyncGenerator<CollectEvent> {
+  return processRawDataCore(data, options);
 }

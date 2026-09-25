@@ -1,7 +1,7 @@
 /**
  * 词典清洗子进程桥接
  * @file src/lib/dictionary-processor.js
- * @version 1.9.47
+ * @version 1.11.3
  * @description 调用 collect-dict.cjs 清洗原始词条文件，并把子进程输出转为采集事件流。
  *   每请求使用独立临时文件，避免并发请求互相覆盖（竞态，见 v1.9.47）。
  */
@@ -52,7 +52,7 @@ function delay(ms) {
  * @param {string} rawTermsFile - 原始词条文件路径（由调用方生成，使用完毕后清理）
  * @returns {AsyncGenerator<CollectEvent>} 采集事件流
  */
-export async function* runDictionaryProcessor(rawTermsFile) {
+export async function* runDictionaryProcessor(rawTermsFile, { signal } = {}) {
   const child = spawn(process.execPath, [PROCESSOR_SCRIPT, rawTermsFile], {
     cwd: process.cwd(),
   });
@@ -61,6 +61,35 @@ export async function* runDictionaryProcessor(rawTermsFile) {
   const queue = [];
   let finished = false;
   let sawError = false;
+
+  // 客户端取消：立即终止子进程并结束事件流（C1）
+  const onAbort = () => {
+    sawError = true;
+    queue.push({
+      type: 'error',
+      message: '请求已取消，已终止词典清洗子进程',
+      code: CollectErrorCode.SUBPROCESS_FAILED,
+    });
+    try { child.kill('SIGKILL'); } catch {}
+    finished = true;
+  };
+  if (signal) {
+    if (signal.aborted) onAbort();
+    else signal.addEventListener('abort', onAbort, { once: true });
+  }
+
+  // 子进程硬超时，防止挂起导致前端永久等待（W3/W6）
+  const CHILD_TIMEOUT_MS = 120_000;
+  const timer = setTimeout(() => {
+    sawError = true;
+    queue.push({
+      type: 'error',
+      message: `词典清洗超时（>${CHILD_TIMEOUT_MS / 1000}s），已终止子进程`,
+      code: CollectErrorCode.SUBPROCESS_FAILED,
+    });
+    try { child.kill('SIGKILL'); } catch {}
+    finished = true;
+  }, CHILD_TIMEOUT_MS);
 
   const pushLine = (line, type, code) => {
     if (!line.trim()) return;
@@ -92,6 +121,8 @@ export async function* runDictionaryProcessor(rawTermsFile) {
   });
 
   child.on('close', (code) => {
+    clearTimeout(timer);
+    if (signal) signal.removeEventListener('abort', onAbort);
     // 子进程异常退出且无 stderr 错误行时，补一条明确错误事件
     if (code !== 0 && !sawError) {
       queue.push({

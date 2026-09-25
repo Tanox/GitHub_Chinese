@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.3] - 2026-09-25
+
+### Fixed（采集工具健壮性与资源泄漏）
+- **C1 客户端断连资源泄漏**：`collect`/`batch-collect` 路由现监听 `req.signal`，客户端断开即取消采集、关闭无头浏览器并释放 `browser-semaphore` 信号量槽；`dictionary-processor` 监听取消信号并 `SIGKILL` 终止清洗子进程
+- **W1/T27 统一 URL 上限**：抽离单一 `MAX_COLLECT_URLS = 20` 常量（`request-body.js`），`collector-core.js` 执行期与 `request-body.js` 校验共用同一上限，消除「21–50 个 URL 校验通过却被运行期拒绝」的不一致
+- **W2 SSE 心跳保活**：两路由每 15s 发送 `: ping` 注释帧，避免长任务（单页最长 30s 导航）经 EdgeOne/Vercel 代理被缓冲或超时断开
+- **W3/W6 子进程超时保护**：`runDictionaryProcessor` 增加 120s 硬超时，挂起时终止子进程并下发错误事件，前端不再永久等待
+
 ## [1.11.2] - 2026-09-25
 
 ### Chore（清理：移除混入应用的旧采集向导）
