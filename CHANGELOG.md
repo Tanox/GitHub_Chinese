@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.1] - 2026-09-25
+
+### Fixed（EdgeOne 部署构建）
+- 修复 EdgeOne Pages / OpenNext 部署失败：`npm run build` 原仅执行 `node build.cjs`（用户脚本构建），未生成 `.next` 目录，导致 OpenNext 插件报 `ENOENT: .next/required-server-files.json`
+- `build` 脚本改为 `next build && node build.cjs`，确保部署时产出 Next.js 构建产物；新增 `build:userscript` 保留用户脚本独立构建入口
+- 纠正工作树版本误降级（1.10.2 → 1.11.1，与 origin/main v1.11.0 对齐并 bump）
+
+---
+
 ## [1.10.2] - 2026-09-25
 
 ### Fixed（T26 序列化回归）

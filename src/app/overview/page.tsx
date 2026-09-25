@@ -30,8 +30,6 @@ interface SpecGroup {
 /** 趋势展示的最大条目数 */
 const MAX_TREND = 8;
 
-
-
 /** 能力清单（静态） */
 const SPEC_GROUPS: SpecGroup[] = [
   {

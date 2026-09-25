@@ -6,11 +6,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  computeBackoffDelay,
-  isRetryable,
-  RetryableError,
-} from '../src/lib/page-navigation.js';
+import { computeBackoffDelay, isRetryable, RetryableError } from '../src/lib/page-navigation.js';
 
 test('computeBackoffDelay 指数递增 1s/2s/4s', () => {
   assert.equal(computeBackoffDelay(1), 1_000);

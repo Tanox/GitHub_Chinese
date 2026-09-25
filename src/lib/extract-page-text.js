@@ -18,13 +18,30 @@
 export function extractPageText(minLength, maxLength) {
   // 跳过非 UI 文本节点：脚本 / 样式 / 模板 / SVG / 表单控件 / 代码块，以及隐藏元素
   const SKIP_TAGS = new Set([
-    'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'SVG', 'HEAD',
-    'LINK', 'META', 'TITLE', 'CODE', 'PRE', 'TEXTAREA', 'INPUT',
+    'SCRIPT',
+    'STYLE',
+    'NOSCRIPT',
+    'TEMPLATE',
+    'SVG',
+    'HEAD',
+    'LINK',
+    'META',
+    'TITLE',
+    'CODE',
+    'PRE',
+    'TEXTAREA',
+    'INPUT',
   ]);
   // GitHub 内容型容器（噪声）：其文本多为代码 / 正文 / 评论，非 UI 文案
   const CONTENT_NOISE_CLASSES = [
-    'markdown-body', 'highlight', 'blob-code', 'CodeMirror',
-    'js-comment-body', 'timeline-comment', 'diff-view', 'comment-body',
+    'markdown-body',
+    'highlight',
+    'blob-code',
+    'CodeMirror',
+    'js-comment-body',
+    'timeline-comment',
+    'diff-view',
+    'comment-body',
   ];
 
   /**

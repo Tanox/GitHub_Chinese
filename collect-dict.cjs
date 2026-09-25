@@ -118,10 +118,7 @@ function findUntranslated(texts, dictionary) {
     // 检查词典：精确（含大小写三态）优先，其次归一化索引
     const key = norm.toLowerCase();
     const matched =
-      dictionary[norm] ||
-      dictionary[key] ||
-      dictionary[norm.toUpperCase()] ||
-      normalizedDict[key];
+      dictionary[norm] || dictionary[key] || dictionary[norm.toUpperCase()] || normalizedDict[key];
     if (matched) {
       translated.add(norm);
     } else {

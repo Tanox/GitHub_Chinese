@@ -56,7 +56,9 @@ export function isRetryable(error) {
   if (error instanceof RetryableError) return true;
   if (error?.name === 'TimeoutError') return true;
   const message = error?.message ?? String(error);
-  return /net::ERR|Navigation timeout|Navigation failed|ERR_CONNECTION|429|502|503|504/i.test(message);
+  return /net::ERR|Navigation timeout|Navigation failed|ERR_CONNECTION|429|502|503|504/i.test(
+    message,
+  );
 }
 
 /**
@@ -66,12 +68,22 @@ export function isRetryable(error) {
  * @param {{ navigationTimeout?: number }} [options] - 导航超时配置
  * @returns {Promise<import('puppeteer-core').HTTPResponse | null>}
  */
-export async function gotoWithFallback(page, target, { navigationTimeout = NAVIGATION_TIMEOUT_MS } = {}) {
+export async function gotoWithFallback(
+  page,
+  target,
+  { navigationTimeout = NAVIGATION_TIMEOUT_MS } = {},
+) {
   try {
     return await page.goto(target, { waitUntil: 'networkidle2', timeout: navigationTimeout });
   } catch (error) {
-    if (error?.name === 'TimeoutError' || /Navigation timeout|net::ERR_TIMED_OUT/i.test(error?.message ?? '')) {
-      const response = await page.goto(target, { waitUntil: 'domcontentloaded', timeout: navigationTimeout });
+    if (
+      error?.name === 'TimeoutError' ||
+      /Navigation timeout|net::ERR_TIMED_OUT/i.test(error?.message ?? '')
+    ) {
+      const response = await page.goto(target, {
+        waitUntil: 'domcontentloaded',
+        timeout: navigationTimeout,
+      });
       await sleep(DOMCONTENTLOADED_WAIT_MS);
       return response;
     }
@@ -86,7 +98,11 @@ export async function gotoWithFallback(page, target, { navigationTimeout = NAVIG
  */
 export async function waitForHydration(
   page,
-  { selector = HYDRATION_SELECTOR, timeout = HYDRATION_TIMEOUT_MS, settleMs = HYDRATION_SETTLE_MS } = {},
+  {
+    selector = HYDRATION_SELECTOR,
+    timeout = HYDRATION_TIMEOUT_MS,
+    settleMs = HYDRATION_SETTLE_MS,
+  } = {},
 ) {
   try {
     await page.waitForSelector(selector, { timeout });
@@ -134,7 +150,9 @@ export async function* navigateWithRetry(page, target) {
   for (;;) {
     attempt += 1;
     try {
-      const response = await gotoWithFallback(page, target, { navigationTimeout: NAVIGATION_TIMEOUT_MS });
+      const response = await gotoWithFallback(page, target, {
+        navigationTimeout: NAVIGATION_TIMEOUT_MS,
+      });
       if (response && response.status() === HTTP_TOO_MANY_REQUESTS) {
         throw new RetryableError('rate-limited (429)', HTTP_TOO_MANY_REQUESTS);
       }

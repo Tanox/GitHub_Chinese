@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.10.2 / 2026-09-25，经实地核查刷新）
+## 项目事实（稳定，截至 v1.11.1 / 2026-09-25，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -11,9 +11,9 @@
      `src/lib/collector-core.js` + `dictionary-processor.js` + `page-navigation.js`（导航/重试/滚动辅助，与用户脚本共享词典）；
      `collector-core.js` 仅保留采集编排；`batch-collector.js`（分批并发抓取，单浏览器内 ≤3 并发页）、`browser-semaphore.js`（全局 ≤2 并发无头浏览器信号量）、`page-navigation.js` 可单测、无浏览器依赖。
 - **采集核心模块（v1.10.1 重构，Next.js 审查修复）**：`collector-core.js` 抽出 `batch-collector.js` 与 `browser-semaphore.js`；`dictionary-processor.js` 自 v1.9.47 起每请求用随机临时文件（`createRawTermsPath`）并 finally 清理——**临时文件竞态已修复**；SSRF 静态校验在 `collectFromUrls` 入口（`guardUrl`）。**T26 回归（v1.10.2 修复）**：`extractPageText` 原引用模块级 `resolveScopeRoot`/`isContentNoise`，经 `page.evaluate` 序列化丢失闭包导致整批提取 0 文本，已将全部辅助内联进函数使其自包含。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.10.2）。全局展示位须同步：
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.11.1）。全局展示位须同步：
   `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
-- **npm 脚本语义**：`build`=用户脚本构建；`build:web`=`next build`；`dev`=Next 工作台；
+- **npm 脚本语义**：`build`=`next build && node build.cjs`（先产 Next.js 构建产物 `.next` 供 EdgeOne/OpenNext 部署打包，再构建用户脚本）；`build:userscript`=`node build.cjs`（用户脚本独立构建入口）；`build:web`=`next build`；`dev`=Next 工作台；
   `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
   `test:unit`=`node --test`（Node 内置 runner，零新增依赖）；`test`=lint→build→test:unit→validate。
 - **测试**：Node 内置 `node --test`（v1.9.30 起替代未启用的 Jest）。`tests/` 共 11 文件 / **30 用例**
