@@ -36,7 +36,7 @@
   `CollectErrorCode.INVALID_URL`（采集前逐项校验；不做 DNS 解析，已知不防 DNS rebinding）；
   ② CSP → `src/proxy.ts` 基于 nonce（script-src nonce + strict-dynamic；**CSP 须同时写请求头**，Next 据此给自身脚本注入 nonce）；
   ③ OG/Twitter → `src/app/layout.tsx` 的 metadataBase / openGraph / twitter；④ PROGRESS 文档漂移已清理。
-- **任务状态（v1.9.48）**：`docs/TASKS.md` 活动任务 **T1–T11 + 遗留 P0-1–P2-7 已全部完成归档**；**新规划 T12–T25（采集成功率/覆盖率 + 词典管理增强）已写入任务清单 §1 活动任务**，按 P1–P3 优先级、S/M/L 工作量标签推进；
+- **任务状态（v1.9.49）**：`docs/TASKS.md` 活动任务 **T1–T11 + 遗留 P0-1–P2-7 已全部完成归档**；**新规划 T12–T25（采集成功率/覆盖率 + 词典管理增强）已写入任务清单 §1 活动任务**，每条附验收要点，按 P1–P3 优先级、S/M/L 工作量标签推进；
   第 2 节为紧凑编号索引，详细改动见 `CHANGELOG.md`。新增事项从 `T12` 起按 `Txx` 追加到 §1。采集趋势数据在 `docs/collect-history.json`（由 `collect-dict.cjs` / `dict-report.cjs` 写入）。
 - **已健康项**（勿重复处理）：req.json 容错已落地（v1.9.25）、构建可复现（无 Date/random 嵌入）、无 >200 行文件、双锁已消除。
 

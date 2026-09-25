@@ -1,11 +1,22 @@
 # Changelog
 
+## [1.9.49] - 2026-09-25
+
+### Docs
+- 文档单一来源收口：确立 `CHANGELOG.md` 为变更唯一归处，`docs/TASKS.md` 与 `docs/PROGRESS.md` §9 不再复述同一变更
+- `docs/TASKS.md` 的 T12–T25 每条补「验收要点」（设计契约），使待完成功能在任务清单内完整可落地
+- `docs/PROGRESS.md` §9 由逐条罗列改为规划指针（主题叙述 + 指向 TASKS/CHANGELOG），消除多文档重复
+- 同步版本展示位至 v1.9.49：`src/version.js`、`package.json`、`docs/PROGRESS.md`、`docs/TASKS.md`
+
+---
+
 ## [1.9.48] - 2026-09-25
 
 ### Docs
 - 刷新 `docs/PROGRESS.md` §1.1 指标为实算值：`src/` 源码 120→121 文件 / 9342→9421 行、原型资产 16→1 HTML + 10 CSS；补 §4.7（v1.9.43–1.9.47 迭代摘要）、§8 变更记录、§9 Roadmap
 - 新增规划：采集成功率/覆盖率提升（提取精准化、SPA 动态适配、错误隔离与退避、并发限流、匹配策略增强、覆盖率度量、采集源扩展）与采集后词典管理增强（词条级审阅、一键合并入库、翻译建议、缺口看板、历史明细、导入导出、搜索批量）
-- 将上述规划拆为任务清单 `docs/TASKS.md` T12–T25（P1–P3，含 S/M/L 工作量标签）
+- 将上述规划拆为任务清单 `docs/TASKS.md` T12–T25（P1–P3，含 S/M/L 工作量标签与验收要点）
+- 确立文档单一来源约定：变更以本文件为唯一归处，`docs/TASKS.md` 仅承载任务清单、`docs/PROGRESS.md` §9 仅作规划指针，避免同一变更在多文档重复出现
 - 同步版本展示位至 v1.9.48：`src/version.js`、`package.json`、`README.md`、`docs/PROGRESS.md`、`docs/TASKS.md`
 
 ---

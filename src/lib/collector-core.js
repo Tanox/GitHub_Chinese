@@ -1,7 +1,7 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.9.47
+ * @version 1.10.0
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
@@ -11,14 +11,26 @@ import { extractPageText } from './extract-page-text.js';
 import { CollectErrorCode } from './collect-codes.js';
 import { guardUrl } from './url-guard.js';
 import { loadPuppeteerCore, resolveBrowserExecutable } from './browser-resolver.js';
+import {
+  NAVIGATION_TIMEOUT_MS,
+  RETRY_MAX,
+  gotoWithFallback,
+  waitForHydration,
+  autoScroll,
+  isRetryable,
+  computeBackoffDelay,
+  sleep,
+  RetryableError,
+} from './page-navigation.js';
 
 /**
  * @typedef {import('./dictionary-processor.js').CollectEvent} CollectEvent
  */
 
-const NAVIGATION_TIMEOUT_MS = 30_000;
 const MIN_TEXT_LENGTH = 2;
 const MAX_TEXT_LENGTH = 300;
+/** HTTP 429 限流状态码（T14 退避触发条件） */
+const HTTP_TOO_MANY_REQUESTS = 429;
 
 /** 未安装 puppeteer-core 时的提示 */
 const MISSING_PUPPETEER_MESSAGE =
@@ -34,6 +46,38 @@ const MISSING_BROWSER_MESSAGE =
  */
 function describeError(error) {
   return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * 带指数退避重试的导航（T14）：处理导航超时 / 反爬(429) / 网络错误，
+ * 单页失败不影响整批。最多重试 RETRY_MAX 次，不可重试或达上限则向外抛出。
+ * @param {import('puppeteer-core').Page} page - puppeteer 页面对象
+ * @param {string} target - 目标 URL
+ * @returns {AsyncGenerator<CollectEvent>} 日志事件流
+ */
+async function* navigateWithRetry(page, target) {
+  let attempt = 0;
+  for (;;) {
+    attempt += 1;
+    try {
+      const response = await gotoWithFallback(page, target, { navigationTimeout: NAVIGATION_TIMEOUT_MS });
+      if (response && response.status() === HTTP_TOO_MANY_REQUESTS) {
+        throw new RetryableError('rate-limited (429)', HTTP_TOO_MANY_REQUESTS);
+      }
+      return;
+    } catch (error) {
+      const retryable = isRetryable(error);
+      if (!retryable || attempt >= RETRY_MAX) {
+        throw error;
+      }
+      const delay = computeBackoffDelay(attempt);
+      yield {
+        type: 'log',
+        message: `访问 ${target} 暂失败（${describeError(error)}），第 ${attempt} 次重试，${delay}ms 后`,
+      };
+      await sleep(delay);
+    }
+  }
 }
 
 /**
@@ -103,7 +147,9 @@ export async function* collectFromUrls(urls) {
 
       const page = await browser.newPage();
       try {
-        await page.goto(target, { waitUntil: 'networkidle2', timeout: NAVIGATION_TIMEOUT_MS });
+        yield* navigateWithRetry(page, target);
+        await waitForHydration(page);
+        await autoScroll(page);
 
         const texts = await page.evaluate(extractPageText, MIN_TEXT_LENGTH, MAX_TEXT_LENGTH);
 
