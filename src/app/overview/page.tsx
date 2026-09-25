@@ -1,7 +1,7 @@
 /**
  * 项目概览页
  * @file src/app/overview/page.tsx
- * @version 1.10.1
+ * @version 1.11.2
  * @description 服务端页面：展示由磁盘实时统计的项目指标、已交付能力与剩余任务
  */
 
@@ -93,11 +93,6 @@ export default function OverviewPage() {
       label: '用户脚本产物',
       value: `${projectMetrics.artifactKB} KB`,
       hint: 'build/GitHub_zh-cn.user.js',
-    },
-    {
-      label: '原型页面',
-      value: `${projectMetrics.prototypePages} 个`,
-      hint: 'prototype/ 设计系统与高保真原型',
     },
     {
       label: '工作台路由',

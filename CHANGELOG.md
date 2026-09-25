@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.14] - 2026-09-25
+
+### Feat（历史明细与轮次对比，T23 数据层）
+- **T23 历史轮次对比**：新增 `history-diff.cjs`：
+  - `diffDictionaries` 计算两轮词典的词条级 diff（新增/删除/变更）、`buildRoundRecord` 生成含 diff（默认含完整 snapshot 以支持回滚）的轮次记录、`restoreFromRecord` 从快照回滚、`compareRounds` 对比历史中任意两轮。
+  - 扩展 `scripts/collect-history.cjs` 新增 `appendRound`，写入词条级轮次记录（默认含快照）。
+  - 增补 `tests/history-diff.test.cjs`（4 用例）覆盖 diff、轮次记录、回滚与对比。
+  - 采集流程接入（`collect-dict.cjs` 调用 `appendRound`）与工作台 UI 对比/回滚面板留后续（受 W5 架构决策影响）。
+
 ## [1.11.13] - 2026-09-25
 
 ### Feat（搜索与批量操作，T25 数据层）

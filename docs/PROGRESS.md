@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.11.13** ｜ 更新日期：2026-09-25 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.14** ｜ 更新日期：2026-09-25 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
 > 每次发版后需同步更新「迭代记录」（§4）与「变更记录」（§8），并按 §7 核对版本与文档同步。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.11.13 |
+| 当前版本 | v1.11.14 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |

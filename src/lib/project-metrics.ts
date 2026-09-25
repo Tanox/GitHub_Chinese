@@ -1,7 +1,7 @@
 /**
  * 项目指标（服务端）
  * @file src/lib/project-metrics.ts
- * @version 1.10.1
+ * @version 1.11.2
  * @description 磁盘指标按需（每次调用）实时计算，供「项目概览」页展示；严禁在客户端组件中引用
  */
 
@@ -12,8 +12,6 @@ import { VERSION } from '@/version';
 
 /** 计入源码统计的扩展名 */
 const SOURCE_EXT_RE = /\.(js|cjs|mjs|ts|tsx|css)$/;
-/** 原型页面扩展名 */
-const HTML_EXT_RE = /\.html$/;
 /** 统计时跳过的目录 */
 const SKIP_DIRS = new Set(['node_modules', '.next', '.git', 'build', 'dist', 'coverage']);
 
@@ -30,8 +28,6 @@ export interface ProjectMetrics {
   sourceLines: number;
   /** 用户脚本产物体积（KB，保留一位小数） */
   artifactKB: number;
-  /** 原型页面数量 */
-  prototypePages: number;
 }
 
 /** 单次采集记录（由 `collect-dict.cjs` 写入 docs/collect-history.json） */
@@ -128,7 +124,6 @@ export function getProjectMetrics(): ProjectMetrics {
     sourceFiles: sourceFiles.length,
     sourceLines: countLines(sourceFiles),
     artifactKB: readArtifactKB(),
-    prototypePages: listFiles(path.join(ROOT, 'prototype'), HTML_EXT_RE).length,
   };
 }
 
