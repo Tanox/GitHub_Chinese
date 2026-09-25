@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.11.9** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.13** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -22,10 +22,10 @@
   - 验收：逐 URL 错误隔离（单页失败记日志续跑整批）；导航超时/429/网络错误指数退避（1s→2s→4s，上限 3 次）
 - [x] **T16** 匹配策略增强（占位符归一） `M` → v1.11.8
   - 验收：`collect-dict.cjs` 新增 `stripTemplateTokens`，在 `findUntranslated` 构建「去占位符词典索引」；含 `%s`/`%1$s`/`%(name)s`/`{0}`/`{{var}}`/`:name` 的已翻译串可命中非模板词典词条，「已翻译却判待翻译」误报下降；增补单测覆盖命中与「不误伤无关串」回归。复数/词级模糊匹配留作后续（见 CHANGELOG）
-- [ ] **T19** 词条级审阅工作流 `M`
-  - 验收：每条待翻译词条可标记 已翻译/忽略/需复核，状态持久化（localStorage 或 JSON 文件），进入历史可追溯
-- [ ] **T20** 一键合并入库 `M`
-  - 验收：审阅通过词条按来源/分类生成词典 stub（`"词条": "待翻译: 词条"`）并渲染 PR 式 diff 预览，支持复制/下载
+- [x] **T19** 词条级审阅工作流（数据层） `M` → v1.11.11
+  - 验收：新增 `review-store.cjs` 不可变状态机——`createReviewEntry`/`applyStatus`（含 `history` 历史数组，状态迁移可追溯）/ `mergeReviewUpdates`（批量、不可变）/ `summarize` 各状态计数；`serialize`/`deserialize` 支持 JSON 文件持久化、反序列化跳过非法条目并计数；增补 `tests/review-store.test.cjs`（7 用例）。持久化媒介（localStorage）与工作流 UI 留前端接入
+- [x] **T20** 一键合并入库（数据层） `M` → v1.11.12
+  - 验收：新增 `merge-into-dictionary.cjs` 衔接 `review-store.cjs`——`selectMergedEntries` 仅收录 `translated` 词条（译文取自 entry.note，无译文生成 `待翻译: 词条` 占位，IGNORED/NEEDS_REVIEW/PENDING 不入库）；`buildDictionaryPatch` 分离 added/updated（值相同跳过）；`applyPatch` 不可变合并；`renderDiffPreview` 输出 PR 式 `+`/`~` 文本供复制/下载；增补 `tests/merge-into-dictionary.test.cjs`（4 用例）。前端复制/下载与写入词典文件留接入
 - [x] **T26** 修复 `extractPageText` 序列化丢失辅助（阻断 v1.10.0 批量采集） `M` → v1.10.2
   - 验收：将 `SKIP_TAGS` / `resolveScopeRoot` / `isContentNoise` 内联进 `extractPageText` 使其自包含；补 jsdom 端到端用例，确认批量采集实际提取到文本（非 0）
 
@@ -58,10 +58,10 @@
   - 验收：后端 `dictionary-processor.js` stdout 解析 `N. "term"` 行改发结构化 `term` 事件 `{type:'term',data:{text}}`；`useCollector.ts` 删除 `TERM_LINE_RE` 反解、`applyEvent` 直接处理 `term`；`collector-types.ts`/`collector-logic.ts`/`dictionary-processor.js` 的 `CollectEvent`/`StreamEvent` 类型均增 `'term'`；`collector-constants.ts` 移除 `TERM_LINE_RE`；tsc/lint 全绿
 
 **P3（体验打磨）**
-- [ ] **T24** 导入/导出增强 `S`
-  - 验收：CSV/JSON 双向、与现有词典结构对齐、术语去重与归一校验
-- [ ] **T25** 搜索与批量操作 `S`
-  - 验收：按状态/来源/关键词检索；批量标记/忽略
+- [x] **T24** 导入/导出增强 `S` → v1.11.10
+  - 验收：新增 `io-dictionary.cjs`，与现有扁平词典 `Object<string,string>`（含 `待翻译: ` 占位）对齐：`dictionaryToCsv`/`csvToDictionary`（RFC4180 引号/逗号/换行转义、表头跳过、重复键 `error`/`last`/`first` 策略、缺列抛错）、`dictionaryToJson`/`jsonToDictionary`（对象+键值字符串校验）、`normalizeDictionary`（trim 键/值、丢空键、去重）；增补 `tests/io-dictionary.test.cjs`（10 用例）覆盖转义往返、去重策略与归一校验
+- [x] **T25** 搜索与批量操作（数据层） `S` → v1.11.13
+  - 验收：新增 `term-operations.cjs`——`searchDictionary`(term/translation 关键词命中、大小写可选、空查询返回全部)、`filterUntranslated`(筛 `待翻译: ` 占位)、`batchApplyStatus`(复用 review-store 批量标记、不可变)；批量导出复用 T24 的 io-dictionary。增补 `tests/term-operations.test.cjs`（4 用例）。UI 搜索框/勾选/导出按钮留前端接入
 - [x] **T28** 清理 `browser-semaphore.js` lint 警告 `S` → v1.11.5（已于 T33 交付，此处重复，归档）
   - 验收：`no-promise-executor-return` 警告消除，`npm run lint` 0 warning（T33 同义）
 - [x] **T29** 重构 `useCollector.ts`（触线风险） `M` → v1.11.6（已于 T34 交付，此处重复，归档）

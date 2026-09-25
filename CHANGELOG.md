@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.11.13] - 2026-09-25
+
+### Feat（搜索与批量操作，T25 数据层）
+- **T25 搜索与批量操作**：新增 `term-operations.cjs`：
+  - `searchDictionary` 关键词命中 `term`/`translation`（大小写可选，空查询返回全部）、`filterUntranslated` 筛出 `待翻译: ` 占位条目、`batchApplyStatus` 复用 `review-store.mergeReviewUpdates` 批量标记且不可变。
+  - 批量导出复用 T24 的 `io-dictionary`。
+  - 增补 `tests/term-operations.test.cjs`（4 用例）覆盖搜索命中、大小写、待翻译筛选与批量标记。
+  - UI 搜索框/勾选/导出按钮留前端接入。
+
+## [1.11.12] - 2026-09-25
+
+### Feat（一键合并入库，T20 数据层）
+- **T20 一键合并入库**：新增 `merge-into-dictionary.cjs` 衔接 `review-store.cjs` 的审阅结果：
+  - `selectMergedEntries` 仅收录 `translated` 词条；译文约定取自 `entry.note`（审阅 UI 写入备注），无译文生成 `待翻译: 词条` 占位；`IGNORED`/`NEEDS_REVIEW`/`PENDING` 不入库。
+  - `buildDictionaryPatch` 分离 `added`/`updated`（值相同跳过）、`applyPatch` 不可变合并、`renderDiffPreview` 输出 PR 式 `+`/`~` 文本供复制/下载。
+  - 增补 `tests/merge-into-dictionary.test.cjs`（4 用例）覆盖筛选/占位、新增更新跳过、不可变应用与预览。
+  - 前端复制/下载与写入词典文件留接入。
+
+## [1.11.11] - 2026-09-25
+
+### Feat（词条级审阅工作流，T19 数据层）
+- **T19 词条级审阅工作流**：新增 `review-store.cjs` 不可变状态机，供工作台标记「已翻译/忽略/需复核」：
+  - `STATUS`（pending/translated/ignored/needs_review）、`createReviewEntry`（默认 pending，内嵌 `history` 含 create 事件）、`applyStatus`（状态迁移、追加 history、不可变）、`mergeReviewUpdates`（批量合并、不可变）、`summarize`（各状态计数）。
+  - `serialize`/`deserialize` 支持 JSON 文件持久化；反序列化跳过非法条目并计数，非对象抛错。
+  - 增补 `tests/review-store.test.cjs`（7 用例）覆盖默认状态、非法拒绝、不可变迁移、批量合并、统计与序列化往返。
+  - 持久化媒介（localStorage）与工作流 UI 留前端接入。
+
+## [1.11.10] - 2026-09-25
+
+### Feat（导入/导出增强，T24）
+- **T24 导入/导出增强**：新增 `io-dictionary.cjs`，与现有扁平词典结构 `Object<string,string>`（含 `待翻译: ` 占位条目）对齐：
+  - CSV 双向：`dictionaryToCsv` / `csvToDictionary`，RFC4180 引号/逗号/换行转义、支持 BOM、默认跳过表头、`dedupe`（`error`/`last`/`first`）重复键策略、缺列抛错。
+  - JSON 双向：`dictionaryToJson` / `jsonToDictionary`，校验为对象且键/值均为字符串。
+  - `normalizeDictionary`：trim 键/值、丢弃空键、重复键按策略合并，返回去重统计。
+  - 增补 `tests/io-dictionary.test.cjs`（10 用例）覆盖转义往返、表头/无表头、去重策略、缺列与非对象/非字符串校验、归一。
+
 ## [1.11.9] - 2026-09-25
 
 ### Feat（覆盖率度量，T17 数据层）
