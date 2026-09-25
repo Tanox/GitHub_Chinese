@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.9.47** ｜ 更新日期：2026-09-25 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.9.48** ｜ 更新日期：2026-09-25 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
 > 每次发版后需同步更新「迭代记录」（§4）与「变更记录」（§8），并按 §7 核对版本与文档同步。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.9.43 |
+| 当前版本 | v1.9.48 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -22,8 +22,8 @@
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 120 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 9342 | 同上 |
+| `src/` 源码文件数 | 121 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 9421 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
@@ -83,7 +83,7 @@ src/main.js                        ← 唯一入口
 | 服务端外壳 | `src/components/Shell.tsx`、`Rail.tsx`（侧栏）、`MobileNav.tsx`（≤1024px 横向导航条） |
 | 导航数据源 | `src/components/navItems.ts`（侧栏与移动端共用，避免两处各写一份） |
 | 客户端岛 | `src/components/CollectorConsole.tsx`；叶组件 `DataCenter` / `PreviewTable` / `Dashboard` / `ScriptInjector` |
-| 服务端逻辑 | `src/lib/collector-core.js`、`src/lib/dictionary-processor.js`、`src/lib/project-metrics.ts` |
+| 服务端逻辑 | `src/lib/collector-core.js`、`src/lib/dictionary-processor.js`、`src/lib/extract-page-text.js`（浏览器端文本提取，v1.9.47 抽出）、`src/lib/project-metrics.ts` |
 | 类型门面 | `src/lib/collector-logic.ts`（为 Route Handler 提供 `CollectEvent` 类型） |
 | 状态 Hook | `src/hooks/useCollector.ts` |
 | Proxy（原 middleware） | `src/proxy.ts`（安全响应头，Next 16 约定） |
@@ -226,6 +226,16 @@ src/main.js                        ← 唯一入口
 | 1.9.41 | **文档整理**：清理 `docs/TASKS.md`（第 1 节空节合并、第 2 节归档改紧凑索引表）；同步 `docs/` 与 `openspec/` 全部文档版本行至 v1.9.41；PROGRESS 指标实算刷新（产物字节 / 用例数） |
 | 1.9.42 | **T11 CI 门禁补齐**：CI `lint` 作业新增类型检查（`typecheck`）、`build` 作业新增单元测试（`test:unit`，20 用例） |
 
+### 4.7 v1.9.43–1.9.47 · 文档刷新与采集流程改进
+
+| 版本 | 变更 |
+|------|------|
+| 1.9.43 | 文档指标刷新（`src/` 行数 9230 → 9342、产物 198,899 → 198,838 字节）；同步版本展示位至 v1.9.43 |
+| 1.9.44 | 原型简化：仅保留高保真原型并改名为 `index.html`；版本同步 |
+| 1.9.45 | 高保真原型重定向为「GitHub 页面字符串采集工具」 |
+| 1.9.46 | 原型单一化（删除 `mobile.html`，`desktop.html` → `index.html`）；用户脚本文件名 `GitHub_i18n.user.js` → `GitHub_zh-cn.user.js` |
+| 1.9.47 | 采集流程改进：提取去噪（跳过 `script`/`style`/隐藏元素）、匹配归一化（`normalizeText`）、修复并发竞态（独立临时文件）、区分告警/错误、`request-body` 增加 `MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
+
 ---
 
 ## 5. 任务清单
@@ -273,6 +283,11 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.9.47 | 2026-09-25 | 采集流程改进：提取去噪、匹配归一化、修复并发竞态、区分告警/错误、`MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
+| 1.9.46 | 2026-09-25 | 原型单一化（删除 `mobile.html`，`desktop.html` → `index.html`）；用户脚本文件名 `GitHub_i18n.user.js` → `GitHub_zh-cn.user.js` |
+| 1.9.45 | 2026-09-25 | 高保真原型重定向为「GitHub 页面字符串采集工具」 |
+| 1.9.44 | 2026-09-25 | 原型简化：仅保留高保真原型并改名 `index.html`；版本同步 |
+| 1.9.43 | 2026-09-24 | 文档指标刷新（`src/` 行数 9230 → 9342、产物 198,899 → 198,838 字节）；同步版本展示位 |
 | 1.9.42 | 2026-09-23 | CI 门禁补齐（T11）：`lint` 作业新增类型检查、`build` 作业新增单元测试；新增 `npm run typecheck` 脚本 |
 | 1.9.41 | 2026-09-23 | 文档整理：清理 `docs/TASKS.md`（归档表格化）、同步 `docs/` 与 `openspec/` 版本行、刷新 PROGRESS 指标 |
 | 1.9.40 | 2026-09-23 | 新增 a11y 自动化检查（T8，axe-core + jsdom）与采集趋势可视化（T10，`collect-history.json` + `/overview`）；拆分 `collect-dict.cjs`，门禁覆盖根脚本 |
@@ -296,3 +311,31 @@ src/main.js                        ← 唯一入口
 | 1.9.22 | 2026-09-18 | 重构词典采集向导样式，统一品牌绿主题，去除无效 Tailwind 依赖 |
 | 1.9.21 | 2026-07-18 | 项目更名为 GitHub Chinese 简体中文 |
 | 1.9.20 | 2026-06-10 | 工具模块拆分（functionUtils/stringUtils/domUtils/urlUtils/securityUtils 等） |
+
+---
+
+## 9. 规划中（Roadmap）：采集成功率/覆盖率与词典管理增强
+
+> 当前采集链路（v1.9.47）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
+> 但**提取仍偏整页、缺少动态内容适配、无覆盖率度量、采集后仅有「两桶预览 + 导出 JSON」、无词条级管理**。
+> 下列规划项已拆为任务清单（详见 `docs/TASKS.md` T12–T25），按优先级推进。
+
+### 9.1 采集成功率与覆盖率提升
+
+- **提取精准化（T12）**：从「整页 `body`」改为限定 GitHub UI 容器（react-app 根 / 已知布局容器），进一步降噪、提升信噪比。
+- **SPA/动态内容适配（T13）**：等待 hydration 完成后再提取；滚动触发懒加载；`networkidle2` 超时降级为 `domcontentloaded` + 固定等待；可选点击展开折叠区。
+- **单次采集鲁棒性（T14）**：逐 URL 错误隔离（单页失败不中断整批、记日志续跑）；导航超时/反爬（429/限速）指数退避重试。
+- **并发与限流（T15）**：复用浏览器实例 + 并发令牌（3–5），避免被 GitHub 限速/封禁。
+- **匹配策略增强（T16）**：模板串/占位符（`%s`/`{0}`/`{{var}}`）与复数归一、词级/子串模糊匹配，降低「已翻译却判待翻译」误报。
+- **覆盖率度量（T17）**：覆盖率 = 命中词典词条数 / 候选 UI 串数；按页面/路由分类统计，输出低覆盖定位报告。
+- **采集源扩展（T18）**：支持登录态 cookie 注入抓取私有页、HAR/会话导入，覆盖更多 UI 区域。
+
+### 9.2 采集后词典管理增强
+
+- **词条级审阅工作流（T19）**：每条待翻译词条可标记 已翻译 / 忽略 / 需复核，状态持久化，进入历史。
+- **一键合并入库（T20）**：将审阅通过词条按来源/分类生成词典 stub（`"词条": "待翻译: 词条"`）并提供 PR 式 diff 预览，减少手工拷贝。
+- **翻译建议（T21）**：对每条待翻译词条调用 LLM / 翻译记忆给出建议译文，人工确认后入库。
+- **覆盖率/缺口看板（T22）**：按词典文件（nav/repo/pr/issue/misc…）展示覆盖率、Top-N 缺口、重复/冲突检测（同键多值、近似键）。
+- **历史明细与轮次对比（T23）**：`collect-history.json` 扩展为词条级 diff，工作台可按轮次对比、回滚。
+- **导入/导出增强（T24）**：CSV/JSON 双向、与现有词典结构对齐、术语去重与归一校验。
+- **搜索与批量操作（T25）**：按状态/来源/关键词检索；批量标记/忽略。

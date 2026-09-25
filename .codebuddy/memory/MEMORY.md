@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（稳定，截至 v1.9.47 / 2026-09-25，经实地核查刷新）
+## 项目事实（稳定，截至 v1.9.48 / 2026-09-25，经实地核查刷新）
 
 - **GitHub_Chinese（e:/Github/GitHub_Chinese）是「双链路」项目**，两条链路相互独立、仅共享词典数据：
   1. **用户脚本引擎（核心交付物）**：原生 ESM JS，`build.cjs` 从入口 `src/main.js` 递归解析依赖图
@@ -9,7 +9,7 @@
   2. **词典采集工作台**：Next.js 16（App Router，`src/` 模式），路由 `/`、`/overview`、`/design`；
      API `src/app/api/collect/route.ts`、`batch-collect/route.ts`；`src/proxy.ts`（Next 16 约定的 proxy）；
      `src/lib/collector-core.js` + `dictionary-processor.js`（spawn `collect-dict.cjs`，与用户脚本共享词典）。
-- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.47）。全局展示位须同步：
+- **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 1.9.48）。全局展示位须同步：
   `package.json` version、`README.md` 徽章、`CHANGELOG.md` 小节、被改文件头注释。
 - **npm 脚本语义**：`build`=用户脚本构建；`build:web`=`next build`；`dev`=Next 工作台；
   `dev:prototype`=`server.js`（原型热更新）；`validate`=`node scripts/validate-bundle.cjs`；
@@ -21,7 +21,7 @@
   **未直接测 route.ts**：其 `@/` 别名在纯 Node 下不可解析，故把可测逻辑抽为纯函数（如 `request-body.js`）。
 - **质量现状**（v1.9.40 核查）：`npm run lint` 0/0；`npm run lint:length`（T6 门禁，>200 行即失败，
   **已覆盖根脚本** `collect-dict.cjs`/`build.cjs`/`server.js`，当前最大 `src/ui/configUI.js` 191）；
-  `tsc --noEmit` 通过（strict:true）；`src/` 120 文件 / 9230 行。
+  `tsc --noEmit` 通过（strict:true）；`src/` 121 文件 / 9421 行（v1.9.48 实测）。
 - **npm 脚本**：`test` = lint → **lint:length** → build → test:unit → validate；
   CI `security` 作业跑 `npm audit --audit-level=high`（T7，高危阻塞、低危放行；本地实测 0 漏洞）。
 - **依赖**：`puppeteer-core@^25.11.0` **已安装**；`browser-resolver.js` 解析系统 Chrome/Edge
@@ -36,7 +36,7 @@
   `CollectErrorCode.INVALID_URL`（采集前逐项校验；不做 DNS 解析，已知不防 DNS rebinding）；
   ② CSP → `src/proxy.ts` 基于 nonce（script-src nonce + strict-dynamic；**CSP 须同时写请求头**，Next 据此给自身脚本注入 nonce）；
   ③ OG/Twitter → `src/app/layout.tsx` 的 metadataBase / openGraph / twitter；④ PROGRESS 文档漂移已清理。
-- **任务状态（v1.9.47）**：`docs/TASKS.md` 活动任务 **全部完成（T1–T11 + 遗留 P0-1–P2-7）**，均已归档至该文档第 2 节「历史归档（已完成）」；
+- **任务状态（v1.9.48）**：`docs/TASKS.md` 活动任务 **T1–T11 + 遗留 P0-1–P2-7 已全部完成归档**；**新规划 T12–T25（采集成功率/覆盖率 + 词典管理增强）已写入任务清单 §1 活动任务**，按 P1–P3 优先级、S/M/L 工作量标签推进；
   第 2 节为紧凑编号索引，详细改动见 `CHANGELOG.md`。新增事项从 `T12` 起按 `Txx` 追加到 §1。采集趋势数据在 `docs/collect-history.json`（由 `collect-dict.cjs` / `dict-report.cjs` 写入）。
 - **已健康项**（勿重复处理）：req.json 容错已落地（v1.9.25）、构建可复现（无 Date/random 嵌入）、无 >200 行文件、双锁已消除。
 
