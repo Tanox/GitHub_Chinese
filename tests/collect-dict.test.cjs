@@ -56,7 +56,12 @@ test('generateReport 写报告 + 词条级历史（注入路径，可轮次对�
   // 第二轮：新增 Profile，验证基于上一轮快照的 diff
   const dict2 = { Sign: '登录', Dashboard: '仪表盘', Profile: '个人资料' };
   const r2 = analyzeTexts(['Sign', 'Dashboard', 'Profile', 'Unknown'], dict2);
-  generateReport(r2.untranslated, { dictionary: dict2, coverage: r2.coverage, reportFile, historyFile });
+  generateReport(r2.untranslated, {
+    dictionary: dict2,
+    coverage: r2.coverage,
+    reportFile,
+    historyFile,
+  });
 
   const hist2 = JSON.parse(fs.readFileSync(historyFile, 'utf-8'));
   assert.equal(hist2.length, 2);

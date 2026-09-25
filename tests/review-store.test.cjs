@@ -45,7 +45,7 @@ test('applyStatus 迁移状态且不修改原条目（不可变）', () => {
 });
 
 test('mergeReviewUpdates 新增+更新且不可变', () => {
-  const map0 = { 'A': createReviewEntry('A', { status: STATUS.IGNORED, timestamp: 1 }) };
+  const map0 = { A: createReviewEntry('A', { status: STATUS.IGNORED, timestamp: 1 }) };
   const map1 = mergeReviewUpdates(map0, [
     { term: 'A', status: STATUS.TRANSLATED }, // 更新既有
     { term: 'B', status: STATUS.NEEDS_REVIEW, source: 'repo' }, // 新增

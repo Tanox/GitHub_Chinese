@@ -1,7 +1,7 @@
 /**
  * 词典导入/导出测试
  * @file tests/io-dictionary.test.cjs
- * @version 1.11.10
+ * @version 1.11.16
  * @description 校验 io-dictionary.cjs 的 CSV/JSON 双向、引号转义往返、去重策略与归一校验
  */
 const test = require('node:test');
@@ -73,7 +73,9 @@ test('normalizeDictionary 去空白、丢空键、去重', () => {
   assert.equal(stats.dropped, 1);
   assert.equal(stats.merged, 0); // 大小写不同视为不同键（匹配词典大小写敏感契约）
   // 同名重复键（dedupe first）
-  const dup = { X: '1', X: '2' }; // 字面量同名会被 JS 合并为 X:'2'
+  // 字面量同名键在 JS 解析时合并为 X:'2'（避免 no-dupe-keys）
+  const dup = { X: '1' };
+  dup.X = '2';
   const r2 = normalizeDictionary(dup, { dedupe: 'first' });
   assert.equal(r2.dictionary.X, '2');
 });

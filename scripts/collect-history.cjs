@@ -52,7 +52,9 @@ function appendHistory(entry, filePath) {
  */
 function appendRound(dictionary, prevDictionary, opts = {}, filePath) {
   const history = readHistory(filePath);
-  history.push(buildRoundRecord(dictionary, prevDictionary, { includeSnapshot: opts.includeSnapshot }));
+  history.push(
+    buildRoundRecord(dictionary, prevDictionary, { includeSnapshot: opts.includeSnapshot }),
+  );
   fs.writeFileSync(
     filePath || HISTORY_FILE,
     `${JSON.stringify(history.slice(-MAX_ENTRIES), null, 2)}\n`,

@@ -35,7 +35,8 @@ function normalizeText(raw) {
  * @type {RegExp}
  */
 // 模板/占位符 token（printf %s/%1$s/%%、Python %(name)s、编号 {0}、mustache {{var}}、Ruby :name）
-const TEMPLATE_TOKEN_RE = /%(\d+\$)?[sdnioxXfgeEGc%]|%\([^)]+\)[sdnioxX]|\{\d+\}|\{\{[^}]+\}\}|:[A-Za-z_]\w*/g;
+const TEMPLATE_TOKEN_RE =
+  /%(\d+\$)?[sdnioxXfgeEGc%]|%\([^)]+\)[sdnioxX]|\{\d+\}|\{\{[^}]+\}\}|:[A-Za-z_]\w*/g;
 
 // 去占位符使「含占位符已翻译串」可命中「非模板词典词条」，降低误报（T16）。
 // 注意：本函数在 normalizeText 之后调用；normalizeText 会先剥离开头标点，
@@ -76,7 +77,12 @@ function findUntranslated(texts, dictionary) {
 
     const key = norm.toLowerCase();
     const strippedKey = stripTemplateTokens(key);
-    const matched = dictionary[norm] || dictionary[key] || dictionary[norm.toUpperCase()] || normalizedDict[key] || (strippedKey && strippedDict[strippedKey]);
+    const matched =
+      dictionary[norm] ||
+      dictionary[key] ||
+      dictionary[norm.toUpperCase()] ||
+      normalizedDict[key] ||
+      (strippedKey && strippedDict[strippedKey]);
     if (matched) {
       translated.add(norm);
     } else {
