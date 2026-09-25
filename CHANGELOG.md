@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.1] - 2026-09-25
+
+### Docs
+- 项目审查与任务文档更新：标记 **T15 采集并发上限与限流** 为完成（随 v1.10.0 由 `browser-semaphore.js` + `batch-collector.js` 落地，此前未入变更记录）
+- 新增审查发现任务：**T26**（P1 回归缺陷）`extractPageText` 经 `page.evaluate` 序列化后丢失模块内 `SKIP_TAGS`/`resolveScopeRoot`/`isContentNoise`，导致 v1.10.0 批量采集整批提取 0 文本；**T27** 统一 URL 上限（`request-body.js` 校验 50 与 `collector-core.js` 执行 20 不一致）；**T28** 清理 `browser-semaphore.js` 的 `no-promise-executor-return` lint 警告；**T29** 重构 `useCollector.ts`（恰为 200 行触线边界）
+- 同步版本展示位至 v1.10.1：`src/version.js`、`package.json`、`README.md`、`docs/PROGRESS.md`、`docs/TASKS.md`
+
+---
+
 ## [1.10.0] - 2026-09-25
 
 ### Added（采集成功率 P1 首批：T12–T14）

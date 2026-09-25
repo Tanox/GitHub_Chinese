@@ -1,7 +1,7 @@
 /**
  * 全局浏览器并发信号量
  * @file src/lib/browser-semaphore.js
- * @version 1.10.1
+ * @version 1.11.0
  * @description 限制同时拉起的 Headless 浏览器实例数量，避免多请求并发耗尽系统资源
  */
 

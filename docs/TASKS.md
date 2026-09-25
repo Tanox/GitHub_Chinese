@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.10.0** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.10.1** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -15,21 +15,23 @@
 
 **P1（成功率 / 覆盖率核心）**
 - [x] **T12** 采集提取精准化 `M` → v1.10.0
-  - 验收：抓取范围从整页 `body` 收敛到 GitHub UI 容器（`#react-app` / `.App` / 已知布局根），排除页脚/侧栏模板噪声；对比基线信噪比提升（待翻译误报下降 ≥30%）
+  - 验收：抓取范围从整页 `body` 收敛到 GitHub UI 容器（`#react-app` / `.application-main` 回退 `body`），排除页脚/侧栏/内容型容器噪声
 - [x] **T13** SPA/动态内容适配 `M` → v1.10.0
-  - 验收：`waitForSelector` 等 hydration 完成后再提取；滚动触发懒加载；`networkidle2` 超时（默认 8s）降级为 `domcontentloaded` + 固定 2s 等待；折叠区可选展开
+  - 验收：`networkidle2` 超时（30s）降级 `domcontentloaded` + 固定 3s 等待；等 hydration（`#react-app`）后提取；`autoScroll` 触发懒加载
 - [x] **T14** 单次采集鲁棒性 `M` → v1.10.0
-  - 验收：逐 URL `try/catch` 隔离，单页失败记入错误日志并续跑整批；导航超时/429 走指数退避（1s→2s→4s，上限 3 次）
+  - 验收：逐 URL 错误隔离（单页失败记日志续跑整批）；导航超时/429/网络错误指数退避（1s→2s→4s，上限 3 次）
 - [ ] **T16** 匹配策略增强 `M`
   - 验收：模板串/占位符（`%s` / `{0}` / `{{var}}`）与复数归一；词级/子串模糊匹配；「已翻译却判待翻译」误报率可量化下降
 - [ ] **T19** 词条级审阅工作流 `M`
   - 验收：每条待翻译词条可标记 已翻译/忽略/需复核，状态持久化（localStorage 或 JSON 文件），进入历史可追溯
 - [ ] **T20** 一键合并入库 `M`
   - 验收：审阅通过词条按来源/分类生成词典 stub（`"词条": "待翻译: 词条"`）并渲染 PR 式 diff 预览，支持复制/下载
+- [ ] **T26** 修复 `extractPageText` 序列化丢失辅助（阻断 v1.10.0 批量采集） `M`
+  - 验收：将 `SKIP_TAGS` / `resolveScopeRoot` / `isContentNoise` 内联进 `extractPageText` 使其自包含；补 jsdom 端到端用例，确认批量采集实际提取到文本（非 0）
 
 **P2（度量 / 管理增强）**
-- [ ] **T15** 采集并发上限与限流 `S`
-  - 验收：复用浏览器实例 + 并发令牌（3–5），单批 URL 受控并发，避免触发 GitHub 限速
+- [x] **T15** 采集并发上限与限流 `S` → v1.10.0
+  - 验收：浏览器实例信号量（全局 2 并发）+ 单浏览器内 3 并发页（`browser-semaphore.js` / `batch-collector.js`），避免资源耗尽与 GitHub 限速
 - [ ] **T17** 覆盖率度量与报告 `M`
   - 验收：覆盖率 = 命中词典词条数 / 候选 UI 串数；按页面/路由分类统计；输出 Top-N 低覆盖定位报告
 - [ ] **T18** 采集源扩展 `L`
@@ -40,12 +42,18 @@
   - 验收：按词典文件（nav/repo/pr/issue/misc…）展示覆盖率、Top-N 缺口、重复/冲突检测（同键多值、近似键）
 - [ ] **T23** 历史明细与轮次对比 `M`
   - 验收：`collect-history.json` 扩展为词条级 diff，工作台可按轮次对比、回滚
+- [ ] **T27** 统一 URL 数量上限（校验/执行不一致） `S`
+  - 验收：抽离单一 `MAX_COLLECT_URLS` 常量同时被 `request-body.js`（校验 50）与 `collector-core.js`（执行 20）复用，两处上限一致
 
 **P3（体验打磨）**
 - [ ] **T24** 导入/导出增强 `S`
   - 验收：CSV/JSON 双向、与现有词典结构对齐、术语去重与归一校验
 - [ ] **T25** 搜索与批量操作 `S`
   - 验收：按状态/来源/关键词检索；批量标记/忽略
+- [ ] **T28** 清理 `browser-semaphore.js` lint 警告 `S`
+  - 验收：`acquireBrowserSlot` 的 Promise executor 不再返回 `waiters.push(...)` 结果（`no-promise-executor-return` 警告消除），`npm run lint` 0 warning
+- [ ] **T29** 重构 `useCollector.ts`（触线风险） `M`
+  - 验收：当前恰为 200 行上限边界，抽出事件流消费/状态归约等子逻辑到独立模块，降至 200 行以内并保留导出契约
 
 ---
 

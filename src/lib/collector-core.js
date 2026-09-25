@@ -1,7 +1,7 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.10.1
+ * @version 1.11.0
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 

@@ -1,7 +1,7 @@
 /**
  * 批量页面抓取（受并发限制）
  * @file src/lib/batch-collector.js
- * @version 1.10.1
+ * @version 1.11.0
  * @description 在单个浏览器实例内分批并发抓取 URL，归集文本并产出采集事件流
  */
 
