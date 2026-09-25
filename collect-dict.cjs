@@ -1,7 +1,7 @@
 /**
  * 词典采集工具
  * @file collect-dict.cjs
- * @version 1.9.47
+ * @version 1.11.8
  * @author Sut
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表（报告生成见 scripts/dict-report.cjs）
  */
@@ -93,9 +93,24 @@ function normalizeText(raw) {
 }
 
 /**
+ * 模板 / 占位符 token 正则：printf（`%s`/`%1$s`/`%%`）、Python 命名（`%(name)s`）、
+ * 编号（`{0}`）、mustache（`{{var}}`）、Ruby 命名（`:name`）。用于在归一化后消除占位符差异（T16）。
+ * @type {RegExp}
+ */
+// 模板/占位符 token（printf %s/%1$s/%%、Python %(name)s、编号 {0}、mustache {{var}}、Ruby :name）
+const TEMPLATE_TOKEN_RE = /%(\d+\$)?[sdnioxXfgeEGc%]|%\([^)]+\)[sdnioxX]|\{\d+\}|\{\{[^}]+\}\}|:[A-Za-z_]\w*/g;
+
+// 去占位符使「含占位符已翻译串」可命中「非模板词典词条」，降低误报（T16）。
+// 注意：本函数在 normalizeText 之后调用；normalizeText 会先剥离开头标点，
+// 故 `{{` 位于串首的 mustache 会被提前吃掉而归一不到（真实占位符多在串中，影响小）。
+function stripTemplateTokens(raw) {
+  return raw.replace(TEMPLATE_TOKEN_RE, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
  * 从文本列表中找出未翻译的词条
  * @description 先做归一化（解码实体 / 压缩空白 / 去首尾标点），再按大小写不敏感精确匹配，
- *   并在精确匹配之外增加归一化词典索引，减少把「已翻译 / 仅差标点」误判为「待翻译」。
+ *   并在精确匹配之外增加归一化词典索引与去占位符索引（T16），减少误判。
  */
 function findUntranslated(texts, dictionary) {
   const untranslated = [];
@@ -107,6 +122,13 @@ function findUntranslated(texts, dictionary) {
     normalizedDict[normalizeText(key).toLowerCase()] = dictionary[key];
   }
 
+  // 去占位符词典索引（T16）：避免含占位符已翻译串误判待翻译
+  const strippedDict = {};
+  for (const nk of Object.keys(normalizedDict)) {
+    const sk = stripTemplateTokens(nk);
+    if (sk) strippedDict[sk] = normalizedDict[nk];
+  }
+
   for (const text of texts) {
     const norm = normalizeText(text);
     // 基础过滤（基于归一化结果）
@@ -115,10 +137,9 @@ function findUntranslated(texts, dictionary) {
     if (/^[\s\p{P}]+$/u.test(norm)) continue; // 纯标点或空白
     if (/^[^a-zA-Z\u4e00-\u9fa5]+$/.test(norm)) continue; // 不包含字母或中文
 
-    // 检查词典：精确（含大小写三态）优先，其次归一化索引
     const key = norm.toLowerCase();
-    const matched =
-      dictionary[norm] || dictionary[key] || dictionary[norm.toUpperCase()] || normalizedDict[key];
+    const strippedKey = stripTemplateTokens(key);
+    const matched = dictionary[norm] || dictionary[key] || dictionary[norm.toUpperCase()] || normalizedDict[key] || (strippedKey && strippedDict[strippedKey]);
     if (matched) {
       translated.add(norm);
     } else {
@@ -162,4 +183,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { mergeDictionaries, findUntranslated, normalizeText, generateReport };
+module.exports = { mergeDictionaries, findUntranslated, normalizeText, stripTemplateTokens, generateReport };

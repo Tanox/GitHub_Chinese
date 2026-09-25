@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.11.7** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.8** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -20,8 +20,8 @@
   - 验收：`networkidle2` 超时（30s）降级 `domcontentloaded` + 固定 3s 等待；等 hydration（`#react-app`）后提取；`autoScroll` 触发懒加载
 - [x] **T14** 单次采集鲁棒性 `M` → v1.10.0
   - 验收：逐 URL 错误隔离（单页失败记日志续跑整批）；导航超时/429/网络错误指数退避（1s→2s→4s，上限 3 次）
-- [ ] **T16** 匹配策略增强 `M`
-  - 验收：模板串/占位符（`%s` / `{0}` / `{{var}}`）与复数归一；词级/子串模糊匹配；「已翻译却判待翻译」误报率可量化下降
+- [x] **T16** 匹配策略增强（占位符归一） `M` → v1.11.8
+  - 验收：`collect-dict.cjs` 新增 `stripTemplateTokens`，在 `findUntranslated` 构建「去占位符词典索引」；含 `%s`/`%1$s`/`%(name)s`/`{0}`/`{{var}}`/`:name` 的已翻译串可命中非模板词典词条，「已翻译却判待翻译」误报下降；增补单测覆盖命中与「不误伤无关串」回归。复数/词级模糊匹配留作后续（见 CHANGELOG）
 - [ ] **T19** 词条级审阅工作流 `M`
   - 验收：每条待翻译词条可标记 已翻译/忽略/需复核，状态持久化（localStorage 或 JSON 文件），进入历史可追溯
 - [ ] **T20** 一键合并入库 `M`
@@ -62,10 +62,10 @@
   - 验收：CSV/JSON 双向、与现有词典结构对齐、术语去重与归一校验
 - [ ] **T25** 搜索与批量操作 `S`
   - 验收：按状态/来源/关键词检索；批量标记/忽略
-- [ ] **T28** 清理 `browser-semaphore.js` lint 警告 `S`
-  - 验收：`acquireBrowserSlot` 的 Promise executor 不再返回 `waiters.push(...)` 结果（`no-promise-executor-return` 警告消除），`npm run lint` 0 warning
-- [ ] **T29** 重构 `useCollector.ts`（触线风险） `M`
-  - 验收：当前恰为 200 行上限边界，抽出事件流消费/状态归约等子逻辑到独立模块，降至 200 行以内并保留导出契约
+- [x] **T28** 清理 `browser-semaphore.js` lint 警告 `S` → v1.11.5（已于 T33 交付，此处重复，归档）
+  - 验收：`no-promise-executor-return` 警告消除，`npm run lint` 0 warning（T33 同义）
+- [x] **T29** 重构 `useCollector.ts`（触线风险） `M` → v1.11.6（已于 T34 交付，此处重复，归档）
+  - 验收：抽出事件流消费/状态归约子逻辑到独立模块，降至 200 行以内并保留导出契约（T34 同义）
 
 ---
 
