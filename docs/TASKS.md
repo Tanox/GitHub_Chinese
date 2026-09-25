@@ -1,6 +1,6 @@
 # 任务追踪（Task Tracker）
 
-> 版本：**v1.11.3** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.4** ｜ 版本权威源：`src/version.js`
 >
 > 本文件是项目**任务清单**：仅列出未完成（活动）任务；已完成的任务记录于 `CHANGELOG.md`。
 > `docs/PROGRESS.md` 仅作进度 / 架构 / 指标报告，不再重复维护任务表。
@@ -44,6 +44,10 @@
   - 验收：`collect-history.json` 扩展为词条级 diff，工作台可按轮次对比、回滚
 - [x] **T27** 统一 URL 数量上限（校验/执行不一致） `S` → v1.11.3
   - 验收：抽离单一 `MAX_COLLECT_URLS` 常量同时被 `request-body.js`（校验 50）与 `collector-core.js`（执行 20）复用，两处上限一致
+- [x] **T30** 修复 SSRF 经 HTTP 重定向绕过 `url-guard` `S` → v1.11.4
+  - 验收：`page-navigation.gotoWithFallback` 启用请求拦截，对所有导航/文档类请求（含重定向目标）二次 `guardUrl` 校验，命中内网/元数据/非公网即 `abort`，阻断重定向 SSRF
+- [x] **T31** 抽离公共 SSE 响应工厂（消除路由样板重复） `S` → v1.11.4
+  - 验收：新增 `src/lib/sse-stream.ts` `createSseResponse`，`/api/collect` 与 `/api/batch-collect` 复用同一「断连取消 + 心跳 + 错误兜底 + 收尾关闭」实现，tsc/lint 全绿
 
 **P3（体验打磨）**
 - [ ] **T24** 导入/导出增强 `S`

@@ -70,7 +70,9 @@ export async function* runDictionaryProcessor(rawTermsFile, { signal } = {}) {
       message: '请求已取消，已终止词典清洗子进程',
       code: CollectErrorCode.SUBPROCESS_FAILED,
     });
-    try { child.kill('SIGKILL'); } catch {}
+    try {
+      child.kill('SIGKILL');
+    } catch {}
     finished = true;
   };
   if (signal) {
@@ -87,7 +89,9 @@ export async function* runDictionaryProcessor(rawTermsFile, { signal } = {}) {
       message: `词典清洗超时（>${CHILD_TIMEOUT_MS / 1000}s），已终止子进程`,
       code: CollectErrorCode.SUBPROCESS_FAILED,
     });
-    try { child.kill('SIGKILL'); } catch {}
+    try {
+      child.kill('SIGKILL');
+    } catch {}
     finished = true;
   }, CHILD_TIMEOUT_MS);
 

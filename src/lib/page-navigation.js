@@ -1,10 +1,12 @@
 /**
  * 页面导航与动态适配辅助（Node 侧，操作 puppeteer page）
  * @file src/lib/page-navigation.js
- * @version 1.10.0
+ * @version 1.11.4
  * @description 从 collector-core 抽离的浏览器交互辅助：导航超时降级、hydration 等待、
  *   懒加载滚动、可重试错误判定与指数退避。本模块不依赖浏览器启动，可独立单元测试。
  */
+
+import { guardUrl } from './url-guard.js';
 
 /** GitHub SPA 挂载根选择器（hydration 完成标志） */
 export const HYDRATION_SELECTOR = '#react-app';
@@ -73,21 +75,40 @@ export async function gotoWithFallback(
   target,
   { navigationTimeout = NAVIGATION_TIMEOUT_MS } = {},
 ) {
-  try {
-    return await page.goto(target, { waitUntil: 'networkidle2', timeout: navigationTimeout });
-  } catch (error) {
-    if (
-      error?.name === 'TimeoutError' ||
-      /Navigation timeout|net::ERR_TIMED_OUT/i.test(error?.message ?? '')
-    ) {
-      const response = await page.goto(target, {
-        waitUntil: 'domcontentloaded',
-        timeout: navigationTimeout,
-      });
-      await sleep(DOMCONTENTLOADED_WAIT_MS);
-      return response;
+  // C2：防止 SSRF 经 HTTP 重定向绕过初始 url-guard（puppeteer 默认跟随重定向）。
+  // 拦截所有导航/文档类请求，目标主机经 guardUrl 判定为内网/元数据/非公网则中止。
+  const guardRequest = (req) => {
+    if (req.isNavigationRequest() || req.resourceType() === 'document') {
+      if (!guardUrl(req.url()).ok) {
+        req.abort('blockedbyclient').catch(() => {});
+        return;
+      }
     }
-    throw error;
+    req.continue().catch(() => {});
+  };
+  await page.setRequestInterception(true);
+  page.on('request', guardRequest);
+
+  try {
+    try {
+      return await page.goto(target, { waitUntil: 'networkidle2', timeout: navigationTimeout });
+    } catch (error) {
+      if (
+        error?.name === 'TimeoutError' ||
+        /Navigation timeout|net::ERR_TIMED_OUT/i.test(error?.message ?? '')
+      ) {
+        const response = await page.goto(target, {
+          waitUntil: 'domcontentloaded',
+          timeout: navigationTimeout,
+        });
+        await sleep(DOMCONTENTLOADED_WAIT_MS);
+        return response;
+      }
+      throw error;
+    }
+  } finally {
+    page.off('request', guardRequest);
+    await page.setRequestInterception(false).catch(() => {});
   }
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.4] - 2026-09-25
+
+### Fixed（采集工具安全与去重）
+- **C2 阻断重定向 SSRF**：`page-navigation.gotoWithFallback` 启用请求拦截，对所有导航/文档类请求（含 HTTP 重定向目标）二次 `guardUrl` 校验，命中内网/链路本地/云元数据等非公网地址即 `req.abort()`，防止 `url-guard` 仅校验初始 URL 被 302 跳板绕过
+- **S2 抽离公共 SSE 工厂**：新增 `src/lib/sse-stream.ts` 的 `createSseResponse`，将「客户端断连取消 + 15s 心跳 + 错误兜底 + 收尾关闭」样板收敛为单一实现，`/api/collect` 与 `/api/batch-collect` 两路由复用，消除重复与漂移风险
+
 ## [1.11.3] - 2026-09-25
 
 ### Fixed（采集工具健壮性与资源泄漏）
