@@ -246,6 +246,14 @@ src/main.js                        ← 唯一入口
 
 > 抽出 `src/lib/page-navigation.js`（Node 侧、无浏览器依赖、可单测）承载全部导航交互辅助，采集核心 `collector-core.js` 仅保留编排；新增 `tests/page-navigation.test.mjs`（4 用例）覆盖退避与可重试判定。
 
+### 4.9 v1.11.0 · 采集并发限流（T15）
+
+| 编号 | 能力 | 处置 |
+|------|------|------|
+| T15 | 并发限流：复用浏览器实例 + 并发令牌，单批 URL 受控并发，避免触发 GitHub 限速 | 抽离 `src/lib/browser-semaphore.js`（全局 ≤2 并发无头浏览器槽位，超出排队交接）+ `src/lib/batch-collector.js`（单浏览器实例内 ≤3 并发页分批抓取）；`collector-core.js` 经 `acquireBrowserSlot` 接入，`collectFromUrls` 改为 `yield* collectBatch(...)` |
+
+> 新增 `tests/browser-semaphore.test.mjs` / `tests/batch-collector.test.mjs`（共 4 用例）覆盖槽位上限交接与批量聚合/单页失败隔离；门禁 0 超限、lint 0 warning。
+
 ---
 
 ## 5. 任务清单
@@ -293,6 +301,7 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.11.0 | 2026-09-25 | 采集并发限流（T15）：抽离 `src/lib/browser-semaphore.js`（全局 ≤2 并发无头浏览器槽位）+ `src/lib/batch-collector.js`（单浏览器内 ≤3 并发页分批）；`collector-core.js` 经信号量接入，复用浏览器实例、受控并发避免 GitHub 限速；新增 `tests/browser-semaphore.test.mjs`/`tests/batch-collector.test.mjs`（共 4 例） |
 | 1.10.0 | 2026-09-25 | 采集成功率 P1 首批（T12–T14）：提取精准化（限定 SPA 容器 + 内容噪声降噪）、SPA/动态适配（hydration 等待 + 滚动懒加载 + 超时降级）、单页鲁棒性（逐 URL 错误隔离 + 指数退避重试）；抽离 `src/lib/page-navigation.js` 并新增 4 例单测 |
 | 1.9.47 | 2026-09-25 | 采集流程改进：提取去噪、匹配归一化、修复并发竞态、区分告警/错误、`MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
 | 1.9.46 | 2026-09-25 | 原型单一化（删除 `mobile.html`，`desktop.html` → `index.html`）；用户脚本文件名 `GitHub_i18n.user.js` → `GitHub_zh-cn.user.js` |
@@ -327,8 +336,8 @@ src/main.js                        ← 唯一入口
 
 ## 9. 规划中（Roadmap）：采集成功率/覆盖率与词典管理增强
 
-> 当前采集链路（v1.10.0）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
-> 其中 **T12 提取精准化、T13 SPA/动态适配、T14 单页鲁棒性已落地**（详见 §4.8）；
+> 当前采集链路（v1.11.0）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
+> 其中 **T12 提取精准化、T13 SPA/动态适配、T14 单页鲁棒性、T15 并发限流已落地**（详见 §4.8–§4.9）；
 > 但**仍缺少覆盖率度量、无采集后词条级管理**。
 >
 > **规划以任务清单 [docs/TASKS.md](./TASKS.md) T12–T25 为唯一活动清单（含 P1–P3 优先级与 S/M/L 工作量标签、验收要点）；
