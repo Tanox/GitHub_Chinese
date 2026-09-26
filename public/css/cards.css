@@ -1,7 +1,7 @@
 /*
  * GitHub 中文 · 采集工作台 — 卡片
  * @file public/css/cards.css
- * @version 1.9.24
+ * @version 1.12.1
  */
 .card {
   background: var(--surface);
@@ -90,4 +90,23 @@
 .trend-delta {
   margin-left: auto;
   color: var(--muted);
+}
+
+/* 区块（对齐原型 proto-section：标题 + meta 引导语） */
+.section {
+  margin-bottom: 0;
+}
+
+.section > h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  margin: 0 0 .35rem;
+}
+
+.section > .meta {
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: .8rem;
+  margin: 0 0 1rem;
 }

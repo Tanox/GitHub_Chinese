@@ -1,7 +1,7 @@
 /**
  * 数据中心面板
  * @file src/components/DataCenter.tsx
- * @version 1.9.24
+ * @version 1.12.1
  * @description 文本粘贴 / 批量 URL 两种采集入口，并提供本地导出能力
  */
 
@@ -95,6 +95,10 @@ export default function DataCenter({
           </button>
         </div>
       </div>
+
+      <p className='card-desc'>
+        两种采集入口，智能清洗后一键导出 JSON。
+      </p>
 
       <div className='field-stack'>
         <label htmlFor='data-center-input' className='sr-only'>

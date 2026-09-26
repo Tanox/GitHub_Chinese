@@ -1,7 +1,7 @@
 /**
  * 工作台外壳
  * @file src/components/Shell.tsx
- * @version 1.9.27
+ * @version 1.12.1
  * @description 服务端组件：侧栏 + 顶栏 + 移动端导航 + 内容区的公共骨架，供三个页面复用
  */
 
@@ -53,6 +53,17 @@ export default function Shell({ active, title, subtitle, badge, children }: Shel
         <div id='collector-content' className='content scroll'>
           <div className='content-inner'>{children}</div>
         </div>
+
+        <footer className='footer'>
+          <div className='footer-inner'>
+            <span className='fnote'>GitHub 中文 · 采集工作台</span>
+            <nav className='flinks' aria-label='页脚链接'>
+              <a href='/overview'>项目概览</a>
+              <a href='/coverage'>覆盖率</a>
+              <a href='/design'>设计系统</a>
+            </nav>
+          </div>
+        </footer>
       </main>
     </div>
   );

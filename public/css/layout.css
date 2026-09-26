@@ -1,7 +1,7 @@
 /*
  * GitHub 中文 · 采集工作台 — 布局（顶栏 / 内容 / 步骤条 / 栅格 / 响应式）
  * @file public/css/layout.css
- * @version 1.9.27
+ * @version 1.12.1
  */
 /* 应用外壳：侧栏 + 主区（横向排布） */
 .app-shell {
@@ -111,7 +111,7 @@
 
 .grid-2 {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 
@@ -171,4 +171,41 @@
   .content {
     padding: 1rem;
   }
+}
+
+/* 页脚（对齐原型 proto-footer） */
+.footer {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border-soft);
+}
+
+.footer-inner {
+  max-width: 64rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 2rem;
+}
+
+.footer .fnote {
+  color: var(--faint);
+  font-size: .8rem;
+}
+
+.footer .flinks {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.footer .flinks a {
+  color: var(--muted);
+  font-size: .8rem;
+}
+
+.footer .flinks a:hover {
+  color: var(--ink);
 }

@@ -7,6 +7,9 @@
 - 修正活跃交叉引用：`docs/project.md`、`docs/architecture.md`、根 `README.md` 目录树移除 `openspec/`；`docs/development.md` 版本同步清单移除 `openspec/config.yaml`、相关文档链接改指 `./project.md`；`docs/coding-style.md` 相关文档链接改指 `./project.md`；`docs/README.md` 权威性说明改为「docs 为唯一权威正文」。
 - 版本同步：`src/version.js`、`package.json`、`README.md`、`docs/{README,project,architecture,development,coding-style}.md` 头部版本统一升级至 v1.12.1（patch，docs 收口）。
 
+### Refactor（应用 UI 对齐原型，首页重构）
+- `CollectorConsole` 以原型四区块（h2+meta）包裹各模块；`DataCenter` 补原型描述「两种采集入口，智能清洗后一键导出 JSON。」；`Shell` 新增页脚（原型 `proto-footer`）；`grid-2` 列宽对齐原型 `1fr 1fr`；新增 `.section`/`.footer` 样式。被改文件头注释同步 1.12.1。
+
 ## [1.12.0] - 2026-09-26
 
 ### Docs（任务清单单一文档收口）
