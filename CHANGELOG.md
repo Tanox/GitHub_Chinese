@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.12.0] - 2026-09-26
+
+### Docs（任务清单单一文档收口）
+- **合并 `docs/TASKS.md` 入 `docs/PROGRESS.md` §5**：
+  - PROGRESS §5 从"指针行"升级为活动任务清单，合入 TASKS.md 剩余两条未完成项（T18 采集源扩展、T21 翻译建议），已完成任务的验收要点保留在本文件各版本小节。
+  - PROGRESS §9 Roadmap 改写为指向本文档 §5（不再引用 TASKS.md 路径）。
+  - PROGRESS §4.9 版本同步清单移除 `docs/TASKS.md`（该文件删除）。
+  - 删除 `docs/TASKS.md` 文件；全局搜索确认 CHANGELOG.md 与 PROGRESS.md §4/§8 中仅保留历史版本事实陈述（"v1.9.34 新增 TASKS.md"、"v1.9.41 清理 TASKS.md"等），无可断链的活跃交叉引用。
+- **版本同步**：`src/version.js`、`package.json`、`README.md`、`docs/PROGRESS.md` 头部版本号统一升级至 v1.12.0（MINOR，docs 类型）。
+- **同步 `docs/prototype.md` 至 v1.12.0**：版本横幅 1.9.48 → 1.12.0；导航由三页扩为四页（新增 `/coverage` 覆盖率看板，T22）；`原型 ↔ 实现映射` 表补覆盖率看板行。
+
 ## [1.11.16] - 2026-09-26
 
 ### Feat（覆盖率 / 缺口看板，T22）

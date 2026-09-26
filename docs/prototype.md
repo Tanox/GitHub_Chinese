@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文 · 字符串采集工作台原型设计
 
-> 版本：**v1.9.48** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.12.0** ｜ 版本权威源：`src/version.js`
 >
 > 说明：本文档描述「词典采集工作台」（亦名 GitHub 页面字符串采集工具）的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/prototypes/`](../prototype/prototypes/)：[高保真原型](prototype/prototypes/index.html)。
 >
@@ -20,9 +20,10 @@
 ```
 
 - 形态：Next.js（App Router）应用，入口 `src/app/`。
-- 三页面（由 `src/components/navItems.ts` 的 `NAV_ITEMS` 定义）：
-  - `/`（控制台，`CollectorConsole` 客户端岛）
+- 四页面（由 `src/components/navItems.ts` 的 `NAV_ITEMS` 定义）：
+  - `/`（采集控制台，`CollectorConsole` 客户端岛）
   - `/overview`（项目概览：指标卡片 + 采集趋势 + 能力清单）
+  - `/coverage`（覆盖率 / 缺口看板：整体覆盖率 + 按文件细分 + Top-N 缺口 + 重复/冲突检测，T22）
   - `/design`（设计系统展示：design tokens、按钮、状态徽标、词条表格）
 - 公共骨架：`src/components/Shell.tsx`（侧栏 `Rail` + 顶栏 + 移动端 `MobileNav`）。
 
@@ -158,6 +159,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
 | 数据中心 | 文本粘贴 / 批量 URL | `DataCenter.tsx`；`/api/collect`、`/api/batch-collect` |
 | 清洗结果预览 | 8 条两状态表 | `PreviewTable.tsx` `STATUS_LABELS` |
 | 引擎实时处理中心 | 进度 + SSE 终端 + 备份提示 | `Dashboard.tsx` + `useCollector.ts`；`page-navigation.js` 超时回退 |
+| 覆盖率 / 缺口看板 | 覆盖率进度条 + Top-N 缺口 + 冲突检测 | `src/app/coverage/page.tsx` + `src/lib/coverage-report.ts`；`public/css/coverage.css` |
 
 ## 8. 关键数据结构
 
@@ -190,6 +192,7 @@ CollectErrorCode = {
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.12.0 | 2026-09-26 | 同步原型规范至当前实现：版本横幅 1.9.48 → 1.12.0；导航由三页扩为四页（新增 `/coverage` 覆盖率看板，T22）；映射表补覆盖率看板行 |
 | 1.9.48 | 2026-09-25 | 重写原型规范：对齐「字符串采集工作台」原型与 src/app 采集实现，版本横幅同步至 1.9.48 |
 | 1.9.46 | 2026-09-25 | 原型重定向为采集工具、单一化为 index.html（旧配置面板原型规格迁出至 architecture.md） |
 | 1.9.24 | 2026-09-19 | 同步文档；确认浮动按钮与菜单命令已在 `ui/configUI/bootstrap.js` 落地（旧翻译脚本原型） |
