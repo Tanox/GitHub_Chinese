@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.11.15** ｜ 更新日期：2026-09-25 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.11.16** ｜ 更新日期：2026-09-26 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
 > 每次发版后需同步更新「迭代记录」（§4）与「变更记录」（§8），并按 §7 核对版本与文档同步。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.11.15 |
+| 当前版本 | v1.11.16 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -31,7 +31,7 @@
 | 翻译词典词条数 | 459 | `node collect-dict.cjs` 输出 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 16 个 HTML + 10 个 CSS | `prototype/` |
-| 工作台页面路由 | 3（`/`、`/overview`、`/design`） | `next build` 路由表 |
+| 工作台页面路由 | 4（`/`、`/overview`、`/coverage`、`/design`） | `next build` 路由表 |
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
 | 产物校验 | 通过 | `npm run validate` |
@@ -246,6 +246,12 @@ src/main.js                        ← 唯一入口
 
 > 抽出 `src/lib/page-navigation.js`（Node 侧、无浏览器依赖、可单测）承载全部导航交互辅助，采集核心 `collector-core.js` 仅保留编排；新增 `tests/page-navigation.test.mjs`（4 用例）覆盖退避与可重试判定。
 
+### 4.9 v1.11.16 · 覆盖率看板（T22）
+
+- 新增 `/coverage` 路由与服务端取数模块 `src/lib/coverage-report.ts`：实时扫描磁盘词典，计算整体翻译覆盖率、按文件（common/codespaces/explore）细分进度条、Top-N 采集缺口（读 `docs/untranslated-terms.txt`）、跨模块同键多值冲突与近似键聚类；服务端渲染（`force-dynamic`），不依赖浏览器，规避 W5 架构约束。
+- 复用 `Shell` 外壳与 `progress`/`showcase` 设计令牌，新增 `public/css/coverage.css`；`navItems.ts` 导航新增「覆盖率」项。
+- 版本同步至 1.11.16：`src/version.js`、`package.json`、`README.md`、`CHANGELOG.md`、`docs/TASKS.md` 与本次改动文件头注释。
+
 ---
 
 ## 5. 任务清单
@@ -293,6 +299,22 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.11.16 | 2026-09-26 | 新增覆盖率/缺口看板（T22）：`/coverage` 路由 + 服务端 `coverage-report.ts` 实时统计整体覆盖率、按文件细分、Top-N 缺口、重复/冲突检测；导航新增「覆盖率」项 |
+| 1.11.15 | 2026-09-25 | 采集工具重构（T36）：`collect-dict.cjs` 抽 `analyzeTexts`、`scripts/dict-report.cjs` 写词条级 diff 历史、抽 `merge-dictionaries.cjs`、补单测 |
+| 1.11.14 | 2026-09-25 | 历史轮次对比（T23）：`history-diff.cjs` 词条级 diff/回滚/轮次对比，`collect-history.cjs` 增 `appendRound` |
+| 1.11.13 | 2026-09-25 | 搜索与批量操作（T25）：`term-operations.cjs` 搜索/待翻译筛选/批量标记，补单测 |
+| 1.11.12 | 2026-09-25 | 一键合并入库（T20）：`merge-into-dictionary.cjs` 筛已译/占位生成 patch、预览 |
+| 1.11.11 | 2026-09-25 | 词条级审阅工作流（T19）：`review-store.cjs` 不可变状态机，补单测 |
+| 1.11.10 | 2026-09-25 | 导入/导出增强（T24）：`io-dictionary.cjs` CSV/JSON 双向 + 归一 |
+| 1.11.9 | 2026-09-25 | 覆盖率度量（T17）：`coverage.cjs` 命中率/按页分类/Top-N 缺口 |
+| 1.11.8 | 2026-09-25 | 匹配策略增强（T16）：占位符归一 `stripTemplateTokens` |
+| 1.11.7 | 2026-09-25 | 去除前端词条正则耦合（S1/T35）：结构化 `term` 事件 |
+| 1.11.6 | 2026-09-25 | 采集前端重构（T29/T34）：`useCollector.ts` 拆分 |
+| 1.11.5 | 2026-09-25 | 采集端点鉴权与限流（C3/T33）+ lint 合规 |
+| 1.11.4 | 2026-09-25 | 阻断重定向 SSRF（C2）+ 抽离公共 SSE 工厂（S2） |
+| 1.11.3 | 2026-09-25 | 客户端断连资源泄漏修复（C1/W1/T27）+ SSE 心跳（W2）+ 子进程超时（W3/W6） |
+| 1.11.2 | 2026-09-25 | 清理废弃旧采集向导（`public/js/collector-guide.js` 等） |
+| 1.11.1 | 2026-09-25 | 修复 EdgeOne/OpenNext 部署构建（`build` 改 `next build && node build.cjs`）；版本 1.10.2→1.11.1 对齐 origin/main |
 | 1.10.2 | 2026-09-25 | 修复 T26 回归：`extractPageText` 经 `page.evaluate` 序列化丢失模块闭包（内联 SKIP_TAGS/resolveScopeRoot/isContentNoise 使其自包含），恢复 v1.10.0 批量采集整批提取 0 文本；新增 `tests/extract-page-text.test.mjs`（jsdom + vm 隔离序列化回归用例）；另补 `browser-semaphore.js`/`batch-collector.js` 单测（共 4 例） |
 | 1.10.0 | 2026-09-25 | 采集成功率 P1 首批（T12–T14）：提取精准化（限定 SPA 容器 + 内容噪声降噪）、SPA/动态适配（hydration 等待 + 滚动懒加载 + 超时降级）、单页鲁棒性（逐 URL 错误隔离 + 指数退避重试）；抽离 `src/lib/page-navigation.js` 并新增 4 例单测 |
 | 1.9.47 | 2026-09-25 | 采集流程改进：提取去噪、匹配归一化、修复并发竞态、区分告警/错误、`MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
@@ -330,7 +352,7 @@ src/main.js                        ← 唯一入口
 
 > 当前采集链路（v1.10.2）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
 > 其中 **T12 提取精准化、T13 SPA/动态适配、T14 单页鲁棒性、T15 并发限流已落地**（详见 §4.8）；
-> **T26（`extractPageText` 经 `page.evaluate` 序列化丢失辅助、整批提取 0 文本回归）已在 v1.10.2 修复**；仍缺少覆盖率度量、无采集后词条级管理。
+> **T26（`extractPageText` 经 `page.evaluate` 序列化丢失辅助、整批提取 0 文本回归）已在 v1.10.2 修复**；**覆盖率度量（T17）+ 覆盖率/缺口看板（T22）已交付**；T19–T25 数据层（审阅/合并/历史/导入导出/搜索批量）已就绪，剩工作台 UI 接入与 localStorage 持久化，以及 T18 采集源扩展、T21 翻译建议。
 >
 > **规划以任务清单 [docs/TASKS.md](./TASKS.md) T12–T25 为唯一活动清单（含 P1–P3 优先级与 S/M/L 工作量标签、验收要点）；
 > 变更记录以 [CHANGELOG.md](./CHANGELOG.md) §1.9.48 为唯一归处。本文档仅作规划指针，不再复述任务逐条内容，避免多文档重复。**
