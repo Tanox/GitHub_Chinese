@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.12.0**（版本单一来源：`src/version.js`）
+> 当前版本：**v1.12.1**（版本单一来源：`src/version.js`）
 
 ## 命名与兼容性说明
 
@@ -99,7 +99,6 @@ prototype/                   # 设计系统与高保真原型
 scripts/                     # 构建依赖图、转换与产物校验
 build/                       # 用户脚本构建产物（纳入版本控制）
 docs/                        # 项目规范文档（唯一权威正文）
-openspec/                    # OpenSpec 规范索引与配置
 ```
 
 ## 参与开发

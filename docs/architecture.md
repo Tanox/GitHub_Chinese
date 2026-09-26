@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.12.1** ｜ 版本权威源：`src/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -389,7 +389,6 @@ GitHub_Chinese/
 ├── scripts/build/                    # moduleGraph.cjs / transform.cjs
 ├── scripts/validate-bundle.cjs       # 构建产物校验
 ├── docs/                             # 正式规范文档（权威正文）
-├── openspec/                         # OpenSpec 规范索引与配置
 ├── build/GitHub_zh-cn.user.js         # 用户脚本构建产物（纳入版本控制）
 ├── build.cjs                         # 用户脚本构建入口
 ├── collect-dict.cjs                  # 词典采集工具

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1] - 2026-09-26
+
+### Docs（合并 OpenSpec 索引入 docs）
+- 合并 `openspec/` 规范索引与配置入 `docs/`：原 `openspec/*.md` 的导航索引与速览摘要并入 `docs/README.md`（成为唯一文档入口），删除 `openspec/` 目录，消除第二份文档副本与维护脱节。
+- 修正活跃交叉引用：`docs/project.md`、`docs/architecture.md`、根 `README.md` 目录树移除 `openspec/`；`docs/development.md` 版本同步清单移除 `openspec/config.yaml`、相关文档链接改指 `./project.md`；`docs/coding-style.md` 相关文档链接改指 `./project.md`；`docs/README.md` 权威性说明改为「docs 为唯一权威正文」。
+- 版本同步：`src/version.js`、`package.json`、`README.md`、`docs/{README,project,architecture,development,coding-style}.md` 头部版本统一升级至 v1.12.1（patch，docs 收口）。
+
 ## [1.12.0] - 2026-09-26
 
 ### Docs（任务清单单一文档收口）
@@ -10,6 +17,7 @@
   - 删除 `docs/TASKS.md` 文件；全局搜索确认 CHANGELOG.md 与 PROGRESS.md §4/§8 中仅保留历史版本事实陈述（"v1.9.34 新增 TASKS.md"、"v1.9.41 清理 TASKS.md"等），无可断链的活跃交叉引用。
 - **版本同步**：`src/version.js`、`package.json`、`README.md`、`docs/PROGRESS.md` 头部版本号统一升级至 v1.12.0（MINOR，docs 类型）。
 - **同步 `docs/prototype.md` 至 v1.12.0**：版本横幅 1.9.48 → 1.12.0；导航由三页扩为四页（新增 `/coverage` 覆盖率看板，T22）；`原型 ↔ 实现映射` 表补覆盖率看板行。
+- **同步 `docs/project.md` 至 v1.12.0（写满开发现状）**：版本横幅与项目信息 1.9.43 → 1.12.0；目录结构补 `/coverage` 并展开 `src/lib`/`components`/`hooks` 真实模块；§5 采集工作台补全 SSRF/CSP/限流/覆盖率等模块与根级数据层脚本；新增「开发现状」专节（双链路、量化指标、已完成能力、活动任务 T18/T21、迭代里程碑）。
 
 ## [1.11.16] - 2026-09-26
 

@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.12.1** ｜ 版本权威源：`src/version.js`
 
 ## 项目概述
 
@@ -47,17 +47,20 @@ GitHub_Chinese/
 │   ├── versionUtils.js               # 版本比较与提取
 │   ├── versionChecker/               # 远程版本抓取
 │   ├── updateNotification/           # 更新通知 UI
-│   ├── app/                          # Next.js App Router（采集工作台）
+│   ├── app/                          # Next.js App Router（采集工作台，四页）
 │   │   ├── page.tsx                  # 采集控制台（服务端外壳 + 客户端岛）
 │   │   ├── overview/page.tsx         # 项目概览（服务端实时指标）
+│   │   ├── coverage/page.tsx          # 覆盖率 / 缺口看板（T22）
 │   │   ├── design/page.tsx           # 设计系统（令牌与组件展示）
 │   │   ├── api/collect/route.ts      # 文本粘贴采集
-│   │   └── api/batch-collect/route.ts# 批量 URL 采集
-│   ├── components/                   # Shell / Rail / MobileNav（服务端）+ navItems（导航源）+ CollectorConsole（客户端岛）
-│   ├── hooks/useCollector.ts         # 采集状态 Hook
-│   ├── lib/                          # collector-core.js / dictionary-processor.js / project-metrics.ts
+│   │   ├── api/batch-collect/route.ts# 批量 URL 采集
+│   │   ├── layout.tsx / globals.css  # 外壳布局与 Tailwind 入口
+│   │   └── robots.ts / sitemap.ts    # SEO
+│   ├── components/                   # Shell / Rail / MobileNav（服务端）+ navItems（导航源）+ CollectorConsole（客户端岛）+ Dashboard / DataCenter / PreviewTable / ScriptInjector（叶组件）
+│   ├── hooks/                        # useCollector.ts（状态 Hook）+ collector-types / constants / sse.ts（拆分模块）
+│   ├── lib/                          # 采集内核：collector-core / dictionary-processor / extract-page-text / page-navigation / collector-logic / request-body / url-guard（SSRF）/ browser-resolver / browser-semaphore / collect-codes / coverage-report / sse-stream / api-guard（鉴权限流）/ batch-collector / project-metrics
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
-│   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
+│   └── proxy.ts                      # 安全响应头 + nonce CSP（Next 16 起取代 middleware）
 ├── public/                           # Next 静态样式资源（css）
 │   └── css/                          # 采集工作台样式（模块化，单文件 ≤200 行）
 ├── prototype/                        # 高保真原型
@@ -68,7 +71,6 @@ GitHub_Chinese/
 │   ├── build/transform.cjs           # ESM → 单作用域拼接
 │   └── validate-bundle.cjs           # 构建产物校验
 ├── docs/                             # 正式规范文档（权威正文）
-├── openspec/                         # OpenSpec 规范索引与配置
 ├── build/                            # 用户脚本构建产物（需纳入版本控制）
 ├── build.cjs                         # 用户脚本构建入口
 ├── collect-dict.cjs                  # 词典采集工具
@@ -125,15 +127,20 @@ GitHub_Chinese/
 
 ### 5. 采集工作台（Next.js）
 
-- `src/app/page.tsx`：服务端页面外壳；交互收敛在 `src/components/CollectorConsole.tsx` 客户端岛
-- `src/app/overview/page.tsx` / `src/app/design/page.tsx`：项目概览与设计系统（均为静态预渲染）
-- `src/components/Shell.tsx` / `Rail.tsx`：服务端外壳与侧栏导航
-- `src/hooks/useCollector.ts`：采集状态与 SSE 事件流解析
+- `src/app/page.tsx`：采集控制台服务端外壳；交互收敛在 `src/components/CollectorConsole.tsx` 客户端岛
+- `src/app/overview/page.tsx` / `src/app/coverage/page.tsx` / `src/app/design/page.tsx`：项目概览、覆盖率/缺口看板（T22）、设计系统（均为静态预渲染，`coverage` 为 `force-dynamic` 服务端实时统计）
+- `src/components/Shell.tsx` / `Rail.tsx` / `MobileNav.tsx`：服务端外壳、侧栏与移动端导航；`navItems.ts` 为导航唯一数据源
+- `src/components/CollectorConsole.tsx` 叶组件：`ScriptInjector`（探针复制）、`DataCenter`（文本/批量归集 + JSON 导出）、`PreviewTable`（词条预览）、`Dashboard`（实时进度/终端/备份）
+- `src/hooks/useCollector.ts`：采集状态与 SSE 事件流解析；`collector-types.ts` / `collector-constants.ts` / `collector-sse.ts` 按职责拆分
 - `src/lib/collector-core.js`：Headless 抓取与采集编排（链路唯一实现）
-- `src/lib/dictionary-processor.js`：调用 `collect-dict.cjs` 的子进程桥接
-- `src/lib/project-metrics.ts`：服务端磁盘指标统计（供项目概览页）
-- `src/app/api/*/route.ts`：`text/event-stream` 流式接口
-- `src/proxy.ts`：附加基础安全响应头（Next 16 起取代 `middleware`）
+- `src/lib/dictionary-processor.js`：调用 `collect-dict.cjs` 的子进程桥接（`term` 结构化事件下发，解除前后端输出耦合）
+- `src/lib/extract-page-text.js`：浏览器端自包含文本提取（作用域根 + 噪声过滤），可经 `page.evaluate` 注入
+- `src/lib/page-navigation.js`：导航超时降级、hydration 等待、滚动懒加载、指数退避重试
+- `src/lib/collector-logic.ts` / `request-body.js` / `collect-codes.js`：类型门面、请求体校验、错误码契约
+- `src/lib/url-guard.js`（SSRF）、`browser-resolver.js` / `browser-semaphore.js`（浏览器解析与并发限流）、`sse-stream.ts`（SSE 工厂）、`api-guard.ts`（鉴权 + 限流）、`coverage-report.ts`（覆盖率统计）、`project-metrics.ts`（磁盘指标）、`batch-collector.js`
+- 根级采集工具脚本：`collect-dict.cjs`（清洗子进程）、`review-store.cjs`（审阅状态机，T19）、`merge-into-dictionary.cjs`（合并入库，T20）、`history-diff.cjs`（轮次对比/回滚，T23）、`io-dictionary.cjs`（导入导出，T24）、`term-operations.cjs`（搜索批量，T25）、`coverage.cjs`（覆盖率度量，T17）、`merge-dictionaries.cjs`；`scripts/`：`dict-report.cjs`、`collect-history.cjs`
+- `src/app/api/*/route.ts`：`text/event-stream` 流式接口（`createSseResponse` 统一心跳/取消）
+- `src/proxy.ts`：附加 nonce CSP 与安全响应头（Next 16 起取代 `middleware`）
 
 ---
 
@@ -198,13 +205,57 @@ npm test               # lint → build → validate
 
 ---
 
+## 开发现状
+
+> 版本权威源 `src/version.js`；完整进度、迭代记录与变更历史见 [PROGRESS.md](./PROGRESS.md) 与 [CHANGELOG.md](../CHANGELOG.md)。
+
+### 当前版本与双链路
+
+- 当前版本 **v1.12.0**（2026-09-26）。
+- 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，四页 `/`、`/overview`、`/coverage`、`/design`）。两链路仅共享词典数据。
+
+### 量化指标（发版时由脚本实算，禁止手填；数值取自 PROGRESS §1.1 v1.12.0）
+
+| 指标 | 数值（v1.12.0） |
+|------|------|
+| `src/` 源码文件数 | 122 |
+| `src/` 源码总行数 | 9612 |
+| 用户脚本纳入模块数 | 92（孤立 0、循环引用 0） |
+| 用户脚本产物大小 | 198,838 字节（194.18 KB） |
+| 翻译词典词条数 | 459（12 个词典模块） |
+| 工作台页面路由 | 4（`/`、`/overview`、`/coverage`、`/design`） |
+| 代码检查 / 类型检查 | 0 error / 0 warning；`strict: true` 通过 |
+| 单元测试 | 20 用例通过（含 a11y 3） |
+| 超长代码文件（>200 行） | 0 |
+
+### 已完成能力
+
+- **用户脚本引擎**：静态/动态翻译、Trie 部分匹配、LRU 缓存/虚拟 DOM/批处理、配置面板 + 性能监控、浮动入口 + 菜单命令、自动更新、输入净化。
+- **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、四页互通与响应式导航、项目概览（实时指标）、设计系统、**覆盖率/缺口看板（/coverage，T22）**。
+- **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（20 用例）、a11y 自动化检查。
+
+### 活动任务（以 PROGRESS §5 为唯一清单）
+
+- **T18** 采集源扩展（L）：登录态 cookie / HAR 导入，覆盖更多私有 UI 区域。
+- **T21** 翻译建议（L）：LLM/翻译记忆建议译文，失败降级（无 key 跳过）。
+
+### 迭代里程碑（节选，详见 CHANGELOG）
+
+- **v1.9.26** 工作台外壳修复 + 概览/设计页 + `proxy` 迁移 + 采集逻辑去重 + TS 严格模式。
+- **v1.9.35–1.9.42** SSRF（T1）/ CSP（T2）/ a11y（T8）/ 依赖审计（T7）/ 行数门禁（T6）等安全加固与质量门禁。
+- **v1.10.0** 采集成功率 P1（T12–T14：提取精准化 / SPA 适配 / 单页鲁棒性）。
+- **v1.11.1–1.11.16** 采集安全（C1–C3/W1–W6/S1–S2/T27–T34）+ 词典管理数据层（T17 度量、T19 审阅、T20 合并、T23 历史、T24 导入导出、T25 搜索批量）+ 覆盖率看板（T22）。
+- **v1.12.0** 文档收口（合并 `docs/TASKS.md` 入 `docs/PROGRESS.md` §5，删除 TASKS.md）。
+
+---
+
 ## 项目信息
 
 | 属性 | 值 |
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.9.43 |
+| **当前版本** | 1.12.0 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

@@ -1,6 +1,6 @@
 # 开发指南
 
-> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.12.1** ｜ 版本权威源：`src/version.js`
 
 本文档记录了项目的开发流程、分支策略、提交规范、发布流程和测试要求。
 
@@ -150,7 +150,7 @@ MAJOR.MINOR.PATCH
 
 1. 更新**单一版本源** `src/version.js` 中的 `VERSION`
 2. 同步全局展示位：`package.json` 的 `version`
-3. 同步文档展示位：`README.md`、`docs/*.md`、`openspec/config.yaml`、`prototype/` 中出现的版本号
+3. 同步文档展示位：`README.md`、`docs/*.md`、``prototype/` 中出现的版本号
 4. 仅同步**本次实际改动文件**的头注释版本号；未改动文件保持不变，**禁止全仓库批量刷写头注释**
 
 #### 3.2.3 CHANGELOG 更新
@@ -329,4 +329,4 @@ npm run validate
 
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - 贡献指南
 - [architecture.md](./architecture.md) - 架构文档
-- [openspec/project.md](../openspec/project.md) - 项目规范
+- [project.md](./project.md) - 项目规范

@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.9.43** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.12.1** ｜ 版本权威源：`src/version.js`
 
 本文档定义了项目的代码风格规范，包括命名约定、代码格式、注释规范和最佳实践。
 
@@ -628,4 +628,4 @@ npm run format:check
 
 - [development.md](./development.md) - 开发指南
 - [architecture.md](./architecture.md) - 架构文档
-- [openspec/project.md](../openspec/project.md) - 项目规范
+- [project.md](./project.md) - 项目规范
