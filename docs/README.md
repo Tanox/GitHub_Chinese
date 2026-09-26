@@ -16,7 +16,6 @@
 | 架构设计 | [architecture.md](./architecture.md) | 系统架构、技术选型、采集工作台架构 |
 | 代码风格 | [coding-style.md](./coding-style.md) | 命名约定、注释规范、最佳实践 |
 | 开发流程 | [development.md](./development.md) | 分支策略、提交规范、发布流程 |
-| 配置 | [config.yaml](./config.yaml) | 规范文档配置（OpenSpec 上下文） |
 | 原型与设计规范 | [prototype.md](./prototype.md) | 原型设计理念与组件规范 |
 
 ## 文档速览
