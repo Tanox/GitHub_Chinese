@@ -1,7 +1,7 @@
 /**
  * 词典助手（T21 翻译建议）
  * @file src/app/dictionary/page.tsx
- * @version 1.12.5
+ * @version 1.12.6
  * @description 服务端页面：翻译建议助手，复用 Shell 外壳 + 客户端岛 DictionaryHelper。
  */
 import type { Metadata } from 'next';

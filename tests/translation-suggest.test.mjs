@@ -1,7 +1,7 @@
 /**
  * 翻译建议引擎单元测试（T21）
  * @file tests/translation-suggest.test.mjs
- * @version 1.12.5
+ * @version 1.12.6
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';

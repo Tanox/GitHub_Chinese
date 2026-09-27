@@ -1,7 +1,7 @@
 /**
  * 可选 LLM 翻译建议（T21）
  * @file src/lib/llm-suggest.js
- * @version 1.12.5
+ * @version 1.12.6
  * @description 调用 OpenAI 兼容接口给出简体中文译文；无密钥或任何失败均降级返回 null，由调用方跳过。
  */
 

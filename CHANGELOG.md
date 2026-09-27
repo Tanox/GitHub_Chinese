@@ -1,4 +1,19 @@
 # Changelog
+## [1.12.7] - 2026-09-27
+
+### Refactor（拆分超 200 行组件 DictionaryHelper）
+- 将 `src/components/DictionaryHelper.tsx`（254 行，超出 200 行上限）按职责拆分为 `dictionary/types.ts`（类型与 `STORAGE_KEY` 常量）、`dictionary/sourceLabel.ts`（来源中文标签）、`dictionary/SuggestPanel.tsx`（翻译建议面板）、`dictionary/PendingList.tsx`（待入库列表）；主文件仅保留状态与编排逻辑（约 130 行）。
+- 公开 API 不变：默认导出 `DictionaryHelper` 与 props（`samples` / `totalEntries`）保持一致，引用方 `src/app/dictionary/page.tsx` 无需改动。
+- 被改/新增文件头注释同步 1.12.7。
+
+## [1.12.6] - 2026-09-27
+
+### Feat（T21 翻译建议 + 词典助手页）
+- 新增翻译建议引擎 `src/lib/translation-suggest.js`：纯函数、无网络，基于现有词典（翻译记忆）给出建议译文——精确命中 / 大小写命中 / 多词组合，并跳过「待翻译」占位。
+- 新增可选 LLM 增强 `src/lib/llm-suggest.js`：配置 `GHZH_LLM_KEY` 时调用 OpenAI 兼容接口，无密钥或任意失败均降级跳过。
+- 新增 `GET /api/dictionary/suggest` 接口与「词典助手」页（`/dictionary`，客户端岛 `DictionaryHelper` 含 `localStorage` 持久化待入库建议、导出 JSON）；导航新增「词典助手」项；新页面纳入 a11y 走查。
+- 单元测试 `tests/translation-suggest.test.mjs` 覆盖引擎（10 用例）；全量单测 73 用例（72 通过 / 1 跳过 / 0 失败）。
+
 ## [1.12.5] - 2026-09-27
 
 ### Docs（变更历史收口至 CHANGELOG）

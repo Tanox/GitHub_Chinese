@@ -1,7 +1,7 @@
 /**
  * 翻译建议引擎（T21 核心）
  * @file src/lib/translation-suggest.js
- * @version 1.12.5
+ * @version 1.12.6
  * @description 纯函数、无 I/O、无网络：基于现有词典（翻译记忆）为待翻译英文词条给出建议译文。
  *   可选注入 llm 回调实现 LLM 增强；任何异常由调用方负责降级（无 key 时跳过）。
  */

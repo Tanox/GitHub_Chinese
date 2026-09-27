@@ -1,7 +1,7 @@
 /**
  * 翻译建议接口（T21）
  * @file src/app/api/dictionary/suggest/route.ts
- * @version 1.12.5
+ * @version 1.12.6
  * @description GET /api/dictionary/suggest?term=... 返回建议译文。
  *   翻译记忆优先；配置 GHZH_LLM_KEY 时额外调用 LLM 增强，无 key 则降级跳过。
  */
