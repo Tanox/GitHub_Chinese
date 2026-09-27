@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2] - 2026-09-27
+
+### Refactor（采集页整页复刻原型）
+- 采集工具首页（`/`）脱离标准 `Shell`，改用原型外壳：`proto-topbar`（品牌「GitHub 中文 · 采集工具」+ 设置齿轮）、hero（eyebrow / 标题 / 导语）、页脚「高保真原型 · 仅供设计走查」；隐藏深侧栏，导航经页脚链接与移动端导航保留。
+- 新增 `public/css/prototype.css`：在 `.proto-page` 作用域内对齐原型 `ct-*` 组件值——步骤徽标绿底 26px、卡片内边距 16px / 标题 16px·600、栅格间距 16px、tab 改为下划线式、输入框 / 代码块 / 词条表 / 进度卡 / 终端尺寸与圆角对齐；覆盖仅作用于采集页，不影响 `/overview` `/coverage` `/design`。
+- `Shell` 新增 `prototype` / `brand` 受控属性；`page.tsx` 渲染 hero 并启用 prototype 模式。被改文件头注释同步 1.12.2。
+
 ## [1.12.1] - 2026-09-26
 
 ### Docs（合并 OpenSpec 索引入 docs）

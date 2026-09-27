@@ -50,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel='stylesheet' href='/css/toast.css' />
         <link rel='stylesheet' href='/css/showcase.css' />
         <link rel='stylesheet' href='/css/coverage.css' />
+        <link rel='stylesheet' href='/css/prototype.css' />
         {children}
       </body>
     </html>
