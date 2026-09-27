@@ -1,4 +1,9 @@
 # Changelog
+## [1.12.5] - 2026-09-27
+
+### Docs（变更历史收口至 CHANGELOG）
+- 移除 `docs/PROGRESS.md` §8「变更记录」整节：该表为 `CHANGELOG.md` 的精简子集（1.12.4→1.9.20 全部版本 CHANGELOG 均已含更详尽条目），且 §9 已声明「变更记录以 CHANGELOG.md 为唯一归处」；变更历史统一收口至 `CHANGELOG.md`，消除同一变更在两处文档重复出现。
+- 同步 `docs/PROGRESS.md` 引言（发版同步指引改指向 CHANGELOG）与版本头注释至 v1.12.5。
 
 ## [1.12.4] - 2026-09-27
 

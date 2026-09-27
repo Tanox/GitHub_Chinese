@@ -15,7 +15,7 @@ import axeCore from 'axe-core';
 const APP_DIR = path.join(import.meta.dirname, '..', '.next', 'server', 'app');
 
 /** 关键页面（与 sitemap 一致） */
-const PAGES = ['index', 'overview', 'design'];
+const PAGES = ['index', 'overview', 'design', 'dictionary'];
 
 /** 视为阻断级的问题影响等级 */
 const BLOCKING_IMPACTS = new Set(['serious', 'critical']);

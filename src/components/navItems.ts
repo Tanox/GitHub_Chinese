@@ -1,11 +1,11 @@
 /**
  * 工作台导航定义
  * @file src/components/navItems.ts
- * @version 1.11.16
+ * @version 1.12.5
  * @description 侧栏（桌面）与移动端导航共用的唯一导航数据源，避免两处各写一份而漂移
  */
 
-export type RailSection = 'console' | 'overview' | 'design' | 'coverage';
+export type RailSection = 'console' | 'overview' | 'design' | 'coverage' | 'dictionary';
 
 export interface NavItem {
   key: RailSection;
@@ -19,4 +19,5 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'overview', label: '项目概览', href: '/overview' },
   { key: 'coverage', label: '覆盖率', href: '/coverage' },
   { key: 'design', label: '设计系统', href: '/design' },
+  { key: 'dictionary', label: '词典助手', href: '/dictionary' },
 ];

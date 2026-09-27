@@ -1,9 +1,9 @@
 # 项目开发进度报告
 
-> 版本：**v1.12.4** ｜ 更新日期：2026-09-27 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.12.5** ｜ 更新日期：2026-09-27 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
-> 每次发版后需同步更新「迭代记录」（§4）与「变更记录」（§8），并按 §7 核对版本与文档同步。
+> 每次发版后需同步更新「迭代记录」（§4），并将变更记录写入 `CHANGELOG.md`，按 §7 核对版本与文档同步。
 
 ---
 
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.12.4 |
+| 当前版本 | v1.12.5 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -324,64 +324,6 @@ src/main.js                        ← 唯一入口
 6. `docs/` 下结构调整文档（`project.md`／`architecture.md`／`development.md`／`coding-style.md`／`prototype.md`）
 7. 本次**实际改动**文件的头注释版本号（未改动文件保持不变）
 8. 发版后重新执行 `node build.cjs` 并确认 `git status` 干净（产物须可复现）
-
----
-
-## 8. 变更记录
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 1.12.4 | 2026-09-27 | 清理冗余依赖与重复代码（移除 devDeps `serve`/`@babel/preset-env` 共 147 包；去重 `mergeDictionaries` 复用 `mergeAllDictionaries`）；并重建滞后产物 `build/GitHub_zh-cn.user.js`（原停于 1.11.16，现含 1.12.4），修复 smoke 测试 |
-| 1.12.3 | 2026-09-27 | 采集页恢复标准应用框架：撤销整页原型模式，`page.tsx` 改回标准 `Shell`（侧栏+顶栏+页脚），`Shell` 移除 prototype/brand 分支、改 `contentClass` 仅做组件级对齐 |
-| 1.12.2 | 2026-09-27 | 采集页整页复刻原型：脱离标准 `Shell` 改用 proto 外壳，新增 `public/css/prototype.css` 在 `.proto-page` 作用域对齐原型组件值 |
-| 1.12.1 | 2026-09-26 | 合并 OpenSpec 索引入 `docs/`（删 `openspec/`）；应用 UI 对齐原型、首页重构 |
-| 1.12.0 | 2026-09-26 | 文档收口：合并 `docs/TASKS.md` 入本文档 §5，删除 TASKS.md 文件；§9 Roadmap 改写为指向 §5；版本升级 MINOR 至 1.12.0 |
-| 1.11.16 | 2026-09-26 | 新增覆盖率/缺口看板（T22）：`/coverage` 路由 + 服务端 `coverage-report.ts` 实时统计整体覆盖率、按文件细分、Top-N 缺口、重复/冲突检测；导航新增「覆盖率」项 |
-| 1.11.15 | 2026-09-25 | 采集工具重构（T36）：`collect-dict.cjs` 抽 `analyzeTexts`、`scripts/dict-report.cjs` 写词条级 diff 历史、抽 `merge-dictionaries.cjs`、补单测 |
-| 1.11.14 | 2026-09-25 | 历史轮次对比（T23）：`history-diff.cjs` 词条级 diff/回滚/轮次对比，`collect-history.cjs` 增 `appendRound` |
-| 1.11.13 | 2026-09-25 | 搜索与批量操作（T25）：`term-operations.cjs` 搜索/待翻译筛选/批量标记，补单测 |
-| 1.11.12 | 2026-09-25 | 一键合并入库（T20）：`merge-into-dictionary.cjs` 筛已译/占位生成 patch、预览 |
-| 1.11.11 | 2026-09-25 | 词条级审阅工作流（T19）：`review-store.cjs` 不可变状态机，补单测 |
-| 1.11.10 | 2026-09-25 | 导入/导出增强（T24）：`io-dictionary.cjs` CSV/JSON 双向 + 归一 |
-| 1.11.9 | 2026-09-25 | 覆盖率度量（T17）：`coverage.cjs` 命中率/按页分类/Top-N 缺口 |
-| 1.11.8 | 2026-09-25 | 匹配策略增强（T16）：占位符归一 `stripTemplateTokens` |
-| 1.11.7 | 2026-09-25 | 去除前端词条正则耦合（S1/T35）：结构化 `term` 事件 |
-| 1.11.6 | 2026-09-25 | 采集前端重构（T29/T34）：`useCollector.ts` 拆分 |
-| 1.11.5 | 2026-09-25 | 采集端点鉴权与限流（C3/T33）+ lint 合规 |
-| 1.11.4 | 2026-09-25 | 阻断重定向 SSRF（C2）+ 抽离公共 SSE 工厂（S2） |
-| 1.11.3 | 2026-09-25 | 客户端断连资源泄漏修复（C1/W1/T27）+ SSE 心跳（W2）+ 子进程超时（W3/W6） |
-| 1.11.2 | 2026-09-25 | 清理废弃旧采集向导（`public/js/collector-guide.js` 等） |
-| 1.11.1 | 2026-09-25 | 修复 EdgeOne/OpenNext 部署构建（`build` 改 `next build && node build.cjs`）；版本 1.10.2→1.11.1 对齐 origin/main |
-| 1.10.2 | 2026-09-25 | 修复 T26 回归：`extractPageText` 经 `page.evaluate` 序列化丢失模块闭包（内联 SKIP_TAGS/resolveScopeRoot/isContentNoise 使其自包含），恢复 v1.10.0 批量采集整批提取 0 文本；新增 `tests/extract-page-text.test.mjs`（jsdom + vm 隔离序列化回归用例）；另补 `browser-semaphore.js`/`batch-collector.js` 单测（共 4 例） |
-| 1.10.0 | 2026-09-25 | 采集成功率 P1 首批（T12–T14）：提取精准化（限定 SPA 容器 + 内容噪声降噪）、SPA/动态适配（hydration 等待 + 滚动懒加载 + 超时降级）、单页鲁棒性（逐 URL 错误隔离 + 指数退避重试）；抽离 `src/lib/page-navigation.js` 并新增 4 例单测 |
-| 1.9.47 | 2026-09-25 | 采集流程改进：提取去噪、匹配归一化、修复并发竞态、区分告警/错误、`MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
-| 1.9.46 | 2026-09-25 | 原型单一化（删除 `mobile.html`，`desktop.html` → `index.html`）；用户脚本文件名 `GitHub_i18n.user.js` → `GitHub_zh-cn.user.js` |
-| 1.9.45 | 2026-09-25 | 高保真原型重定向为「GitHub 页面字符串采集工具」 |
-| 1.9.44 | 2026-09-25 | 原型简化：仅保留高保真原型并改名 `index.html`；版本同步 |
-| 1.9.43 | 2026-09-24 | 文档指标刷新（`src/` 行数 9230 → 9342、产物 198,899 → 198,838 字节）；同步版本展示位 |
-| 1.9.42 | 2026-09-23 | CI 门禁补齐（T11）：`lint` 作业新增类型检查、`build` 作业新增单元测试；新增 `npm run typecheck` 脚本 |
-| 1.9.41 | 2026-09-23 | 文档整理：清理 `docs/TASKS.md`（归档表格化）、同步 `docs/` 与 `openspec/` 版本行、刷新 PROGRESS 指标 |
-| 1.9.40 | 2026-09-23 | 新增 a11y 自动化检查（T8，axe-core + jsdom）与采集趋势可视化（T10，`collect-history.json` + `/overview`）；拆分 `collect-dict.cjs`，门禁覆盖根脚本 |
-| 1.9.39 | 2026-09-23 | 文档：README 新增「命名与兼容性说明」（T9），澄清产品名与仓库旧名 `GitHub_i18n` 的保留原因（该保留策略已于 v1.9.43 被脚本更名推翻） |
-| 1.9.38 | 2026-09-23 | 新增代码文件行数门禁（T6，`lint:length` + CI）与高优先级依赖审计（T7，`npm audit --audit-level=high`） |
-| 1.9.37 | 2026-09-23 | 新增 API 路由集成测试（T5）：`request-body.js` 纯函数 + `request-body`/`collector-core` 用例；SSRF 校验前移至浏览器启动前 |
-| 1.9.36 | 2026-09-23 | 新增基于 nonce 的 CSP（T2，`src/proxy.ts`）与 OG / Twitter 元信息（T4，`src/app/layout.tsx`） |
-| 1.9.35 | 2026-09-23 | 新增 SSRF 防护（T1）：`src/lib/url-guard.js` 纯函数 + `CollectErrorCode.INVALID_URL`，采集前逐项校验目标 URL；清理文档漂移（T3） |
-| 1.9.34 | 2026-09-23 | 新增 `docs/TASKS.md` 作为唯一任务清单，合并 PROGRESS 遗留任务与 `IMPROVEMENT-TASKS.md`（文档） |
-| 1.9.33 | 2026-09-23 | 新增 `docs/IMPROVEMENT-TASKS.md` 改进建议任务文档（v1.9.34 已合并入 `TASKS.md`） |
-| 1.9.32 | 2026-09-23 | 修复 P0-2：批量采集改用 `puppeteer-core` + 系统 Chrome / Edge（`browser-resolver.js` 解析可执行路径，支持 `PUPPETEER_EXECUTABLE_PATH`），`next build` 告警降为 0 |
-| 1.9.31 | 2026-09-23 | 新增用户脚本产物冒烟测试（P2-5）：`tests/smoke.test.cjs` 校验产物存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性 |
-| 1.9.30 | 2026-09-23 | 清理未启用的 Jest 配置并改用 Node 内置 test runner（P1-3）；新增 `tests/` 用例覆盖错误码契约与采集纯函数；`npm test` 串联 `test:unit` |
-| 1.9.29 | 2026-09-23 | 消除双锁文件漂移（P1-4）：删除 `bun.lock`，保留 npm 单一锁（`package-lock.json`）；词典采集支持增量与去重统计（P2-3）：`collect-dict.cjs` 的 `generateReport` 对比历史 `docs/untranslated-terms.txt`，输出新增 / 移除 / 净增统计 |
-| 1.9.28 | 2026-09-23 | 修复配置面板性能监控按钮为死按钮（P2-4）；新增采集错误码约定（P2-7）：`collect-codes.js` 共用 `CollectErrorCode`、服务端错误事件带 `code`、前端渲染错误码徽标；空输入/空 URL 返回 `INPUT_INVALID` |
-| 1.9.27 | 2026-09-22 | 修复窄屏下三页无法互跳：新增移动端导航（`MobileNav` + 共享 `navItems`）；≤640px 顶栏与内容区响应式调整 |
-| 1.9.26 | 2026-09-22 | 工作台外壳布局与状态徽标修复；新增「项目概览」「设计系统」页；`middleware`→`proxy` 迁移；采集服务端逻辑去重（P1-5）；移除未引用的 i18n 框架（P1-2）；开启 TS 严格模式（P2-1）；消除构建期循环引用；拆分超长文件 |
-| 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配导致清洗步骤失败；`req.json()` 异常改返回 400 |
-| 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节等 7 项阻塞缺陷；对齐 CI 脚本；补齐采集工作台交互；拆分 6 处超长文件；新增产物校验脚本与本文档 |
-| 1.9.23 | 2026-09-19 | 采集演示页升级为 Next.js 16（App Router）；新增 Tailwind/PostCSS/ESLint/Husky 配置 |
-| 1.9.22 | 2026-09-18 | 重构词典采集向导样式，统一品牌绿主题，去除无效 Tailwind 依赖 |
-| 1.9.21 | 2026-07-18 | 项目更名为 GitHub Chinese 简体中文 |
-| 1.9.20 | 2026-06-10 | 工具模块拆分（functionUtils/stringUtils/domUtils/urlUtils/securityUtils 等） |
 
 ---
 
