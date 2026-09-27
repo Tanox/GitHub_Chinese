@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.3] - 2026-09-27
+
+### Refactor（采集页恢复真实应用框架）
+- 撤销「整页复刻原型」模式：采集页 `page.tsx` 改回标准 `Shell`（侧栏 + 真实顶栏 + 真实页脚），不再隐藏外壳或把原型当应用前端，恢复应用身份并保留全部交互功能（探针复制 / 文本·批量 URL 采集 / 实时日志 / JSON 导出）。
+- `Shell` 移除 `prototype`/`brand` 模式分支，新增 `contentClass` 仅用于采集页承接 `prototype.css` 的组件级视觉对齐（`.proto-page` 作用域），不影响 /overview /coverage /design。
+- `prototype.css` 删除失效的 proto 顶栏 / 齿轮样式，保留 hero 与 `.proto-page` 组件覆盖；hero eyebrow 由「PROTOTYPE · COLLECTOR」改为「采集工具 · COLLECTOR」。
+- 被改文件头注释同步 1.12.3。
+
 ## [1.12.2] - 2026-09-27
 
 ### Refactor（采集页整页复刻原型）
