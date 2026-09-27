@@ -96,9 +96,7 @@ export default function DataCenter({
         </div>
       </div>
 
-      <p className='card-desc'>
-        两种采集入口，智能清洗后一键导出 JSON。
-      </p>
+      <p className='card-desc'>两种采集入口，智能清洗后一键导出 JSON。</p>
 
       <div className='field-stack'>
         <label htmlFor='data-center-input' className='sr-only'>

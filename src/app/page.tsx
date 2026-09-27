@@ -15,8 +15,8 @@ export default function CollectorPage() {
         <span className='proto-eyebrow'>PROTOTYPE · COLLECTOR</span>
         <h1 className='proto-title'>GitHub 页面字符串采集工具</h1>
         <p className='proto-lede'>
-          从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典。原型覆盖探针植入、文本 /
-          批量 URL 采集、实时处理中心与 JSON 导出全流程。
+          从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典。原型覆盖探针植入、文本 / 批量 URL
+          采集、实时处理中心与 JSON 导出全流程。
         </p>
       </div>
       <CollectorConsole />
