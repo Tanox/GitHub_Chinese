@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.12.0** ｜ 更新日期：2026-09-26 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.12.4** ｜ 更新日期：2026-09-27 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
 > 每次发版后需同步更新「迭代记录」（§4）与「变更记录」（§8），并按 §7 核对版本与文档同步。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.12.0 |
+| 当前版本 | v1.12.4 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -22,20 +22,20 @@
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 122 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 9612 | 同上 |
+| `src/` 源码文件数 | 136 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 10555 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
-| 用户脚本产物大小 | 198,838 字节（194.18 KB） | `build/GitHub_zh-cn.user.js` |
+| 用户脚本产物大小 | 198,845 字节（约 194 KB） | `build/GitHub_zh-cn.user.js` |
 | 翻译词典词条数 | 459 | `node collect-dict.cjs` 输出 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
-| 原型资源数 | 16 个 HTML + 10 个 CSS | `prototype/` |
+| 原型资源数 | 1 个 HTML + 10 个 CSS | `prototype/` |
 | 工作台页面路由 | 4（`/`、`/overview`、`/coverage`、`/design`） | `next build` 路由表 |
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
 | 产物校验 | 通过 | `npm run validate` |
-| 单元测试 | 20 用例通过（含 a11y 3） | `npm run test:unit` |
+| 单元测试 | 62 用例（61 通过 / 1 跳过 / 0 失败，含 a11y 3） | `npm run test:unit` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
 | Next 构建告警 | 0 | `npm run build:web` |
 
@@ -150,7 +150,7 @@ src/main.js                        ← 唯一入口
 - [x] Next 16 约定对齐：`middleware` → `proxy`、移除失效 `eslint` 配置键
 - [x] 语义化 `id` 覆盖主要容器与交互控件
 - [x] 全部代码文件符合「单文件 ≤ 200 行」约定（0 处超出）
-- [x] 单元测试：Node 内置 test runner（`node --test`），共 20 用例（错误码契约 / 词典采集纯函数 / 产物冒烟 / a11y 3），详见 §1.1
+- [x] 单元测试：Node 内置 test runner（`node --test`），共 62 用例（错误码契约 / 词典采集纯函数 / 产物冒烟 / a11y 3），详见 §1.1
 - [x] 用户脚本产物冒烟：存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性（P2-5）
 
 ---
@@ -254,6 +254,30 @@ src/main.js                        ← 唯一入口
 
 ---
 
+## 4.10 v1.12.1 · 文档收口与 UI 对齐原型
+
+- **Docs（合并 OpenSpec 索引入 docs）**：`openspec/` 规范索引与配置并入 `docs/README.md`（唯一文档入口），删除 `openspec/`，消除第二份文档副本与维护脱节；修正活跃交叉引用（`docs/project.md`、`docs/architecture.md`、根 `README.md`、`docs/development.md`、`docs/coding-style.md` 移除 `openspec/`、`config.yaml` 等引用）。
+- **Refactor（应用 UI 对齐原型 / 首页重构）**：`CollectorConsole` 以原型四区块（h2+meta）包裹各模块；`DataCenter` 补原型描述；`Shell` 新增页脚（原型 `proto-footer`）；`grid-2` 列宽对齐原型 `1fr 1fr`；新增 `.section`/`.footer` 样式。
+
+## 4.11 v1.12.2 · 采集页整页复刻原型
+
+- 采集工具首页（`/`）脱离标准 `Shell`，改用原型外壳：`proto-topbar`（品牌「GitHub 中文 · 采集工具」+ 设置齿轮）、hero（eyebrow / 标题 / 导语）、页脚「高保真原型 · 仅供设计走查」；隐藏深侧栏，导航经页脚链接与移动端导航保留。
+- 新增 `public/css/prototype.css`：在 `.proto-page` 作用域内对齐原型 `ct-*` 组件值（步骤徽标绿底 26px、卡片内边距 16px / 标题 16px·600、栅格 16px、tab 下划线式、输入框 / 代码块 / 词条表 / 进度卡 / 终端尺寸与圆角对齐）；覆盖仅作用于采集页，不影响 `/overview` `/coverage` `/design`。
+
+## 4.12 v1.12.3 · 采集页恢复标准应用框架
+
+- 撤销「整页复刻原型」模式：采集页 `page.tsx` 改回标准 `Shell`（侧栏 + 真实顶栏 + 真实页脚），恢复应用身份并保留全部交互功能（探针复制 / 文本·批量 URL 采集 / 实时日志 / JSON 导出）。
+- `Shell` 移除 `prototype`/`brand` 模式分支，新增 `contentClass` 仅用于采集页承接 `prototype.css` 的组件级视觉对齐（`.proto-page` 作用域），不影响其余三页。
+- `prototype.css` 删除失效的 proto 顶栏 / 齿轮样式，保留 hero 与 `.proto-page` 组件覆盖；hero eyebrow 由「PROTOTYPE · COLLECTOR」改「采集工具 · COLLECTOR」。
+
+## 4.13 v1.12.4 · 清理冗余依赖与重复代码（+ 产物重建）
+
+- 移除未使用的 devDependencies：`serve`、`@babel/preset-env`（含传递依赖共 147 个包）；`dev:prototype` 实际由 `server.js`（express）驱动，无 babel 配置引用 preset-env。
+- 去重：`DictionaryProcessor.mergeDictionaries()` 改为复用 `dictionaries/index.js` 的 `mergeAllDictionaries()`，删除重复遍历逻辑。
+- **分析发现并修复产物脱节**：`build/GitHub_zh-cn.user.js` 自 v1.11.16 起从未重建，UserScript `@version` 与内联 `version.js` 仍停留 1.11.16，导致 `tests/smoke.test.cjs`「产物含当前版本号」断言失败；本次已 `node build.cjs` 重建，产物现含 `@version 1.12.4`、纳入 92 模块、193.98 KB，全量单测 62 用例（61 通过 / 1 跳过 / 0 失败）。
+
+---
+
 ## 5. 活动任务（进行中 / 待办）
 
 > 优先级 P0/P1/P2/P3；工作量标签：S（<0.5d）/ M（0.5–2d）/ L（>2d）。
@@ -307,6 +331,10 @@ src/main.js                        ← 唯一入口
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
+| 1.12.4 | 2026-09-27 | 清理冗余依赖与重复代码（移除 devDeps `serve`/`@babel/preset-env` 共 147 包；去重 `mergeDictionaries` 复用 `mergeAllDictionaries`）；并重建滞后产物 `build/GitHub_zh-cn.user.js`（原停于 1.11.16，现含 1.12.4），修复 smoke 测试 |
+| 1.12.3 | 2026-09-27 | 采集页恢复标准应用框架：撤销整页原型模式，`page.tsx` 改回标准 `Shell`（侧栏+顶栏+页脚），`Shell` 移除 prototype/brand 分支、改 `contentClass` 仅做组件级对齐 |
+| 1.12.2 | 2026-09-27 | 采集页整页复刻原型：脱离标准 `Shell` 改用 proto 外壳，新增 `public/css/prototype.css` 在 `.proto-page` 作用域对齐原型组件值 |
+| 1.12.1 | 2026-09-26 | 合并 OpenSpec 索引入 `docs/`（删 `openspec/`）；应用 UI 对齐原型、首页重构 |
 | 1.12.0 | 2026-09-26 | 文档收口：合并 `docs/TASKS.md` 入本文档 §5，删除 TASKS.md 文件；§9 Roadmap 改写为指向 §5；版本升级 MINOR 至 1.12.0 |
 | 1.11.16 | 2026-09-26 | 新增覆盖率/缺口看板（T22）：`/coverage` 路由 + 服务端 `coverage-report.ts` 实时统计整体覆盖率、按文件细分、Top-N 缺口、重复/冲突检测；导航新增「覆盖率」项 |
 | 1.11.15 | 2026-09-25 | 采集工具重构（T36）：`collect-dict.cjs` 抽 `analyzeTexts`、`scripts/dict-report.cjs` 写词条级 diff 历史、抽 `merge-dictionaries.cjs`、补单测 |
@@ -359,7 +387,7 @@ src/main.js                        ← 唯一入口
 
 ## 9. 规划中（Roadmap）：采集成功率/覆盖率与词典管理增强
 
-> 当前采集链路（v1.10.2）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
+> 当前采集链路（v1.12.4）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，
 > 其中 **T12 提取精准化、T13 SPA/动态适配、T14 单页鲁棒性、T15 并发限流已落地**（详见 §4.8）；
 > **T26（`extractPageText` 经 `page.evaluate` 序列化丢失辅助、整批提取 0 文本回归）已在 v1.10.2 修复**；**覆盖率度量（T17）+ 覆盖率/缺口看板（T22）已交付**；T19–T25 数据层（审阅/合并/历史/导入导出/搜索批量）已就绪，剩工作台 UI 接入与 localStorage 持久化，以及 T18 采集源扩展、T21 翻译建议。
 >
