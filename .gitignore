@@ -31,3 +31,9 @@ github_string_fetcher.js
 # 仅保留 npm 单一锁文件，避免 bun/pnpm 锁漂移
 bun.lock
 
+# 运行/调试瞬时产物（采集工具与 Playwright CLI 检查生成，勿提交）
+.playwright-cli/
+devserver.log
+collect-page.png
+docs/untranslated-terms.txt
+
