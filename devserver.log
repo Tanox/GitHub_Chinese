@@ -1,0 +1,35 @@
+
+> github-chinese@1.12.3 dev
+> next dev -p 3100
+
+▲ Next.js 16.3.5 (Turbopack)
+- Local:         http://localhost:3100
+- Network:       http://192.168.48.1:3100
+✓ Ready in 1522ms
+✓ Running next.config.mjs took 56ms
+
+○ Compiling / ...
+ GET / 200 in 5.1s (next.js: 4.1s, proxy.ts: 492ms, application-code: 510ms)
+[browser] eval() is not supported in this environment. If this page was served with a `Content-Security-Policy` header, make sure that `unsafe-eval` is included. React requires eval() in development mode for various debugging features like reconstructing callstacks from a different environment.
+React will never use eval() in production mode 
+ POST /api/collect 200 in 1776ms (next.js: 366ms, proxy.ts: 14ms, application-code: 1397ms)
+ GET / 200 in 88ms (next.js: 23ms, proxy.ts: 13ms, application-code: 52ms)
+✓ Compiled in 2.3s
+ GET / 200 in 2.3s (next.js: 2.2s, proxy.ts: 22ms, application-code: 114ms)
+ GET / 200 in 151ms (next.js: 9ms, proxy.ts: 11ms, application-code: 131ms)
+ GET / 200 in 185ms (next.js: 9ms, proxy.ts: 15ms, application-code: 160ms)
+ GET / 200 in 205ms (next.js: 13ms, proxy.ts: 14ms, application-code: 177ms)
+ GET / 200 in 256ms (next.js: 21ms, proxy.ts: 15ms, application-code: 220ms)
+ GET / 200 in 287ms (next.js: 11ms, proxy.ts: 15ms, application-code: 260ms)
+ GET / 200 in 163ms (next.js: 13ms, proxy.ts: 27ms, application-code: 123ms)
+ GET / 200 in 388ms (next.js: 81ms, proxy.ts: 12ms, application-code: 296ms)
+ GET / 200 in 145ms (next.js: 27ms, proxy.ts: 13ms, application-code: 105ms)
+ GET / 200 in 125ms (next.js: 10ms, proxy.ts: 11ms, application-code: 104ms)
+ GET / 200 in 133ms (next.js: 11ms, proxy.ts: 15ms, application-code: 106ms)
+ GET / 200 in 138ms (next.js: 12ms, proxy.ts: 8ms, application-code: 118ms)
+ GET / 200 in 145ms (next.js: 9ms, proxy.ts: 10ms, application-code: 126ms)
+ GET / 200 in 148ms (next.js: 13ms, proxy.ts: 10ms, application-code: 125ms)
+ GET / 200 in 156ms (next.js: 12ms, proxy.ts: 15ms, application-code: 128ms)
+ GET / 200 in 150ms (next.js: 8ms, proxy.ts: 11ms, application-code: 131ms)
+ GET / 200 in 122ms (next.js: 10ms, proxy.ts: 13ms, application-code: 99ms)
+ GET / 200 in 54ms (next.js: 10ms, proxy.ts: 9ms, application-code: 35ms)

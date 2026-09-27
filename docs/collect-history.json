@@ -4,5 +4,2315 @@
     "total": 0,
     "added": 0,
     "removed": 0
+  },
+  {
+    "time": "2026-09-27T07:43:14.379Z",
+    "total": 459,
+    "added": 459,
+    "removed": 0,
+    "changed": 0,
+    "diff": {
+      "added": [
+        {
+          "term": "Skip to content",
+          "translation": "跳转到内容"
+        },
+        {
+          "term": "You signed in with another tab or window. Reload to refresh your session.",
+          "translation": "您已在另一个标签页或窗口中登录。请重新加载以刷新您的会话。"
+        },
+        {
+          "term": "Reload",
+          "translation": "重新加载"
+        },
+        {
+          "term": "You signed out in another tab or window. Reload to refresh your session.",
+          "translation": "您已在另一个标签页或窗口中登出。请重新加载以刷新您的会话。"
+        },
+        {
+          "term": "Dismiss alert",
+          "translation": "关闭警告"
+        },
+        {
+          "term": "Uh oh!\n\n              There was an error while loading. Please reload this page.",
+          "translation": "哎呀！\n\n              加载时发生错误。请重新加载此页面。"
+        },
+        {
+          "term": "Uh oh!",
+          "translation": "哎呀！"
+        },
+        {
+          "term": "There was an error while loading. Please reload this page.",
+          "translation": "加载时发生错误。请重新加载此页面。"
+        },
+        {
+          "term": "Please reload this page",
+          "translation": "请重新加载此页面"
+        },
+        {
+          "term": "Sign in with a passkey",
+          "translation": "使用通行密钥登录"
+        },
+        {
+          "term": "Terms",
+          "translation": "条款"
+        },
+        {
+          "term": "Privacy",
+          "translation": "隐私"
+        },
+        {
+          "term": "Docs",
+          "translation": "文档"
+        },
+        {
+          "term": "Manage cookies",
+          "translation": "管理 Cookie"
+        },
+        {
+          "term": "Do not share my personal information",
+          "translation": "不要分享我的个人信息"
+        },
+        {
+          "term": "You can't perform that action at this time.",
+          "translation": "您现在无法执行此操作。"
+        },
+        {
+          "term": "New issue",
+          "translation": "新建问题"
+        },
+        {
+          "term": "Open a blank issue",
+          "translation": "开启空白问题"
+        },
+        {
+          "term": "Get started",
+          "translation": "开始"
+        },
+        {
+          "term": "Submit new issue",
+          "translation": "提交新问题"
+        },
+        {
+          "term": "Title",
+          "translation": "标题"
+        },
+        {
+          "term": "Add title",
+          "translation": "添加标题"
+        },
+        {
+          "term": "Body",
+          "translation": "正文"
+        },
+        {
+          "term": "Add body",
+          "translation": "添加正文"
+        },
+        {
+          "term": "Assignees",
+          "translation": "负责人"
+        },
+        {
+          "term": "Labels",
+          "translation": "标签"
+        },
+        {
+          "term": "Milestone",
+          "translation": "里程碑"
+        },
+        {
+          "term": "No milestone",
+          "translation": "无里程碑"
+        },
+        {
+          "term": "No assignees",
+          "translation": "无负责人"
+        },
+        {
+          "term": "No labels",
+          "translation": "无标签"
+        },
+        {
+          "term": "Nobody assigned",
+          "translation": "未分配"
+        },
+        {
+          "term": "Add labels",
+          "translation": "添加标签"
+        },
+        {
+          "term": "Set milestone",
+          "translation": "设置里程碑"
+        },
+        {
+          "term": "Set assignees",
+          "translation": "设置负责人"
+        },
+        {
+          "term": "Set project",
+          "translation": "设置项目"
+        },
+        {
+          "term": "Open",
+          "translation": "打开"
+        },
+        {
+          "term": "Closed",
+          "translation": "已关闭"
+        },
+        {
+          "term": "Closed as completed",
+          "translation": "已关闭（已完成）"
+        },
+        {
+          "term": "Closed as not planned",
+          "translation": "已关闭（未计划）"
+        },
+        {
+          "term": "Close issue",
+          "translation": "关闭问题"
+        },
+        {
+          "term": "Close as completed",
+          "translation": "标记为已完成"
+        },
+        {
+          "term": "Close as not planned",
+          "translation": "标记为未计划"
+        },
+        {
+          "term": "Reopen issue",
+          "translation": "重新打开问题"
+        },
+        {
+          "term": "Edit issue",
+          "translation": "编辑问题"
+        },
+        {
+          "term": "Delete issue",
+          "translation": "删除问题"
+        },
+        {
+          "term": "Transfer issue",
+          "translation": "转移问题"
+        },
+        {
+          "term": "Pin issue",
+          "translation": "置顶问题"
+        },
+        {
+          "term": "Unpin issue",
+          "translation": "取消置顶问题"
+        },
+        {
+          "term": "Lock conversation",
+          "translation": "锁定对话"
+        },
+        {
+          "term": "Unlock conversation",
+          "translation": "解锁对话"
+        },
+        {
+          "term": "bug",
+          "translation": "错误"
+        },
+        {
+          "term": "documentation",
+          "translation": "文档"
+        },
+        {
+          "term": "duplicate",
+          "translation": "重复"
+        },
+        {
+          "term": "enhancement",
+          "translation": "增强"
+        },
+        {
+          "term": "good first issue",
+          "translation": "适合新手"
+        },
+        {
+          "term": "help wanted",
+          "translation": "需要帮助"
+        },
+        {
+          "term": "invalid",
+          "translation": "无效"
+        },
+        {
+          "term": "question",
+          "translation": "问题"
+        },
+        {
+          "term": "wontfix",
+          "translation": "不予修复"
+        },
+        {
+          "term": "Save",
+          "translation": "保存"
+        },
+        {
+          "term": "Cancel",
+          "translation": "取消"
+        },
+        {
+          "term": "Edit",
+          "translation": "编辑"
+        },
+        {
+          "term": "Delete",
+          "translation": "删除"
+        },
+        {
+          "term": "Create",
+          "translation": "创建"
+        },
+        {
+          "term": "Update",
+          "translation": "更新"
+        },
+        {
+          "term": "Submit",
+          "translation": "提交"
+        },
+        {
+          "term": "Confirm",
+          "translation": "确认"
+        },
+        {
+          "term": "Close",
+          "translation": "关闭"
+        },
+        {
+          "term": "Save changes",
+          "translation": "保存更改"
+        },
+        {
+          "term": "Cancel changes",
+          "translation": "取消更改"
+        },
+        {
+          "term": "Success",
+          "translation": "成功"
+        },
+        {
+          "term": "Failure",
+          "translation": "失败"
+        },
+        {
+          "term": "Error",
+          "translation": "错误"
+        },
+        {
+          "term": "Pending",
+          "translation": "待定"
+        },
+        {
+          "term": "In progress",
+          "translation": "进行中"
+        },
+        {
+          "term": "Queued",
+          "translation": "排队中"
+        },
+        {
+          "term": "Running",
+          "translation": "运行中"
+        },
+        {
+          "term": "Completed",
+          "translation": "已完成"
+        },
+        {
+          "term": "Skipped",
+          "translation": "已跳过"
+        },
+        {
+          "term": "Cancelled",
+          "translation": "已取消"
+        },
+        {
+          "term": "Action required",
+          "translation": "需要操作"
+        },
+        {
+          "term": "Waiting",
+          "translation": "等待中"
+        },
+        {
+          "term": "On hold",
+          "translation": "暂停"
+        },
+        {
+          "term": "About this repository",
+          "translation": "关于此仓库"
+        },
+        {
+          "term": "Readme",
+          "translation": "README"
+        },
+        {
+          "term": "License",
+          "translation": "许可证"
+        },
+        {
+          "term": "Contributing",
+          "translation": "贡献指南"
+        },
+        {
+          "term": "Code of conduct",
+          "translation": "行为准则"
+        },
+        {
+          "term": "Security policy",
+          "translation": "安全政策"
+        },
+        {
+          "term": "Website",
+          "translation": "网站"
+        },
+        {
+          "term": "Languages",
+          "translation": "语言"
+        },
+        {
+          "term": "View license",
+          "translation": "查看许可证"
+        },
+        {
+          "term": "View documentation",
+          "translation": "查看文档"
+        },
+        {
+          "term": "Contribute",
+          "translation": "贡献"
+        },
+        {
+          "term": "Report a bug",
+          "translation": "报告问题"
+        },
+        {
+          "term": "Request a feature",
+          "translation": "请求功能"
+        },
+        {
+          "term": "Get help",
+          "translation": "获取帮助"
+        },
+        {
+          "term": "Sponsor",
+          "translation": "赞助"
+        },
+        {
+          "term": "Sponsors",
+          "translation": "赞助者"
+        },
+        {
+          "term": "Sponsor this project",
+          "translation": "赞助此项目"
+        },
+        {
+          "term": "Become a sponsor",
+          "translation": "成为赞助者"
+        },
+        {
+          "term": "View sponsors",
+          "translation": "查看赞助者"
+        },
+        {
+          "term": "Quick setup — if you've done this kind of thing before",
+          "translation": "快速设置 — 如果您之前做过这种事"
+        },
+        {
+          "term": "Get started by creating a new file or uploading an existing file. We recommend every repository include a README, LICENSE, and .gitignore.",
+          "translation": "通过创建新文件或上传现有文件开始。我们建议每个仓库都包含 README、LICENSE 和 .gitignore。"
+        },
+        {
+          "term": "…or create a new repository on the command line",
+          "translation": "…或在命令行上创建新仓库"
+        },
+        {
+          "term": "…or push an existing repository from the command line",
+          "translation": "…或从命令行推送现有仓库"
+        },
+        {
+          "term": "…or import code from another repository",
+          "translation": "…或从另一个仓库导入代码"
+        },
+        {
+          "term": "You can initialize this repository with code from a Subversion, Mercurial, or TFS project.",
+          "translation": "您可以使用 Subversion、Mercurial 或 TFS 项目的代码初始化此仓库。"
+        },
+        {
+          "term": "Import code",
+          "translation": "导入代码"
+        },
+        {
+          "term": "Overview",
+          "translation": "概览"
+        },
+        {
+          "term": "Stars",
+          "translation": "星标"
+        },
+        {
+          "term": "Followers",
+          "translation": "关注者"
+        },
+        {
+          "term": "Following",
+          "translation": "关注中"
+        },
+        {
+          "term": "Achievements",
+          "translation": "成就"
+        },
+        {
+          "term": "Pinned",
+          "translation": "置顶"
+        },
+        {
+          "term": "Contribution settings",
+          "translation": "贡献设置"
+        },
+        {
+          "term": "Contribution activity",
+          "translation": "贡献活动"
+        },
+        {
+          "term": "Yearly contributions",
+          "translation": "年度贡献"
+        },
+        {
+          "term": "Contribution graph",
+          "translation": "贡献图"
+        },
+        {
+          "term": "The future of building happens together",
+          "translation": "共同构建未来"
+        },
+        {
+          "term": "Try GitHub Copilot",
+          "translation": "尝试 GitHub Copilot"
+        },
+        {
+          "term": "GitHub features",
+          "translation": "GitHub 功能"
+        },
+        {
+          "term": "GitHub customers",
+          "translation": "GitHub 客户"
+        },
+        {
+          "term": "Accelerate your entire workflow",
+          "translation": "加速您的工作流程"
+        },
+        {
+          "term": "Automate your path to production",
+          "translation": "自动化您的生产之路"
+        },
+        {
+          "term": "Code instantly from anywhere",
+          "translation": "随时随地即时编写代码"
+        },
+        {
+          "term": "Keep momentum on the go",
+          "translation": "随时保持动力"
+        },
+        {
+          "term": "Shape your toolchain",
+          "translation": "塑造您的工具链"
+        },
+        {
+          "term": "Built-in application security where found means fixed",
+          "translation": "内置应用安全，发现即修复"
+        },
+        {
+          "term": "Work together, achieve more",
+          "translation": "协作共进"
+        },
+        {
+          "term": "Millions of developers and businesses call GitHub home",
+          "translation": "数百万开发者与业务选择 GitHub"
+        },
+        {
+          "term": "Technology",
+          "translation": "科技"
+        },
+        {
+          "term": "Automotive",
+          "translation": "汽车"
+        },
+        {
+          "term": "Figma streamlines development and strengthens security",
+          "translation": "Figma 简化开发并加强安全"
+        },
+        {
+          "term": "Mercedes-Benz standardizes source code and automates onboarding",
+          "translation": "梅赛德斯-奔驰标准化源代码并自动化入职流程"
+        },
+        {
+          "term": "Mercado Libre cuts coding time by 50%",
+          "translation": "Mercado Libre 将编码时间缩短 50%"
+        },
+        {
+          "term": "Automate any workflow",
+          "translation": "自动化任何工作流"
+        },
+        {
+          "term": "Packages",
+          "translation": "包"
+        },
+        {
+          "term": "Host and manage packages",
+          "translation": "托管和管理包"
+        },
+        {
+          "term": "Find and fix vulnerabilities",
+          "translation": "查找和修复漏洞"
+        },
+        {
+          "term": "Instant dev environments",
+          "translation": "即时开发环境"
+        },
+        {
+          "term": "Copilot",
+          "translation": "Copilot"
+        },
+        {
+          "term": "Write better code with AI",
+          "translation": "用 AI 写出更好的代码"
+        },
+        {
+          "term": "Code review",
+          "translation": "代码审查"
+        },
+        {
+          "term": "Manage code changes",
+          "translation": "管理代码变更"
+        },
+        {
+          "term": "Plan and track work",
+          "translation": "计划和跟踪工作"
+        },
+        {
+          "term": "Collaborate outside of code",
+          "translation": "代码外的协作"
+        },
+        {
+          "term": "Enterprise platform",
+          "translation": "企业平台"
+        },
+        {
+          "term": "AI-powered developer platform",
+          "translation": "人工智能驱动的开发者平台"
+        },
+        {
+          "term": "Available add-ons",
+          "translation": "可用附加组件"
+        },
+        {
+          "term": "Copilot for business",
+          "translation": "商业版 Copilot"
+        },
+        {
+          "term": "Enterprise-grade AI features",
+          "translation": "企业级人工智能功能"
+        },
+        {
+          "term": "Premium Support",
+          "translation": "高级支持"
+        },
+        {
+          "term": "Enterprise-grade 24/7 support",
+          "translation": "企业级 24/7 支持"
+        },
+        {
+          "term": "Pricing",
+          "translation": "价格"
+        },
+        {
+          "term": "View all features",
+          "translation": "查看全部功能"
+        },
+        {
+          "term": "By company size",
+          "translation": "按公司规模"
+        },
+        {
+          "term": "Small and medium teams",
+          "translation": "中小型团队"
+        },
+        {
+          "term": "By use case",
+          "translation": "按使用场景"
+        },
+        {
+          "term": "App Modernization",
+          "translation": "应用现代化"
+        },
+        {
+          "term": "DevOps",
+          "translation": "开发运维"
+        },
+        {
+          "term": "CI/CD",
+          "translation": "持续集成/持续部署"
+        },
+        {
+          "term": "View all use cases",
+          "translation": "查看全部使用场景"
+        },
+        {
+          "term": "By industry",
+          "translation": "按行业"
+        },
+        {
+          "term": "Financial services",
+          "translation": "金融服务"
+        },
+        {
+          "term": "View all industries",
+          "translation": "查看全部行业"
+        },
+        {
+          "term": "View all solutions",
+          "translation": "查看全部解决方案"
+        },
+        {
+          "term": "AI",
+          "translation": "人工智能"
+        },
+        {
+          "term": "Software Development",
+          "translation": "软件开发"
+        },
+        {
+          "term": "View all",
+          "translation": "查看全部"
+        },
+        {
+          "term": "Learning Pathways",
+          "translation": "学习路径"
+        },
+        {
+          "term": "Events & Webinars",
+          "translation": "活动与网络研讨会"
+        },
+        {
+          "term": "Ebooks & Whitepapers",
+          "translation": "电子书与白皮书"
+        },
+        {
+          "term": "Customer Stories",
+          "translation": "客户案例"
+        },
+        {
+          "term": "Executive Insights",
+          "translation": "高管见解"
+        },
+        {
+          "term": "Open Source",
+          "translation": "开源"
+        },
+        {
+          "term": "The ReadME Project",
+          "translation": "ReadME 项目"
+        },
+        {
+          "term": "MCP Registry",
+          "translation": "MCP 注册表"
+        },
+        {
+          "term": "Organization",
+          "translation": "组织"
+        },
+        {
+          "term": "People",
+          "translation": "人员"
+        },
+        {
+          "term": "Teams",
+          "translation": "团队"
+        },
+        {
+          "term": "Repositories",
+          "translation": "仓库"
+        },
+        {
+          "term": "Members",
+          "translation": "成员"
+        },
+        {
+          "term": "Outside collaborators",
+          "translation": "外部协作者"
+        },
+        {
+          "term": "Pending invitations",
+          "translation": "待处理邀请"
+        },
+        {
+          "term": "Invite member",
+          "translation": "邀请成员"
+        },
+        {
+          "term": "Invite outside collaborator",
+          "translation": "邀请外部协作者"
+        },
+        {
+          "term": "Topics",
+          "translation": "主题"
+        },
+        {
+          "term": "Trending",
+          "translation": "趋势"
+        },
+        {
+          "term": "Collections",
+          "translation": "收藏集"
+        },
+        {
+          "term": "Events",
+          "translation": "活动"
+        },
+        {
+          "term": "Trending repositories",
+          "translation": "趋势仓库"
+        },
+        {
+          "term": "Trending developers",
+          "translation": "趋势开发者"
+        },
+        {
+          "term": "Explore repositories",
+          "translation": "探索仓库"
+        },
+        {
+          "term": "Curated lists and insight into burgeoning industries, topics, and communities.",
+          "translation": "精选列表和对新兴行业、主题和社区的洞察。"
+        },
+        {
+          "term": "Load more…",
+          "translation": "加载更多…"
+        },
+        {
+          "term": "Notifications",
+          "translation": "通知"
+        },
+        {
+          "term": "Mark all as read",
+          "translation": "全部标记为已读"
+        },
+        {
+          "term": "Mark as read",
+          "translation": "标记为已读"
+        },
+        {
+          "term": "Mark as unread",
+          "translation": "标记为未读"
+        },
+        {
+          "term": "Unread",
+          "translation": "未读"
+        },
+        {
+          "term": "Read",
+          "translation": "已读"
+        },
+        {
+          "term": "All notifications",
+          "translation": "所有通知"
+        },
+        {
+          "term": "Watching",
+          "translation": "关注中"
+        },
+        {
+          "term": "Participating",
+          "translation": "参与中"
+        },
+        {
+          "term": "Done",
+          "translation": "完成"
+        },
+        {
+          "term": "No new notifications",
+          "translation": "没有新通知"
+        },
+        {
+          "term": "Contact",
+          "translation": "联系"
+        },
+        {
+          "term": "Blog",
+          "translation": "博客"
+        },
+        {
+          "term": "Status",
+          "translation": "状态"
+        },
+        {
+          "term": "About",
+          "translation": "关于"
+        },
+        {
+          "term": "API",
+          "translation": "API"
+        },
+        {
+          "term": "Training",
+          "translation": "培训"
+        },
+        {
+          "term": "Shop",
+          "translation": "商店"
+        },
+        {
+          "term": "You're all set!",
+          "translation": "一切就绪！"
+        },
+        {
+          "term": "The repository has been created.",
+          "translation": "仓库已创建。"
+        },
+        {
+          "term": "The file has been added.",
+          "translation": "文件已添加。"
+        },
+        {
+          "term": "The file has been updated.",
+          "translation": "文件已更新。"
+        },
+        {
+          "term": "The file has been deleted.",
+          "translation": "文件已删除。"
+        },
+        {
+          "term": "The pull request has been created.",
+          "translation": "拉取请求已创建。"
+        },
+        {
+          "term": "The issue has been created.",
+          "translation": "问题已创建。"
+        },
+        {
+          "term": "The comment has been added.",
+          "translation": "评论已添加。"
+        },
+        {
+          "term": "The issue has been closed.",
+          "translation": "问题已关闭。"
+        },
+        {
+          "term": "The issue has been reopened.",
+          "translation": "问题已重新打开。"
+        },
+        {
+          "term": "The pull request has been closed.",
+          "translation": "拉取请求已关闭。"
+        },
+        {
+          "term": "The pull request has been reopened.",
+          "translation": "拉取请求已重新打开。"
+        },
+        {
+          "term": "The pull request has been merged.",
+          "translation": "拉取请求已合并。"
+        },
+        {
+          "term": "The branch has been deleted.",
+          "translation": "分支已删除。"
+        },
+        {
+          "term": "The branch has been restored.",
+          "translation": "分支已恢复。"
+        },
+        {
+          "term": "Copied!",
+          "translation": "已复制！"
+        },
+        {
+          "term": "Navigation Menu",
+          "translation": "导航菜单"
+        },
+        {
+          "term": "Toggle navigation",
+          "translation": "切换导航"
+        },
+        {
+          "term": "Sign in",
+          "translation": "登录"
+        },
+        {
+          "term": "Sign up",
+          "translation": "注册"
+        },
+        {
+          "term": "Sign out",
+          "translation": "登出"
+        },
+        {
+          "term": "Set status",
+          "translation": "设置状态"
+        },
+        {
+          "term": "Clear status",
+          "translation": "清除状态"
+        },
+        {
+          "term": "Set status message",
+          "translation": "设置状态消息"
+        },
+        {
+          "term": "Set status emoji",
+          "translation": "设置状态表情"
+        },
+        {
+          "term": "Set status until",
+          "translation": "设置状态至"
+        },
+        {
+          "term": "Available",
+          "translation": "有空"
+        },
+        {
+          "term": "Busy",
+          "translation": "忙碌"
+        },
+        {
+          "term": "Do not disturb",
+          "translation": "请勿打扰"
+        },
+        {
+          "term": "In a meeting",
+          "translation": "会议中"
+        },
+        {
+          "term": "Commuting",
+          "translation": "通勤中"
+        },
+        {
+          "term": "Sick",
+          "translation": "生病"
+        },
+        {
+          "term": "Vacationing",
+          "translation": "休假中"
+        },
+        {
+          "term": "Working remotely",
+          "translation": "远程工作中"
+        },
+        {
+          "term": "Focusing",
+          "translation": "专注中"
+        },
+        {
+          "term": "Presenting",
+          "translation": "演示中"
+        },
+        {
+          "term": "Custom status",
+          "translation": "自定义状态"
+        },
+        {
+          "term": "What's on your mind?",
+          "translation": "你在想什么？"
+        },
+        {
+          "term": "Never",
+          "translation": "从不"
+        },
+        {
+          "term": "Today",
+          "translation": "今天"
+        },
+        {
+          "term": "This week",
+          "translation": "本周"
+        },
+        {
+          "term": "Custom date",
+          "translation": "自定义日期"
+        },
+        {
+          "term": "Your profile",
+          "translation": "您的个人资料"
+        },
+        {
+          "term": "Your repositories",
+          "translation": "您的仓库"
+        },
+        {
+          "term": "Your projects",
+          "translation": "您的项目"
+        },
+        {
+          "term": "Your stars",
+          "translation": "您的星标"
+        },
+        {
+          "term": "Your gists",
+          "translation": "您的代码片段"
+        },
+        {
+          "term": "Feature preview",
+          "translation": "功能预览"
+        },
+        {
+          "term": "Help",
+          "translation": "帮助"
+        },
+        {
+          "term": "Settings",
+          "translation": "设置"
+        },
+        {
+          "term": "New",
+          "translation": "新建"
+        },
+        {
+          "term": "New repository",
+          "translation": "新建仓库"
+        },
+        {
+          "term": "Import repository",
+          "translation": "导入仓库"
+        },
+        {
+          "term": "New organization",
+          "translation": "新建组织"
+        },
+        {
+          "term": "New project",
+          "translation": "新建项目"
+        },
+        {
+          "term": "New gist",
+          "translation": "新建代码片段"
+        },
+        {
+          "term": "Pull requests",
+          "translation": "拉取请求"
+        },
+        {
+          "term": "Issues",
+          "translation": "问题"
+        },
+        {
+          "term": "Codespaces",
+          "translation": "代码空间"
+        },
+        {
+          "term": "Explore",
+          "translation": "探索"
+        },
+        {
+          "term": "Marketplace",
+          "translation": "应用市场"
+        },
+        {
+          "term": "Search or jump to...",
+          "translation": "搜索或跳转到..."
+        },
+        {
+          "term": "Search",
+          "translation": "搜索"
+        },
+        {
+          "term": "Clear",
+          "translation": "清除"
+        },
+        {
+          "term": "Search syntax tips",
+          "translation": "搜索语法提示"
+        },
+        {
+          "term": "Provide feedback",
+          "translation": "提供反馈"
+        },
+        {
+          "term": "We read every piece of feedback, and take your input very seriously.",
+          "translation": "我们会阅读每一条反馈，并非常重视您的意见。"
+        },
+        {
+          "term": "Submit feedback",
+          "translation": "提交反馈"
+        },
+        {
+          "term": "Saved searches",
+          "translation": "已保存的搜索"
+        },
+        {
+          "term": "Use saved searches to filter your results more quickly",
+          "translation": "使用已保存的搜索更快地筛选结果"
+        },
+        {
+          "term": "Name",
+          "translation": "名称"
+        },
+        {
+          "term": "Query",
+          "translation": "查询"
+        },
+        {
+          "term": "To see all available qualifiers, see our documentation.",
+          "translation": "查看我们的文档了解所有可用的限定符。"
+        },
+        {
+          "term": "Create saved search",
+          "translation": "创建已保存的搜索"
+        },
+        {
+          "term": "Resetting focus",
+          "translation": "重置焦点"
+        },
+        {
+          "term": "Create pull request",
+          "translation": "创建拉取请求"
+        },
+        {
+          "term": "Draft pull request",
+          "translation": "草稿拉取请求"
+        },
+        {
+          "term": "Create draft pull request",
+          "translation": "创建草稿拉取请求"
+        },
+        {
+          "term": "Pull request",
+          "translation": "拉取请求"
+        },
+        {
+          "term": "Open a pull request",
+          "translation": "创建拉取请求"
+        },
+        {
+          "term": "Compare changes",
+          "translation": "比较更改"
+        },
+        {
+          "term": "Choose a branch",
+          "translation": "选择分支"
+        },
+        {
+          "term": "base:",
+          "translation": "基础分支:"
+        },
+        {
+          "term": "compare:",
+          "translation": "比较分支:"
+        },
+        {
+          "term": "Ability to merge",
+          "translation": "合并能力"
+        },
+        {
+          "term": "This branch has no conflicts with the base branch",
+          "translation": "此分支与基础分支没有冲突"
+        },
+        {
+          "term": "This branch has conflicts that must be resolved",
+          "translation": "此分支有必须解决的冲突"
+        },
+        {
+          "term": "Resolve conflicts",
+          "translation": "解决冲突"
+        },
+        {
+          "term": "Merging can be performed automatically.",
+          "translation": "可以自动执行合并。"
+        },
+        {
+          "term": "Merge pull request",
+          "translation": "合并拉取请求"
+        },
+        {
+          "term": "Squash and merge",
+          "translation": "压缩并合并"
+        },
+        {
+          "term": "Rebase and merge",
+          "translation": "变基并合并"
+        },
+        {
+          "term": "Create merge commit",
+          "translation": "创建合并提交"
+        },
+        {
+          "term": "Confirm merge",
+          "translation": "确认合并"
+        },
+        {
+          "term": "Restore branch",
+          "translation": "恢复分支"
+        },
+        {
+          "term": "Conversation",
+          "translation": "对话"
+        },
+        {
+          "term": "Files changed",
+          "translation": "文件已更改"
+        },
+        {
+          "term": "Checks",
+          "translation": "检查"
+        },
+        {
+          "term": "Review required",
+          "translation": "需要审查"
+        },
+        {
+          "term": "Write",
+          "translation": "编写"
+        },
+        {
+          "term": "Leave a comment",
+          "translation": "发表评论"
+        },
+        {
+          "term": "Write a review",
+          "translation": "撰写审查意见"
+        },
+        {
+          "term": "Suggest a change",
+          "translation": "建议更改"
+        },
+        {
+          "term": "Attach files by dragging & dropping, selecting or pasting them.",
+          "translation": "通过拖放、选择或粘贴来附加文件。"
+        },
+        {
+          "term": "Styling with Markdown is supported",
+          "translation": "支持 Markdown 样式"
+        },
+        {
+          "term": "Start a review",
+          "translation": "开始审查"
+        },
+        {
+          "term": "Add your review",
+          "translation": "添加您的审查"
+        },
+        {
+          "term": "Submit review",
+          "translation": "提交审查"
+        },
+        {
+          "term": "Approve",
+          "translation": "批准"
+        },
+        {
+          "term": "Request changes",
+          "translation": "请求更改"
+        },
+        {
+          "term": "Comment",
+          "translation": "评论"
+        },
+        {
+          "term": "Approved",
+          "translation": "已批准"
+        },
+        {
+          "term": "Changes requested",
+          "translation": "已请求更改"
+        },
+        {
+          "term": "Commented",
+          "translation": "已评论"
+        },
+        {
+          "term": "Pending review",
+          "translation": "待审查"
+        },
+        {
+          "term": "Review has been dismissed",
+          "translation": "审查已被驳回"
+        },
+        {
+          "term": "Code",
+          "translation": "代码"
+        },
+        {
+          "term": "Discussions",
+          "translation": "讨论"
+        },
+        {
+          "term": "Actions",
+          "translation": "Actions"
+        },
+        {
+          "term": "Wiki",
+          "translation": "维基"
+        },
+        {
+          "term": "Security",
+          "translation": "安全"
+        },
+        {
+          "term": "Insights",
+          "translation": "洞察"
+        },
+        {
+          "term": "Projects",
+          "translation": "项目"
+        },
+        {
+          "term": "Use this template",
+          "translation": "使用此模板"
+        },
+        {
+          "term": "Generate new repository",
+          "translation": "生成新仓库"
+        },
+        {
+          "term": "Use this template to create a new repository",
+          "translation": "使用此模板创建新仓库"
+        },
+        {
+          "term": "Include all branches",
+          "translation": "包含所有分支"
+        },
+        {
+          "term": "Star",
+          "translation": "星标"
+        },
+        {
+          "term": "Unstar",
+          "translation": "取消星标"
+        },
+        {
+          "term": "Fork",
+          "translation": "复刻"
+        },
+        {
+          "term": "Watch",
+          "translation": "关注"
+        },
+        {
+          "term": "Unwatch",
+          "translation": "取消关注"
+        },
+        {
+          "term": "Owner",
+          "translation": "所有者"
+        },
+        {
+          "term": "Repository name",
+          "translation": "仓库名称"
+        },
+        {
+          "term": "Description (optional)",
+          "translation": "描述（可选）"
+        },
+        {
+          "term": "Public",
+          "translation": "公开"
+        },
+        {
+          "term": "Anyone on the internet can see this repository. You choose who can commit.",
+          "translation": "互联网上的任何人都可以看到此仓库。您选择谁可以提交。"
+        },
+        {
+          "term": "Private",
+          "translation": "私有"
+        },
+        {
+          "term": "You choose who can see and commit to this repository.",
+          "translation": "您选择谁可以查看和提交到此仓库。"
+        },
+        {
+          "term": "Create repository",
+          "translation": "创建仓库"
+        },
+        {
+          "term": "Add a README file",
+          "translation": "添加 README 文件"
+        },
+        {
+          "term": "Add .gitignore",
+          "translation": "添加 .gitignore"
+        },
+        {
+          "term": "Choose a license",
+          "translation": "选择许可证"
+        },
+        {
+          "term": "Add file",
+          "translation": "添加文件"
+        },
+        {
+          "term": "Create new file",
+          "translation": "创建新文件"
+        },
+        {
+          "term": "Upload files",
+          "translation": "上传文件"
+        },
+        {
+          "term": "Find file",
+          "translation": "查找文件"
+        },
+        {
+          "term": "Go to file",
+          "translation": "前往文件"
+        },
+        {
+          "term": "Add directory",
+          "translation": "添加目录"
+        },
+        {
+          "term": "Edit file",
+          "translation": "编辑文件"
+        },
+        {
+          "term": "Delete file",
+          "translation": "删除文件"
+        },
+        {
+          "term": "Copy path",
+          "translation": "复制路径"
+        },
+        {
+          "term": "Copy file",
+          "translation": "复制文件"
+        },
+        {
+          "term": "Download",
+          "translation": "下载"
+        },
+        {
+          "term": "View raw",
+          "translation": "查看原始文件"
+        },
+        {
+          "term": "Blame",
+          "translation": "责备"
+        },
+        {
+          "term": "History",
+          "translation": "历史"
+        },
+        {
+          "term": "Preview",
+          "translation": "预览"
+        },
+        {
+          "term": "Preview changes",
+          "translation": "预览更改"
+        },
+        {
+          "term": "No changes",
+          "translation": "无更改"
+        },
+        {
+          "term": "Edit new file",
+          "translation": "编辑新文件"
+        },
+        {
+          "term": "Branch",
+          "translation": "分支"
+        },
+        {
+          "term": "Switch branches",
+          "translation": "切换分支"
+        },
+        {
+          "term": "Find or create branch",
+          "translation": "查找或创建分支"
+        },
+        {
+          "term": "Create branch",
+          "translation": "创建分支"
+        },
+        {
+          "term": "Delete branch",
+          "translation": "删除分支"
+        },
+        {
+          "term": "Rename branch",
+          "translation": "重命名分支"
+        },
+        {
+          "term": "Switch to default branch",
+          "translation": "切换到默认分支"
+        },
+        {
+          "term": "View more branches",
+          "translation": "查看更多分支"
+        },
+        {
+          "term": "Showing recent branches",
+          "translation": "显示最近的分支"
+        },
+        {
+          "term": "Default branch",
+          "translation": "默认分支"
+        },
+        {
+          "term": "Commit changes",
+          "translation": "提交更改"
+        },
+        {
+          "term": "Commit directly to the main branch.",
+          "translation": "直接提交到 main 分支。"
+        },
+        {
+          "term": "Create a new branch for this commit and start a pull request.",
+          "translation": "为此提交创建一个新分支并开始拉取请求。"
+        },
+        {
+          "term": "Learn more about pull requests.",
+          "translation": "了解更多关于拉取请求的信息。"
+        },
+        {
+          "term": "Propose new file",
+          "translation": "提议新文件"
+        },
+        {
+          "term": "Propose changes",
+          "translation": "提议更改"
+        },
+        {
+          "term": "Commit",
+          "translation": "提交"
+        },
+        {
+          "term": "Commits",
+          "translation": "提交"
+        },
+        {
+          "term": "Commit history",
+          "translation": "提交历史"
+        },
+        {
+          "term": "Recent commits",
+          "translation": "最近提交"
+        },
+        {
+          "term": "Sign in\n          \n              \n    \n        \n    \n\nAppearance settings",
+          "translation": "登录\n          \n              \n    \n        \n    \n\n外观设置"
+        },
+        {
+          "term": "Appearance settings",
+          "translation": "外观设置"
+        },
+        {
+          "term": "Actions\n\n        \n\n        Automate any workflow",
+          "translation": "Actions\n\n        \n\n        自动化任何工作流"
+        },
+        {
+          "term": "Codespaces\n\n        \n\n        Instant dev environments",
+          "translation": "Codespaces\n\n        \n\n        即时开发环境"
+        },
+        {
+          "term": "Issues\n\n        \n\n        Plan and track work",
+          "translation": "Issues\n\n        \n\n        计划和跟踪工作"
+        },
+        {
+          "term": "Code Review\n\n        \n\n        Manage code changes",
+          "translation": "代码审查\n\n        \n\n        管理代码变更"
+        },
+        {
+          "term": "Code Review",
+          "translation": "代码审查"
+        },
+        {
+          "term": "Discussions\n\n        \n\n        Collaborate outside of code",
+          "translation": "讨论\n\n        \n\n        代码外的协作"
+        },
+        {
+          "term": "Code Search\n\n        \n\n        Find more, search less",
+          "translation": "代码搜索\n\n        \n\n        查找更多，搜索更少"
+        },
+        {
+          "term": "Code Search",
+          "translation": "代码搜索"
+        },
+        {
+          "term": "Enterprise platform\n\n        \n\n        AI-powered developer platform",
+          "translation": "企业平台\n\n        \n\n        人工智能驱动的开发者平台"
+        },
+        {
+          "term": "Copilot for business\n\n        \n\n        Enterprise-grade AI features",
+          "translation": "商业版 Copilot\n\n        \n\n        企业级人工智能功能"
+        },
+        {
+          "term": "Premium Support\n\n        \n\n        Enterprise-grade 24/7 support",
+          "translation": "高级支持\n\n        \n\n        企业级 24/7 支持"
+        },
+        {
+          "term": "Cancel\n\n              Submit feedback",
+          "translation": "取消\n\n              提交反馈"
+        },
+        {
+          "term": "Saved searches\n      \n        Use saved searches to filter your results more quickly",
+          "translation": "已保存的搜索\n      \n        使用已保存的搜索更快地筛选结果"
+        },
+        {
+          "term": "Cancel\n\n              Create saved search",
+          "translation": "取消\n\n              创建已保存的搜索"
+        },
+        {
+          "term": "Collections\n    Curated lists and insight into burgeoning industries, topics, and communities.",
+          "translation": "收藏集\n    精选列表和对新兴行业、主题和社区的洞察。"
+        },
+        {
+          "term": "Pixel Art Tools",
+          "translation": "像素艺术工具"
+        },
+        {
+          "term": "Learn to Code\n    Resources to help people learn to code",
+          "translation": "学习编程\n    帮助人们学习编程的资源"
+        },
+        {
+          "term": "Learn to Code",
+          "translation": "学习编程"
+        },
+        {
+          "term": "Resources to help people learn to code",
+          "translation": "帮助人们学习编程的资源"
+        },
+        {
+          "term": "#\n    Game Engines\n    Frameworks for building games across multiple platforms.",
+          "translation": "#\n    游戏引擎\n    用于跨平台构建游戏的框架。"
+        },
+        {
+          "term": "Game Engines",
+          "translation": "游戏引擎"
+        },
+        {
+          "term": "Frameworks for building games across multiple platforms.",
+          "translation": "用于跨平台构建游戏的框架。"
+        },
+        {
+          "term": "How to choose (and contribute to) your first open source project",
+          "translation": "如何选择（并贡献于）您的第一个开源项目"
+        },
+        {
+          "term": "Clean code linters",
+          "translation": "代码整洁检查工具"
+        },
+        {
+          "term": "Open journalism",
+          "translation": "开放新闻业"
+        },
+        {
+          "term": "Design essentials",
+          "translation": "设计基础"
+        },
+        {
+          "term": "#\n    \n\n    \n      Music\n      Drop the code bass with these musically themed repositories.",
+          "translation": "#\n    \n\n    \n      音乐\n      用这些音乐主题的仓库释放代码节奏。"
+        },
+        {
+          "term": "Music\n      Drop the code bass with these musically themed repositories.",
+          "translation": "音乐\n      用这些音乐主题的仓库释放代码节奏。"
+        },
+        {
+          "term": "Music",
+          "translation": "音乐"
+        },
+        {
+          "term": "Government apps",
+          "translation": "政府应用"
+        },
+        {
+          "term": "DevOps tools",
+          "translation": "DevOps 工具"
+        },
+        {
+          "term": "Front-end JavaScript frameworks",
+          "translation": "前端 JavaScript 框架"
+        },
+        {
+          "term": "Hacking Minecraft",
+          "translation": "Minecraft 黑客技术"
+        },
+        {
+          "term": "JavaScript Game Engines",
+          "translation": "JavaScript 游戏引擎"
+        },
+        {
+          "term": "Learn to Code\n      Resources to help people learn to code",
+          "translation": "学习编程\n      帮助人们学习编程的资源"
+        },
+        {
+          "term": "Getting started with machine learning",
+          "translation": "机器学习入门"
+        },
+        {
+          "term": "Made in Africa",
+          "translation": "非洲制造"
+        },
+        {
+          "term": "Net neutrality\n      Software, research, and organizations protecting the free and open internet.",
+          "translation": "网络中立性\n      保护自由开放互联网的软件、研究和组织。"
+        },
+        {
+          "term": "Net neutrality",
+          "translation": "网络中立性"
+        },
+        {
+          "term": "Open data",
+          "translation": "开放数据"
+        },
+        {
+          "term": "Open source organizations\n      A showcase of organizations showcasing their open source projects.",
+          "translation": "开源组织\n      展示开源项目的组织展示。"
+        },
+        {
+          "term": "Open source organizations",
+          "translation": "开源组织"
+        },
+        {
+          "term": "Software productivity tools",
+          "translation": "软件生产力工具"
+        },
+        {
+          "term": "Footer",
+          "translation": "页脚"
+        },
+        {
+          "term": "Footer navigation",
+          "translation": "页脚导航"
+        },
+        {
+          "term": "The Download",
+          "translation": "The Download"
+        },
+        {
+          "term": "Get the latest developer and open source news",
+          "translation": "获取最新的开发者和开源新闻"
+        },
+        {
+          "term": "Trending repository",
+          "translation": "热门仓库"
+        },
+        {
+          "term": "juspay          /\n          hyperswitch",
+          "translation": "juspay          /\n          hyperswitch"
+        },
+        {
+          "term": "juspay",
+          "translation": "juspay"
+        },
+        {
+          "term": "Star\n          35.6k",
+          "translation": "星标\n          35.6k"
+        },
+        {
+          "term": "35.6k",
+          "translation": "35.6k"
+        },
+        {
+          "term": "An open source payments switch written in Rust to make payments fast, reliable and affordable",
+          "translation": "一个用 Rust 编写的开源支付交换机，使支付变得快速、可靠且经济实惠"
+        },
+        {
+          "term": "rust",
+          "translation": "rust"
+        },
+        {
+          "term": "redis",
+          "translation": "redis"
+        },
+        {
+          "term": "open-source",
+          "translation": "开源"
+        },
+        {
+          "term": "finance",
+          "translation": "金融"
+        },
+        {
+          "term": "sdk",
+          "translation": "SDK"
+        },
+        {
+          "term": "high-performance",
+          "translation": "高性能"
+        },
+        {
+          "term": "beginner-friendly",
+          "translation": "对初学者友好"
+        },
+        {
+          "term": "works-with-react",
+          "translation": "兼容 React"
+        },
+        {
+          "term": "Updated\n            Oct 4, 2025",
+          "translation": "更新于\n            2025年10月4日"
+        }
+      ],
+      "removed": [],
+      "changed": []
+    },
+    "snapshot": {
+      "Skip to content": "跳转到内容",
+      "You signed in with another tab or window. Reload to refresh your session.": "您已在另一个标签页或窗口中登录。请重新加载以刷新您的会话。",
+      "Reload": "重新加载",
+      "You signed out in another tab or window. Reload to refresh your session.": "您已在另一个标签页或窗口中登出。请重新加载以刷新您的会话。",
+      "Dismiss alert": "关闭警告",
+      "Uh oh!\n\n              There was an error while loading. Please reload this page.": "哎呀！\n\n              加载时发生错误。请重新加载此页面。",
+      "Uh oh!": "哎呀！",
+      "There was an error while loading. Please reload this page.": "加载时发生错误。请重新加载此页面。",
+      "Please reload this page": "请重新加载此页面",
+      "Sign in with a passkey": "使用通行密钥登录",
+      "Terms": "条款",
+      "Privacy": "隐私",
+      "Docs": "文档",
+      "Manage cookies": "管理 Cookie",
+      "Do not share my personal information": "不要分享我的个人信息",
+      "You can't perform that action at this time.": "您现在无法执行此操作。",
+      "New issue": "新建问题",
+      "Open a blank issue": "开启空白问题",
+      "Get started": "开始",
+      "Submit new issue": "提交新问题",
+      "Title": "标题",
+      "Add title": "添加标题",
+      "Body": "正文",
+      "Add body": "添加正文",
+      "Assignees": "负责人",
+      "Labels": "标签",
+      "Milestone": "里程碑",
+      "No milestone": "无里程碑",
+      "No assignees": "无负责人",
+      "No labels": "无标签",
+      "Nobody assigned": "未分配",
+      "Add labels": "添加标签",
+      "Set milestone": "设置里程碑",
+      "Set assignees": "设置负责人",
+      "Set project": "设置项目",
+      "Open": "打开",
+      "Closed": "已关闭",
+      "Closed as completed": "已关闭（已完成）",
+      "Closed as not planned": "已关闭（未计划）",
+      "Close issue": "关闭问题",
+      "Close as completed": "标记为已完成",
+      "Close as not planned": "标记为未计划",
+      "Reopen issue": "重新打开问题",
+      "Edit issue": "编辑问题",
+      "Delete issue": "删除问题",
+      "Transfer issue": "转移问题",
+      "Pin issue": "置顶问题",
+      "Unpin issue": "取消置顶问题",
+      "Lock conversation": "锁定对话",
+      "Unlock conversation": "解锁对话",
+      "bug": "错误",
+      "documentation": "文档",
+      "duplicate": "重复",
+      "enhancement": "增强",
+      "good first issue": "适合新手",
+      "help wanted": "需要帮助",
+      "invalid": "无效",
+      "question": "问题",
+      "wontfix": "不予修复",
+      "Save": "保存",
+      "Cancel": "取消",
+      "Edit": "编辑",
+      "Delete": "删除",
+      "Create": "创建",
+      "Update": "更新",
+      "Submit": "提交",
+      "Confirm": "确认",
+      "Close": "关闭",
+      "Save changes": "保存更改",
+      "Cancel changes": "取消更改",
+      "Success": "成功",
+      "Failure": "失败",
+      "Error": "错误",
+      "Pending": "待定",
+      "In progress": "进行中",
+      "Queued": "排队中",
+      "Running": "运行中",
+      "Completed": "已完成",
+      "Skipped": "已跳过",
+      "Cancelled": "已取消",
+      "Action required": "需要操作",
+      "Waiting": "等待中",
+      "On hold": "暂停",
+      "About this repository": "关于此仓库",
+      "Readme": "README",
+      "License": "许可证",
+      "Contributing": "贡献指南",
+      "Code of conduct": "行为准则",
+      "Security policy": "安全政策",
+      "Website": "网站",
+      "Languages": "语言",
+      "View license": "查看许可证",
+      "View documentation": "查看文档",
+      "Contribute": "贡献",
+      "Report a bug": "报告问题",
+      "Request a feature": "请求功能",
+      "Get help": "获取帮助",
+      "Sponsor": "赞助",
+      "Sponsors": "赞助者",
+      "Sponsor this project": "赞助此项目",
+      "Become a sponsor": "成为赞助者",
+      "View sponsors": "查看赞助者",
+      "Quick setup — if you've done this kind of thing before": "快速设置 — 如果您之前做过这种事",
+      "Get started by creating a new file or uploading an existing file. We recommend every repository include a README, LICENSE, and .gitignore.": "通过创建新文件或上传现有文件开始。我们建议每个仓库都包含 README、LICENSE 和 .gitignore。",
+      "…or create a new repository on the command line": "…或在命令行上创建新仓库",
+      "…or push an existing repository from the command line": "…或从命令行推送现有仓库",
+      "…or import code from another repository": "…或从另一个仓库导入代码",
+      "You can initialize this repository with code from a Subversion, Mercurial, or TFS project.": "您可以使用 Subversion、Mercurial 或 TFS 项目的代码初始化此仓库。",
+      "Import code": "导入代码",
+      "Overview": "概览",
+      "Stars": "星标",
+      "Followers": "关注者",
+      "Following": "关注中",
+      "Achievements": "成就",
+      "Pinned": "置顶",
+      "Contribution settings": "贡献设置",
+      "Contribution activity": "贡献活动",
+      "Yearly contributions": "年度贡献",
+      "Contribution graph": "贡献图",
+      "The future of building happens together": "共同构建未来",
+      "Try GitHub Copilot": "尝试 GitHub Copilot",
+      "GitHub features": "GitHub 功能",
+      "GitHub customers": "GitHub 客户",
+      "Accelerate your entire workflow": "加速您的工作流程",
+      "Automate your path to production": "自动化您的生产之路",
+      "Code instantly from anywhere": "随时随地即时编写代码",
+      "Keep momentum on the go": "随时保持动力",
+      "Shape your toolchain": "塑造您的工具链",
+      "Built-in application security where found means fixed": "内置应用安全，发现即修复",
+      "Work together, achieve more": "协作共进",
+      "Millions of developers and businesses call GitHub home": "数百万开发者与业务选择 GitHub",
+      "Technology": "科技",
+      "Automotive": "汽车",
+      "Figma streamlines development and strengthens security": "Figma 简化开发并加强安全",
+      "Mercedes-Benz standardizes source code and automates onboarding": "梅赛德斯-奔驰标准化源代码并自动化入职流程",
+      "Mercado Libre cuts coding time by 50%": "Mercado Libre 将编码时间缩短 50%",
+      "Automate any workflow": "自动化任何工作流",
+      "Packages": "包",
+      "Host and manage packages": "托管和管理包",
+      "Find and fix vulnerabilities": "查找和修复漏洞",
+      "Instant dev environments": "即时开发环境",
+      "Copilot": "Copilot",
+      "Write better code with AI": "用 AI 写出更好的代码",
+      "Code review": "代码审查",
+      "Manage code changes": "管理代码变更",
+      "Plan and track work": "计划和跟踪工作",
+      "Collaborate outside of code": "代码外的协作",
+      "Enterprise platform": "企业平台",
+      "AI-powered developer platform": "人工智能驱动的开发者平台",
+      "Available add-ons": "可用附加组件",
+      "Copilot for business": "商业版 Copilot",
+      "Enterprise-grade AI features": "企业级人工智能功能",
+      "Premium Support": "高级支持",
+      "Enterprise-grade 24/7 support": "企业级 24/7 支持",
+      "Pricing": "价格",
+      "View all features": "查看全部功能",
+      "By company size": "按公司规模",
+      "Small and medium teams": "中小型团队",
+      "By use case": "按使用场景",
+      "App Modernization": "应用现代化",
+      "DevOps": "开发运维",
+      "CI/CD": "持续集成/持续部署",
+      "View all use cases": "查看全部使用场景",
+      "By industry": "按行业",
+      "Financial services": "金融服务",
+      "View all industries": "查看全部行业",
+      "View all solutions": "查看全部解决方案",
+      "AI": "人工智能",
+      "Software Development": "软件开发",
+      "View all": "查看全部",
+      "Learning Pathways": "学习路径",
+      "Events & Webinars": "活动与网络研讨会",
+      "Ebooks & Whitepapers": "电子书与白皮书",
+      "Customer Stories": "客户案例",
+      "Executive Insights": "高管见解",
+      "Open Source": "开源",
+      "The ReadME Project": "ReadME 项目",
+      "MCP Registry": "MCP 注册表",
+      "Organization": "组织",
+      "People": "人员",
+      "Teams": "团队",
+      "Repositories": "仓库",
+      "Members": "成员",
+      "Outside collaborators": "外部协作者",
+      "Pending invitations": "待处理邀请",
+      "Invite member": "邀请成员",
+      "Invite outside collaborator": "邀请外部协作者",
+      "Topics": "主题",
+      "Trending": "趋势",
+      "Collections": "收藏集",
+      "Events": "活动",
+      "Trending repositories": "趋势仓库",
+      "Trending developers": "趋势开发者",
+      "Explore repositories": "探索仓库",
+      "Curated lists and insight into burgeoning industries, topics, and communities.": "精选列表和对新兴行业、主题和社区的洞察。",
+      "Load more…": "加载更多…",
+      "Notifications": "通知",
+      "Mark all as read": "全部标记为已读",
+      "Mark as read": "标记为已读",
+      "Mark as unread": "标记为未读",
+      "Unread": "未读",
+      "Read": "已读",
+      "All notifications": "所有通知",
+      "Watching": "关注中",
+      "Participating": "参与中",
+      "Done": "完成",
+      "No new notifications": "没有新通知",
+      "Contact": "联系",
+      "Blog": "博客",
+      "Status": "状态",
+      "About": "关于",
+      "API": "API",
+      "Training": "培训",
+      "Shop": "商店",
+      "You're all set!": "一切就绪！",
+      "The repository has been created.": "仓库已创建。",
+      "The file has been added.": "文件已添加。",
+      "The file has been updated.": "文件已更新。",
+      "The file has been deleted.": "文件已删除。",
+      "The pull request has been created.": "拉取请求已创建。",
+      "The issue has been created.": "问题已创建。",
+      "The comment has been added.": "评论已添加。",
+      "The issue has been closed.": "问题已关闭。",
+      "The issue has been reopened.": "问题已重新打开。",
+      "The pull request has been closed.": "拉取请求已关闭。",
+      "The pull request has been reopened.": "拉取请求已重新打开。",
+      "The pull request has been merged.": "拉取请求已合并。",
+      "The branch has been deleted.": "分支已删除。",
+      "The branch has been restored.": "分支已恢复。",
+      "Copied!": "已复制！",
+      "Navigation Menu": "导航菜单",
+      "Toggle navigation": "切换导航",
+      "Sign in": "登录",
+      "Sign up": "注册",
+      "Sign out": "登出",
+      "Set status": "设置状态",
+      "Clear status": "清除状态",
+      "Set status message": "设置状态消息",
+      "Set status emoji": "设置状态表情",
+      "Set status until": "设置状态至",
+      "Available": "有空",
+      "Busy": "忙碌",
+      "Do not disturb": "请勿打扰",
+      "In a meeting": "会议中",
+      "Commuting": "通勤中",
+      "Sick": "生病",
+      "Vacationing": "休假中",
+      "Working remotely": "远程工作中",
+      "Focusing": "专注中",
+      "Presenting": "演示中",
+      "Custom status": "自定义状态",
+      "What's on your mind?": "你在想什么？",
+      "Never": "从不",
+      "Today": "今天",
+      "This week": "本周",
+      "Custom date": "自定义日期",
+      "Your profile": "您的个人资料",
+      "Your repositories": "您的仓库",
+      "Your projects": "您的项目",
+      "Your stars": "您的星标",
+      "Your gists": "您的代码片段",
+      "Feature preview": "功能预览",
+      "Help": "帮助",
+      "Settings": "设置",
+      "New": "新建",
+      "New repository": "新建仓库",
+      "Import repository": "导入仓库",
+      "New organization": "新建组织",
+      "New project": "新建项目",
+      "New gist": "新建代码片段",
+      "Pull requests": "拉取请求",
+      "Issues": "问题",
+      "Codespaces": "代码空间",
+      "Explore": "探索",
+      "Marketplace": "应用市场",
+      "Search or jump to...": "搜索或跳转到...",
+      "Search": "搜索",
+      "Clear": "清除",
+      "Search syntax tips": "搜索语法提示",
+      "Provide feedback": "提供反馈",
+      "We read every piece of feedback, and take your input very seriously.": "我们会阅读每一条反馈，并非常重视您的意见。",
+      "Submit feedback": "提交反馈",
+      "Saved searches": "已保存的搜索",
+      "Use saved searches to filter your results more quickly": "使用已保存的搜索更快地筛选结果",
+      "Name": "名称",
+      "Query": "查询",
+      "To see all available qualifiers, see our documentation.": "查看我们的文档了解所有可用的限定符。",
+      "Create saved search": "创建已保存的搜索",
+      "Resetting focus": "重置焦点",
+      "Create pull request": "创建拉取请求",
+      "Draft pull request": "草稿拉取请求",
+      "Create draft pull request": "创建草稿拉取请求",
+      "Pull request": "拉取请求",
+      "Open a pull request": "创建拉取请求",
+      "Compare changes": "比较更改",
+      "Choose a branch": "选择分支",
+      "base:": "基础分支:",
+      "compare:": "比较分支:",
+      "Ability to merge": "合并能力",
+      "This branch has no conflicts with the base branch": "此分支与基础分支没有冲突",
+      "This branch has conflicts that must be resolved": "此分支有必须解决的冲突",
+      "Resolve conflicts": "解决冲突",
+      "Merging can be performed automatically.": "可以自动执行合并。",
+      "Merge pull request": "合并拉取请求",
+      "Squash and merge": "压缩并合并",
+      "Rebase and merge": "变基并合并",
+      "Create merge commit": "创建合并提交",
+      "Confirm merge": "确认合并",
+      "Restore branch": "恢复分支",
+      "Conversation": "对话",
+      "Files changed": "文件已更改",
+      "Checks": "检查",
+      "Review required": "需要审查",
+      "Write": "编写",
+      "Leave a comment": "发表评论",
+      "Write a review": "撰写审查意见",
+      "Suggest a change": "建议更改",
+      "Attach files by dragging & dropping, selecting or pasting them.": "通过拖放、选择或粘贴来附加文件。",
+      "Styling with Markdown is supported": "支持 Markdown 样式",
+      "Start a review": "开始审查",
+      "Add your review": "添加您的审查",
+      "Submit review": "提交审查",
+      "Approve": "批准",
+      "Request changes": "请求更改",
+      "Comment": "评论",
+      "Approved": "已批准",
+      "Changes requested": "已请求更改",
+      "Commented": "已评论",
+      "Pending review": "待审查",
+      "Review has been dismissed": "审查已被驳回",
+      "Code": "代码",
+      "Discussions": "讨论",
+      "Actions": "Actions",
+      "Wiki": "维基",
+      "Security": "安全",
+      "Insights": "洞察",
+      "Projects": "项目",
+      "Use this template": "使用此模板",
+      "Generate new repository": "生成新仓库",
+      "Use this template to create a new repository": "使用此模板创建新仓库",
+      "Include all branches": "包含所有分支",
+      "Star": "星标",
+      "Unstar": "取消星标",
+      "Fork": "复刻",
+      "Watch": "关注",
+      "Unwatch": "取消关注",
+      "Owner": "所有者",
+      "Repository name": "仓库名称",
+      "Description (optional)": "描述（可选）",
+      "Public": "公开",
+      "Anyone on the internet can see this repository. You choose who can commit.": "互联网上的任何人都可以看到此仓库。您选择谁可以提交。",
+      "Private": "私有",
+      "You choose who can see and commit to this repository.": "您选择谁可以查看和提交到此仓库。",
+      "Create repository": "创建仓库",
+      "Add a README file": "添加 README 文件",
+      "Add .gitignore": "添加 .gitignore",
+      "Choose a license": "选择许可证",
+      "Add file": "添加文件",
+      "Create new file": "创建新文件",
+      "Upload files": "上传文件",
+      "Find file": "查找文件",
+      "Go to file": "前往文件",
+      "Add directory": "添加目录",
+      "Edit file": "编辑文件",
+      "Delete file": "删除文件",
+      "Copy path": "复制路径",
+      "Copy file": "复制文件",
+      "Download": "下载",
+      "View raw": "查看原始文件",
+      "Blame": "责备",
+      "History": "历史",
+      "Preview": "预览",
+      "Preview changes": "预览更改",
+      "No changes": "无更改",
+      "Edit new file": "编辑新文件",
+      "Branch": "分支",
+      "Switch branches": "切换分支",
+      "Find or create branch": "查找或创建分支",
+      "Create branch": "创建分支",
+      "Delete branch": "删除分支",
+      "Rename branch": "重命名分支",
+      "Switch to default branch": "切换到默认分支",
+      "View more branches": "查看更多分支",
+      "Showing recent branches": "显示最近的分支",
+      "Default branch": "默认分支",
+      "Commit changes": "提交更改",
+      "Commit directly to the main branch.": "直接提交到 main 分支。",
+      "Create a new branch for this commit and start a pull request.": "为此提交创建一个新分支并开始拉取请求。",
+      "Learn more about pull requests.": "了解更多关于拉取请求的信息。",
+      "Propose new file": "提议新文件",
+      "Propose changes": "提议更改",
+      "Commit": "提交",
+      "Commits": "提交",
+      "Commit history": "提交历史",
+      "Recent commits": "最近提交",
+      "Sign in\n          \n              \n    \n        \n    \n\nAppearance settings": "登录\n          \n              \n    \n        \n    \n\n外观设置",
+      "Appearance settings": "外观设置",
+      "Actions\n\n        \n\n        Automate any workflow": "Actions\n\n        \n\n        自动化任何工作流",
+      "Codespaces\n\n        \n\n        Instant dev environments": "Codespaces\n\n        \n\n        即时开发环境",
+      "Issues\n\n        \n\n        Plan and track work": "Issues\n\n        \n\n        计划和跟踪工作",
+      "Code Review\n\n        \n\n        Manage code changes": "代码审查\n\n        \n\n        管理代码变更",
+      "Code Review": "代码审查",
+      "Discussions\n\n        \n\n        Collaborate outside of code": "讨论\n\n        \n\n        代码外的协作",
+      "Code Search\n\n        \n\n        Find more, search less": "代码搜索\n\n        \n\n        查找更多，搜索更少",
+      "Code Search": "代码搜索",
+      "Enterprise platform\n\n        \n\n        AI-powered developer platform": "企业平台\n\n        \n\n        人工智能驱动的开发者平台",
+      "Copilot for business\n\n        \n\n        Enterprise-grade AI features": "商业版 Copilot\n\n        \n\n        企业级人工智能功能",
+      "Premium Support\n\n        \n\n        Enterprise-grade 24/7 support": "高级支持\n\n        \n\n        企业级 24/7 支持",
+      "Cancel\n\n              Submit feedback": "取消\n\n              提交反馈",
+      "Saved searches\n      \n        Use saved searches to filter your results more quickly": "已保存的搜索\n      \n        使用已保存的搜索更快地筛选结果",
+      "Cancel\n\n              Create saved search": "取消\n\n              创建已保存的搜索",
+      "Collections\n    Curated lists and insight into burgeoning industries, topics, and communities.": "收藏集\n    精选列表和对新兴行业、主题和社区的洞察。",
+      "Pixel Art Tools": "像素艺术工具",
+      "Learn to Code\n    Resources to help people learn to code": "学习编程\n    帮助人们学习编程的资源",
+      "Learn to Code": "学习编程",
+      "Resources to help people learn to code": "帮助人们学习编程的资源",
+      "#\n    Game Engines\n    Frameworks for building games across multiple platforms.": "#\n    游戏引擎\n    用于跨平台构建游戏的框架。",
+      "Game Engines": "游戏引擎",
+      "Frameworks for building games across multiple platforms.": "用于跨平台构建游戏的框架。",
+      "How to choose (and contribute to) your first open source project": "如何选择（并贡献于）您的第一个开源项目",
+      "Clean code linters": "代码整洁检查工具",
+      "Open journalism": "开放新闻业",
+      "Design essentials": "设计基础",
+      "#\n    \n\n    \n      Music\n      Drop the code bass with these musically themed repositories.": "#\n    \n\n    \n      音乐\n      用这些音乐主题的仓库释放代码节奏。",
+      "Music\n      Drop the code bass with these musically themed repositories.": "音乐\n      用这些音乐主题的仓库释放代码节奏。",
+      "Music": "音乐",
+      "Government apps": "政府应用",
+      "DevOps tools": "DevOps 工具",
+      "Front-end JavaScript frameworks": "前端 JavaScript 框架",
+      "Hacking Minecraft": "Minecraft 黑客技术",
+      "JavaScript Game Engines": "JavaScript 游戏引擎",
+      "Learn to Code\n      Resources to help people learn to code": "学习编程\n      帮助人们学习编程的资源",
+      "Getting started with machine learning": "机器学习入门",
+      "Made in Africa": "非洲制造",
+      "Net neutrality\n      Software, research, and organizations protecting the free and open internet.": "网络中立性\n      保护自由开放互联网的软件、研究和组织。",
+      "Net neutrality": "网络中立性",
+      "Open data": "开放数据",
+      "Open source organizations\n      A showcase of organizations showcasing their open source projects.": "开源组织\n      展示开源项目的组织展示。",
+      "Open source organizations": "开源组织",
+      "Software productivity tools": "软件生产力工具",
+      "Footer": "页脚",
+      "Footer navigation": "页脚导航",
+      "The Download": "The Download",
+      "Get the latest developer and open source news": "获取最新的开发者和开源新闻",
+      "Trending repository": "热门仓库",
+      "juspay          /\n          hyperswitch": "juspay          /\n          hyperswitch",
+      "juspay": "juspay",
+      "Star\n          35.6k": "星标\n          35.6k",
+      "35.6k": "35.6k",
+      "An open source payments switch written in Rust to make payments fast, reliable and affordable": "一个用 Rust 编写的开源支付交换机，使支付变得快速、可靠且经济实惠",
+      "rust": "rust",
+      "redis": "redis",
+      "open-source": "开源",
+      "finance": "金融",
+      "sdk": "SDK",
+      "high-performance": "高性能",
+      "beginner-friendly": "对初学者友好",
+      "works-with-react": "兼容 React",
+      "Updated\n            Oct 4, 2025": "更新于\n            2025年10月4日"
+    }
   }
 ]

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.12.4] - 2026-09-27
+
+### Chore（清理冗余依赖与重复代码）
+- 移除未使用的 devDependencies：`serve`、`@babel/preset-env`（含其传递依赖，共 147 个包）；`dev:prototype` 实际由 `server.js`（express）驱动，无任何 babel 配置引用 preset-env。
+- 去重：`DictionaryProcessor.mergeDictionaries()` 改为复用 `dictionaries/index.js` 的 `mergeAllDictionaries()`，删除重复遍历逻辑；被改文件头注释同步 1.12.4。
+
 ## [1.12.3] - 2026-09-27
 
 ### Refactor（采集页恢复真实应用框架）

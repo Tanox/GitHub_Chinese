@@ -1,0 +1,124 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [aria-hidden] [ref=e5]: 中
+        - generic [ref=e6]: GitHub 中文
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - paragraph [ref=e9]: 工作台
+          - navigation "工作台导航" [ref=e10]:
+            - link "采集控制台" [ref=e11] [cursor=pointer]:
+              - /url: /
+            - link "项目概览" [ref=e12] [cursor=pointer]:
+              - /url: /overview
+            - link "覆盖率" [ref=e13] [cursor=pointer]:
+              - /url: /coverage
+            - link "设计系统" [ref=e14] [cursor=pointer]:
+              - /url: /design
+        - generic [ref=e15]:
+          - paragraph [ref=e16]: 引擎状态
+          - generic [ref=e17]:
+            - generic [ref=e18]:
+              - generic [ref=e19]: 引擎版本
+              - generic [ref=e20]: v1.12.3
+            - generic [ref=e21]:
+              - generic [ref=e22]: 运行环境
+              - generic [ref=e23]: 本地
+      - generic [ref=e24]: 采集服务运行中
+    - main [ref=e27]:
+      - status
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - heading "词典采集工作台" [level=1] [ref=e30]
+          - paragraph [ref=e31]: 从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典
+        - generic [ref=e32]: 本地优先 · 离线可用
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - generic [ref=e37]: 采集工具 · COLLECTOR
+          - heading "GitHub 页面字符串采集工具" [level=1] [ref=e38]
+          - paragraph [ref=e39]: 从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典。覆盖探针植入、文本 / 批量 URL 采集、实时处理中心与 JSON 导出全流程。
+        - region [ref=e40]:
+          - heading "采集流程" [level=2] [ref=e41]
+          - paragraph [ref=e42]: 三步闭环：植入探针 → 归集词条 → 解析入库
+          - generic "采集流程" [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]: "1"
+              - generic [ref=e46]: 植入探针
+            - generic [ref=e48]:
+              - generic [ref=e49]: "2"
+              - generic [ref=e50]: 归集词条
+            - generic [ref=e52]:
+              - generic [ref=e53]: "3"
+              - generic [ref=e54]: 解析入库
+        - region [ref=e55]:
+          - heading "采集入口 · 探针脚本 + 数据中心" [level=2] [ref=e56]
+          - paragraph [ref=e57]: 左侧注入探针提取文本，右侧粘贴文本或批量导入 URL 后智能清洗
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - heading "1 探针脚本" [level=2] [ref=e61]:
+                  - generic [ref=e62]: "1"
+                  - text: 探针脚本
+                - button "复制脚本" [ref=e63] [cursor=pointer]
+              - paragraph [ref=e64]: 在 GitHub 页面控制台执行下方脚本，引擎会提取当前视图中的全部有效 UI 文本块。
+              - generic [ref=e65]: "const textNodes = []; const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false); while (walker.nextNode()) { const text = walker.currentNode.textContent.trim(); if (text.length > 2 && !/^\\s*$/.test(text)) { textNodes.push(text); } } console.log(textNodes.join('\\n')); copy(textNodes.join('\\n'));"
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - heading "2 数据中心" [level=2] [ref=e69]:
+                  - generic [ref=e70]: "2"
+                  - text: 数据中心
+                - tablist [ref=e71]:
+                  - tab "文本粘贴" [selected] [ref=e72] [cursor=pointer]
+                  - tab "批量 URL" [ref=e73] [cursor=pointer]
+              - paragraph [ref=e74]: 两种采集入口，智能清洗后一键导出 JSON。
+              - generic [ref=e75]:
+                - generic [ref=e76]: 待清洗文本
+                - textbox "待清洗文本" [active] [ref=e77]:
+                  - /placeholder: 在此粘贴控制台采集到的文本...
+                  - text: Dashboard Issues Pull requests Settings Profile Notifications Marketplace
+                - generic [ref=e78]:
+                  - button "智能清洗" [ref=e79] [cursor=pointer]
+                  - button "导出 JSON" [disabled] [ref=e80] [cursor=pointer]
+                  - button "开始分析" [ref=e81] [cursor=pointer]
+        - region [ref=e82]:
+          - heading "清洗结果预览" [level=2] [ref=e83]
+          - paragraph [ref=e84]: 实时归集词条，标注待翻译 / 已翻译状态
+        - region [ref=e85]:
+          - heading "引擎实时处理中心" [level=2] [ref=e86]
+          - paragraph [ref=e87]: SSE 流式日志、进度与自动备份状态
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - heading "引擎实时处理中心" [level=2] [ref=e90]
+              - generic [ref=e91]: Ready
+            - generic [ref=e93]:
+              - generic [ref=e94]: 当前任务
+              - generic [ref=e95]:
+                - generic [ref=e96]: 引擎准备就绪
+                - generic [ref=e97]: 0%
+            - progressbar "采集进度" [ref=e98]
+            - generic [ref=e99]: 等待首次自动备份...
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e106]: i18n-engine --stream
+                - button "Clear" [ref=e107] [cursor=pointer]
+              - log "引擎实时日志" [ref=e108]
+      - generic [ref=e110]:
+        - generic [ref=e111]: GitHub 中文 · 采集工作台
+        - navigation "页脚链接" [ref=e112]:
+          - link "项目概览" [ref=e113] [cursor=pointer]:
+            - /url: /overview
+          - link "覆盖率" [ref=e114] [cursor=pointer]:
+            - /url: /coverage
+          - link "设计系统" [ref=e115] [cursor=pointer]:
+            - /url: /design
+  - generic [ref=e121] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e122]
+    - generic [ref=e126]:
+      - button "Open issues overlay" [ref=e127]:
+        - generic [ref=e128]:
+          - generic [aria-hidden] [ref=e129]: "0"
+          - generic [ref=e130]: "1"
+        - generic [ref=e131]: Issue
+      - button "Collapse issues badge" [ref=e132]
+  - alert [ref=e116]

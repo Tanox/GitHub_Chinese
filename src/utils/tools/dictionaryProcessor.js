@@ -1,20 +1,14 @@
 /**
  * 词典处理工具
  * @file src/utils/tools/dictionaryProcessor.js
- * @version 1.9.24
+ * @version 1.12.4
  */
-import { translationModule } from '../../dictionaries/index.js';
+import { mergeAllDictionaries } from '../../dictionaries/index.js';
 import { stringExtractor } from './stringExtractor.js';
 
 export class DictionaryProcessor {
   static mergeDictionaries() {
-    const merged = {};
-    for (const module in translationModule) {
-      if (Object.prototype.hasOwnProperty.call(translationModule, module)) {
-        Object.assign(merged, translationModule[module]);
-      }
-    }
-    return merged;
+    return mergeAllDictionaries();
   }
 
   static validateDictionary() {
