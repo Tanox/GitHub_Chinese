@@ -1,7 +1,7 @@
 /**
  * GitHub 中文翻译性能监控组件
  * @file performanceMonitor.js
- * @version 1.9.28
+ * @version 1.13.2
  * @date 2026-09-23
  * @author Sut
  * @description 性能监控区域组件
@@ -21,7 +21,11 @@ export function createPerformanceMonitoringSection() {
   section.className = 'github-i18n-config-section';
 
   const sectionTitle = document.createElement('h4');
-  sectionTitle.innerHTML = '<span style="color: #d29922;">📊</span> 性能监控';
+  const emojiSpan = document.createElement('span');
+  emojiSpan.style.color = '#d29922';
+  emojiSpan.textContent = '📊';
+  sectionTitle.appendChild(emojiSpan);
+  sectionTitle.appendChild(document.createTextNode(' 性能监控'));
   section.appendChild(sectionTitle);
 
   const perfGrid = document.createElement('div');

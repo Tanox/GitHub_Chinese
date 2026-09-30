@@ -1,7 +1,7 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.11.3
+ * @version 1.13.2
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
@@ -10,7 +10,7 @@ import { createRawTermsPath, runDictionaryProcessor } from './dictionary-process
 import { CollectErrorCode } from './collect-codes.js';
 import { guardUrl } from './url-guard.js';
 import { MAX_COLLECT_URLS } from './request-body.js';
-import { loadPuppeteerCore, resolveBrowserExecutable } from './browser-resolver.js';
+import { acquireBrowser, releaseBrowser } from './browser-pool.js';
 import { acquireBrowserSlot, releaseBrowserSlot } from './browser-semaphore.js';
 import { collectBatch } from './batch-collector.js';
 
@@ -78,43 +78,21 @@ export async function* collectFromUrls(urls, { signal } = {}) {
     return;
   }
 
-  const puppeteer = await loadPuppeteerCore();
-  if (!puppeteer) {
-    yield {
-      type: 'error',
-      message: MISSING_PUPPETEER_MESSAGE,
-      code: CollectErrorCode.MISSING_DEPENDENCY,
-    };
-    return;
-  }
-
-  const executablePath = resolveBrowserExecutable();
-  if (!executablePath) {
-    yield {
-      type: 'error',
-      message: MISSING_BROWSER_MESSAGE,
-      code: CollectErrorCode.MISSING_DEPENDENCY,
-    };
-    return;
-  }
-
   const total = targets.length;
 
-  // 限制并发浏览器实例，避免多请求同时拉起无头浏览器耗尽资源
+  // 限制并发采集任务数，复用进程内浏览器实例池（M5：不再每请求新建浏览器，降低启动开销）
   await acquireBrowserSlot();
-  let browser;
-  try {
-    browser = await puppeteer.launch({
-      headless: true,
-      executablePath,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-  } catch (error) {
+  const { browser, error } = await acquireBrowser();
+  if (!browser) {
     releaseBrowserSlot();
+    // 按浏览器池返回的失败原因映射用户可读消息（默认兜底为通用启动失败）
+    let message = '浏览器启动失败，请检查 puppeteer-core 与浏览器安装';
+    if (error === 'MISSING_DEPENDENCY') message = MISSING_PUPPETEER_MESSAGE;
+    else if (error === 'MISSING_BROWSER') message = MISSING_BROWSER_MESSAGE;
     yield {
       type: 'error',
-      message: `浏览器启动失败: ${describeError(error)}`,
-      code: CollectErrorCode.SUBPROCESS_FAILED,
+      message,
+      code: CollectErrorCode.MISSING_DEPENDENCY,
     };
     return;
   }
@@ -146,7 +124,7 @@ export async function* collectFromUrls(urls, { signal } = {}) {
       code: CollectErrorCode.SUBPROCESS_FAILED,
     };
   } finally {
-    await browser.close();
+    releaseBrowser();
     releaseBrowserSlot();
   }
 }

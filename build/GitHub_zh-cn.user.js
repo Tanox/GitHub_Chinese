@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_i18n
-// @version      1.13.1
+// @version      1.13.2
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,7 +27,7 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.1
+ * @version 1.13.2
  * @date 2026-09-30
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.1';
+const VERSION = '1.13.2';
 
 /**
  * GitHub 元素选择器列表配置
@@ -4441,7 +4441,7 @@ function addConfigUIStyles() {
 /**
  * GitHub 中文翻译性能监控组件
  * @file performanceMonitor.js
- * @version 1.9.28
+ * @version 1.13.2
  * @date 2026-09-23
  * @author Sut
  * @description 性能监控区域组件
@@ -4459,7 +4459,11 @@ function createPerformanceMonitoringSection() {
   section.className = 'github-i18n-config-section';
 
   const sectionTitle = document.createElement('h4');
-  sectionTitle.innerHTML = '<span style="color: #d29922;">📊</span> 性能监控';
+  const emojiSpan = document.createElement('span');
+  emojiSpan.style.color = '#d29922';
+  emojiSpan.textContent = '📊';
+  sectionTitle.appendChild(emojiSpan);
+  sectionTitle.appendChild(document.createTextNode(' 性能监控'));
   section.appendChild(sectionTitle);
 
   const perfGrid = document.createElement('div');

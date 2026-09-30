@@ -1,4 +1,23 @@
 # Changelog
+## [1.13.2] - 2026-09-30
+
+### Fix（代码审查收尾：M1 / M2 / M5 + 安全加固）
+- `src/proxy.ts`：CSP nonce 标准化——改用 `crypto.randomUUID().replace(/-/g,'')` 作为 base64 安全 nonce，仅向请求头写入 `x-nonce`（供 Next 为自身脚本注入 nonce 属性），移除冗余的请求头 `Content-Security-Policy`；`script-src` 维持 `nonce + strict-dynamic`。
+- `src/lib/api-guard.ts`：限流客户端 IP 提取增强——信任链 `cf-connecting-ip` → `x-real-ip` → `x-forwarded-for` 首段；注释标注内存态固定窗口限流在 serverless 多实例下失效，需边缘层或分布式存储统一计数。
+- `src/lib/browser-pool.js`（新增）+ `src/lib/collector-core.js`：浏览器实例池复用单例（M5），不再每请求 `puppeteer.launch`，降低启动开销；并发仍由 `browser-semaphore` 控制；实例意外断开自动重建。Chromium 启动参数改为仅在以 root 运行时加 `--no-sandbox`（非 root 容器提升隔离），并加 `--disable-dev-shm-usage`。
+- `src/app/error.tsx`：生产环境不再向用户暴露原始异常 `error.message`（避免泄露内部路径/栈），改为展示 `error.digest` 参考码；补语义化 id（`error-boundary` / `error-detail`）。
+- `src/ui/components/performanceMonitor.js`：`sectionTitle` 由 `innerHTML` 改为 DOM 构建（保留视觉），消除潜在注入隐患。
+- 受影响文件头注释同步 1.13.2；全局版本源 `src/version.js` / `package.json` / `README` 同步。
+
+## [1.13.1] - 2026-09-30
+
+### Fix（代码审查 H1：SSRF 守卫归一化非常规 IP 字面量）
+- `src/lib/url-guard.js` 新增 IPv4 字面量归一化：将十进制 / 十六进制 / 八进制 / 省略写法
+  （如 `2852039166`、`0xA9FEA9FE`、`017700000001`、`127.1`）解析为标准点分十进制后再做私网判定，
+  修复此前非常规形式绕过私网正则、可打云元数据（169.254.169.254）的 SSRF 漏洞。
+- 保持 `guardUrl` 纯函数与同步签名，采集路由（`collector-core.js`）与浏览器请求拦截（`page-navigation.js`）调用点零改动。
+- 补 `tests/url-guard.test.mjs` 边界用例：覆盖上述非常规字面量拒绝与公网 IP/域名放行。
+
 ## [1.13.0] - 2026-09-30
 
 ### Feat（独立采集服务支持 Bearer 令牌鉴权）

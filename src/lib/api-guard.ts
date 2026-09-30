@@ -1,7 +1,7 @@
 /**
  * 采集 / 词典 API 访问控制（C3）：可选 Bearer 令牌鉴权 + 每 IP 限流
  * @file src/lib/api-guard.ts
- * @version 1.12.10
+ * @version 1.13.2
  * @date 2026-09-30
  * @description 为 `/api/collect`、`/api/batch-collect` 与 `/api/dictionary/suggest` 提供统一门禁：
  *   1. 可选令牌：仅当配置 `COLLECT_API_TOKEN` 时启用，默认开放（向后兼容，无 UI 破坏）；
@@ -21,11 +21,20 @@ const RATE_WINDOW_MS = Number(process.env.COLLECT_RATE_WINDOW_MS ?? 60_000);
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
-/** 从代理头推导客户端 IP（无代理时回退 unknown） */
+/**
+ * 从请求头推导客户端 IP。
+ * 信任链优先级：边缘节点字段（Cloudflare/EdgeOne `cf-connecting-ip`）> `x-real-ip` > `x-forwarded-for` 首段。
+ * 注意：内存态固定窗口限流仅对单一 Node 实例有效；serverless（EdgeOne/Vercel）多实例部署下
+ * 各实例计数独立，限流可被绕过，需在边缘层或接入分布式存储（如 Redis）统一计数。
+ */
 function clientIp(req: NextRequest): string {
+  const cf = req.headers.get('cf-connecting-ip');
+  if (cf) return cf.trim();
+  const realIp = req.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
   const fwd = req.headers.get('x-forwarded-for');
   if (fwd) return fwd.split(',')[0].trim();
-  return req.headers.get('x-real-ip') ?? 'unknown';
+  return 'unknown';
 }
 
 /** 恒定时间比较，避免令牌可枚举 */
