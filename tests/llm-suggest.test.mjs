@@ -38,10 +38,10 @@ test('无密钥时直接返回 null 且不发请求', async () => {
 test('成功响应返回去空白后的译文', async () => {
   const mock = mockFetch(
     async () =>
-      new Response(
-        JSON.stringify({ choices: [{ message: { content: '  设置页面  ' } }] }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      ),
+      new Response(JSON.stringify({ choices: [{ message: { content: '  设置页面  ' } }] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
   );
   try {
     const result = await llmSuggest('Settings page', { apiKey: 'k' });

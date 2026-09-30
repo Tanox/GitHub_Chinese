@@ -24,10 +24,12 @@ test('完整合法响应被保留（含可选 llmEnabled）', () => {
 });
 
 test('suggestion 为 null 的「无建议」响应合法', () => {
-  assert.deepEqual(
-    narrowSuggestResponse({ suggestion: null, source: 'none', confidence: 0 }),
-    { suggestion: null, source: 'none', confidence: 0, llmEnabled: undefined },
-  );
+  assert.deepEqual(narrowSuggestResponse({ suggestion: null, source: 'none', confidence: 0 }), {
+    suggestion: null,
+    source: 'none',
+    confidence: 0,
+    llmEnabled: undefined,
+  });
 });
 
 test('缺 llmEnabled 时得到 undefined 而非崩溃', () => {

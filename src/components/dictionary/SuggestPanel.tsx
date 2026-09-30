@@ -37,8 +37,8 @@ export function SuggestPanel({
         <h2 className='card-title'>翻译建议</h2>
       </div>
       <p className='card-desc'>
-        输入 GitHub 界面英文词条，基于 {totalEntries} 条现有词典（翻译记忆）给出建议译文；
-        配置 LLM 密钥时额外调用模型增强。采纳的建议暂存于本地，可导出后人工入库。
+        输入 GitHub 界面英文词条，基于 {totalEntries} 条现有词典（翻译记忆）给出建议译文； 配置 LLM
+        密钥时额外调用模型增强。采纳的建议暂存于本地，可导出后人工入库。
       </p>
       <div className='dict-row'>
         <label htmlFor='dict-input' className='sr-only'>

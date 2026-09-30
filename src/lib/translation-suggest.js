@@ -39,7 +39,9 @@ export function isPlaceholder(value) {
  * @returns {string}
  */
 export function normalizeEn(term) {
-  return String(term ?? '').trim().replace(/\s+/g, ' ');
+  return String(term ?? '')
+    .trim()
+    .replace(/\s+/g, ' ');
 }
 
 /**
