@@ -29,8 +29,14 @@
 ## 工具链陷阱（Windows/PowerShell）
 - `Get-Content` 读 UTF-8 中文乱码 → 用读取文件工具；`node -e "..."` 的 `$`/`[`/引号被吞 → 写临时 `.mjs` 执行；搜代码用 `search_content` 的 `ignore_globs`（勿用 `!{negated}`）；长任务 `node --test` 直跑、输出 `Select-String` 过滤；批量改写仓库文档用 node 脚本时：① 文档为 CRLF，正则须用 `\r?\n` 且 `[^\r\n]*` 而非 `[^\n]*`；② 含中文顿号 `、`(U+3001) 的字面量在脚本里易失配（曾因目录树行带反引号、且码位核对偏差导致多次 replace 失败），优先用 `replace_in_file` 工具或先 `codePointAt` 确认码位；③ 同一文件多次编辑用单个脚本原子完成，避免多工具并行竞态（本项目高频被用户并行编辑）。
 
-## 结构改进待办（2026-09-30 评审，未实施）
-- 根目录 ~10 个游离 `.cjs` 维护脚本（T17/T19/T23/T24/T25/T36 数据层：coverage/history-diff/io-dictionary/merge-dictionaries/merge-into-dictionary/review-store/term-operations），多数未接入 npm scripts，建议迁入 scripts/ 并补 dict:* 命令。
-- 两套并行 UI：Next 工作台(src/app) 与 prototype/(server.js dev:prototype) 功能重叠；样式三处(public/css 14 / prototype/assets 10 / globals.css)。建议归档 prototype 或明确分工。
-- 引擎核心(src/core、src/translation-core、src/page-monitor、src/utils) 近乎无单测，tests/ 仅覆盖 src/lib 数据/采集层（9 模块）；39 文件含 console.* 缺统一日志器。最高价值改进：用 jsdom 补翻译核心单测 + 建统一 logger。
-- 同名混淆：src/utils/tools/dictionaryProcessor.js(词典校验/统计) 与 src/lib/dictionary-processor.js(清洗子进程桥接) 同名不同义。
+## 结构改进（2026-09-30 已完成，v1.12.8）
+- **A 脚本归位**：根目录 8 个游离 `.cjs`（coverage/history-diff/io-dictionary/merge-dictionaries/merge-into-dictionary/review-store/term-operations/collect-dict）迁入 `scripts/`；`package.json` 的 `dict:collect`/`lint`/`format` 路径、`src/lib/dictionary-processor.js`、`scripts/collect-history.cjs`、7 个测试 require 全部同步；根目录仅保留 `build.cjs`（用户脚本构建）与 `server.js`（prototype 预览）。
+- **B 同名消歧**：`src/utils/tools/dictionaryProcessor.js`（词典统计）重命名为 `dictionaryStats.js`、类名 `DictionaryStats`，消除与 `src/lib/dictionary-processor.js`（采集清洗桥接）歧义。
+- **D 统一日志**：新增 `src/utils/logger.js` 门面（统一前缀 + 级别过滤，Node 侧 `GITHUB_ZH_LOG` 调级）；供服务端/新代码（采集服务、客户端）使用；引擎调试日志仍由 `CONFIG.debugMode` 守卫，未做大面积 console 替换（避免破坏脚本 stdout 契约与高 churn）。
+- **E prototype 分工**：README 明确 `prototype/` = 轻量高保真预览（不接真实后端/无持久化），`src/app` Next 工作台 = 正式采集/审阅/词典沉淀环境，二者不重叠（用户选择不删文件）。
+- **G 引擎单测**：新增 5 个测试文件（Trie / LRU 缓存 / 部分匹配 / 词典管理 / 错误处理）共 **22 用例全过**；过程中发现并修复 `dictionaryManager.getTranslatedText` 未命中返回 `undefined`（应 `null`）的真实 bug——`=== null` 误判导致误缓存 undefined 及 `sanitizeText(undefined)` 崩溃，改为 `== null` 判断 + 返回 `null`。
+- **H W5 采集解耦**：新增 `server/collect-service/index.js`（可自托管 Node 服务，复用 `src/lib/collector-core`，HTTP+SSE 暴露 `/api/collect`/`/api/batch-collect`/`/health`）+ `src/lib/collect-service-client.js`（配置 `COLLECT_SERVICE_URL` 时代理 SSE，否则返回 null 走本地兜底）；采集路由 `collect`/`batch-collect` 已接入；新增 `npm run collect-service`。解决 serverless 无浏览器导致生产采集不可用。
+- **I 版本收口**：核查 `src/version.js` 为唯一版本源，`versionChecker/fetcher.js` 仅做远程比对、无重复版本逻辑，无需改代码。
+- **C @babel/core**：因生产采集子进程（`collect-dict.cjs`→`merge-dictionaries.cjs`）运行时依赖，仍保留于 `dependencies`；H 服务化后其归属由服务依赖接管（待办）。
+- **F public/css→Next import**：**待办**——需 `git mv` 批量迁移 14 个样式到 `src/app/styles/` 并改 `layout.tsx` 为 import；本轮 git 命令审批超时未执行，css 仍在 `public/css`、layout 仍 `<link>`。
+- 当前版本：**v1.12.8**（2026-09-30）。

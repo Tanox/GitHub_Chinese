@@ -1,4 +1,15 @@
 # Changelog
+## [1.12.8] - 2026-09-30
+
+### Refactor（目录与采集架构改进）
+- **脚本归位（A）**：将根目录游离的 8 个维护/采集脚本（`collect-dict` / `coverage` / `history-diff` / `io-dictionary` / `merge-dictionaries` / `merge-into-dictionary` / `review-store` / `term-operations`）迁入 `scripts/`，`dict:collect` 等脚本与 `src/lib/dictionary-processor.js`、`scripts/collect-history.cjs` 及 7 个测试的路径同步；根目录仅保留 `build.cjs` 与 `server.js` 两个构建/预览入口。
+- **同名消歧（B）**：`src/utils/tools/dictionaryProcessor.js`（词典统计）重命名为 `dictionaryStats.js` 并改类名 `DictionaryStats`，消除与 `src/lib/dictionary-processor.js`（采集清洗桥接）的同名歧义。
+- **统一日志门面（D）**：新增 `src/utils/logger.js`，统一日志前缀与级别过滤（Node 侧 `GITHUB_ZH_LOG` 可调），供新服务端代码使用，引擎调试日志沿用 `CONFIG.debugMode` 守卫。
+- **W5 采集解耦（H）**：新增可自托管部署的独立采集服务 `server/collect-service/index.js`（复用 `src/lib/collector-core`，HTTP+SSE 暴露采集接口），并提供 `src/lib/collect-service-client.js`；采集路由 `collect` / `batch-collect` 在配置 `COLLECT_SERVICE_URL` 时代理其 SSE 流，未配置时回退本地采集，默认行为不变。新增 `npm run collect-service`。
+- **原型分工（E）**：README 明确 `prototype/` 为轻量高保真预览（不接入真实后端、不含持久化），`src/app` Next 工作台为正式采集/审阅/词典沉淀环境，二者功能不重叠。
+- **引擎单测（G）**：新增 5 个引擎单测文件（Trie / LRU 缓存 / 部分匹配 / 词典管理 / 错误处理），22 用例全过；过程中发现并修复 `dictionaryManager.getTranslatedText` 未命中时返回 `undefined`（应为 `null`）的真实 bug，避免误缓存 `undefined` 及 `sanitizeText(undefined)` 崩溃。
+- `@babel/core` 因生产采集子进程依赖仍保留于 `dependencies`（C 项随 H 完成后其归属由服务依赖接管）。
+
 ## [1.12.7] - 2026-09-27
 
 ### Refactor（拆分超 200 行组件 DictionaryHelper）

@@ -1,7 +1,7 @@
 /**
  * 历史轮次 diff 测试
  * @file tests/history-diff.test.cjs
- * @version 1.11.14
+ * @version 1.12.8
  * @description 校验 history-diff.cjs 的词条级 diff、轮次记录、回滚与对比
  */
 const test = require('node:test');

@@ -1,7 +1,7 @@
 /**
  * 覆盖率度量测试
  * @file tests/coverage.test.cjs
- * @version 1.11.9
+ * @version 1.12.8
  * @description 校验 computeCoverage 的覆盖率、按页面分类、Top-N 低覆盖定位与噪声过滤
  */
 const test = require('node:test');

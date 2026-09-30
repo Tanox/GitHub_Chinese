@@ -1,7 +1,7 @@
 /**
  * 一键合并入库测试
  * @file tests/merge-into-dictionary.test.cjs
- * @version 1.11.16
+ * @version 1.12.8
  * @description 校验 merge-into-dictionary.cjs 的审阅筛选、diff 补丁、不可变应用与 PR 式预览
  */
 const test = require('node:test');

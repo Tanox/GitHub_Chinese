@@ -1,7 +1,7 @@
 /**
  * 采集历史记录
  * @file scripts/collect-history.cjs
- * @version 1.11.14
+ * @version 1.12.8
  * @description 将每次词典采集的统计追加到 `docs/collect-history.json`，供工作台展示采集趋势
  *   （T23 扩展：新增 `appendRound` 写入词条级 diff + snapshot，支持轮次对比与回滚）
  */

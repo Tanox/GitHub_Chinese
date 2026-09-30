@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.12.7**（版本单一来源：`src/version.js`）
+> 当前版本：**v1.12.8**（版本单一来源：`src/version.js`）
 
 ## 命名与兼容性说明
 
@@ -59,6 +59,8 @@ npm run dev     # 打开 http://localhost:3000
 
 > 批量 URL 采集依赖可选依赖 `puppeteer-core` 与系统已安装的 Chrome / Edge 浏览器。未满足条件时该功能会返回明确提示，其余功能不受影响。
 
+> **独立采集服务（W5 解耦）**：生产环境（EdgeOne / Vercel 等 serverless）无法运行无头浏览器，采集实际不可用。可将采集引擎抽离为自托管 Node 服务（`npm run collect-service`，监听 `COLLECT_SERVICE_PORT`，默认 8787），由 `src/lib/collect-service-client.js` 在配置 `COLLECT_SERVICE_URL` 时把采集请求代理到该服务并透传 SSE；未配置时退回本地采集逻辑，行为不变。
+
 ## 高保真原型
 
 > **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
@@ -99,6 +101,7 @@ src/
 public/                      # 工作台静态资源（css / js，模块化拆分）
 prototype/                   # 设计系统与高保真原型
 scripts/                     # 构建依赖图、转换、产物校验与词典采集工具链
+server/                     # 独立采集服务（W5 解耦，可自托管部署的 Node 服务）
 build/                       # 用户脚本构建产物（纳入版本控制）
 docs/                        # 项目规范文档（唯一权威正文）
 ```

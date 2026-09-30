@@ -1,7 +1,7 @@
 /**
  * 采集工具集成测试（参考原型重构）
  * @file tests/collect-dict.test.cjs
- * @version 1.11.15
+ * @version 1.12.8
  * @description 校验 collect-dict.cjs 的 analyzeTexts（findUntranslated + 覆盖率）与
  *   dict-report.cjs 的 generateReport（写报告 + 词条级采集历史），路径注入避免污染仓库。
  */

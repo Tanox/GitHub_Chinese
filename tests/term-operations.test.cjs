@@ -1,7 +1,7 @@
 /**
  * 搜索与批量操作测试
  * @file tests/term-operations.test.cjs
- * @version 1.11.13
+ * @version 1.12.8
  * @description 校验 term-operations.cjs 的搜索命中、待翻译筛选与批量标记
  */
 const test = require('node:test');

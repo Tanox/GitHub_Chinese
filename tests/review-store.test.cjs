@@ -1,7 +1,7 @@
 /**
  * 词条级审阅工作流测试
  * @file tests/review-store.test.cjs
- * @version 1.11.11
+ * @version 1.12.8
  * @description 校验 review-store.cjs 的状态机、不可变迁移、批量合并、统计与序列化往返
  */
 const test = require('node:test');

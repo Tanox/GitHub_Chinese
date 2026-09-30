@@ -1,7 +1,7 @@
 /**
  * 词典导入/导出测试
  * @file tests/io-dictionary.test.cjs
- * @version 1.11.16
+ * @version 1.12.8
  * @description 校验 io-dictionary.cjs 的 CSV/JSON 双向、引号转义往返、去重策略与归一校验
  */
 const test = require('node:test');

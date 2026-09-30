@@ -1,7 +1,7 @@
 /**
  * 词典清洗子进程桥接
  * @file src/lib/dictionary-processor.js
- * @version 1.11.7
+ * @version 1.12.8
  * @description 调用 collect-dict.cjs 清洗原始词条文件，并把子进程输出转为采集事件流。
  *   每请求使用独立临时文件，避免并发请求互相覆盖（竞态，见 v1.9.47）。
  */
