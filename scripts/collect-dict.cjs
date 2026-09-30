@@ -1,13 +1,14 @@
 /**
  * 词典采集工具
- * @file collect-dict.cjs
- * @version 1.11.15
+ * @file scripts/collect-dict.cjs
+ * @version 1.12.9
+ * @date 2026-09-30
  * @author Sut
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表（报告生成见 scripts/dict-report.cjs）
  */
 
 const fs = require('fs');
-const { generateReport } = require('./scripts/dict-report.cjs');
+const { generateReport } = require('./dict-report.cjs');
 const { mergeDictionaries } = require('./merge-dictionaries.cjs');
 
 /**

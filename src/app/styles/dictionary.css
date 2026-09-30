@@ -1,8 +1,8 @@
 /*
  * GitHub 中文 · 采集工作台 — 词典助手
  * 设计变量与基础类复用 base.css；本文件仅补充词典助手专属布局
- * @file public/css/dictionary.css
- * @version 1.12.6
+ * @file src/app/styles/dictionary.css
+ * @version 1.12.9
  */
 .dict-wrap {
   display: flex;

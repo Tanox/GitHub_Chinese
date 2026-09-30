@@ -1,8 +1,8 @@
 /*
  * GitHub 中文 · 采集工作台 — 覆盖率看板（T22）
  * 复用 showcase.css 设计令牌，仅补充看板专属布局类
- * @file public/css/coverage.css
- * @version 1.11.16
+ * @file src/app/styles/coverage.css
+ * @version 1.12.9
  */
 
 .file-coverage-list {

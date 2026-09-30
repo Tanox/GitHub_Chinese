@@ -1,12 +1,26 @@
 /**
  * 全局布局
  * @file src/app/layout.tsx
- * @version 1.12.5
- * @description 加载 Tailwind 入口与 public/css 下的自包含样式模块，提供全站元数据
+ * @version 1.12.9
+ * @description 加载 Tailwind 入口与 src/app/styles 下的自包含样式模块（经 Next 打包，不再依赖 public 静态目录），提供全站元数据
  */
 
 import type { Metadata } from 'next';
 import './globals.css';
+import './styles/base.css';
+import './styles/layout.css';
+import './styles/sidebar.css';
+import './styles/cards.css';
+import './styles/buttons.css';
+import './styles/code.css';
+import './styles/terms.css';
+import './styles/progress.css';
+import './styles/terminal.css';
+import './styles/toast.css';
+import './styles/showcase.css';
+import './styles/coverage.css';
+import './styles/prototype.css';
+import './styles/dictionary.css';
 
 /** 站点基础地址（可由 NEXT_PUBLIC_SITE_URL 覆盖，用于生成绝对 OG URL） */
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tanox.github.io/GitHub_i18n';
@@ -37,21 +51,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang='zh-CN'>
       <body>
-        {/* 静态样式表位于 public/css，由 Next 自动提升到 <head> */}
-        <link rel='stylesheet' href='/css/base.css' />
-        <link rel='stylesheet' href='/css/layout.css' />
-        <link rel='stylesheet' href='/css/sidebar.css' />
-        <link rel='stylesheet' href='/css/cards.css' />
-        <link rel='stylesheet' href='/css/buttons.css' />
-        <link rel='stylesheet' href='/css/code.css' />
-        <link rel='stylesheet' href='/css/terms.css' />
-        <link rel='stylesheet' href='/css/progress.css' />
-        <link rel='stylesheet' href='/css/terminal.css' />
-        <link rel='stylesheet' href='/css/toast.css' />
-        <link rel='stylesheet' href='/css/showcase.css' />
-        <link rel='stylesheet' href='/css/coverage.css' />
-        <link rel='stylesheet' href='/css/prototype.css' />
-        <link rel='stylesheet' href='/css/dictionary.css' />
         {children}
       </body>
     </html>

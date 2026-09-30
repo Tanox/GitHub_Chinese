@@ -1,4 +1,16 @@
 # Changelog
+## [1.12.9] - 2026-09-30
+
+### Fix（修复 v1.12.8 路径缺陷，解除采集主链路与单测红灯）
+- `scripts/collect-dict.cjs` 迁入 `scripts/` 后残留旧路径 `require('./scripts/dict-report.cjs')`，修正为同目录 `require('./dict-report.cjs')`；此前模块加载即 `MODULE_NOT_FOUND`，导致 `npm run dict:collect`、生产采集子进程及 collect-dict/coverage 两组单测全部失败。
+- `src/lib/collect-service-client.js` 误写 `from './logger.js'`（应为 `../utils/logger.js`），修正后两个采集路由的静态导入不再在模块加载期崩溃。
+- 重新构建 `build/GitHub_zh-cn.user.js`（产物版本对齐 v1.12.9）。
+
+### Refactor（样式工程化：public/css → Next 打包）
+- 将 `public/css/` 下 14 个自包含样式模块迁移至 `src/app/styles/`，改由 `src/app/layout.tsx` 经 `import` 引入（不再经 `public` 静态目录以 `<link>` 加载），纳入 Next 构建打包与内容指纹，离线/部署路径更可控。
+- 各样式文件 `@file` 路径与头注释版本同步至 v1.12.9；`layout.tsx` 导入顺序保持原 `<link>` 顺序（base→layout→sidebar→cards→buttons→code→terms→progress→terminal→toast→showcase→coverage→prototype→dictionary）以维持级联优先级。
+- 清理已空的 `public/css/` 目录。
+
 ## [1.12.8] - 2026-09-30
 
 ### Refactor（目录与采集架构改进）

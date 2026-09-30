@@ -1,12 +1,13 @@
 /**
  * 采集服务客户端
  * @file src/lib/collect-service-client.js
- * @version 1.12.8
+ * @version 1.12.9
+ * @date 2026-09-30
  * @description 将采集请求转发到自托管「独立采集服务」（W5 架构解耦）：
  *   仅当配置 COLLECT_SERVICE_URL 时启用，把 SSE 流透传回前端；
  *   未配置时返回 null，路由回退到本地采集逻辑（默认行为不变）。
  */
-import { logger } from './logger.js';
+import { logger } from '../utils/logger.js';
 
 const SERVICE_URL = process.env.COLLECT_SERVICE_URL || '';
 

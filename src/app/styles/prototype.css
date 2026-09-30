@@ -1,7 +1,7 @@
 /*
  * GitHub 中文 · 采集工作台 — 原型复刻外壳与组件覆盖
- * @file public/css/prototype.css
- * @version 1.12.3
+ * @file src/app/styles/prototype.css
+ * @version 1.12.9
  * @description 采集页组件级原型视觉对齐：所有覆盖规则限定在 .proto-page 作用域，
  *              不影响 /overview /coverage /design 三个页面的既有样式。应用外壳由 Shell 标准模式提供。
  */

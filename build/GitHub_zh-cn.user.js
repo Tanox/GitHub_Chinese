@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_i18n
-// @version      1.12.7
+// @version      1.12.9
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,8 +27,8 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.12.7
- * @date 2026-09-27
+ * @version 1.12.9
+ * @date 2026-09-30
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
  */
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.12.7';
+const VERSION = '1.12.9';
 
 /**
  * GitHub 元素选择器列表配置
@@ -2187,8 +2187,8 @@ const partialTranslator = {
 /**
  * 翻译词典管理模块
  * @file src/translation-core/dictionaryManager.js
- * @version 1.9.26
- * @date 2026-09-22
+ * @version 1.12.8
+ * @date 2026-09-30
  * @author Sut
  * @description 管理翻译词典的加载和查询
  */
@@ -2266,18 +2266,18 @@ const dictionaryManager = {
       }
     }
 
-    // 查询哈希表
+    // 查询哈希表（Map.get 未命中返回 undefined，统一按「无结果」处理）
     let result = this.dictionaryHash.get(normalizedText);
 
     // 如果没有找到，尝试大小写不敏感查询
-    if (result === null && normalizedText.length <= MAX_KEY_LENGTH_FOR_CASE_VARIANTS) {
+    if (result == null && normalizedText.length <= MAX_KEY_LENGTH_FOR_CASE_VARIANTS) {
       const lowerCaseText = normalizedText.toLowerCase();
       const upperCaseText = normalizedText.toUpperCase();
       result = this.dictionaryHash.get(lowerCaseText) || this.dictionaryHash.get(upperCaseText);
     }
 
     // 精确匹配仍无结果时，按配置启用 Trie 部分匹配（上下文由本模块注入，避免循环依赖）
-    if (result === null && CONFIG.performance?.enablePartialMatch) {
+    if (result == null && CONFIG.performance?.enablePartialMatch) {
       result = partialTranslator.performPartialTranslation(normalizedText, true, {
         dictionary: this.dictionary,
         dictionaryTrie: this.dictionaryTrie,
@@ -2286,21 +2286,21 @@ const dictionaryManager = {
     }
 
     // 清理文本中的潜在危险内容
-    if (result !== null) {
+    if (result != null) {
       result = this.sanitizeText(result);
     }
 
-    // 缓存结果
+    // 缓存结果（仅缓存有效字符串，避免写入 undefined/null）
     if (
       CONFIG.performance?.enableTranslationCache &&
       normalizedText.length <= (CONFIG.performance?.maxCachedTextLength || 100)
     ) {
-      if (result !== null) {
+      if (result != null) {
         this.cacheManager.setToCache(normalizedText, result, false);
       }
     }
 
-    return result;
+    return result == null ? null : result;
   },
 
   sanitizeText(text) {
@@ -6965,18 +6965,20 @@ class AutoStringUpdater {
 }
 
 /**
- * 词典处理工具
- * @file src/utils/tools/dictionaryProcessor.js
- * @version 1.12.4
+ * 词典统计工具
+ * @file src/utils/tools/dictionaryStats.js
+ * @version 1.12.8
+ * @description 与 src/lib/dictionary-processor.js（采集清洗子进程桥接）同名易混，
+ *   此处仅做词典合并与统计，不涉及任何子进程调用。
  */
 
-class DictionaryProcessor {
+class DictionaryStats {
   static mergeDictionaries() {
     return mergeAllDictionaries();
   }
 
   static validateDictionary() {
-    const dictionary = DictionaryProcessor.mergeDictionaries();
+    const dictionary = DictionaryStats.mergeDictionaries();
     const total = Object.keys(dictionary).length;
     const untranslated = Array.from(stringExtractor.findUntranslatedStrings(false)).length;
     return {
@@ -6987,7 +6989,7 @@ class DictionaryProcessor {
   }
 
   static showStatisticsInConsole() {
-    const stats = DictionaryProcessor.validateDictionary();
+    const stats = DictionaryStats.validateDictionary();
     console.log('[GitHub 中文翻译] 词典统计');
     console.log(`📊 总条目数: ${stats.totalEntries}`);
     console.log(`✅ 已翻译条目: ${stats.translatedEntries}`);
@@ -7008,6 +7010,6 @@ function loadTools() {
   return {
     stringExtractor,
     AutoStringUpdater,
-    DictionaryProcessor,
+    DictionaryStats,
   };
 }})();

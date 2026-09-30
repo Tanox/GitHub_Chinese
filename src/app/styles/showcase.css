@@ -1,8 +1,8 @@
 /*
  * GitHub 中文 · 采集工作台 — 概览与设计系统
  * 仅服务 /overview 与 /design 两个信息型页面，复用 base.css 的设计令牌
- * @file public/css/showcase.css
- * @version 1.9.28
+ * @file src/app/styles/showcase.css
+ * @version 1.12.9
  */
 .stat-grid {
   display: grid;

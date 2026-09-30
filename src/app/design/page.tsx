@@ -1,8 +1,8 @@
 /**
  * 设计系统页
  * @file src/app/design/page.tsx
- * @version 1.9.26
- * @description 服务端页面：展示 public/css/base.css 的设计令牌与核心组件样式
+ * @version 1.12.9
+ * @description 服务端页面：展示 src/app/styles/base.css 的设计令牌与核心组件样式
  */
 
 import type { Metadata } from 'next';
@@ -47,7 +47,7 @@ export default function DesignPage() {
     <Shell
       active='design'
       title='设计系统'
-      subtitle='设计令牌与核心组件样式，源码位于 public/css'
+      subtitle='设计令牌与核心组件样式，源码位于 src/app/styles'
       badge={
         <div className='status-pill'>
           <span className='dot'></span>
