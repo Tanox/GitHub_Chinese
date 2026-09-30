@@ -6,13 +6,13 @@
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { STATUS, createReviewEntry } = require('../review-store.cjs');
+const { STATUS, createReviewEntry } = require('../scripts/review-store.cjs');
 const {
   searchDictionary,
   filterUntranslated,
   batchApplyStatus,
   UNTRANSLATED_PREFIX,
-} = require('../term-operations.cjs');
+} = require('../scripts/term-operations.cjs');
 
 const DICT = {
   Sign: '登录',

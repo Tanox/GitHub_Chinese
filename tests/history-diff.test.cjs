@@ -11,7 +11,7 @@ const {
   buildRoundRecord,
   restoreFromRecord,
   compareRounds,
-} = require('../history-diff.cjs');
+} = require('../scripts/history-diff.cjs');
 
 const PREV = { Sign: '登录', Issue: '议题', Delete: '删除' };
 const CURR = { Sign: '登录', Issue: '工单', Star: '星标' };

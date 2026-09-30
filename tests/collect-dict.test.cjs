@@ -11,7 +11,7 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs');
 
-const { analyzeTexts, generateReport } = require('../collect-dict.cjs');
+const { analyzeTexts, generateReport } = require('../scripts/collect-dict.cjs');
 
 const DICT = { Sign: '登录', Issue: '议题', 'New issue': '新建议题' };
 

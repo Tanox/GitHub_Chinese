@@ -6,14 +6,14 @@
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { STATUS, createReviewEntry } = require('../review-store.cjs');
+const { STATUS, createReviewEntry } = require('../scripts/review-store.cjs');
 const {
   selectMergedEntries,
   buildDictionaryPatch,
   applyPatch,
   renderDiffPreview,
   PLACEHOLDER_PREFIX,
-} = require('../merge-into-dictionary.cjs');
+} = require('../scripts/merge-into-dictionary.cjs');
 
 test('selectMergedEntries 仅收录 translated，无译文生成占位', () => {
   const map = {

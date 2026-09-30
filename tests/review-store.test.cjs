@@ -15,7 +15,7 @@ const {
   summarize,
   serialize,
   deserialize,
-} = require('../review-store.cjs');
+} = require('../scripts/review-store.cjs');
 
 test('createReviewEntry 默认 pending 且 history 含 create', () => {
   const e = createReviewEntry('Sign in', { source: 'nav' });

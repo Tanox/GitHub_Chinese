@@ -4,9 +4,9 @@
  */
 import { stringExtractor } from './tools/stringExtractor.js';
 import { AutoStringUpdater } from './tools/autoUpdater.js';
-import { DictionaryProcessor } from './tools/dictionaryProcessor.js';
+import { DictionaryStats } from './tools/dictionaryStats.js';
 
-export { stringExtractor, AutoStringUpdater, DictionaryProcessor };
+export { stringExtractor, AutoStringUpdater, DictionaryStats };
 
 /**
  * 加载工具类
@@ -16,6 +16,6 @@ export function loadTools() {
   return {
     stringExtractor,
     AutoStringUpdater,
-    DictionaryProcessor,
+    DictionaryStats,
   };
 }

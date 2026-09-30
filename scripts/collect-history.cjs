@@ -7,7 +7,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { buildRoundRecord } = require('../history-diff.cjs');
+const { buildRoundRecord } = require('./history-diff.cjs');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const HISTORY_FILE = path.join(PROJECT_ROOT, 'docs', 'collect-history.json');

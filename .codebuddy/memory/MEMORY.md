@@ -28,3 +28,9 @@
 
 ## 工具链陷阱（Windows/PowerShell）
 - `Get-Content` 读 UTF-8 中文乱码 → 用读取文件工具；`node -e "..."` 的 `$`/`[`/引号被吞 → 写临时 `.mjs` 执行；搜代码用 `search_content` 的 `ignore_globs`（勿用 `!{negated}`）；长任务 `node --test` 直跑、输出 `Select-String` 过滤；批量改写仓库文档用 node 脚本时：① 文档为 CRLF，正则须用 `\r?\n` 且 `[^\r\n]*` 而非 `[^\n]*`；② 含中文顿号 `、`(U+3001) 的字面量在脚本里易失配（曾因目录树行带反引号、且码位核对偏差导致多次 replace 失败），优先用 `replace_in_file` 工具或先 `codePointAt` 确认码位；③ 同一文件多次编辑用单个脚本原子完成，避免多工具并行竞态（本项目高频被用户并行编辑）。
+
+## 结构改进待办（2026-09-30 评审，未实施）
+- 根目录 ~10 个游离 `.cjs` 维护脚本（T17/T19/T23/T24/T25/T36 数据层：coverage/history-diff/io-dictionary/merge-dictionaries/merge-into-dictionary/review-store/term-operations），多数未接入 npm scripts，建议迁入 scripts/ 并补 dict:* 命令。
+- 两套并行 UI：Next 工作台(src/app) 与 prototype/(server.js dev:prototype) 功能重叠；样式三处(public/css 14 / prototype/assets 10 / globals.css)。建议归档 prototype 或明确分工。
+- 引擎核心(src/core、src/translation-core、src/page-monitor、src/utils) 近乎无单测，tests/ 仅覆盖 src/lib 数据/采集层（9 模块）；39 文件含 console.* 缺统一日志器。最高价值改进：用 jsdom 补翻译核心单测 + 建统一 logger。
+- 同名混淆：src/utils/tools/dictionaryProcessor.js(词典校验/统计) 与 src/lib/dictionary-processor.js(清洗子进程桥接) 同名不同义。

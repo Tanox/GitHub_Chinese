@@ -12,7 +12,7 @@ const {
   dictionaryToJson,
   jsonToDictionary,
   normalizeDictionary,
-} = require('../io-dictionary.cjs');
+} = require('../scripts/io-dictionary.cjs');
 
 const SAMPLE = { Sign: '登录', 'New issue': '新建议题', '待翻译: Foo': '待翻译: Foo' };
 

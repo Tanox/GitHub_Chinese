@@ -6,7 +6,7 @@
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { computeCoverage, isTranslatableCandidate } = require('../coverage.cjs');
+const { computeCoverage, isTranslatableCandidate } = require('../scripts/coverage.cjs');
 
 test('isTranslatableCandidate 过滤噪声（与 findUntranslated 一致）', () => {
   assert.equal(isTranslatableCandidate('a'), false); // 过短

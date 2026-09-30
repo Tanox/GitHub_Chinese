@@ -22,7 +22,7 @@ import { CollectErrorCode } from './collect-codes.js';
  */
 
 /** 词典清洗脚本（相对项目根解析） */
-const PROCESSOR_SCRIPT = path.join(process.cwd(), 'collect-dict.cjs');
+const PROCESSOR_SCRIPT = path.join(process.cwd(), 'scripts', 'collect-dict.cjs');
 /** 事件轮询间隔（子进程输出为流式，采用短轮询转事件流） */
 const QUEUE_POLL_INTERVAL_MS = 100;
 /** 子进程告警前缀：此类 stderr 行视为警告而非错误 */
