@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.3** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.4** ｜ 版本权威源：`src/version.js`
 
 ## 项目概述
 
@@ -209,7 +209,7 @@ npm test               # lint → build → validate
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.3**（2026-09-30）。
+- 当前版本 **v1.13.4**（2026-09-30）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，四页 `/`、`/overview`、`/coverage`、`/design`）。两链路仅共享词典数据。
 
 ### 量化指标
@@ -243,7 +243,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.13.3 |
+| **当前版本** | 1.13.4 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

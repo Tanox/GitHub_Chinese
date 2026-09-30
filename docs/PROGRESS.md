@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.13.3** ｜ 更新日期：2026-09-30 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.4** ｜ 更新日期：2026-09-30 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
 > 每次发版后需同步更新「迭代记录」（§4），并将变更记录写入 `CHANGELOG.md`，按 §7 核对版本与文档同步。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.13.3 |
+| 当前版本 | v1.13.4 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -27,7 +27,7 @@
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
-| 用户脚本产物大小 | 198,845 字节（约 194 KB） | `build/GitHub_zh-cn.user.js` |
+| 用户脚本产物大小 | 199,094 字节（约 194 KB） | `build/GitHub_zh-cn.user.js` |
 | 翻译词典词条数 | 459 | `node scripts/collect-dict.cjs` 输出 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 1 个 HTML + 10 个 CSS | `prototype/` |
@@ -35,7 +35,7 @@
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
 | 产物校验 | 通过 | `npm run validate` |
-| 单元测试 | 140 用例（139 通过 / 1 跳过 / 0 失败，含 a11y 3） | `npm run test:unit` |
+| 单元测试 | 144 用例（143 通过 / 1 跳过 / 0 失败，含 a11y 3） | `npm run test:unit` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
 | Next 构建告警 | 0 | `npm run build:web` |
 
@@ -150,7 +150,7 @@ src/main.js                        ← 唯一入口
 - [x] Next 16 约定对齐：`middleware` → `proxy`、移除失效 `eslint` 配置键
 - [x] 语义化 `id` 覆盖主要容器与交互控件
 - [x] 全部代码文件符合「单文件 ≤ 200 行」约定（0 处超出）
-- [x] 单元测试：Node 内置 test runner（`node --test`），共 140 用例（139 通过 / 1 跳过 / 0 失败，含 a11y 3），详见 §1.1
+- [x] 单元测试：Node 内置 test runner（`node --test`），共 144 用例（143 通过 / 1 跳过 / 0 失败，含 a11y 3），详见 §1.1
 - [x] 用户脚本产物冒烟：存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性（P2-5）
 
 ---
