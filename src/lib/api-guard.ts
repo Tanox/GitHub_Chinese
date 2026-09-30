@@ -1,8 +1,9 @@
 /**
- * 采集 API 访问控制（C3）：可选 Bearer 令牌鉴权 + 每 IP 限流
+ * 采集 / 词典 API 访问控制（C3）：可选 Bearer 令牌鉴权 + 每 IP 限流
  * @file src/lib/api-guard.ts
- * @version 1.11.5
- * @description 为 `/api/collect` 与 `/api/batch-collect` 提供统一门禁：
+ * @version 1.12.10
+ * @date 2026-09-30
+ * @description 为 `/api/collect`、`/api/batch-collect` 与 `/api/dictionary/suggest` 提供统一门禁：
  *   1. 可选令牌：仅当配置 `COLLECT_API_TOKEN` 时启用，默认开放（向后兼容，无 UI 破坏）；
  *   2. 每 IP 固定窗口限流：默认 60s 内 30 次，超出返回 429 + Retry-After。
  *   调用方在解析请求体前执行 `checkApiAccess`，被拒时直接返回对应 Response。

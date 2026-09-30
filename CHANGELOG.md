@@ -1,4 +1,10 @@
 # Changelog
+## [1.12.10] - 2026-09-30
+
+### Fix（翻译建议接口补鉴权/限流）
+- `/api/dictionary/suggest` 此前未接入统一门禁：配置 `GHZH_LLM_KEY` 后匿名请求可持续消耗付费 LLM 额度。现与 `/api/collect`、`/api/batch-collect` 一致，在解析参数前调用 `checkApiAccess`——默认按 IP 限流（60s/30 次，超出 429），配置 `COLLECT_API_TOKEN` 后要求 Bearer 令牌（401）；默认开放策略不变，前端词典助手无需改动。
+- `api-guard.ts` 头注释适用范围补登第三路由。
+
 ## [1.12.9] - 2026-09-30
 
 ### Fix（修复 v1.12.8 路径缺陷，解除采集主链路与单测红灯）
