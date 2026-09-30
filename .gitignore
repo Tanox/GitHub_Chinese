@@ -1,4 +1,5 @@
-/.trae
+/.trae/*
+!/.trae/skills/
 /.vscode
 /node_modules
 # /build  <- 允许追踪源码
