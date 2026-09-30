@@ -1,6 +1,6 @@
 # 开发指南
 
-> 版本：**v1.12.3** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.3** ｜ 版本权威源：`src/version.js`
 
 本文档记录了项目的开发流程、分支策略、提交规范、发布流程和测试要求。
 
@@ -20,11 +20,10 @@
 | 分支名称 | 用途 | 说明 |
 |---------|------|------|
 | `main` | 主分支 | 稳定版本，随时可发布生产环境 |
-| `develop` | 开发分支 | 集成下一个版本的所有功能开发 |
 
 ### 1.2 功能分支
 
-功能分支从 `develop` 分支创建，开发完成后合并回 `develop`。
+功能分支从 `main` 分支创建，开发完成后合并回 `main`。
 
 **命名格式**：
 - `feature/<功能描述>` - 新功能开发
@@ -47,7 +46,7 @@ main (稳定版本)
   ↑
   │  发布新版本时合并
   │
-develop (开发集成分支)
+main（主分支）
   ↑
   │  开发完成后合并
   │
@@ -55,12 +54,12 @@ feature/* (功能分支) ← 从这里开始开发
 ```
 
 **流程步骤**：
-1. 从 `develop` 创建功能分支
+1. 从 `main` 创建功能分支
 2. 在功能分支上进行开发
 3. 提交代码（遵循语义化提交规范）
 4. 推送分支并创建 Pull Request
-5. 代码审查通过后合并到 `develop`
-6. 发布时，将 `develop` 合并到 `main` 并打标签
+5. 代码审查通过后合并到 `main`
+6. 发布时，将改动经 PR 合并到 `main` 并打标签
 
 ---
 
@@ -142,7 +141,7 @@ MAJOR.MINOR.PATCH
 
 #### 3.2.1 准备发布
 
-1. 确保 `develop` 分支所有代码已合并
+1. 确保 `main` 分支为最新
 2. 运行测试确保所有测试通过
 3. 更新版本号和 CHANGELOG
 
@@ -175,7 +174,7 @@ MAJOR.MINOR.PATCH
 
 #### 3.2.4 发布步骤
 
-1. 将 `develop` 合并到 `main`
+1. 将改动经 PR 合并到 `main`
 2. 创建 Git 标签：`git tag -a v<版本号> -m "Release v<版本号>"`
 3. 推送标签：`git push origin v<版本号>`
 4. 在 GitHub 创建 Release
@@ -186,13 +185,13 @@ MAJOR.MINOR.PATCH
 项目使用 GitHub Actions 自动化发布：
 
 **触发条件**：
-- 推送到 `main` 或 `develop` 分支 → 运行 CI 检查
+- 推送到 `main` 分支 → 运行 CI 检查
 - 创建 Pull Request 到 `main` → 运行 CI 检查
 - 发布 GitHub Release → 执行发布流程
 
 **CI/CD 作业**：
 1. **lint** - 代码质量检查
-2. **test** - 单元测试（Node.js 18.x 和 20.x）
+2. **test** - 单元测试（Node.js ≥ 22）
 3. **build** - 构建项目并验证产物
 4. **security** - 安全审计
 5. **release** - 发布到 GitHub Releases（仅在发布时）
@@ -213,9 +212,7 @@ npm run validate  # 校验产物：存在性 / 体积 / 语法 / 未定义引用
 
 此外 Next 工作台可单独做类型检查：`node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json`。
 
-> **注意**：仓库中保留 `jest.config.js` 与 `jest.setup.js`，但 `jest`、
-> `jest-environment-jsdom`、`babel-jest` 尚未安装，且当前无任何测试用例，
-> `npm test` 不会执行单元测试。是否启用 Jest 待决策（见 `docs/PROGRESS.md` P1-3）。
+> **说明**：`npm test` 的完整流水线见 `package.json`（lint → lint:length → build → test:unit → validate）；单元测试由 Node 内置 `node --test` 运行（`npm run test:unit`，当前 **140 用例 / 1 跳过 / 0 失败**），无需 Jest。
 
 ### 4.2 测试文件组织
 
@@ -256,18 +253,11 @@ npm run build
 npm run validate
 ```
 
-### 4.4 覆盖率要求
+### 4.4 测试执行
 
-项目要求最低测试覆盖率：
-
-| 指标 | 最低要求 |
-|------|---------|
-| 分支覆盖率 (branches) | 50% |
-| 函数覆盖率 (functions) | 50% |
-| 行覆盖率 (lines) | 50% |
-| 语句覆盖率 (statements) | 50% |
-
-覆盖率报告生成在 `coverage/` 目录下。
+- 单元测试：`node --test`（`npm run test:unit`），当前 **140 用例 / 1 跳过 / 0 失败**。
+- 类型检查：`tsc --noEmit -p tsconfig.json`（`npm run typecheck`）。
+- 当前未强制覆盖率门禁；新增核心逻辑建议配套单测（见 [STANDARDS.md](../docs/code-review/STANDARDS.md) 测试检查点）。
 
 ### 4.5 测试规范
 

@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.12.3** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.3** ｜ 版本权威源：`src/version.js`
 
 面向开发者与贡献者的文档入口。设计规范与高保真原型由 `prototype/` 目录统一维护。
 
@@ -30,7 +30,7 @@
 | B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
 - 用户脚本调用链：`src/main.js → main/lifecycle.js → versionChecker / translation-core / page-monitor / ui/configUI.js`
-- 采集工作台调用链：`src/app/page.tsx → useCollector.ts → POST /api/collect | /api/batch-collect → collector-logic → puppeteer-core / spawn(collect-dict.cjs) → SSE 实时回传`
+- 采集工作台调用链：`src/app/page.tsx → useCollector.ts → POST /api/collect | /api/batch-collect → collector-logic → puppeteer-core / spawn(scripts/collect-dict.cjs) → SSE 实时回传`
 
 ### 开发要点
 
@@ -48,7 +48,7 @@
 ### 原型设计要点
 
 - 产品定位：GitHub 页面字符串采集工具（词典采集工作台），Next.js 应用 + 可交互高保真原型
-- 三步闭环：① 植入探针（TreeWalker 提取）→ ② 归集词条（DataCenter → `POST /api/collect` / `batch-collect`）→ ③ 解析入库（collector-core + `collect-dict.cjs` → `untranslated-terms.txt` / `collect-history.json`）
+- 三步闭环：① 植入探针（TreeWalker 提取）→ ② 归集词条（DataCenter → `POST /api/collect` / `batch-collect`）→ ③ 解析入库（collector-core + `scripts/collect-dict.cjs` → `untranslated-terms.txt` / `collect-history.json`）
 - API 契约：`POST /api/collect {data:string}`、`POST /api/batch-collect {urls:string[]}`（上限 50）→ SSE `{type:'log'|'error'|'progress'|'done'}`
 
 ## 高保真原型

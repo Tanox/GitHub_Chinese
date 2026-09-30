@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.12.3** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.3** ｜ 版本权威源：`src/version.js`
 
 ## 项目概述
 
@@ -61,8 +61,6 @@ GitHub_Chinese/
 │   ├── lib/                          # 采集内核：collector-core / dictionary-processor / extract-page-text / page-navigation / collector-logic / request-body / url-guard（SSRF）/ browser-resolver / browser-semaphore / collect-codes / coverage-report / sse-stream / api-guard（鉴权限流）/ batch-collector / project-metrics
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
 │   └── proxy.ts                      # 安全响应头 + nonce CSP（Next 16 起取代 middleware）
-├── public/                           # Next 静态样式资源（css）
-│   └── css/                          # 采集工作台样式（模块化，单文件 ≤200 行）
 ├── prototype/                        # 高保真原型
 │   ├── assets/                       # 原型样式（CSS）
 │   └── prototypes/                   # index.html（唯一原型入口）
@@ -73,7 +71,7 @@ GitHub_Chinese/
 ├── docs/                             # 正式规范文档（权威正文）
 ├── build/                            # 用户脚本构建产物（需纳入版本控制）
 ├── build.cjs                         # 用户脚本构建入口
-├── collect-dict.cjs                  # 词典采集工具
+├── scripts/collect-dict.cjs            # 词典采集工具（已随 v1.12.8 迁入 scripts/）
 ├── server.js                         # 原型热更新预览服务器
 ├── next.config.mjs                   # Next 配置（根级，与 src 解耦）
 ├── tailwind.config.ts / postcss.config.mjs
@@ -133,12 +131,12 @@ GitHub_Chinese/
 - `src/components/CollectorConsole.tsx` 叶组件：`ScriptInjector`（探针复制）、`DataCenter`（文本/批量归集 + JSON 导出）、`PreviewTable`（词条预览）、`Dashboard`（实时进度/终端/备份）
 - `src/hooks/useCollector.ts`：采集状态与 SSE 事件流解析；`collector-types.ts` / `collector-constants.ts` / `collector-sse.ts` 按职责拆分
 - `src/lib/collector-core.js`：Headless 抓取与采集编排（链路唯一实现）
-- `src/lib/dictionary-processor.js`：调用 `collect-dict.cjs` 的子进程桥接（`term` 结构化事件下发，解除前后端输出耦合）
+- `src/lib/dictionary-processor.js`：调用 `scripts/collect-dict.cjs` 的子进程桥接（`term` 结构化事件下发，解除前后端输出耦合）
 - `src/lib/extract-page-text.js`：浏览器端自包含文本提取（作用域根 + 噪声过滤），可经 `page.evaluate` 注入
 - `src/lib/page-navigation.js`：导航超时降级、hydration 等待、滚动懒加载、指数退避重试
 - `src/lib/collector-logic.ts` / `request-body.js` / `collect-codes.js`：类型门面、请求体校验、错误码契约
 - `src/lib/url-guard.js`（SSRF）、`browser-resolver.js` / `browser-semaphore.js`（浏览器解析与并发限流）、`sse-stream.ts`（SSE 工厂）、`api-guard.ts`（鉴权 + 限流）、`coverage-report.ts`（覆盖率统计）、`project-metrics.ts`（磁盘指标）、`batch-collector.js`
-- 根级采集工具脚本：`collect-dict.cjs`（清洗子进程）、`review-store.cjs`（审阅状态机，T19）、`merge-into-dictionary.cjs`（合并入库，T20）、`history-diff.cjs`（轮次对比/回滚，T23）、`io-dictionary.cjs`（导入导出，T24）、`term-operations.cjs`（搜索批量，T25）、`coverage.cjs`（覆盖率度量，T17）、`merge-dictionaries.cjs`；`scripts/`：`dict-report.cjs`、`collect-history.cjs`
+- 根级采集工具脚本：`scripts/collect-dict.cjs`（清洗子进程）、`review-store.cjs`（审阅状态机，T19）、`merge-into-dictionary.cjs`（合并入库，T20）、`history-diff.cjs`（轮次对比/回滚，T23）、`io-dictionary.cjs`（导入导出，T24）、`term-operations.cjs`（搜索批量，T25）、`coverage.cjs`（覆盖率度量，T17）、`merge-dictionaries.cjs`；`scripts/`：`dict-report.cjs`、`collect-history.cjs`
 - `src/app/api/*/route.ts`：`text/event-stream` 流式接口（`createSseResponse` 统一心跳/取消）
 - `src/proxy.ts`：附加 nonce CSP 与安全响应头（Next 16 起取代 `middleware`）
 
@@ -211,22 +209,12 @@ npm test               # lint → build → validate
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.12.0**（2026-09-26）。
+- 当前版本 **v1.13.3**（2026-09-30）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，四页 `/`、`/overview`、`/coverage`、`/design`）。两链路仅共享词典数据。
 
-### 量化指标（发版时由脚本实算，禁止手填；数值取自 PROGRESS §1.1 v1.12.0）
+### 量化指标
 
-| 指标 | 数值（v1.12.0） |
-|------|------|
-| `src/` 源码文件数 | 122 |
-| `src/` 源码总行数 | 9612 |
-| 用户脚本纳入模块数 | 92（孤立 0、循环引用 0） |
-| 用户脚本产物大小 | 198,838 字节（194.18 KB） |
-| 翻译词典词条数 | 459（12 个词典模块） |
-| 工作台页面路由 | 4（`/`、`/overview`、`/coverage`、`/design`） |
-| 代码检查 / 类型检查 | 0 error / 0 warning；`strict: true` 通过 |
-| 单元测试 | 20 用例通过（含 a11y 3） |
-| 超长代码文件（>200 行） | 0 |
+量化指标（源码文件数 / 行数 / 产物大小 / 词条数 / 测试数等）随发版由对应命令实算，**禁止手填**；最新数值见 [PROGRESS.md §1.1](./PROGRESS.md)（测试数以 `npm run test:unit` 经 `node --test` 统计）。
 
 ### 已完成能力
 
@@ -255,7 +243,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.12.0 |
+| **当前版本** | 1.13.3 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

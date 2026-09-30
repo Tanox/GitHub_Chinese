@@ -1,7 +1,7 @@
 # 代码审查流程规范 (Code Review Process)
 
 > **版本**: 1.0.0
-> **更新日期**: 2026-01-XX
+> **更新日期**: 2026-09-30
 > **维护者**: 技术团队
 
 ---
@@ -466,7 +466,7 @@ git branch -d feature/your-feature-name
 
 1. **从生产分支创建 Hotfix 分支**
    ```bash
-   git checkout production
+   git checkout main
    git checkout -b hotfix/critical-bug-fix
    ```
 
@@ -538,7 +538,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
       - run: npm ci
       - run: npm run lint
 
@@ -548,7 +548,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
       - run: npm ci
       - run: npm run build
       - run: npm run validate

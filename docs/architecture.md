@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.12.3** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.3** ｜ 版本权威源：`src/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -384,14 +384,13 @@ GitHub_Chinese/
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts
 │   ├── types/                        # puppeteer-core.d.ts 等最小类型声明
 │   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
-├── public/                           # 静态资源（css 模块化 / js 向导）
 ├── prototype/                        # 设计系统与高保真原型
 ├── scripts/build/                    # moduleGraph.cjs / transform.cjs
 ├── scripts/validate-bundle.cjs       # 构建产物校验
 ├── docs/                             # 正式规范文档（权威正文）
 ├── build/GitHub_zh-cn.user.js         # 用户脚本构建产物（纳入版本控制）
 ├── build.cjs                         # 用户脚本构建入口
-├── collect-dict.cjs                  # 词典采集工具
+├── scripts/collect-dict.cjs            # 词典采集工具（已随 v1.12.8 迁入 scripts/）
 ├── server.js                         # 原型热更新预览服务器
 ├── next.config.mjs / tailwind.config.ts / postcss.config.mjs
 ├── eslint.config.js / tsconfig.json
@@ -432,7 +431,7 @@ GitHub_Chinese/
                 └─ src/lib/collector-core.js（抓取与编排，链路唯一实现）
                     ├─ puppeteer-core（可选依赖）+ 系统浏览器抓取页面文本
                     └─ src/lib/dictionary-processor.js
-                          └─ spawn(collect-dict.cjs) ← 与用户脚本共享同一份词典
+                          └─ spawn(scripts/collect-dict.cjs) ← 与用户脚本共享同一份词典
                                 └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
 ```
 
@@ -442,7 +441,7 @@ GitHub_Chinese/
 |------|------|------|
 | `/` | 静态 | 采集控制台；仅 `CollectorConsole` 及其叶组件为客户端组件 |
 | `/overview` | 静态 | 项目概览；由 `src/lib/project-metrics.ts` 在模块加载时一次性统计磁盘指标 |
-| `/design` | 静态 | 设计系统；展示 `public/css/base.css` 的令牌与核心组件样式 |
+| `/design` | 静态 | 设计系统；展示 `src/app/styles/base.css` 的令牌与核心组件样式 |
 
 响应式导航（无额外客户端 JS）：
 
@@ -476,15 +475,4 @@ GitHub_Chinese/
 
 ## 8. 版本历史
 
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 1.9.28 | 2026-09-23 | 修复配置面板性能监控按钮为死按钮（P2-4）；新增采集错误码约定（P2-7）：`collect-codes.js` 共用 `CollectErrorCode`、服务端错误事件带 `code`、前端渲染错误码徽标；空输入/空 URL 直接返回 `INPUT_INVALID` |
-| 1.9.27 | 2026-09-22 | 修复窄屏（≤1024px）隐藏侧栏导致三页无法互跳：新增服务端组件 `MobileNav`（CSS 媒体查询切换，不增加客户端包）与共享导航源 `navItems.ts`；≤640px 顶栏转纵向、内容区收窄内边距 |
-| 1.9.26 | 2026-09-22 | 修复工作台外壳布局与词条状态徽标样式；新增「项目概览」「设计系统」页与服务端指标；`middleware`→`proxy` 迁移；采集服务端逻辑去重为 `collector-core` + `dictionary-processor`；移除未引用的 i18n 框架；部分匹配改为上下文注入以消除循环引用；开启 TS 严格模式 |
-| 1.9.25 | 2026-09-22 | 修复词典清洗子进程输入路径不匹配；采集接口非法 JSON 返回 400 |
-| 1.9.24 | 2026-09-19 | 修复构建脚本模块清单脱节、`configUI` 未导出、部分匹配空转、版本号不一致等阻塞缺陷；新增产物校验脚本与进度文档 |
-| 1.9.23 | 2026-09-19 | 采集演示页升级为 Next.js 16（App Router），新增 Tailwind / ESLint / Husky 配置 |
-| 1.9.22 | 2026-09-18 | 重构词典采集向导样式，统一品牌绿主题 |
-| 1.9.21 | 2026-07-18 | 项目更名为 GitHub Chinese 简体中文 |
-| 1.9.20 | 2026-06-10 | 完善项目规范文档，统一版本号，修正 CI/CD 配置 |
-| 1.9.19 | 2026-06-08 | ⭐ 优化翻译逻辑：无匹配时不修改 DOM |
+变更记录统一维护在根目录 [CHANGELOG.md](../CHANGELOG.md)（Keep-a-Changelog 格式，含 1.9.x 至今的全部版本），本文档不再重复维护版本历史表。

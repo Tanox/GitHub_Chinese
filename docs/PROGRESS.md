@@ -1,6 +1,6 @@
 # 项目开发进度报告
 
-> 版本：**v1.12.6** ｜ 更新日期：2026-09-27 ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.3** ｜ 更新日期：2026-09-30 ｜ 版本权威源：`src/version.js`
 >
 > 本文档记录 GitHub Chinese 简体中文项目的开发进度、已交付能力、任务索引与后续计划。
 > 每次发版后需同步更新「迭代记录」（§4），并将变更记录写入 `CHANGELOG.md`，按 §7 核对版本与文档同步。
@@ -13,7 +13,7 @@
 |------|------|
 | 项目定位 | GitHub 界面中文本地化（浏览器用户脚本）+ 词典采集工作台（Next.js 16） |
 | 运行形态 | 单文件用户脚本 `build/GitHub_zh-cn.user.js`（Tampermonkey / Greasemonkey） |
-| 当前版本 | v1.12.6 |
+| 当前版本 | v1.13.3 |
 | 许可证 | GPL-2.0 |
 | 仓库 | https://github.com/Tanox/GitHub_i18n |
 | 包管理器 | npm（单一锁文件 `package-lock.json`；`bun.lock` 已于 v1.9.29 删除并加入 `.gitignore`） |
@@ -28,14 +28,14 @@
 | 用户脚本孤立模块数 | 0 | 同上 |
 | 构建期循环引用 | 0 | 同上 |
 | 用户脚本产物大小 | 198,845 字节（约 194 KB） | `build/GitHub_zh-cn.user.js` |
-| 翻译词典词条数 | 459 | `node collect-dict.cjs` 输出 |
+| 翻译词典词条数 | 459 | `node scripts/collect-dict.cjs` 输出 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 1 个 HTML + 10 个 CSS | `prototype/` |
 | 工作台页面路由 | 4（`/`、`/overview`、`/coverage`、`/design`） | `next build` 路由表 |
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
 | 产物校验 | 通过 | `npm run validate` |
-| 单元测试 | 73 用例（72 通过 / 1 跳过 / 0 失败，含 a11y 3） | `npm run test:unit` |
+| 单元测试 | 140 用例（139 通过 / 1 跳过 / 0 失败，含 a11y 3） | `npm run test:unit` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
 | Next 构建告警 | 0 | `npm run build:web` |
 
@@ -88,7 +88,7 @@ src/main.js                        ← 唯一入口
 | 状态 Hook | `src/hooks/useCollector.ts` |
 | Proxy（原 middleware） | `src/proxy.ts`（安全响应头，Next 16 约定） |
 | 类型声明 | `src/types/puppeteer-core.d.ts`、`src/version.d.ts` |
-| 样式 | `public/css/`（11 个自包含模块）+ `src/app/globals.css`（Tailwind 入口） |
+| 样式 | `src/app/styles/`（11 个自包含模块）+ `src/app/globals.css`（Tailwind 入口） |
 
 ```
 浏览器（服务端页面 Shell + 客户端岛 CollectorConsole）
@@ -98,7 +98,7 @@ src/main.js                        ← 唯一入口
             └─ src/lib/collector-core.js
                 ├─ puppeteer-core（可选依赖）+ 系统浏览器抓取页面文本
                 └─ src/lib/dictionary-processor.js
-                      └─ spawn(collect-dict.cjs) ← 与用户脚本共享同一份词典
+                      └─ spawn(scripts/collect-dict.cjs) ← 与用户脚本共享同一份词典
                             └─ SSE(text/event-stream) 实时回传日志 / 进度 / 完成
 ```
 
@@ -150,7 +150,7 @@ src/main.js                        ← 唯一入口
 - [x] Next 16 约定对齐：`middleware` → `proxy`、移除失效 `eslint` 配置键
 - [x] 语义化 `id` 覆盖主要容器与交互控件
 - [x] 全部代码文件符合「单文件 ≤ 200 行」约定（0 处超出）
-- [x] 单元测试：Node 内置 test runner（`node --test`），共 62 用例（错误码契约 / 词典采集纯函数 / 产物冒烟 / a11y 3），详见 §1.1
+- [x] 单元测试：Node 内置 test runner（`node --test`），共 140 用例（139 通过 / 1 跳过 / 0 失败，含 a11y 3），详见 §1.1
 - [x] 用户脚本产物冒烟：存在性 / 体积 / UserScript 元数据 / 版本号 / `vm` 语法合法性（P2-5）
 
 ---

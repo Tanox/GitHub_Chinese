@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.12.3** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.3** ｜ 版本权威源：`src/version.js`
 
 本文档定义了项目的代码风格规范，包括命名约定、代码格式、注释规范和最佳实践。
 
@@ -537,7 +537,7 @@ function createUser(name, email, age, address, phone) {
 - 文档文件（`.md`）不适用该规则，必须保持完整与连贯
 - 项目内既有拆分实践：`utils/string/*`、`utils/tools/*`、`translation-core/elementTranslator/*`、
   `translation-core/selectorUtils/*`、`page-monitor/domObserver/*`、`ui/configUI/*`、`ui/styles/configUI/*`、
-  `scripts/build/*`、`public/css/*`
+  `scripts/build/*`、`src/app/styles/*`
 
 ### 5.9 语义化 id
 

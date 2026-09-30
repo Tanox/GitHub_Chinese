@@ -75,7 +75,7 @@
 - `extract-page-text.js`：`extractPageText(minLength,maxLength)` 自包含纯函数，可经 `page.evaluate` 注入。
 - `batch-collector.js`、`page-navigation.js`：批量抓取、超时回退与重试。
 - `dictionary-processor.js`、`request-body.js`、`url-guard.js`、`browser-resolver.js`、`browser-semaphore.js`、`collect-codes.js`、`project-metrics.ts`。
-- 解析入库脚本（`scripts/`）：`collect-dict.cjs`、`scripts/dict-report.cjs`、`scripts/collect-history.cjs`。
+- 解析入库脚本（`scripts/`）：`scripts/collect-dict.cjs`、`scripts/dict-report.cjs`、`scripts/collect-history.cjs`。
 
 ## 3. 采集流程：三步闭环
 
@@ -154,7 +154,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
 
 | 原型区块 | 原型呈现 | 真实代码落点 |
 |----------|----------|--------------|
-| 三步闭环 | `ct-steps` | `CollectorConsole.tsx` `STEPS`；`ScriptInjector`→`DataCenter`→`collector-core`+`collect-dict.cjs` |
+| 三步闭环 | `ct-steps` | `CollectorConsole.tsx` `STEPS`；`ScriptInjector`→`DataCenter`→`collector-core`+`scripts/collect-dict.cjs` |
 | 探针脚本 | `ct-code` TreeWalker | `ScriptInjector.tsx` `PROBE_SCRIPT`；`extract-page-text.js` `extractPageText` |
 | 数据中心 | 文本粘贴 / 批量 URL | `DataCenter.tsx`；`/api/collect`、`/api/batch-collect` |
 | 清洗结果预览 | 8 条两状态表 | `PreviewTable.tsx` `STATUS_LABELS` |
@@ -186,7 +186,7 @@ CollectErrorCode = {
 - 输入校验：`/api/collect` 非字符串 / 空 → 400 `{error:'没有提供数据'}`；`/api/batch-collect` `urls` 超限 → 400 `{error}`。
 - SSRF 防护：`url-guard.js` `guardUrl` 仅允许 http/https，拒绝 localhost / 内网 / 链路本地 / 云元数据（`PRIVATE_IPV4_PATTERN`、`PRIVATE_IPV6_PATTERN`、`BLOCKED_HOSTNAMES`）；非法项发 `INVALID_URL` 事件。
 - 依赖缺失：`loadPuppeteerCore` / `resolveBrowserExecutable` 失败 → `MISSING_DEPENDENCY` 事件。
-- 子进程隔离：`dictionary-processor.js` 以独立子进程运行 `collect-dict.cjs`，区分 `[WARN]` 与错误（`SUBPROCESS_FAILED`）；`finally` 清理临时文件与浏览器槽位。
+- 子进程隔离：`dictionary-processor.js` 以独立子进程运行 `scripts/collect-dict.cjs`，区分 `[WARN]` 与错误（`SUBPROCESS_FAILED`）；`finally` 清理临时文件与浏览器槽位。
 - 重试与退避：见 §6 `navigateWithRetry` 指数退避。
 
 ## 10. 版本历史
