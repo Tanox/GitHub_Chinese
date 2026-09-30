@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文 · 字符串采集工作台原型设计
 
-> 版本：**v1.12.0** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.3** ｜ 版本权威源：`src/version.js`
 >
 > 说明：本文档描述「词典采集工作台」（亦名 GitHub 页面字符串采集工具）的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/prototypes/`](../prototype/prototypes/)：[高保真原型](prototype/prototypes/index.html)。
 >
@@ -57,7 +57,7 @@
                 ▼                                └───────────┬─────────────┘
         ┌─────────────────────────────────────────────────┐ │
         │            dictionary-processor.js                │◄┘
-        │  spawn collect-dict.cjs（清洗子进程）              │
+        │  spawn scripts/collect-dict.cjs（清洗子进程）              │
         │   mergeDictionaries + normalizeText +             │
         │   findUntranslated → SSE log/progress/done        │
         └───────────────┬───────────────────────────────────┘
@@ -75,7 +75,7 @@
 - `extract-page-text.js`：`extractPageText(minLength,maxLength)` 自包含纯函数，可经 `page.evaluate` 注入。
 - `batch-collector.js`、`page-navigation.js`：批量抓取、超时回退与重试。
 - `dictionary-processor.js`、`request-body.js`、`url-guard.js`、`browser-resolver.js`、`browser-semaphore.js`、`collect-codes.js`、`project-metrics.ts`。
-- 解析入库脚本（项目根 / `scripts/`）：`collect-dict.cjs`、`scripts/dict-report.cjs`、`scripts/collect-history.cjs`。
+- 解析入库脚本（`scripts/`）：`collect-dict.cjs`、`scripts/dict-report.cjs`、`scripts/collect-history.cjs`。
 
 ## 3. 采集流程：三步闭环
 
@@ -103,8 +103,8 @@
 
 ### 3.3 解析入库
 
-- 实现：`dictionary-processor.js` `spawn(process.execPath, ['collect-dict.cjs', rawFile])`，stdout→`log` 事件；stderr 以 `[WARN]` 前缀视为 `log`，其余 → `error`（`SUBPROCESS_FAILED`）；`close` 补 `done` 事件（退出码≠0 且无错误行则补 error）。
-- `collect-dict.cjs`：`mergeDictionaries()`（babel 解析 `src/dictionaries/**/*.js` 提取 `{原文:译文}`）、`normalizeText()`（解码 HTML 实体 / 压缩空白 / 去首尾标点）、`findUntranslated(texts, dictionary)`（精确 + 归一化大小写不敏感匹配，返回 `{untranslated, translated}`）。
+- 实现：`dictionary-processor.js` `spawn(process.execPath, ['scripts/collect-dict.cjs', rawFile])`，stdout→`log` 事件；stderr 以 `[WARN]` 前缀视为 `log`，其余 → `error`（`SUBPROCESS_FAILED`）；`close` 补 `done` 事件（退出码≠0 且无错误行则补 error）。
+- `scripts/collect-dict.cjs`：`mergeDictionaries()`（babel 解析 `src/dictionaries/**/*.js` 提取 `{原文:译文}`）、`normalizeText()`（解码 HTML 实体 / 压缩空白 / 去首尾标点）、`findUntranslated(texts, dictionary)`（精确 + 归一化大小写不敏感匹配，返回 `{untranslated, translated}`）。
 - 报告：`scripts/dict-report.cjs` 写 `docs/untranslated-terms.txt` 并计算历史增量；`scripts/collect-history.cjs` 追加 `docs/collect-history.json`（保留 `MAX_ENTRIES = 30`）。`/overview` 读取并展示趋势。
 
 ## 4. API 契约与限流
@@ -137,7 +137,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
 
 - 数据中心：`DataCenter.tsx` —— 标签切换「文本粘贴 / 批量 URL」，导出 JSON（`downloadTermsAsJson`），触发「开始分析」调用对应 API。
 - 清洗结果预览：`PreviewTable.tsx` —— 表列「序号 / 采集词条 / 状态」，`STATUS_LABELS`（`untranslated → 待翻译`，`translated → 已翻译`）。
-- 说明：原型中「智能清洗」按钮与「待翻译/已翻译」两状态示例为静态展示；真实清洗与状态判定由后端 `collect-dict.cjs` 经 SSE 透传（当前前端以正则 `TERM_LINE_RE=/^\d+\. "(.+)"$/` 将 collect-dict 输出标为 `untranslated`）。
+- 说明：原型中「智能清洗」按钮与「待翻译/已翻译」两状态示例为静态展示；真实清洗与状态判定由后端 `scripts/collect-dict.cjs` 经 SSE 透传（当前前端以正则 `TERM_LINE_RE=/^\d+\. "(.+)"$/` 将 collect-dict 输出标为 `untranslated`）。
 
 ## 6. 引擎实时处理中心
 
@@ -159,7 +159,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
 | 数据中心 | 文本粘贴 / 批量 URL | `DataCenter.tsx`；`/api/collect`、`/api/batch-collect` |
 | 清洗结果预览 | 8 条两状态表 | `PreviewTable.tsx` `STATUS_LABELS` |
 | 引擎实时处理中心 | 进度 + SSE 终端 + 备份提示 | `Dashboard.tsx` + `useCollector.ts`；`page-navigation.js` 超时回退 |
-| 覆盖率 / 缺口看板 | 覆盖率进度条 + Top-N 缺口 + 冲突检测 | `src/app/coverage/page.tsx` + `src/lib/coverage-report.ts`；`public/css/coverage.css` |
+| 覆盖率 / 缺口看板 | 覆盖率进度条 + Top-N 缺口 + 冲突检测 | `src/app/coverage/page.tsx` + `src/lib/coverage-report.ts`；`src/app/styles/coverage.css` |
 
 ## 8. 关键数据结构
 
@@ -173,7 +173,8 @@ CollectEvent = {
 
 CollectErrorCode = {
   UNKNOWN: 9000, MISSING_DEPENDENCY: 1001, FETCH_FAILED: 2001,
-  SUBPROCESS_FAILED: 2002, INPUT_INVALID: 3001, INVALID_URL: 3002
+  SUBPROCESS_FAILED: 2002, BROWSER_LAUNCH_FAILED: 2003,
+  INPUT_INVALID: 3001, INVALID_URL: 3002
 }
 
 原始词条临时文件：os.tmpdir()/github-i18n-raw-${uuid}.txt（每请求独立，防并发覆盖）
@@ -190,10 +191,4 @@ CollectErrorCode = {
 
 ## 10. 版本历史
 
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 1.12.0 | 2026-09-26 | 同步原型规范至当前实现：版本横幅 1.9.48 → 1.12.0；导航由三页扩为四页（新增 `/coverage` 覆盖率看板，T22）；映射表补覆盖率看板行 |
-| 1.9.48 | 2026-09-25 | 重写原型规范：对齐「字符串采集工作台」原型与 src/app 采集实现，版本横幅同步至 1.9.48 |
-| 1.9.46 | 2026-09-25 | 原型重定向为采集工具、单一化为 index.html（旧配置面板原型规格迁出至 architecture.md） |
-| 1.9.24 | 2026-09-19 | 同步文档；确认浮动按钮与菜单命令已在 `ui/configUI/bootstrap.js` 落地（旧翻译脚本原型） |
-| 1.9.19 | 2026-06-08 | 添加原型设计文档（初版，描述翻译用户脚本配置面板） |
+变更记录统一维护在根目录 [CHANGELOG.md](../CHANGELOG.md)（含 1.9.x 至今的全部版本），本原型文档不再重复维护版本历史表。

@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.13.3**（版本单一来源：`src/version.js`）
+> 当前版本：**v1.13.4**（版本单一来源：`src/version.js`）
 
 ## 命名与兼容性说明
 
@@ -55,7 +55,7 @@ npm run dev     # 打开 http://localhost:3000
 ```
 
 工作台能力：探针脚本一键复制 → 文本粘贴 / 批量 URL 采集 → SSE 实时日志与进度 → 词条预览 → 导出 JSON。
-采集清洗由 `collect-dict.cjs` 完成，与用户脚本共享同一份词典数据。
+采集清洗由 `scripts/collect-dict.cjs` 完成，与用户脚本共享同一份词典数据。
 
 > 批量 URL 采集依赖可选依赖 `puppeteer-core` 与系统已安装的 Chrome / Edge 浏览器。未满足条件时该功能会返回明确提示，其余功能不受影响。
 
@@ -102,7 +102,7 @@ src/
 ├── versionUtils.js          # 版本工具函数
 ├── versionChecker/          # 版本更新检查
 └── updateNotification/      # 更新通知 UI
-public/                      # 工作台静态资源（css / js，模块化拆分）
+src/app/styles/             # 采集工作台样式（模块化，由 Next 构建打包）
 prototype/                   # 设计系统与高保真原型
 scripts/                     # 构建依赖图、转换、产物校验与词典采集工具链
 server/                     # 独立采集服务（W5 解耦，可自托管部署的 Node 服务）

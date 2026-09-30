@@ -1,7 +1,9 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.13.2
+ * @version 1.13.4
+ * @date 2026-09-30
+ * @author Sut
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
  */
 
@@ -34,6 +36,28 @@ const MISSING_BROWSER_MESSAGE =
  */
 function describeError(error) {
   return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * 将浏览器池的获取失败原因映射为用户可读消息与错误码（纯函数，便于无浏览器环境单测）。
+ * 语义区分：依赖/浏览器缺失属于「可选依赖缺失」（1001）；依赖齐全但 Chromium
+ * 进程启动异常（权限、沙箱、端口等）属于运行时启动失败（2003），不得混入依赖缺失，
+ * 也与词典清洗子进程失败（2002）区分。
+ * @param {'MISSING_DEPENDENCY'|'MISSING_BROWSER'|'LAUNCH_FAILED'|string|null} reason - browser-pool 返回的失败原因
+ * @returns {{ message: string, code: number }}
+ */
+export function resolveBrowserAcquireError(reason) {
+  if (reason === 'MISSING_DEPENDENCY') {
+    return { message: MISSING_PUPPETEER_MESSAGE, code: CollectErrorCode.MISSING_DEPENDENCY };
+  }
+  if (reason === 'MISSING_BROWSER') {
+    // 浏览器可执行文件缺失同样属于「可选依赖缺失」，沿用 1001，仅消息不同
+    return { message: MISSING_BROWSER_MESSAGE, code: CollectErrorCode.MISSING_DEPENDENCY };
+  }
+  return {
+    message: '浏览器启动失败，请检查 puppeteer-core 与浏览器安装',
+    code: CollectErrorCode.BROWSER_LAUNCH_FAILED,
+  };
 }
 
 /**
@@ -85,14 +109,11 @@ export async function* collectFromUrls(urls, { signal } = {}) {
   const { browser, error } = await acquireBrowser();
   if (!browser) {
     releaseBrowserSlot();
-    // 按浏览器池返回的失败原因映射用户可读消息（默认兜底为通用启动失败）
-    let message = '浏览器启动失败，请检查 puppeteer-core 与浏览器安装';
-    if (error === 'MISSING_DEPENDENCY') message = MISSING_PUPPETEER_MESSAGE;
-    else if (error === 'MISSING_BROWSER') message = MISSING_BROWSER_MESSAGE;
+    const failure = resolveBrowserAcquireError(error);
     yield {
       type: 'error',
-      message,
-      code: CollectErrorCode.MISSING_DEPENDENCY,
+      message: failure.message,
+      code: failure.code,
     };
     return;
   }

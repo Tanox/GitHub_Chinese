@@ -1,4 +1,12 @@
 # Changelog
+## [1.13.4] - 2026-09-30
+
+### Fix（浏览器启动失败错误码语义拆分）
+- `collector-core.js` 接入浏览器池后，三种获取失败原因（puppeteer-core 未安装 / 无 Chrome/Edge 可执行文件 / Chromium 进程启动异常）统一上报 `MISSING_DEPENDENCY`（1001），导致依赖齐全但因权限、沙箱等原因启动失败时，前端错误徽标与运维归因误指向「安装依赖」。
+- 新增错误码 `BROWSER_LAUNCH_FAILED`（2003，运行时失败系列，与 FETCH_FAILED 2001 / SUBPROCESS_FAILED 2002 同档）；提取纯函数 `resolveBrowserAcquireError` 统一映射：缺 puppeteer-core 与缺浏览器二进制 → 1001（均为可选依赖缺失，消息分别提示）；`LAUNCH_FAILED` 及未知原因 → 2003。不与 2002（词典清洗子进程失败）混用。
+- 前端只透传展示 `E<code>`，无数值分流，新增枚举向后兼容；`docs/prototype.md` 错误码契约清单同步。
+- 测试：`collect-codes.test.mjs` 契约新增 2003；`collector-core.test.mjs` 新增 4 例映射回归（含 LAUNCH_FAILED 不等于 1001/2002、空与未知原因兜底 2003）。
+
 ## [1.13.3] - 2026-09-30
 
 ### Fix（限流客户端 IP 头伪造可绕过每 IP 限流）
@@ -7,6 +15,11 @@
 - 影响面：不配置该变量的部署，匿名流量共享一个限流桶（边缘部署应配置以恢复按真实 IP 分桶）；令牌鉴权与 429/Retry-After 行为不变。
 - 文档：README 新增「API 限流与 IP 头信任」配置说明。
 - 测试：`api-guard.test.mjs` 扩至 10 例，新增默认模型下轮换三类伪造头仍命中共享桶 429 的核心回归，及受信 cf/x-real-ip/XFF、受信头缺失、配置大小写不敏感等场景。
+
+### Docs（规范文档与记忆一致性收口）
+- 规范文档头版本与全局展示位统一对齐至 v1.13.3；移除已删除的 `public/`（样式已于 v1.12.9 迁入 `src/app/styles/`）与根级 `collect-dict.cjs`（已于 v1.12.8 迁入 `scripts/`）等过时路径；`development.md` 校正分支策略（无 `develop` 分支）、测试框架（Node 内置 `node --test`，非 Jest）、CI Node 版本（≥22）。
+- 单元测试数经 `node --test` 实算更新为 **140 用例 / 1 跳过 / 0 失败**（PROGRESS §1.1 / §3.3）。
+- `architecture.md` / `prototype.md` 的「版本历史」表改为指向 `CHANGELOG.md` 单一归处，消除与变更日志重复。
 
 ## [1.13.2] - 2026-09-30
 
