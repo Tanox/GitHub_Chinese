@@ -1,7 +1,8 @@
 /**
  * 统一日志门面
  * @file src/utils/logger.js
- * @version 1.12.8
+ * @version 1.12.13
+ * @date 2026-09-30
  * @description 全项目统一日志出口：统一前缀、按级别过滤（默认 info）。
  *   Node 侧可用环境变量 GITHUB_ZH_LOG 调整级别（debug/info/warn/error）；
  *   浏览器侧日志沿用既有 CONFIG.debugMode 守卫，本门面仅作统一前缀与可替换出口。
@@ -29,9 +30,11 @@ export function setLogLevel(level) {
 
 function emit(level, method, args) {
   if (currentLevel > LEVELS[level]) return;
+  /* eslint-disable no-console -- 本文件是全项目唯一日志门面，必须直连 console；其他代码禁用 console 后统一走 logger */
   if (typeof console !== 'undefined' && typeof console[method] === 'function') {
     console[method]('[GitHub 中文翻译]', ...args);
   }
+  /* eslint-enable no-console */
 }
 
 export const logger = {

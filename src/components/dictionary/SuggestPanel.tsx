@@ -2,7 +2,8 @@
 /**
  * 翻译建议面板（T21 子组件）
  * @file src/components/dictionary/SuggestPanel.tsx
- * @version 1.12.7
+ * @version 1.12.13
+ * @date 2026-09-30
  */
 import type { SuggestResult } from './types';
 import { sourceLabel } from './sourceLabel';
@@ -81,7 +82,9 @@ export function SuggestPanel({
               </>
             ) : (
               <span className='dict-empty'>
-                未找到建议（词典中无匹配，且未配置 LLM）
+                {result.llmEnabled
+                  ? '未找到建议（翻译记忆与 LLM 均无匹配）'
+                  : '未找到建议（词典中无匹配；配置 LLM 密钥可增强）'}
               </span>
             )}
           </div>

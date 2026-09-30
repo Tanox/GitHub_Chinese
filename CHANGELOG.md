@@ -1,4 +1,17 @@
 # Changelog
+## [1.12.13] - 2026-09-30
+
+### Fix（代码审查非阻断建议项加固：词典助手健壮性、LLM 超时、lint 清零）
+- 词典助手本地数据防崩溃：新增 `dictionary/pending.ts`，localStorage 内容收窄为 `PendingItem[]`——损坏 JSON、非数组、字段类型错误均安全降级为空列表并过滤坏元素（旧代码直接 `JSON.parse` 后渲染，脏数据可致整个客户端岛白屏）。
+- 接口响应类型收窄：新增 `dictionary/suggest-response.ts`，`resp.json()` 的 unknown 结果经结构校验后才入状态（含错误消息提取），字段漂移返回「接口返回数据格式异常」而非污染视图。
+- 请求竞态修复：`DictionaryHelper` 每次查询前 abort 上一个在飞请求（AbortController 存入 ref），慢响应晚到不再覆盖新查询结果；组件卸载时中断；陈旧请求的 AbortError 不再误报「网络错误」。
+- 采纳去重：同 key 重复采纳改为就地替换为最新建议，不再产生重复待入库条目。
+- 空态文案与实际状态一致：`SuggestPanel` 按 `llmEnabled` 区分「LLM 也无匹配」与「未配置 LLM」，删除原先自相矛盾的硬编码文案。
+- LLM 请求超时：`llm-suggest.js` 经 `AbortSignal.timeout` 增加默认 10s 超时（可用 `GHZH_LLM_TIMEOUT_MS` 或 `opts.timeoutMs` 覆盖），端点挂起时按既有约定降级 null 而非永久占用请求。
+- 消除魔法数：`translation-suggest.js` 置信度提取为 `CONFIDENCE` 常量（取值不变）；`llm-suggest.js` 温度/max_tokens/模型/端点提取命名常量，ESLint 0 warning。
+- `logger.js` 在门面出口处定点豁免 `no-console`（门面是全项目唯一允许直连 console 的位置），全量 lint 从此 0 error 0 warning。
+- 新增单测：`pending.test.mjs`（6 例）、`suggest-response.test.mjs`（5 例）、`llm-suggest.test.mjs`（6 例，含挂起端点超时回归）。
+
 ## [1.12.12] - 2026-09-30
 
 ### Fix（修复采集服务回退本地时请求体已消费导致必返 400）

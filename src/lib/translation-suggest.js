@@ -1,13 +1,28 @@
 /**
  * 翻译建议引擎（T21 核心）
  * @file src/lib/translation-suggest.js
- * @version 1.12.6
+ * @version 1.12.13
+ * @date 2026-09-30
  * @description 纯函数、无 I/O、无网络：基于现有词典（翻译记忆）为待翻译英文词条给出建议译文。
  *   可选注入 llm 回调实现 LLM 增强；任何异常由调用方负责降级（无 key 时跳过）。
  */
 
 /** 词典「待翻译」占位前缀（未真正翻译的条目） */
 const PLACEHOLDER_PREFIX = '待翻译';
+
+/** 各命中来源的置信度（取值即排序：精确 > 大小写 > LLM > 组合拼接） */
+const CONFIDENCE = {
+  /** 精确命中现有词典 */
+  EXACT: 0.95,
+  /** 仅大小写不同的命中（可靠性略低于精确） */
+  CASE_INSENSITIVE: 0.9,
+  /** LLM 生成（无翻译记忆佐证） */
+  LLM: 0.8,
+  /** 多词逐词拼接（语序未必自然） */
+  COMPOSED: 0.6,
+  /** 无建议 */
+  NONE: 0,
+};
 
 /**
  * 判断词典值是否为「待翻译」占位（应被建议引擎忽略）
@@ -66,7 +81,7 @@ function lookupCi(dictionary, key) {
 export async function suggestTranslation(term, opts = {}) {
   const dictionary = opts.dictionary ?? {};
   const normalized = normalizeEn(term);
-  if (!normalized) return { suggestion: null, source: 'empty', confidence: 0 };
+  if (!normalized) return { suggestion: null, source: 'empty', confidence: CONFIDENCE.NONE };
 
   // 1) 精确命中（跳过占位）；区分大小写精确与大小写不敏感命中
   const exactKey = Object.prototype.hasOwnProperty.call(dictionary, normalized)
@@ -77,7 +92,7 @@ export async function suggestTranslation(term, opts = {}) {
     return {
       suggestion: dictionary[exactKey],
       source: ci ? 'memory-ci' : 'memory-exact',
-      confidence: ci ? 0.9 : 0.95,
+      confidence: ci ? CONFIDENCE.CASE_INSENSITIVE : CONFIDENCE.EXACT,
     };
   }
 
@@ -95,7 +110,11 @@ export async function suggestTranslation(term, opts = {}) {
       }
     }
     if (ok && parts.length === words.length) {
-      return { suggestion: parts.join(' '), source: 'memory-composed', confidence: 0.6 };
+      return {
+        suggestion: parts.join(' '),
+        source: 'memory-composed',
+        confidence: CONFIDENCE.COMPOSED,
+      };
     }
   }
 
@@ -104,12 +123,16 @@ export async function suggestTranslation(term, opts = {}) {
     try {
       const llmOut = await opts.llm(normalized);
       if (typeof llmOut === 'string' && llmOut.trim()) {
-        return { suggestion: llmOut.trim(), source: 'llm', confidence: 0.8 };
+        return {
+          suggestion: llmOut.trim(),
+          source: 'llm',
+          confidence: CONFIDENCE.LLM,
+        };
       }
     } catch {
       // 降级：忽略 LLM 失败
     }
   }
 
-  return { suggestion: null, source: 'none', confidence: 0 };
+  return { suggestion: null, source: 'none', confidence: CONFIDENCE.NONE };
 }

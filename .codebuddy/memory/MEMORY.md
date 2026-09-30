@@ -1,6 +1,6 @@
 # MEMORY.md
 
-## 项目事实（GitHub_Chinese，截至 2026-09-30，v1.12.9）
+## 项目事实（GitHub_Chinese，截至 2026-09-30，v1.12.12）
 - **双链路项目**：①用户脚本引擎（核心交付）——`build.cjs` 从 `src/main.js` 递归依赖图→拓扑→剥离 import/export→单文件 IIFE，产物 `build/GitHub_zh-cn.user.js`（~194KB，~92 模块）。`build/` 须纳入版本控制。②词典采集工作台——Next.js 16 App Router（`src/` 模式），路由 `/`、`/overview`、`/design`；API `src/app/api/collect`、`batch-collect`；`src/lib/{collector-core,dictionary-processor,page-navigation}.js` + `batch-collector.js` + `browser-semaphore.js`。两链路仅共享词典数据。
 - **版本单一来源 = `src/version.js` 的 `VERSION`**（当前 **1.12.9**，HEAD 以 `git log` 实查）。全局展示位同步：`package.json`/README 徽章/CHANGELOG 小节/被改文件头注释。**每次改动 bump 最小版本（项目惯例按任务逐 patch 递增，如 T16→1.11.8…T36→1.11.15）；仅更新被改文件头注释，禁止全仓库批量刷写。**
 - **npm 脚本**：`build`=`next build && node build.cjs`；`build:userscript`=`node build.cjs`；`dev`=Next 工作台；`dev:prototype`=`server.js`；`validate`=`node scripts/validate-bundle.cjs`；`test:unit`=`node --test`；`test`=lint→**lint:length**(>200 行失败)→build→test:unit→validate。
@@ -39,4 +39,4 @@
 - **I 版本收口**：核查 `src/version.js` 为唯一版本源，`versionChecker/fetcher.js` 仅做远程比对、无重复版本逻辑，无需改代码。
 - **C @babel/core**：因生产采集子进程（`collect-dict.cjs`→`merge-dictionaries.cjs`）运行时依赖，仍保留于 `dependencies`；H 服务化后其归属由服务依赖接管（待办）。
 - **F public/css→Next import**：**已完成**——14 个样式经 `git mv` 等价迁移（文件工具实现，因 execute_command 审批通道不可用）至 `src/app/styles/`，`layout.tsx` 改为 `import` 引入（保持原级联顺序），删除空 `public/css/`；`globals.css`/`design/page.tsx` 注释与文案同步；版本 bump 至 v1.12.9。CSS 不在 `lint:length` 扩展名范围内（仅 js/cjs/mjs/ts/tsx），`layout.css` 212 行不受限。
-- 当前版本：**v1.12.9**（2026-09-30）。
+- 当前版本：**v1.12.12**（2026-09-30；1.12.9→1.12.12 由 collect-service 回退 body 消费修复、server/ 纳入 lint 等推进）。
