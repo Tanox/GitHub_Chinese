@@ -1,11 +1,15 @@
 /**
  * 采集服务客户端
  * @file src/lib/collect-service-client.js
- * @version 1.12.12
+ * @version 1.13.0
  * @date 2026-09-30
  * @description 将采集请求转发到自托管「独立采集服务」（W5 架构解耦）：
  *   仅当配置 COLLECT_SERVICE_URL 时启用，把 SSE 流透传回调用方；
  *   未配置或上游不可用时返回 null，调用方用已解析的请求数据回退本地采集（默认行为不变）。
+ *
+ * 鉴权契约：自托管服务配置 COLLECT_SERVICE_TOKEN 强制 Bearer 校验时，Next 侧必须配置
+ *   同一个值（同样的环境变量名），本客户端会携带 Authorization 头；两端配置须成对，
+ *   只配一边会导致 401（服务端开了、客户端没带）或形同裸奔（客户端带了、服务端没验）。
  *
  * 设计约定：本模块不接收/不消费原始 Request——请求体由路由层读取一次并完成 JSON 校验，
  * 这里只拿原始字符串转发。否则回退本地时路由无法再次读取 body（Request.body 流只能消费一次）。
@@ -13,6 +17,7 @@
 import { logger } from '../utils/logger.js';
 
 const SERVICE_URL = process.env.COLLECT_SERVICE_URL || '';
+const SERVICE_TOKEN = process.env.COLLECT_SERVICE_TOKEN || '';
 
 /** 是否启用了独立采集服务 */
 export function isCollectServiceEnabled() {
@@ -34,10 +39,14 @@ export async function proxyCollectRequest({ body, signal }, kind) {
   // 客户端已主动断开：静默返回，不打告警日志，也无需回退本地
   if (signal?.aborted) return null;
 
+  const headers = { 'Content-Type': 'application/json' };
+  // 与服务端 COLLECT_SERVICE_TOKEN 成对配置后才携带，避免对未启用鉴权的内网服务多发头
+  if (SERVICE_TOKEN) headers.Authorization = `Bearer ${SERVICE_TOKEN}`;
+
   try {
     const upstream = await fetch(`${SERVICE_URL}/api/${kind}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body,
       signal,
     });

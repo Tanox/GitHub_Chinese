@@ -1,7 +1,7 @@
 /**
  * 独立采集服务（W5 架构解耦）
  * @file server/collect-service/index.js
- * @version 1.12.11
+ * @version 1.13.0
  * @date 2026-09-30
  * @author Sut
  * @description 可自托管部署的 Node 服务，复用 src/lib/collector-core 的采集实现，
@@ -9,11 +9,14 @@
  *   解决 serverless（EdgeOne/Vercel）无浏览器导致生产采集不可用的问题。
  *
  * 运行：node server/collect-service/index.js（或 npm run collect-service）
- * 环境变量：COLLECT_SERVICE_PORT（默认 8787）
+ * 环境变量：
+ *   COLLECT_SERVICE_PORT   监听端口（默认 8787）
+ *   COLLECT_SERVICE_TOKEN  配置后 /api/* 要求 Bearer 令牌（公网部署必须配置；/health 始终放行）
  */
 import express from 'express';
 import { collectFromUrls, processRawData } from '../../src/lib/collector-core.js';
 import { logger } from '../../src/utils/logger.js';
+import { createTokenAuth } from './auth.js';
 
 /** 默认监听端口（可被 COLLECT_SERVICE_PORT 覆盖） */
 const DEFAULT_PORT = 8787;
@@ -22,6 +25,10 @@ const BODY_LIMIT = '5mb';
 
 const app = express();
 app.use(express.json({ limit: BODY_LIMIT }));
+
+// 配置令牌后保护全部 /api 路由；未配置时不启用（兼容内网/本机部署）。/health 在下方单独注册，不受影响。
+const tokenAuth = createTokenAuth(process.env.COLLECT_SERVICE_TOKEN);
+if (tokenAuth) app.use('/api', tokenAuth);
 
 /**
  * 将采集异步生成器包装为 SSE 响应
@@ -74,4 +81,9 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 const PORT = Number(process.env.COLLECT_SERVICE_PORT) || DEFAULT_PORT;
 app.listen(PORT, () => {
   logger.info(`独立采集服务已启动: http://localhost:${PORT}（W5 解耦）`);
+  if (tokenAuth) {
+    logger.info('令牌校验已启用：/api/* 要求 Authorization: Bearer <COLLECT_SERVICE_TOKEN>');
+  } else {
+    logger.warn('未配置 COLLECT_SERVICE_TOKEN，采集接口无鉴权——公网部署请务必配置令牌');
+  }
 });

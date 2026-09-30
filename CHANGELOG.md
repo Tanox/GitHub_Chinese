@@ -1,4 +1,13 @@
 # Changelog
+## [1.13.0] - 2026-09-30
+
+### Feat（独立采集服务支持 Bearer 令牌鉴权）
+- 自托管采集服务暴露公网时此前无任何访问控制（默认监听 0.0.0.0，任何人可调用其浏览器采集能力）。新增 `server/collect-service/auth.js`：配置 `COLLECT_SERVICE_TOKEN` 后，Express 中间件对 `/api/*` 强制校验 `Authorization: Bearer <token>`——缺失/格式错/令牌错一律 401 并带 `WWW-Authenticate: Bearer` 质询头；令牌比较使用 `crypto.timingSafeEqual`（长度不同先短路），防止耗时枚举。`/health` 探活始终放行。
+- 鉴权链路两端成对闭合：Next 侧 `src/lib/collect-service-client.js` 读取同名环境变量 `COLLECT_SERVICE_TOKEN`，配置后向采集服务携带 Bearer 头；未配置则不发该头（兼容未启用鉴权的内网服务）。只配服务端 → 401 回退本地；只配客户端 → 鉴权形同虚设，README 已写明两端必须同值成对配置。
+- 默认行为不变：两端都不配时采集服务依旧开放（本机/内网场景）；启动日志在启用时提示「令牌校验已启用」，未启用时输出公网部署配置告警。
+- 文档：README W5 段落新增令牌鉴权配置契约（端侧、变量名、失败模式）。
+- 新增单测：`collect-service-auth.test.mjs`（7 例：Bearer 解析、恒定时间比对语义、未配置不启用、401 各分支、正确放行）；`collect-service-client.test.mjs` 扩展为 9 例（令牌携带/缺失、401 回退）。
+
 ## [1.12.13] - 2026-09-30
 
 ### Fix（代码审查非阻断建议项加固：词典助手健壮性、LLM 超时、lint 清零）

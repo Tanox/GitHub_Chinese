@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.12.13**（版本单一来源：`src/version.js`）
+> 当前版本：**v1.13.0**（版本单一来源：`src/version.js`）
 
 ## 命名与兼容性说明
 
@@ -60,6 +60,8 @@ npm run dev     # 打开 http://localhost:3000
 > 批量 URL 采集依赖可选依赖 `puppeteer-core` 与系统已安装的 Chrome / Edge 浏览器。未满足条件时该功能会返回明确提示，其余功能不受影响。
 
 > **独立采集服务（W5 解耦）**：生产环境（EdgeOne / Vercel 等 serverless）无法运行无头浏览器，采集实际不可用。可将采集引擎抽离为自托管 Node 服务（`npm run collect-service`，监听 `COLLECT_SERVICE_PORT`，默认 8787），由 `src/lib/collect-service-client.js` 在配置 `COLLECT_SERVICE_URL` 时把采集请求代理到该服务并透传 SSE；未配置时退回本地采集逻辑，行为不变。
+>
+> **令牌鉴权（公网部署必配）**：采集服务默认无鉴权，仅适用于本机 / 内网。公网部署时须在**两端配置同一个密钥**——自托管服务侧设置 `COLLECT_SERVICE_TOKEN`（服务将对 `/api/*` 强制校验 `Authorization: Bearer <token>`，恒定时间比对，`/health` 探活始终放行）；Next 应用侧设置同名变量（客户端据此携带令牌）。只配一边会导致 401 或鉴权形同虚设。
 
 ## 高保真原型
 
