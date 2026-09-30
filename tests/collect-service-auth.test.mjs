@@ -7,11 +7,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  createTokenAuth,
-  extractBearer,
-  isTokenValid,
-} from '../server/collect-service/auth.js';
+import { createTokenAuth, extractBearer, isTokenValid } from '../server/collect-service/auth.js';
 
 /** 构造最小 Express 风格 req/res/next 探针 */
 function makeMwsEnv(authHeader) {

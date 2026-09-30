@@ -10,6 +10,9 @@
  */
 import crypto from 'node:crypto';
 
+/** HTTP 401：未提供或未通过鉴权 */
+const HTTP_UNAUTHORIZED = 401;
+
 /**
  * 恒定时间比对提供的令牌与期望值
  * @param {unknown} provided 请求中携带的令牌
@@ -53,7 +56,7 @@ export function createTokenAuth(expectedToken) {
       return;
     }
     res
-      .status(401)
+      .status(HTTP_UNAUTHORIZED)
       .set('WWW-Authenticate', 'Bearer')
       .json({ error: '未授权：采集服务令牌缺失或错误' });
   };
