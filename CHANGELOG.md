@@ -1,4 +1,13 @@
 # Changelog
+## [1.13.3] - 2026-09-30
+
+### Fix（限流客户端 IP 头伪造可绕过每 IP 限流）
+- `src/lib/api-guard.ts` 的 `clientIp` 此前无条件信任 `cf-connecting-ip` → `x-real-ip` → `x-forwarded-for`。这三个头在未经过可信边缘（Cloudflare/EdgeOne/Nginx）清洗的链路上可被客户端任意伪造：攻击者每次请求换一个头值即可落入新的限流桶，使每 IP 固定窗口限流（默认 60s/30）完全失效。
+- 改为**显式 opt-in 信任模型**：新增环境变量 `COLLECT_TRUSTED_IP_HEADER`，仅读取运维声明的、由边缘保证覆写的那一个头（值如 `cf-connecting-ip`、`x-real-ip`、`x-forwarded-for`，配置大小写不敏感；XFF 仍取首段并注释要求边缘清洗）。未配置时所有匿名请求归入 `unknown` 共享桶——「宁可误限、不可漏限」，限流无法再被头值轮换绕过。
+- 影响面：不配置该变量的部署，匿名流量共享一个限流桶（边缘部署应配置以恢复按真实 IP 分桶）；令牌鉴权与 429/Retry-After 行为不变。
+- 文档：README 新增「API 限流与 IP 头信任」配置说明。
+- 测试：`api-guard.test.mjs` 扩至 10 例，新增默认模型下轮换三类伪造头仍命中共享桶 429 的核心回归，及受信 cf/x-real-ip/XFF、受信头缺失、配置大小写不敏感等场景。
+
 ## [1.13.2] - 2026-09-30
 
 ### Fix（代码审查收尾：M1 / M2 / M5 + 安全加固）

@@ -1,7 +1,7 @@
 /**
  * 采集 / 词典 API 访问控制（C3）：可选 Bearer 令牌鉴权 + 每 IP 限流
  * @file src/lib/api-guard.ts
- * @version 1.13.2
+ * @version 1.13.3
  * @date 2026-09-30
  * @description 为 `/api/collect`、`/api/batch-collect` 与 `/api/dictionary/suggest` 提供统一门禁：
  *   1. 可选令牌：仅当配置 `COLLECT_API_TOKEN` 时启用，默认开放（向后兼容，无 UI 破坏）；
@@ -17,24 +17,31 @@ const TOKEN = process.env.COLLECT_API_TOKEN ?? '';
 const RATE_LIMIT = Number(process.env.COLLECT_RATE_LIMIT ?? 30);
 /** 限流窗口毫秒数 */
 const RATE_WINDOW_MS = Number(process.env.COLLECT_RATE_WINDOW_MS ?? 60_000);
+/**
+ * 受信任的客户端 IP 请求头：仅当运维显式声明边缘节点（Cloudflare/EdgeOne/Nginx）
+ * 保证覆写该头时才读取，取值如 `cf-connecting-ip`、`x-real-ip`、`x-forwarded-for`。
+ * 不配置时一律归入 'unknown' 共享桶——这些头在直达链路上可被客户端任意伪造，
+ * 无条件信任等于让攻击者每请求换值即可获得新限流桶，每 IP 限流将完全失效。
+ */
+const TRUSTED_IP_HEADER = (process.env.COLLECT_TRUSTED_IP_HEADER ?? '').trim().toLowerCase();
 
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
 /**
- * 从请求头推导客户端 IP。
- * 信任链优先级：边缘节点字段（Cloudflare/EdgeOne `cf-connecting-ip`）> `x-real-ip` > `x-forwarded-for` 首段。
- * 注意：内存态固定窗口限流仅对单一 Node 实例有效；serverless（EdgeOne/Vercel）多实例部署下
- * 各实例计数独立，限流可被绕过，需在边缘层或接入分布式存储（如 Redis）统一计数。
+ * 推导限流用客户端标识。
+ * 安全模型：只读取运维通过 COLLECT_TRUSTED_IP_HEADER 显式信任的那一个头；
+ * 未配置时返回 'unknown'（匿名流量共享一桶，以「宁可误限、不可漏限」保证限流不被绕过）。
+ * 注意：内存态固定窗口限流仅对单一 Node 实例有效；serverless 多实例下计数独立，
+ * 需在边缘层或接入分布式存储（如 Redis）统一计数。
  */
 function clientIp(req: NextRequest): string {
-  const cf = req.headers.get('cf-connecting-ip');
-  if (cf) return cf.trim();
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp.trim();
-  const fwd = req.headers.get('x-forwarded-for');
-  if (fwd) return fwd.split(',')[0].trim();
-  return 'unknown';
+  if (!TRUSTED_IP_HEADER) return 'unknown';
+  const value = req.headers.get(TRUSTED_IP_HEADER);
+  if (!value) return 'unknown';
+  // x-forwarded-for 形如 "client, proxy1, proxy2"，取首段；配置该头意味着运维确认
+  // 边缘会清洗/覆写 XFF，否则首段仍可伪造（此时应改用 cf-connecting-ip 等单值头）。
+  return value.split(',')[0].trim() || 'unknown';
 }
 
 /** 恒定时间比较，避免令牌可枚举 */
