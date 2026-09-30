@@ -27,7 +27,7 @@ export const bestPracticeRules = {
   'no-dupe-keys': 'error', // 不允许重复的对象键
   'no-else-return': 'error', // 在 if return 后不需要 else
   'no-empty-function': ['warn', { allow: ['arrowFunctions', 'functions', 'methods'] }], // 警告空函数
-  'no-eq-null': 'error', // 不允许 == null
+  'no-eq-null': 'off', // 允许 == null：docs/coding-style.md §3.2 明确 null 例外，与 eqeqeq { null: 'ignore' } 一致
   'no-extend-native': 'error', // 不允许扩展原生对象
   'no-extra-bind': 'error', // 不需要的 bind
   'no-extra-label': 'error', // 不需要的标签

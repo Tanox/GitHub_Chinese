@@ -4,6 +4,8 @@
 ### Fix（翻译建议接口补鉴权/限流）
 - `/api/dictionary/suggest` 此前未接入统一门禁：配置 `GHZH_LLM_KEY` 后匿名请求可持续消耗付费 LLM 额度。现与 `/api/collect`、`/api/batch-collect` 一致，在解析参数前调用 `checkApiAccess`——默认按 IP 限流（60s/30 次，超出 429），配置 `COLLECT_API_TOKEN` 后要求 Bearer 令牌（401）；默认开放策略不变，前端词典助手无需改动。
 - `api-guard.ts` 头注释适用范围补登第三路由。
+- 新增 `tests/api-guard.test.mjs`（5 用例：默认放行、缺/错令牌 401、正确令牌放行、同 IP 429+Retry-After、跨 IP 桶隔离）。
+- 工具链对齐成文规范：`eslint/rules/bestPractices.js` 关闭与 coding-style §3.2「null 例外」及 `eqeqeq { null: 'ignore' }` 相矛盾的 `no-eq-null`（v1.12.8 null 安全修复因此规则误报 5 处 error）；`eslint.config.js` 测试文件匹配补登 `**/*.test.mjs` 并注入 Node 全局。
 
 ## [1.12.9] - 2026-09-30
 

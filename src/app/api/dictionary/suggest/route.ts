@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
     ...(llmEnabled ? { llm: (t: string) => llmSuggest(t) } : {}),
   });
 
-  return new Response(
-    JSON.stringify({ term, llmEnabled, ...result }),
-    { status: 200, headers: { 'Content-Type': 'application/json' } },
-  );
+  return new Response(JSON.stringify({ term, llmEnabled, ...result }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
