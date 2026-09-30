@@ -1,6 +1,6 @@
 {
   "name": "github-chinese",
-  "version": "1.12.10",
+  "version": "1.12.11",
   "description": "GitHub Chinese 简体中文 - GitHub 中文本地化解决方案",
   "main": "src/main.js",
   "type": "module",
@@ -11,8 +11,8 @@
     "build:web": "next build",
     "build:userscript": "node build.cjs",
     "start": "next start",
-    "lint": "eslint src/ scripts/ tests/ build.cjs server.js",
-    "lint:fix": "eslint src/ scripts/ tests/ build.cjs server.js --fix",
+    "lint": "eslint src/ scripts/ tests/ server/ build.cjs server.js",
+    "lint:fix": "eslint src/ scripts/ tests/ server/ build.cjs server.js --fix",
     "lint:length": "node scripts/check-file-length.cjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\" \"scripts/**/*.cjs\" \"tests/**/*.{js,cjs,mjs}\" \"build.cjs\"",

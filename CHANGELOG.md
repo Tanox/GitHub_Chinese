@@ -1,4 +1,11 @@
 # Changelog
+## [1.12.11] - 2026-09-30
+
+### Chore（server/ 纳入 lint 与行数门禁）
+- 消除门禁扫描盲区：`package.json` 的 `lint`/`lint:fix` 扫描目标新增 `server/`；`scripts/check-file-length.cjs` 的 `ROOTS` 新增 `server`，独立采集服务此后受 ESLint 与 200 行上限约束。
+- 清理 `check-file-length.cjs` 的 `ROOT_FILES` 中已随 v1.12.8 迁入 `scripts/` 的死配置 `collect-dict.cjs`（现仅留 `build.cjs`、`server.js` 两个根目录入口）。
+- `server/collect-service/index.js` 补全头注释（@date/@author）并消除唯一 lint warning：默认端口与请求体上限提取为 `DEFAULT_PORT`/`BODY_LIMIT` 命名常量。
+
 ## [1.12.10] - 2026-09-30
 
 ### Fix（翻译建议接口补鉴权/限流）

@@ -1,7 +1,9 @@
 /**
  * 独立采集服务（W5 架构解耦）
  * @file server/collect-service/index.js
- * @version 1.12.8
+ * @version 1.12.11
+ * @date 2026-09-30
+ * @author Sut
  * @description 可自托管部署的 Node 服务，复用 src/lib/collector-core 的采集实现，
  *   通过 HTTP + SSE 暴露采集接口，使前端/Next 路由与「需要 Chrome 的采集」彻底解耦，
  *   解决 serverless（EdgeOne/Vercel）无浏览器导致生产采集不可用的问题。
@@ -13,8 +15,13 @@ import express from 'express';
 import { collectFromUrls, processRawData } from '../../src/lib/collector-core.js';
 import { logger } from '../../src/utils/logger.js';
 
+/** 默认监听端口（可被 COLLECT_SERVICE_PORT 覆盖） */
+const DEFAULT_PORT = 8787;
+/** 请求体上限：批量 URL 采集可能携带较大 URL 列表 */
+const BODY_LIMIT = '5mb';
+
 const app = express();
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: BODY_LIMIT }));
 
 /**
  * 将采集异步生成器包装为 SSE 响应
@@ -64,7 +71,7 @@ app.post(
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-const PORT = Number(process.env.COLLECT_SERVICE_PORT) || 8787;
+const PORT = Number(process.env.COLLECT_SERVICE_PORT) || DEFAULT_PORT;
 app.listen(PORT, () => {
   logger.info(`独立采集服务已启动: http://localhost:${PORT}（W5 解耦）`);
 });
