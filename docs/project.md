@@ -222,7 +222,7 @@ npm test               # lint → build → validate
 - **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、四页互通与响应式导航、项目概览（实时指标）、设计系统、**覆盖率/缺口看板（/coverage，T22）**。
 - **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（20 用例）、a11y 自动化检查。
 
-### 活动任务（以 PROGRESS §5 为唯一清单）
+### 活动任务（以 docs/tasks.md 为唯一清单）
 
 - **T18** 采集源扩展（L）：登录态 cookie / HAR 导入，覆盖更多私有 UI 区域。
 - **T21** 翻译建议（L）：LLM/翻译记忆建议译文，失败降级（无 key 跳过）。
