@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.4** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.5** ｜ 版本权威源：`src/version.js`
 
 ## 项目概述
 
@@ -205,16 +205,37 @@ npm test               # lint → build → validate
 
 ## 开发现状
 
-> 版本权威源 `src/version.js`；完整进度、迭代记录与变更历史见 [PROGRESS.md](./PROGRESS.md) 与 [CHANGELOG.md](../CHANGELOG.md)。
+> 版本权威源 `src/version.js`；迭代记录见本文档「迭代记录」节，变更历史见 [CHANGELOG.md](../CHANGELOG.md)（唯一归处），活动任务见 [tasks.md](./tasks.md)（唯一清单）。
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.4**（2026-09-30）。
+- 当前版本 **v1.13.5**（2026-09-30）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，四页 `/`、`/overview`、`/coverage`、`/design`）。两链路仅共享词典数据。
 
 ### 量化指标
 
-量化指标（源码文件数 / 行数 / 产物大小 / 词条数 / 测试数等）随发版由对应命令实算，**禁止手填**；最新数值见 [PROGRESS.md §1.1](./PROGRESS.md)（测试数以 `npm run test:unit` 经 `node --test` 统计）。
+量化指标随发版由对应命令实算，**禁止手填**（v1.13.4 发版实算快照，发版时重新实算）：
+
+| 指标 | 数值 | 采集方式 |
+|------|------|---------|
+| `src/` 源码文件数 | 141 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 11062 | 同上 |
+| 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
+| 用户脚本孤立模块数 | 0 | 同上 |
+| 构建期循环引用 | 0 | 同上 |
+| 用户脚本产物大小 | 199,094 字节（约 194 KB） | `build/GitHub_zh-cn.user.js` |
+| 翻译词典词条数 | 459 | `node scripts/collect-dict.cjs` 输出 |
+| 词典模块数 | 12 | `src/dictionaries/**/*.js` |
+| 原型资源数 | 1 个 HTML + 10 个 CSS | `prototype/` |
+| 工作台页面路由 | 4（`/`、`/overview`、`/coverage`、`/design`） | `next build` 路由表 |
+| 代码检查 | 0 error / 0 warning | `npm run lint` |
+| 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
+| 产物校验 | 通过 | `npm run validate` |
+| 单元测试 | 144 用例（143 通过 / 1 跳过 / 0 失败，含 a11y 3） | `npm run test:unit` |
+| 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
+| Next 构建告警 | 0 | `npm run build:web` |
+
+> 工作台「项目概览」页（`/overview`）已把多数指标改为服务端实时统计，不再依赖本文档的手工数字。
 
 ### 已完成能力
 
@@ -237,13 +258,161 @@ npm test               # lint → build → validate
 
 ---
 
+## 迭代记录
+
+> 以下为按版本的内部迭代记录（缺陷修复 / 架构改进 / 文档完善），对应变更的细化与验收以 [CHANGELOG.md](../CHANGELOG.md) 为准。原 `docs/PROGRESS.md` 的 §4 已并入本节。
+
+### 4.1 v1.9.26 · 缺陷修复
+
+| 编号 | 问题 | 影响 | 处置 |
+|------|------|------|------|
+| C1 | 工作台外壳外层容器误用 `.workspace`（`flex-direction: column`） | 侧栏与主区**上下堆叠**，侧栏导航布局完全错位 | 新增 `.app-shell` 横向外壳，`Shell.tsx` 改用它 |
+| C2 | `.badge` / `.badge.untranslated` / `.badge.translated` **从未定义样式** | 词条状态一直以裸英文文本展示 | 在 `terms.css` 补齐样式，并把文案本地化为「待翻译 / 已翻译」 |
+| C3 | 构建期循环引用 `dictionaryManager → partialTranslator → dictionaryManager` | 拼接顺序依赖启发式，构建输出持续告警 | `partialTranslator` 改为接收调用方注入的查询上下文 |
+| C4 | `next.config.mjs` 保留 Next 16 已不支持的 `eslint` 键 | 每次构建输出 2 条无效配置告警 | 移除该键；`typescript.ignoreBuildErrors` 保留 |
+| C5 | `src/middleware.ts` 使用 Next 16 已弃用的 `middleware` 约定 | 构建输出迁移提示 | 迁移为 `src/proxy.ts`（具名导出 `proxy`），路由表显示 `ƒ Proxy` |
+| C6 | 原型服务器把采集临时文件写入仓库根目录 | 污染工作区，与 Next 侧行为不一致 | 统一走 `dictionary-processor.js` 的系统临时目录 |
+| C7 | `src/lib/collector-core.js` 达 206 行 | 违反「单代码文件 ≤ 200 行」约定 | 拆出 `dictionary-processor.js`（子进程桥接） |
+
+### 4.2 v1.9.26 · 架构与性能改进
+
+- **客户端边界收敛**：`src/app/page.tsx` 原为整页 `'use client'`，现改为服务端页面 + `CollectorConsole` 客户端岛；侧栏、顶栏、步骤条等静态结构不再进入客户端包。
+- **导航真实化**：侧栏三个入口由 `aria-disabled` 占位改为 `next/link` 真实路由（`prefetch` + `aria-current`）。
+- **新增页面**：`/overview`（服务端读取磁盘指标）、`/design`（设计令牌与组件展示），均静态预渲染。
+- **采集逻辑去重（P1-5）**：删除 `src/server/collector.js`，Next 路由与原型服务器共用 `collector-core.js`（抓取编排）+ `dictionary-processor.js`（子进程桥接）；SSE 适配各自保留。
+- **可选依赖处理**：`puppeteer` 改为运行时解析（`createRequire` + 变量说明符），并加入 `serverExternalPackages`；未安装时返回明确提示而非崩溃。
+- **类型安全**：`tsconfig.json` 开启 `strict: true`，零错误（与「避免 any」约定对齐）。
+- **移除未引用的 i18n 框架（P1-2，决策 B）**：删除 `src/i18n.js` + `src/i18n/`（9 个文件 / 641 行），移除依据：1. 精确检索（import 说明符）确认**零外部引用**，构建时持续报告 9 个孤立模块；2. 产品为单语言（中文）工具，其自身 UI 固定中文，无语言切换需求；3. `translations.js` 的 `github.*` 键与词典职责重叠，双翻译源易产生分叉（词典 459 条 vs 硬编码 8 条）；4. `loader.js` 提供远程拉取翻译 JSON 的能力，与「本地优先 · 离线可用」定位相悖。内容仍完整保留在 git 历史中，如需恢复可整体还原。
+
+### 4.3 v1.9.26 · 文档完善
+
+- 重写 `docs/PROGRESS.md`：指标实算、任务状态、架构图与变更记录同步至 v1.9.26。
+- `docs/architecture.md` 同步工作台架构与目录结构。
+- `CHANGELOG.md` 新增 1.9.26 小节。
+- 版本同步范围：`src/version.js`、`package.json`、`README.md` 徽章、`CHANGELOG.md`、以及**本次实际改动文件**的头注释版本号。
+
+### 4.4 v1.9.27 · 移动端可用性
+
+| 编号 | 问题 | 影响 | 处置 |
+|------|------|------|------|
+| D1 | `@media (max-width: 1024px)` 直接 `display: none` 隐藏侧栏 | 窄屏下**三个页面无法互相跳转**（新增概览/设计页后影响放大） | 新增 `MobileNav.tsx` 横向导航条替代侧栏；导航定义抽为 `navItems.ts` 单一来源 |
+| D2 | ≤640px 顶栏固定 `height: 5rem` 且横向排列 | 标题与状态徽标在窄屏被挤压、内容区内边距过大 | 顶栏改为纵向堆叠（`height: auto`），内容区内边距收到 `1rem` |
+
+### 4.5 v1.9.28 · 体验修复与契约完善
+
+| 编号 | 问题 | 影响 | 处置 |
+|------|------|------|------|
+| E1 | 配置面板「性能监控」区的 `刷新`/`导出` 按钮仅创建 DOM，从未绑定 `click` 事件 | 两个按钮完全是死的，用户点击无反应（P2-4） | `performanceMonitor.js` 内绑定 `updatePerformanceStats` / `exportPerformanceStats`；导出无数据时按钮短暂显示「暂无数据」 |
+| E2 | 采集错误仅以文本消息返回，前端难以按类型分流处理（P2-7） | 所有失败在 UI 里都是无差别红字，无法区分依赖缺失 / 抓取失败 / 子进程失败 | 新增 `collect-codes.js`（纯数据、客户端可安全导入）定义 `CollectErrorCode`；服务端 `error` 事件填充 `code`，`Dashboard` 渲染 `E<code>` 徽标 |
+| E3 | 空文本 / 空 URL 会进入子进程并以晦涩方式失败 | 错误提示不可读 | `processRawData` / `collectFromUrls` 入口直接返回 `INPUT_INVALID` |
+
+### 4.6 v1.9.33–1.9.42 · 任务清单与安全加固
+
+| 版本 | 变更 |
+|------|------|
+| 1.9.33 | 新增 `docs/IMPROVEMENT-TASKS.md` 改进建议任务文档（代码审查 + 实地核查） |
+| 1.9.34 | 新增 `docs/TASKS.md` 作为**唯一任务清单**，合并 PROGRESS 遗留任务与改进建议文档；PROGRESS §5 改为指向 TASKS 的指针 |
+| 1.9.35 | **T1 SSRF 加固**：新增 `src/lib/url-guard.js` 纯函数（协议白名单 + 私网 / 回环 / 链路本地 / 云元数据拦截）与 `CollectErrorCode.INVALID_URL`，`collector-core.js` 抓取前逐项校验；**T3** 清理文档漂移（双锁陈述、版本行、变更记录） |
+| 1.9.36 | **T2 CSP**：`src/proxy.ts` 注入基于 nonce 的 Content-Security-Policy；**T4** OG/Twitter 元信息：`src/app/layout.tsx` 补全 `metadataBase` / `openGraph` / `twitter` |
+| 1.9.37 | **T5 API 集成测试**：新增 `src/lib/request-body.js` 纯函数及 `tests/request-body.test.mjs`、`tests/collector-core.test.mjs`；SSRF 校验前移至浏览器启动前（全部非法则不启动浏览器） |
+| 1.9.38 | **T6 行数门禁**：新增 `scripts/check-file-length.cjs`（>200 行即失败）并纳入 `npm test` 与 CI；**T7 依赖审计**：CI 改为 `npm audit --audit-level=high`（高危阻塞、低危放行） |
+| 1.9.39 | **T9 命名澄清**：README 新增「命名与兼容性说明」，说明旧名 `GitHub_i18n` 因 `@updateURL` 依赖刻意保留（该保留策略已于 v1.9.43 被脚本更名推翻，新文件名为 `GitHub_zh-cn.user.js`） |
+| 1.9.40 | **T8 a11y**：axe-core + jsdom 检查三页静态产物（serious / critical 阻断）+ 语义修复；**T10 采集趋势**：`scripts/collect-history.cjs` 记录统计、`/overview` 展示趋势；拆分 `collect-dict.cjs`（211 行）至 `scripts/dict-report.cjs`；行数门禁扩展至根脚本 |
+| 1.9.41 | **文档整理**：清理 `docs/TASKS.md`（第 1 节空节合并、第 2 节归档改紧凑索引表）；同步 `docs/` 与 `openspec/` 全部文档版本行至 v1.9.41；PROGRESS 指标实算刷新（产物字节 / 用例数） |
+| 1.9.42 | **T11 CI 门禁补齐**：CI `lint` 作业新增类型检查（`typecheck`）、`build` 作业新增单元测试（`test:unit`，20 用例） |
+
+### 4.7 v1.9.43–1.9.47 · 文档刷新与采集流程改进
+
+| 版本 | 变更 |
+|------|------|
+| 1.9.43 | 文档指标刷新（`src/` 行数 9230 → 9342、产物 198,899 → 198,838 字节）；同步版本展示位至 v1.9.43 |
+| 1.9.44 | 原型简化：仅保留高保真原型并改名为 `index.html`；版本同步 |
+| 1.9.45 | 高保真原型重定向为「GitHub 页面字符串采集工具」 |
+| 1.9.46 | 原型单一化（删除 `mobile.html`，`desktop.html` → `index.html`）；用户脚本文件名 `GitHub_i18n.user.js` → `GitHub_zh-cn.user.js` |
+| 1.9.47 | 采集流程改进：提取去噪（跳过 `script`/`style`/隐藏元素）、匹配归一化（`normalizeText`）、修复并发竞态（独立临时文件）、区分告警/错误、`request-body` 增加 `MAX_URLS=50`、`@babel/core` 移入 `dependencies` |
+
+### 4.8 v1.10.0 · 采集成功率/覆盖率（P1 首批：T12–T14）
+
+| 编号 | 能力 | 处置 |
+|------|------|------|
+| T12 | 提取精准化：作用域从整页 `body` 收窄为 GitHub SPA 根（`#react-app` / `.application-main` 回退 `body`），跳过 `markdown-body`/`highlight`/`blob-code`/`CodeMirror`/评论等「内容型容器」，进一步降噪、提升信噪比 | `src/lib/extract-page-text.js` 新增 `resolveScopeRoot()` 与内容噪声判定 |
+| T13 | SPA/动态内容适配：导航优先 `networkidle2`，超时降级为 `domcontentloaded` + 固定等待；等待 hydration（`#react-app`）后再提取；滚动触发懒加载（`autoScroll`） | 抽离 `src/lib/page-navigation.js`（gotoWithFallback / waitForHydration / autoScroll） |
+| T14 | 单次采集鲁棒性：逐 URL 错误隔离（单页失败不中断整批、记日志续跑）；导航超时/反爬(429)/网络错误指数退避重试（最多 3 次） | `page-navigation.js` 的 `navigateWithRetry`（RetryableError + computeBackoffDelay） |
+
+> 抽出 `src/lib/page-navigation.js`（Node 侧、无浏览器依赖、可单测）承载全部导航交互辅助，采集核心 `collector-core.js` 仅保留编排；新增 `tests/page-navigation.test.mjs`（4 用例）覆盖退避与可重试判定。
+
+### 4.9 v1.11.16 · 覆盖率看板（T22）
+
+- 新增 `/coverage` 路由与服务端取数模块 `src/lib/coverage-report.ts`：实时扫描磁盘词典，计算整体翻译覆盖率、按文件（common/codespaces/explore）细分进度条、Top-N 采集缺口（读 `docs/untranslated-terms.txt`）、跨模块同键多值冲突与近似键聚类；服务端渲染（`force-dynamic`），不依赖浏览器，规避 W5 架构约束。
+- 复用 `Shell` 外壳与 `progress`/`showcase` 设计令牌，新增 `public/css/coverage.css`；`navItems.ts` 导航新增「覆盖率」项。
+- 版本同步至 1.11.16：`src/version.js`、`package.json`、`README.md`、`CHANGELOG.md` 与本次改动文件头注释。
+
+---
+
+## 4.10 v1.12.1 · 文档收口与 UI 对齐原型
+
+- **Docs（合并 OpenSpec 索引入 docs）**：`openspec/` 规范索引与配置并入 `docs/README.md`（唯一文档入口），删除 `openspec/`，消除第二份文档副本与维护脱节；修正活跃交叉引用（`docs/project.md`、`docs/architecture.md`、根 `README.md`、`docs/development.md`、`docs/coding-style.md` 移除 `openspec/`、`config.yaml` 等引用）。
+- **Refactor（应用 UI 对齐原型 / 首页重构）**：`CollectorConsole` 以原型四区块（h2+meta）包裹各模块；`DataCenter` 补原型描述；`Shell` 新增页脚（原型 `proto-footer`）；`grid-2` 列宽对齐原型 `1fr 1fr`；新增 `.section`/`.footer` 样式。
+
+## 4.11 v1.12.2 · 采集页整页复刻原型
+
+- 采集工具首页（`/`）脱离标准 `Shell`，改用原型外壳：`proto-topbar`（品牌「GitHub 中文 · 采集工具」+ 设置齿轮）、hero（eyebrow / 标题 / 导语）、页脚「高保真原型 · 仅供设计走查」；隐藏深侧栏，导航经页脚链接与移动端导航保留。
+- 新增 `public/css/prototype.css`：在 `.proto-page` 作用域内对齐原型 `ct-*` 组件值（步骤徽标绿底 26px、卡片内边距 16px / 标题 16px·600、栅格 16px、tab 下划线式、输入框 / 代码块 / 词条表 / 进度卡 / 终端尺寸与圆角对齐）；覆盖仅作用于采集页，不影响 `/overview` `/coverage` `/design`。
+
+## 4.12 v1.12.3 · 采集页恢复标准应用框架
+
+- 撤销「整页复刻原型」模式：采集页 `page.tsx` 改回标准 `Shell`（侧栏 + 真实顶栏 + 真实页脚），恢复应用身份并保留全部交互功能（探针复制 / 文本·批量 URL 采集 / 实时日志 / JSON 导出）。
+- `Shell` 移除 `prototype`/`brand` 模式分支，新增 `contentClass` 仅用于采集页承接 `prototype.css` 的组件级视觉对齐（`.proto-page` 作用域），不影响其余三页。
+- `prototype.css` 删除失效的 proto 顶栏 / 齿轮样式，保留 hero 与 `.proto-page` 组件覆盖；hero eyebrow 由「PROTOTYPE · COLLECTOR」改「采集工具 · COLLECTOR」。
+
+## 4.13 v1.12.4 · 清理冗余依赖与重复代码（+ 产物重建）
+
+- 移除未使用的 devDependencies：`serve`、`@babel/preset-env`（含传递依赖共 147 个包）；`dev:prototype` 实际由 `server.js`（express）驱动，无 babel 配置引用 preset-env。
+- 去重：`DictionaryProcessor.mergeDictionaries()` 改为复用 `dictionaries/index.js` 的 `mergeAllDictionaries()`，删除重复遍历逻辑。
+- **分析发现并修复产物脱节**：`build/GitHub_zh-cn.user.js` 自 v1.11.16 起从未重建，UserScript `@version` 与内联 `version.js` 仍停留 1.11.16，导致 `tests/smoke.test.cjs`「产物含当前版本号」断言失败；本次已 `node build.cjs` 重建，产物现含 `@version 1.12.4`、纳入 92 模块、193.98 KB，全量单测 62 用例（61 通过 / 1 跳过 / 0 失败）。
+
+---
+
+## 4.14 v1.12.6 · T21 翻译建议 + 词典助手页
+
+- **Feat（T21 翻译建议）**：新增翻译建议引擎 `src/lib/translation-suggest.js`（纯函数、无网络）——基于现有词典（翻译记忆）给出建议译文，覆盖精确命中 / 大小写命中 / 多词组合，并跳过「待翻译」占位；新增可选 LLM 增强 `src/lib/llm-suggest.js`（配置 `GHZH_LLM_KEY` 时调用 OpenAI 兼容接口，无密钥或失败均降级跳过）。
+- **Feat（词典助手页 + 持久化）**：新增 `GET /api/dictionary/suggest` 接口与「词典助手」页（`/dictionary`，`DictionaryHelper` 客户端岛），支持输入词条获取建议、采纳后存 `localStorage` 待入库并导出 JSON；导航新增「词典助手」项；新页面纳入 a11y 走查。
+- 单元测试 `tests/translation-suggest.test.mjs` 覆盖引擎（10 用例）；全量单测 73 用例（72 通过 / 1 跳过 / 0 失败）。
+
+## 版本与文档同步清单
+
+发版时必须逐项核对，避免长期脱节：
+
+1. `src/version.js` 的 `VERSION`（**单一版本源**）
+2. `package.json` 的 `version`
+3. `CHANGELOG.md` 新增对应版本小节
+4. `README.md` 中的版本相关描述与结构说明
+5. **本次实际编辑**的文档版本行（`docs/*.md`，含本文档）；未编辑的文档不批量刷写版本行，避免无意义 diff
+6. `docs/` 下结构调整文档（`project.md`／`architecture.md`／`development.md`／`coding-style.md`／`prototype.md`）
+7. 本次**实际改动**文件的头注释版本号（未改动文件保持不变）
+8. 发版后重新执行 `node build.cjs` 并确认 `git status` 干净（产物须可复现）
+
+## 路线图（Roadmap）
+
+> 当前采集链路（v1.12.6）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，其中 **T12 提取精准化、T13 SPA/动态适配、T14 单页鲁棒性、T15 并发限流已落地**（详见本文「迭代记录」）；**T26（`extractPageText` 经 `page.evaluate` 序列化丢失辅助、整批提取 0 文本回归）已在 v1.10.2 修复**；**覆盖率度量（T17）+ 覆盖率/缺口看板（T22）已交付**；T19–T25 数据层（审阅/合并/历史/导入导出/搜索批量）已就绪，T21 的 UI 接入与 localStorage 持久化已由 v1.12.6「词典助手」页交付；剩 T19–T25 其余工作台 UI 接入，以及 T18 采集源扩展。
+>
+> **活动任务以 [docs/tasks.md](./tasks.md) 为唯一清单（含 P1–P3 优先级与 S/M/L 工作量标签、验收要点）；变更记录以 [CHANGELOG.md](./CHANGELOG.md) 为唯一归处。**
+
+### 9.1 采集成功率与覆盖率提升（T12–T18）
+围绕「提取更准、适配更稳、度量更清」三条主线：提取精准化（限定 UI 容器）、SPA 动态内容适配、单页错误隔离与退避重试、并发限流、匹配策略增强、覆盖率度量、采集源扩展。
+
+### 9.2 采集后词典管理增强（T19–T25）
+围绕「审阅 → 入库 → 度量 → 回溯」闭环：词条级审阅、一键合并入库、翻译建议、覆盖率/缺口看板、历史轮次对比、导入导出增强、搜索与批量操作。
+
+---
+
 ## 项目信息
 
 | 属性 | 值 |
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.13.4 |
+| **当前版本** | 1.13.5 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
@@ -259,4 +428,3 @@ npm test               # lint → build → validate
 | [development.md](./development.md) | 开发流程、分支策略、发布规范 |
 | [coding-style.md](./coding-style.md) | 命名规范、代码格式、注释要求 |
 | [prototype.md](./prototype.md) | 原型设计、交互规格与数据结构 |
-| [PROGRESS.md](./PROGRESS.md) | 开发进度报告与后续计划 |

@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.13.4**（版本单一来源：`src/version.js`）
+> 当前版本：**v1.13.5**（版本单一来源：`src/version.js`）
 
 ## 命名与兼容性说明
 
@@ -137,7 +137,6 @@ npm test        # lint → build → validate
 
 | 文档 | 说明 |
 |------|------|
-| [docs/PROGRESS.md](docs/PROGRESS.md) | 开发进度报告与后续计划 |
 | [docs/project.md](docs/project.md) | 项目概述、目录结构与核心模块 |
 | [docs/architecture.md](docs/architecture.md) | 系统架构与技术选型 |
 | [docs/development.md](docs/development.md) | 开发流程与发布规范 |

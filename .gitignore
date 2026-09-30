@@ -37,4 +37,4 @@ bun.lock
 devserver.log
 collect-page.png
 docs/untranslated-terms.txt
-
+*.sync-conflict-*

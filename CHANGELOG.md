@@ -1,4 +1,11 @@
 # Changelog
+## [1.13.5] - 2026-09-30
+
+### Docs（合并 PROGRESS.md 至 project.md 后删除）
+- 将 `docs/PROGRESS.md` 的非任务内容并入 `docs/project.md`：量化指标表（§1.1）、迭代记录（§4）、版本与文档同步清单（§7）、路线图（§9）。架构现状（§2）与命令速查（§6）已分别收口于 `docs/architecture.md` / `docs/development.md`，不再重复迁移，避免信息丢失且消除文档冗余。
+- 删除 `docs/PROGRESS.md`；同步清理活跃交叉引用（`docs/README.md`、`docs/project.md`、`README.md`、`docs/tasks.md` 中对 PROGRESS.md 的链接与说明）。
+- 此后项目进度类内容收口为：`docs/project.md`（概览 / 指标 / 迭代 / 路线图）、`docs/tasks.md`（任务唯一清单）、`CHANGELOG.md`（变更唯一归处）。
+
 ## [1.13.4] - 2026-09-30
 
 ### Fix（浏览器启动失败错误码语义拆分）
