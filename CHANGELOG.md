@@ -1,4 +1,12 @@
 # Changelog
+## [1.12.12] - 2026-09-30
+
+### Fix（修复采集服务回退本地时请求体已消费导致必返 400）
+- 旧实现中 `proxyCollectRequest(req, kind)` 内部 `req.text()` 消费请求体；当独立采集服务返回非 2xx、无响应体或网络错误而返回 null 时，路由随后再次 `req.json()` 必然抛错 → 400，「服务异常回退本地」实际从未执行（collect/batch-collect 同病）。
+- 重构为单点读取：两个路由鉴权后先读取一次原始 body 字符串并完成 JSON/业务校验（非法仍返 400），再将 `{ body, signal }` 交给 `proxyCollectRequest` 转发；返回 null 时直接用已解析数据执行本地采集，不再触碰 Request 流。
+- `collect-service-client.js` 不再接收 Request；新增 signal 已中断/AbortError 的静默分支（客户端断开不打「回退本地」告警）。
+- 新增 `tests/collect-service-client.test.mjs`（7 用例）：未启用直返、成功透传 SSE 且原样转发 body、非 2xx 回退后调用方仍持有请求体（回归）、无 body/网络错误回退、中断静默。
+
 ## [1.12.11] - 2026-09-30
 
 ### Chore（server/ 纳入 lint 与行数门禁）
