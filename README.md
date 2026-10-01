@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.13.10**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.11**（版本单一来源：`src/userscript/version.js`）
 
 ## 命名与兼容性说明
 
@@ -141,6 +141,7 @@ npm test        # lint → build → validate
 | [docs/architecture.md](docs/architecture.md) | 系统架构与技术选型 |
 | [docs/development.md](docs/development.md) | 开发流程与发布规范 |
 | [docs/coding-style.md](docs/coding-style.md) | 代码风格规范 |
+| [docs/tasks.md](docs/tasks.md) | 活动任务唯一清单 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更记录 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献指南 |
 

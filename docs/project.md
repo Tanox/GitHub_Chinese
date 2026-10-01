@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.5** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.11** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -209,39 +209,41 @@ npm test               # lint → build → validate
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.5**（2026-09-30）。
-- 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，四页 `/`、`/overview`、`/coverage`、`/design`）。两链路仅共享词典数据。
+- 当前版本 **v1.13.11**（2026-10-01）。
+- 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，六页 `/`、`/overview`、`/coverage`、`/design`、`/dictionary`、`/dict-manage`）。两链路仅共享词典数据。
 
 ### 量化指标
 
-量化指标随发版由对应命令实算，**禁止手填**（v1.13.4 发版实算快照，发版时重新实算）：
+量化指标随发版由对应命令实算，**禁止手填**（v1.13.11 发版实算快照，发版时重新实算）：
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 141 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 11062 | 同上 |
+| `src/` 源码文件数 | 157 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 12695 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
-| 用户脚本孤立模块数 | 0 | 同上 |
+| 用户脚本孤立模块数 | 1（`src/utils/logger.js`） | 同上 |
 | 构建期循环引用 | 0 | 同上 |
-| 用户脚本产物大小 | 199,094 字节（约 194 KB） | `build/GitHub_zh-cn.user.js` |
-| 翻译词典词条数 | 459 | `node scripts/collect-dict.cjs` 输出 |
+| 用户脚本产物大小 | 194.86 KB（build.cjs 输出） | `build/GitHub_zh-cn.user.js` |
+| 翻译词典词条数 | 459 | `mergeAllDictionaries()` 合并计数 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 1 个 HTML + 10 个 CSS | `prototype/` |
-| 工作台页面路由 | 4（`/`、`/overview`、`/coverage`、`/design`） | `next build` 路由表 |
-| 代码检查 | 0 error / 0 warning | `npm run lint` |
-| 类型检查 | 通过（`strict: true`） | `tsc --noEmit -p tsconfig.json` |
-| 产物校验 | 通过 | `npm run validate` |
-| 单元测试 | 144 用例（143 通过 / 1 跳过 / 0 失败，含 a11y 3） | `npm run test:unit` |
+| 工作台页面路由 | 6（console·overview·coverage·design·dictionary·dict-manage） | `src/components/navItems.ts` |
+| 代码检查 | 2 error / 0 warning | `npm run lint` |
+| 类型检查 | 未通过（`next build` 报 4 个 TS 错误，strict 模式启用） | `npm run build:web` |
+| 产物校验 | 通过（build.cjs 生成成功，vm 编译校验通过） | `npm run build:userscript` |
+| 单元测试 | 170 用例（161 通过 / 5 集成测试因 Next 服务未就绪失败 / 4 跳过） | `node --test` |
 | 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
-| Next 构建告警 | 0 | `npm run build:web` |
+| Next 构建告警 | 构建失败（类型检查未通过，阻断 `next build`） | `npm run build:web` |
 
 > 工作台「项目概览」页（`/overview`）已把多数指标改为服务端实时统计，不再依赖本文档的手工数字。
+
+> ⚠️ 「类型检查」与「Next 构建告警」当前为**未通过 / 构建失败**，系 `src/app/api/batch-collect/route.ts` 与 `src/components/dictionary/MergePatchPanel.tsx` 的 4 个 TypeScript 错误所致（`next build` 类型检查阶段即报错）。此为**已知预存问题**，非本次文档变更引入，修复另行跟进。
 
 ### 已完成能力
 
 - **用户脚本引擎**：静态/动态翻译、Trie 部分匹配、LRU 缓存/虚拟 DOM/批处理、配置面板 + 性能监控、浮动入口 + 菜单命令、自动更新、输入净化。
 - **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、四页互通与响应式导航、项目概览（实时指标）、设计系统、**覆盖率/缺口看板（/coverage，T22）**。
-- **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（20 用例）、a11y 自动化检查。
+- **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（170 用例）、a11y 自动化检查。
 
 ### 活动任务（以 docs/tasks.md 为唯一清单）
 
@@ -396,7 +398,7 @@ npm test               # lint → build → validate
 
 > 当前采集链路（v1.12.6）已具备「粘贴/批量 URL → Headless 抓取 → 词典匹配 → 报告/趋势」主干能力，其中 **T12 提取精准化、T13 SPA/动态适配、T14 单页鲁棒性、T15 并发限流已落地**（详见本文「迭代记录」）；**T26（`extractPageText` 经 `page.evaluate` 序列化丢失辅助、整批提取 0 文本回归）已在 v1.10.2 修复**；**覆盖率度量（T17）+ 覆盖率/缺口看板（T22）已交付**；T19–T25 数据层（审阅/合并/历史/导入导出/搜索批量）已就绪，T21 的 UI 接入与 localStorage 持久化已由 v1.12.6「词典助手」页交付；剩 T19–T25 其余工作台 UI 接入，以及 T18 采集源扩展。
 >
-> **活动任务以 [docs/tasks.md](./tasks.md) 为唯一清单（含 P1–P3 优先级与 S/M/L 工作量标签、验收要点）；变更记录以 [CHANGELOG.md](./CHANGELOG.md) 为唯一归处。**
+> **活动任务以 [docs/tasks.md](./tasks.md) 为唯一清单（含 P1–P3 优先级与 S/M/L 工作量标签、验收要点）；变更记录以 [CHANGELOG.md](../CHANGELOG.md) 为唯一归处。**
 
 ### 9.1 采集成功率与覆盖率提升（T12–T18）
 围绕「提取更准、适配更稳、度量更清」三条主线：提取精准化（限定 UI 容器）、SPA 动态内容适配、单页错误隔离与退避重试、并发限流、匹配策略增强、覆盖率度量、采集源扩展。
@@ -412,7 +414,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.13.5 |
+| **当前版本** | 1.13.11 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
@@ -428,3 +430,4 @@ npm test               # lint → build → validate
 | [development.md](./development.md) | 开发流程、分支策略、发布规范 |
 | [coding-style.md](./coding-style.md) | 命名规范、代码格式、注释要求 |
 | [prototype.md](./prototype.md) | 原型设计、交互规格与数据结构 |
+| [tasks.md](./tasks.md) | 活动任务唯一清单（含优先级与验收要点） |

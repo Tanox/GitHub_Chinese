@@ -1,8 +1,8 @@
 # GitHub Chinese 简体中文 · 字符串采集工作台原型设计
 
-> 版本：**v1.13.4** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.11** ｜ 版本权威源：`src/userscript/version.js`
 >
-> 说明：本文档描述「词典采集工作台」（亦名 GitHub 页面字符串采集工具）的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/prototypes/`](../prototype/prototypes/)：[高保真原型](prototype/prototypes/index.html)。
+> 说明：本文档描述「词典采集工作台」（亦名 GitHub 页面字符串采集工具）的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/prototypes/`](../prototype/prototypes/)：[高保真原型](../prototype/prototypes/index.html)。
 >
 > 注：翻译用户脚本（配置面板 `ui/configUI`、翻译核心 `translationCore` 等）为另一子系统，其规格见 [架构设计](./architecture.md)，不在本文档范围内。
 

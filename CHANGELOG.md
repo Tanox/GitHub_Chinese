@@ -1,4 +1,15 @@
 # Changelog
+## [1.13.11] - 2026-10-01
+
+### Docs
+- 审查并更新项目文档：统一各规范文档版本展示位至 v1.13.11
+- 刷新 `docs/project.md` §量化指标为实算值（src 文件数 157 / 行数 12695 / 孤立模块 1 / 代码检查 2 error / 单元测试 170 用例 / 页面路由 6 等）
+- 修正 §量化指标中「类型检查通过 / Next 构建告警 0」为如实陈述（`next build` 类型检查当前存在 4 个 TS 错误，构建未通过；属已知预存问题）
+- 修复 `docs/project.md`、`docs/prototype.md` 两处死链
+- 在 `docs/README.md`、`docs/project.md`、根 `README.md` 索引补入 `tasks.md`
+
+---
+
 ## [1.13.10] - 2026-10-01
 
 ### Feat（T18 采集源扩展 · 登录态 / HAR 导入 / 覆盖扩展）

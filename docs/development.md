@@ -1,6 +1,6 @@
 # 开发指南
 
-> 版本：**v1.13.4** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.11** ｜ 版本权威源：`src/userscript/version.js`
 
 本文档记录了项目的开发流程、分支策略、提交规范、发布流程和测试要求。
 

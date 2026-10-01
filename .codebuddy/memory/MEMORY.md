@@ -10,5 +10,9 @@
 - `npm run format` / `typecheck` / `lint` / `build`（build 含 `next build` + `node build.cjs`）。
 - 部署：GitHub Pages（`deploy-pages`），产物为 Next 应用而非原型。
 
+## 版本权威源
+- 权威版本来源：`package.json` 的 `version` 字段 + `src/userscript/version.js` 的 `VERSION`（二者须一致）。版本源已迁至 `src/userscript/version.js`，旧 `src/version.js` 于 v1.13.6 删除，勿再引用。
+- 每次修改（含纯文档）按规则 bump 最小版本（patch）；仅更新被改文件的头注释版本。
+
 ## 待处理预存问题（2026-10-01 发现，与布局改造无关）
 - `batch-collect/route.ts:44` cookies 类型缺失；`MergePatchPanel.tsx:89` key/value 未定义；`tests/batch-collector.test.mjs` `_` 未使用。

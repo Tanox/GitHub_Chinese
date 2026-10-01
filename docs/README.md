@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.13.6** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.11** ｜ 版本权威源：`src/userscript/version.js`
 
 面向开发者与贡献者的文档入口。设计规范与高保真原型由 `prototype/` 目录统一维护。
 
@@ -16,6 +16,7 @@
 | 代码风格 | [coding-style.md](./coding-style.md) | 命名约定、注释规范、最佳实践 |
 | 开发流程 | [development.md](./development.md) | 分支策略、提交规范、发布流程 |
 | 原型与设计规范 | [prototype.md](./prototype.md) | 原型设计理念与组件规范 |
+| 活动任务 | [tasks.md](./tasks.md) | 活动任务唯一清单（含优先级与验收要点） |
 
 ## 文档速览
 
