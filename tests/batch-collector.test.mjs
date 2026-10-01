@@ -109,7 +109,7 @@ test('collectBatch 注入 cookies：每页 setCookie 命中匹配项（T18-a）'
 
   const it = collectBatch(browser, targets, targets.length, { cookies });
   // 排空事件流
-  // eslint-disable-next-line no-empty
+  // eslint-disable-next-line no-empty, no-unused-vars
   for await (const _ of it) {
   }
 
@@ -127,7 +127,7 @@ test('collectBatch 无 cookies 时不调用 setCookie（向后兼容）', async 
   const { browser } = makeFakeBrowser({ recordCookies: recorded });
 
   const it = collectBatch(browser, targets, targets.length);
-  // eslint-disable-next-line no-empty
+  // eslint-disable-next-line no-empty, no-unused-vars
   for await (const _ of it) {
   }
 

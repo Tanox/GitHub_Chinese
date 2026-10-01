@@ -1,4 +1,13 @@
 # Changelog
+## [1.13.13] - 2026-10-01
+
+### Docs & Chore
+- 清理预存 ESLint 错误：`tests/batch-collector.test.mjs` 两处 `for await` 排空循环的 `_` 未使用（`no-unused-vars`），补充禁用后 `npm run lint` 回归 0 error（TS `tsc --noEmit` 亦 0 error）。
+- 同步全部文档头版本行至 1.13.13（以 `src/userscript/version.js` 为单一版本源）：`project` / `architecture` / `coding-style` / `development` / `prototype` / `docs/README` / `README`。
+- 登记 T37（文档与记忆整理，已于 v1.13.12 会话交付）与 T38（清理预存 lint 错误，本版交付）至 `docs/tasks.md`。
+
+---
+
 ## [1.13.12] - 2026-10-01
 
 ### Docs

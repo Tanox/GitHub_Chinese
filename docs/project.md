@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.12** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.13** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
