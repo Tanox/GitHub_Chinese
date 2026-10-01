@@ -3,8 +3,8 @@
  * @file errorHandler.js
  */
 
-import { CONFIG } from '../config/index.js';
-import { utils } from '../../utils/utils.js';
+import { CONFIG } from '../../config/index.js';
+import { utils } from '../../../utils/utils.js';
 import {
   ERROR_TYPES,
   DEFAULT_THRESHOLD,

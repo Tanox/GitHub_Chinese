@@ -5,7 +5,7 @@
 import { CONFIG } from '../../config/index.js';
 import { utils } from '../../../utils/utils.js';
 import { translationCore } from '../../translation-core/index.js';
-import { domObserverConfig } from '../domObserver.config/index.js';
+import { domObserverConfig } from '../domObserver.config.js';
 import { pageMonitorCache } from '../cacheManager.js';
 
 export function setupDomObserver(domObserver, translationTriggerCallback) {

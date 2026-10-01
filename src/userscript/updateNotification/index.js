@@ -2,7 +2,7 @@
  * 更新通知模块
  * @file updateNotification.js
  */
-import { CONFIG } from './config/index.js';
+import { CONFIG } from '../config/index.js';
 import { updateStore } from './store.js';
 import { updateRenderer } from './renderer.js';
 

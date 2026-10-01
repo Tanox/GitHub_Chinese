@@ -3,7 +3,7 @@
  * @file config.js
  */
 
-import { VERSION } from './version.js';
+import { VERSION } from '../version.js';
 import { performanceConfig } from './performance.js';
 import { selectorsConfig, pagePatternsConfig } from './selectors.js';
 

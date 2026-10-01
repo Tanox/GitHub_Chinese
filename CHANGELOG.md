@@ -1,4 +1,14 @@
 # Changelog
+## [1.13.7] - 2026-10-01
+
+### Refactor（修复 file+dir→index.js 迁移的引用深度与误改写）
+- 修复 9 处 `X.js`+`X/` 收敛为 `X/index.js` 后被迁文件内部相对引用深度错误：指向被迁目录【内部】兄弟文件的引用（如 `config/performance.js`、`config/selectors.js`、`main/lifecycle.js`、`updateNotification/store.js`、`versionChecker/fetcher.js`、`configUI/styles|components|store|renderer|bootstrap`、`errorHandler/constants|recovery`、`virtualDom/manager`、`selectorUtils/patterns|matchers`、`tools/*`）被错误加深为 `.././X`，导致 `resolveSpec` 解析不到目标、依赖图断裂（92→50 模块）。改为基于文件存在性的确定性重算，统一修正为规范相对路径。
+- 审计并回退 refactor 全局 `.js`→`/index.js` 改写造成的误改：非迁移文件 `page-monitor/domObserver.config.js` 被误改为 `domObserver.config/index.js`（实际是文件），已回退为 `domObserver.config.js`，使其重新纳入打包。
+- 修正 `@/version` 悬空别名：`src/lib/project-metrics.ts`、`src/components/Rail.tsx` 在 v1.13.6 引擎迁出后 `@/version` 已失效，统一改为 `@/userscript/version`（`src/version.js` 已迁至 `src/userscript/version.js`）。
+- 构建恢复：依赖图重新纳入 92 个模块，产物 `build/GitHub_zh-cn.user.js` 体积与结构回归基线；`node --test`（144 用例：143 通过 / 1 跳过 / 0 失败）与 `tsc --noEmit` 全绿。
+
+---
+
 ## [1.13.6] - 2026-10-01
 
 ### Refactor（用户脚本引擎整体迁入 src/userscript/，与 Next 工作台分离）

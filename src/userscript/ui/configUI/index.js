@@ -3,9 +3,9 @@
  * @file configUI.js
  */
 
-import { CONFIG } from '../config/index.js';
-import { addConfigUIStyles } from './styles/configUI.styles.js';
-import { updatePerformanceStats, exportPerformanceStats } from './components/perfPanel.js';
+import { CONFIG } from '../../config/index.js';
+import { addConfigUIStyles } from '../styles/configUI.styles.js';
+import { updatePerformanceStats, exportPerformanceStats } from '../components/perfPanel.js';
 import { configStore } from './store.js';
 import { configRenderer } from './renderer.js';
 import { configBootstrap } from './bootstrap.js';
