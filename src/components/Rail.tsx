@@ -15,6 +15,8 @@ interface RailProps {
 }
 
 export default function Rail({ active }: RailProps) {
+  // 未配置独立采集服务时走本地回退，状态文案随之调整，避免误导
+  const collectServiceConfigured = Boolean(process.env.COLLECT_SERVICE_URL);
   return (
     <aside id='collector-rail' className='rail'>
       <div className='rail-brand'>
@@ -63,7 +65,7 @@ export default function Rail({ active }: RailProps) {
 
       <div className='rail-foot'>
         <span className='dot' aria-hidden='true'></span>
-        <span>采集服务运行中</span>
+        <span>{collectServiceConfigured ? '采集服务运行中' : '本地采集模式'}</span>
       </div>
     </aside>
   );

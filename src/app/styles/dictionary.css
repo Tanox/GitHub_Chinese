@@ -2,7 +2,7 @@
  * GitHub 中文 · 采集工作台 — 词典助手
  * 设计变量与基础类复用 base.css；本文件仅补充词典助手专属布局
  * @file src/app/styles/dictionary.css
- * @version 1.12.9
+ * @version 1.13.8
  */
 .dict-wrap {
   display: flex;
@@ -88,4 +88,104 @@
   background: var(--canvas);
   padding: .15rem .4rem;
   border-radius: 6px;
+}
+
+/* 词库管理台（T19 / T24 / T25） */
+.dict-manage {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dict-stats {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.dict-badge {
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .2rem .7rem;
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+.dict-toolbar {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.dict-select {
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.dict-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.dict-table {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.dict-thead,
+.dict-tr {
+  display: grid;
+  grid-template-columns: 64px 1fr 1fr 64px;
+  gap: .5rem;
+  padding: .55rem .7rem;
+  align-items: center;
+}
+
+.dict-thead {
+  background: var(--canvas);
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+.dict-tr {
+  border-top: 1px solid var(--border);
+}
+
+.dict-tr:nth-child(even) {
+  background: var(--canvas);
+}
+
+.dict-key code {
+  font-size: .85rem;
+  word-break: break-all;
+}
+
+.dict-val {
+  word-break: break-all;
+}
+
+.dict-import-ok {
+  color: var(--brand-strong);
+  font-size: .9rem;
+  margin: .5rem 0 0;
+}
+
+@media (max-width: 640px) {
+  .dict-thead,
+  .dict-tr {
+    grid-template-columns: 48px 1fr 48px;
+  }
+
+  .dict-thead .c-val,
+  .dict-tr .c-val {
+    display: none;
+  }
 }

@@ -9,6 +9,8 @@ import Shell from '@/components/Shell';
 import DictionaryHelper from '@/components/DictionaryHelper';
 import { mergeAllDictionaries } from '@/dictionaries/index';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = { title: '词典助手 · GitHub 中文' };
 
 /** 示例试词条数量上限 */

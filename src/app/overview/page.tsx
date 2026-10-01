@@ -8,6 +8,7 @@
 import type { Metadata } from 'next';
 import Shell from '@/components/Shell';
 import { getProjectMetrics, getCollectHistory } from '@/lib/project-metrics';
+import { NAV_ITEMS } from '@/components/navItems';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,8 +97,8 @@ export default function OverviewPage() {
     },
     {
       label: '工作台路由',
-      value: '3 个',
-      hint: '采集控制台 / 项目概览 / 设计系统',
+      value: `${NAV_ITEMS.length} 个`,
+      hint: NAV_ITEMS.map((i) => i.label).join(' / '),
     },
   ];
 
