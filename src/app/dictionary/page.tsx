@@ -16,9 +16,7 @@ const MAX_SAMPLES = 12;
 
 export default function DictionaryPage() {
   const dictionary = mergeAllDictionaries();
-  const translated = Object.entries(dictionary).filter(
-    ([, v]) => !String(v).startsWith('待翻译'),
-  );
+  const translated = Object.entries(dictionary).filter(([, v]) => !String(v).startsWith('待翻译'));
   const totalEntries = translated.length;
   // 取若干已译词条作为示例，便于用户一键试跑翻译记忆
   const samples = translated.slice(0, MAX_SAMPLES).map(([k]) => k);

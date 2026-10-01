@@ -21,7 +21,10 @@ test('findAllMatches 返回文本中全部命中键', () => {
   trie.insert('Sign in', '登录');
   trie.insert('Pull request', '拉取请求');
   const matches = trie.findAllMatches('Please Sign in now');
-  assert.ok(matches.some((m) => m.key === 'Sign in'), '应命中 Sign in');
+  assert.ok(
+    matches.some((m) => m.key === 'Sign in'),
+    '应命中 Sign in',
+  );
 });
 
 test('findAllMatches 受 minKeyLength 约束', () => {

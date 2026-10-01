@@ -81,7 +81,15 @@ function computeCoverage(entries, dictionary, options = {}) {
     .sort((a, b) => b.count - a.count || a.term.localeCompare(b.term))
     .slice(0, topN);
 
-  return { total, covered, uncovered: total - covered, rate, byPage: byPageOut, lowCoveragePages, topUnmatched };
+  return {
+    total,
+    covered,
+    uncovered: total - covered,
+    rate,
+    byPage: byPageOut,
+    lowCoveragePages,
+    topUnmatched,
+  };
 }
 
 module.exports = { computeCoverage, isTranslatableCandidate };

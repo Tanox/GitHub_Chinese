@@ -28,18 +28,49 @@ function parseCsv(csv) {
     const c = s[i];
     if (inQuotes) {
       if (c === '"') {
-        if (s[i + 1] === '"') { field += '"'; i += 2; continue; }
-        inQuotes = false; i += 1; continue;
+        if (s[i + 1] === '"') {
+          field += '"';
+          i += 2;
+          continue;
+        }
+        inQuotes = false;
+        i += 1;
+        continue;
       }
-      field += c; i += 1; continue;
+      field += c;
+      i += 1;
+      continue;
     }
-    if (c === '"') { inQuotes = true; i += 1; continue; }
-    if (c === ',') { row.push(field); field = ''; i += 1; continue; }
-    if (c === '\r') { i += 1; continue; }
-    if (c === '\n') { row.push(field); records.push(row); row = []; field = ''; i += 1; continue; }
-    field += c; i += 1;
+    if (c === '"') {
+      inQuotes = true;
+      i += 1;
+      continue;
+    }
+    if (c === ',') {
+      row.push(field);
+      field = '';
+      i += 1;
+      continue;
+    }
+    if (c === '\r') {
+      i += 1;
+      continue;
+    }
+    if (c === '\n') {
+      row.push(field);
+      records.push(row);
+      row = [];
+      field = '';
+      i += 1;
+      continue;
+    }
+    field += c;
+    i += 1;
   }
-  if (field !== '' || row.length > 0) { row.push(field); records.push(row); }
+  if (field !== '' || row.length > 0) {
+    row.push(field);
+    records.push(row);
+  }
   return records;
 }
 
@@ -129,7 +160,10 @@ function normalizeDictionary(dict, options = {}) {
   for (const [k, v] of Object.entries(dict)) {
     const nk = String(k).trim();
     const nv = String(v).trim();
-    if (nk === '') { dropped += 1; continue; }
+    if (nk === '') {
+      dropped += 1;
+      continue;
+    }
     if (Object.prototype.hasOwnProperty.call(out, nk)) {
       merged += 1;
       if (dedupe === 'first') continue;

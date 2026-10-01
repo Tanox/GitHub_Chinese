@@ -24,7 +24,8 @@ function searchDictionary(dictionary, query, opts = {}) {
   if (q.trim() === '') {
     return Object.entries(dictionary || {}).map(([term, translation]) => ({ term, translation }));
   }
-  const match = (s) => (opts.caseSensitive ? s.includes(q) : s.toLowerCase().includes(q.toLowerCase()));
+  const match = (s) =>
+    opts.caseSensitive ? s.includes(q) : s.toLowerCase().includes(q.toLowerCase());
   const out = [];
   for (const [term, translation] of Object.entries(dictionary || {})) {
     if (match(term) || match(translation)) out.push({ term, translation });

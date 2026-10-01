@@ -19,20 +19,10 @@ export function PendingList({ pending, onRemove, onClear, onExport }: PendingLis
       <div className='card-head'>
         <h2 className='card-title'>待入库（本地 {pending.length}）</h2>
         <div className='btn-row'>
-          <button
-            type='button'
-            className='btn'
-            onClick={onExport}
-            disabled={pending.length === 0}
-          >
+          <button type='button' className='btn' onClick={onExport} disabled={pending.length === 0}>
             导出 JSON
           </button>
-          <button
-            type='button'
-            className='btn'
-            onClick={onClear}
-            disabled={pending.length === 0}
-          >
+          <button type='button' className='btn' onClick={onClear} disabled={pending.length === 0}>
             清空
           </button>
         </div>

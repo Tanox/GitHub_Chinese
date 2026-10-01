@@ -75,4 +75,10 @@ function renderDiffPreview(patch) {
   return lines.length ? lines.join('\n') : '(无变更)';
 }
 
-module.exports = { selectMergedEntries, buildDictionaryPatch, applyPatch, renderDiffPreview, PLACEHOLDER_PREFIX };
+module.exports = {
+  selectMergedEntries,
+  buildDictionaryPatch,
+  applyPatch,
+  renderDiffPreview,
+  PLACEHOLDER_PREFIX,
+};
