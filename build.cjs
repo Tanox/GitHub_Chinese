@@ -17,7 +17,7 @@ const PROJECT_ROOT = path.resolve(__dirname);
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 const OUTPUT_FILE = path.join(BUILD_DIR, 'GitHub_zh-cn.user.js');
-const ENTRY_FILE = path.join(SRC_DIR, 'main.js');
+const ENTRY_FILE = path.join(SRC_DIR, 'userscript', 'main.js');
 
 /** 未被入口引用、但需继续随用户脚本发布的模块 */
 const EXTRA_ENTRIES = [path.join(SRC_DIR, 'utils', 'tools.js')];
@@ -54,11 +54,11 @@ const USER_SCRIPT_FOOTER = `})();
 `;
 
 /**
- * 读取 src/version.js 中的版本号（项目单一版本源）
+ * 读取 src/userscript/version.js 中的版本号（项目单一版本源）
  * @returns {string} 版本号
  */
 function readCurrentVersion() {
-  const content = fs.readFileSync(path.join(SRC_DIR, 'version.js'), 'utf-8');
+  const content = fs.readFileSync(path.join(SRC_DIR, 'userscript', 'version.js'), 'utf-8');
   const match = content.match(/export\s+const\s+VERSION\s*=\s*['"]([^'"]+)['"]/);
   return match ? match[1] : '0.0.0';
 }

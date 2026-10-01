@@ -5,7 +5,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Trie } from '../src/core/trie.js';
+import { Trie } from '../src/userscript/core/trie.js';
 
 test('insert 与 getSize：空串被忽略', () => {
   const trie = new Trie();

@@ -5,8 +5,8 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { partialTranslator } from '../src/translation-core/partialTranslator.js';
-import { Trie } from '../src/core/trie.js';
+import { partialTranslator } from '../src/userscript/translation-core/partialTranslator.js';
+import { Trie } from '../src/userscript/core/trie.js';
 
 function buildStore(dict) {
   const trie = new Trie();

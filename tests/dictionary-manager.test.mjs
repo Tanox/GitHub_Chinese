@@ -5,8 +5,8 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { dictionaryManager } from '../src/translation-core/dictionaryManager.js';
-import { CacheManager } from '../src/core/cacheManager.js';
+import { dictionaryManager } from '../src/userscript/translation-core/dictionaryManager.js';
+import { CacheManager } from '../src/userscript/core/cacheManager.js';
 
 function seed(entries) {
   dictionaryManager.cacheManager = new CacheManager(100);

@@ -77,7 +77,7 @@ export default function OverviewPage() {
     {
       label: '当前版本',
       value: `v${projectMetrics.version}`,
-      hint: '单一版本源 src/version.js',
+      hint: '单一版本源 src/userscript/version.js',
     },
     {
       label: '词典词条',

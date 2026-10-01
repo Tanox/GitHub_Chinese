@@ -5,7 +5,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CacheManager } from '../src/core/cacheManager.js';
+import { CacheManager } from '../src/userscript/core/cacheManager.js';
 
 test('set/get：命中与未命中统计', () => {
   const cm = new CacheManager(10);

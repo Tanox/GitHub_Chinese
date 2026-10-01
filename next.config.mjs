@@ -7,7 +7,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // 用户脚本核心（src/main.js 等 .js）由 build.cjs 独立构建，Next 仅处理 app/components/lib
+  // 用户脚本核心（src/userscript/main.js 等 .js）由 build.cjs 独立构建，Next 仅处理 app/components/lib
   typescript: {
     ignoreBuildErrors: false,
   },

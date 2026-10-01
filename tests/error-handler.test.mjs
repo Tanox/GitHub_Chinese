@@ -5,7 +5,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ErrorHandler } from '../src/core/errorHandler.js';
+import { ErrorHandler } from '../src/userscript/core/errorHandler.js';
 
 test('init 后所有错误类型计数为 0', () => {
   ErrorHandler.init();

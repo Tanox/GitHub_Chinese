@@ -20,7 +20,7 @@ const MIN_BUNDLE_SIZE = 50 * 1024;
  * @returns {string|null} 版本号
  */
 function readVersion() {
-  const src = fs.readFileSync(path.join(ROOT, 'src', 'version.js'), 'utf-8');
+  const src = fs.readFileSync(path.join(ROOT, 'src', 'userscript', 'version.js'), 'utf-8');
   const matched = src.match(/VERSION\s*=\s*'([^']+)'/);
   return matched ? matched[1] : null;
 }
@@ -36,7 +36,7 @@ test('产物包含 UserScript 元数据与当前版本号', () => {
   assert.match(content, /==UserScript==/);
   assert.match(content, /@match/);
   const version = readVersion();
-  assert.ok(version, '无法从 src/version.js 读取版本号');
+  assert.ok(version, '无法从 src/userscript/version.js 读取版本号');
   assert.ok(content.includes(version), `产物未包含当前版本号 ${version}`);
 });
 

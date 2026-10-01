@@ -16,7 +16,7 @@ const SOURCE_EXT_RE = /\.(js|cjs|mjs|ts|tsx|css)$/;
 const SKIP_DIRS = new Set(['node_modules', '.next', '.git', 'build', 'dist', 'coverage']);
 
 export interface ProjectMetrics {
-  /** 单一版本源 src/version.js */
+  /** 单一版本源 src/userscript/version.js */
   version: string;
   /** 词典词条总数 */
   dictionaryEntries: number;
