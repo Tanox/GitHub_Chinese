@@ -545,7 +545,7 @@ function createUser(name, email, age, address, phone) {
 
 ```html
 <div id="collector-workspace">
-  <aside id="collector-rail">…</aside>
+  <aside id="collector-nav">…</aside>
   <main id="collector-main">
     <textarea id="data-center-input"></textarea>
     <button id="data-center-run-btn">开始分析</button>
