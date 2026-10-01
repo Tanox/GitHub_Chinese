@@ -45,3 +45,7 @@ build-web.log
 integ.log
 release-notes.md
 .tmp-*
+# 运行/调试瞬时产物（补充，勿提交）
+test-out.txt
+.devserver.err.log
+.devserver.out.log
