@@ -11,11 +11,11 @@ import { collectBatch } from '../src/lib/batch-collector.js';
 
 /**
  * 构造假浏览器：每个 newPage 返回可 mock 的 page，不触碰真实 puppeteer
- * @param {{ failAll?: boolean, texts?: string[] }} [opts] - 行为开关
- * @returns {{ browser: object, getMaxOpen: () => number }}
+ * @param {{ failAll?: boolean, texts?: string[], recordCookies?: object }} [opts] - 行为开关
+ * @returns {{ browser: object, getMaxOpen: () => number, getCookies: () => object[] }}
  */
 function makeFakeBrowser(opts = {}) {
-  const { failAll = false, texts = ['UI 标签 A', '按钮 提交'] } = opts;
+  const { failAll = false, texts = ['UI 标签 A', '按钮 提交'], recordCookies } = opts;
   let opened = 0;
   let maxOpen = 0;
   const browser = {
@@ -36,6 +36,9 @@ function makeFakeBrowser(opts = {}) {
         async setRequestInterception() {},
         on() {},
         off() {},
+        async setCookie(c) {
+          if (recordCookies) recordCookies.push(c);
+        },
         async close() {
           opened -= 1;
         },
@@ -93,4 +96,37 @@ test('collectBatch 单页失败记错误事件并续跑，不中断整批', asyn
   const errorEvents = events.filter((e) => e.type === 'error');
   assert.equal(errorEvents.length, targets.length, '每个失败 URL 应产生一条 error 事件');
   assert.equal(allTexts.size, 0, '失败页面不贡献文本');
+});
+
+test('collectBatch 注入 cookies：每页 setCookie 命中匹配项（T18-a）', async () => {
+  const recorded = [];
+  const targets = ['https://github.com/a', 'https://github.com/b'];
+  const { browser } = makeFakeBrowser({ recordCookies: recorded });
+  const cookies = [
+    { name: 'sess', value: 'abc', domain: '.github.com' },
+    { name: 'other', value: 'x', domain: '.other.com' },
+  ];
+
+  const it = collectBatch(browser, targets, targets.length, { cookies });
+  // 排空事件流
+  // eslint-disable-next-line no-empty
+  for await (const _ of it) {
+  }
+
+  // 每个目标页各应注入 1 条匹配的 cookie（共 2 条）
+  assert.equal(recorded.length, targets.length, '每页应注入匹配的主机 cookie');
+  assert.ok(recorded.every((c) => c.name === 'sess'), '仅注入与 github.com 匹配的 cookie');
+});
+
+test('collectBatch 无 cookies 时不调用 setCookie（向后兼容）', async () => {
+  const recorded = [];
+  const targets = ['https://github.com/a'];
+  const { browser } = makeFakeBrowser({ recordCookies: recorded });
+
+  const it = collectBatch(browser, targets, targets.length);
+  // eslint-disable-next-line no-empty
+  for await (const _ of it) {
+  }
+
+  assert.equal(recorded.length, 0, '未传 cookies 不应调用 setCookie');
 });

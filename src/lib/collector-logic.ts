@@ -1,8 +1,9 @@
 /**
  * 词典采集服务端入口（类型门面）
  * @file src/lib/collector-logic.ts
- * @version 1.11.7
- * @description 为 Next.js Route Handler 提供带类型的采集入口，实现收敛在 collector-core.js
+ * @version 1.13.10
+ * @description 为 Next.js Route Handler 提供带类型的采集入口，实现收敛在 collector-core.js。
+ *   T18：collectFromUrls 透传登录态 cookie。
  */
 
 import {
@@ -27,15 +28,23 @@ export interface CollectEvent {
   code?: number | null;
 }
 
+/** 登录态 cookie（T18），用于抓取需鉴权的私有页 */
+export interface CookieInput {
+  name: string;
+  value: string;
+  domain?: string;
+  path?: string;
+}
+
 /**
  * 批量抓取 URL 页面文本并交由词典清洗
  * @param urls - 目标页面 URL 列表
- * @param options - 可选取消信号等运行时选项
+ * @param options - 可选取消信号、登录态 cookie 等运行时选项
  * @returns 采集事件流
  */
 export function collectFromUrls(
   urls: string[],
-  options?: { signal?: AbortSignal },
+  options?: { signal?: AbortSignal; cookies?: CookieInput[] },
 ): AsyncGenerator<CollectEvent> {
   return collectFromUrlsCore(urls, options);
 }

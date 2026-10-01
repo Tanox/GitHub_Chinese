@@ -1,15 +1,17 @@
 /**
  * 词典合并（从源码加载全部词典模块）
  * @file merge-dictionaries.cjs
- * @version 1.11.15
+ * @version 1.13.10
  * @description 用 babel 解析 src/dictionaries 下的全部词典模块（*.js），提取 {原文:译文} 并合并为单一对象
- *   （从 collect-dict.cjs 抽出，降低单文件行数并提升可测试性）
+ *   （从 collect-dict.cjs 抽出，降低单文件行数并提升可测试性）。
+ *   1.13.10：修正 PROJECT_ROOT 为项目根（脚本位于 scripts/，词典在 <root>/src/dictionaries）。
  */
 const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
 
-const PROJECT_ROOT = path.resolve(__dirname);
+// 脚本位于 scripts/，项目根为上一级；词典目录为 <root>/src/dictionaries
+const PROJECT_ROOT = path.resolve(__dirname, '..');
 const DICT_DIR = path.join(PROJECT_ROOT, 'src', 'dictionaries');
 
 /**

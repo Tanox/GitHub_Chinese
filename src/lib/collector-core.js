@@ -1,10 +1,11 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.13.4
- * @date 2026-09-30
+ * @version 1.13.10
+ * @date 2026-10-01
  * @author Sut
- * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移
+ * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移。
+ *   T18：collectFromUrls 支持随请求注入登录态 cookie（options.cookies）以抓取私有页。
  */
 
 import fs from 'fs/promises';
@@ -63,9 +64,10 @@ export function resolveBrowserAcquireError(reason) {
 /**
  * 批量抓取 URL 页面文本并交由词典清洗
  * @param {string[]} urls - 目标页面 URL 列表
+ * @param {{ signal?: AbortSignal, cookies?: Array<{ name: string, value: string, domain?: string, path?: string }> }} [options] - 可选取消信号与登录态 cookie
  * @returns {AsyncGenerator<CollectEvent>} 采集事件流
  */
-export async function* collectFromUrls(urls, { signal } = {}) {
+export async function* collectFromUrls(urls, { signal, cookies } = {}) {
   if (signal?.aborted) {
     yield { type: 'error', message: '请求已取消', code: CollectErrorCode.INPUT_INVALID };
     return;
@@ -120,7 +122,7 @@ export async function* collectFromUrls(urls, { signal } = {}) {
 
   try {
     yield { type: 'log', message: '正在初始化 Headless 浏览器...' };
-    const allTexts = yield* collectBatch(browser, targets, total);
+    const allTexts = yield* collectBatch(browser, targets, total, { cookies });
 
     yield { type: 'log', message: '页面提取完成，开始保存并分析词典...' };
     yield { type: 'progress', data: { type: 'analyze' } };

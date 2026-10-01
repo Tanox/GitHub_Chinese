@@ -1,4 +1,15 @@
 # Changelog
+## [1.13.10] - 2026-10-01
+
+### Feat（T18 采集源扩展 · 登录态 / HAR 导入 / 覆盖扩展）
+- **T18-a 登录态 cookie 注入**：`collectFromUrls` 新增 `cookies` 选项，经 `batch-collector → page-navigation.applyCookies` 在导航前注入，仅注入与目标主机匹配的 cookie（`page-navigation-utils.js` 抽离纯函数）。API `batch-collect` 请求体可选 `cookies` 字段；独立采集服务支持 `GITHUB_ZH_COOKIES` 环境变量；`collector-logic.ts` 补充 `CookieInput` 类型。
+- **T18-b HAR / 会话导入**：新增 `scripts/har-import.cjs`，从 HAR 解析 GitHub HTML 响应体（含 base64 解码），复用 `extract-html-text.js`（Node 端 jsdom 提取器，与浏览器端一致降噪）与 `collect-dict.cjs` 清洗管线产出待翻译词条，离线补采无需浏览器。
+- **T18-c 覆盖更多 UI 区域**：`extractPageText` / `extractVisibleText` 作用域根改为「主根 + 主根之外全局头部（header / .AppHeader / .js-header-wrapper）」并集，确保旧版 / 部分页面顶部导航文案被纳入；导出 `UI_REGION_SELECTORS` 声明覆盖区域。
+- **拆分合规**：`page-navigation.js` 超出 200 行，抽离纯逻辑至 `page-navigation-utils.js`（再导出保持 import 稳定）；`extract-html-text.js`、`har-import.cjs` 为新增模块。
+- 单测新增 10 例（`page-navigation` 2、`batch-collector` 2、`extract-html-text` 3、`har-import` 2、`extract-page-text` 1），总计 165 用例（164 通过 / 1 a11y 跳过）。
+
+---
+
 ## [1.13.9] - 2026-10-01
 
 ### Feat（T20 合并入库 · T23 历史对比 工作台 UI 接入）

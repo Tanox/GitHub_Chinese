@@ -1,13 +1,14 @@
 /**
  * 批量页面抓取（受并发限制）
  * @file src/lib/batch-collector.js
- * @version 1.10.1
- * @description 在单个浏览器实例内分批并发抓取 URL，归集文本并产出采集事件流
+ * @version 1.13.10
+ * @description 在单个浏览器实例内分批并发抓取 URL，归集文本并产出采集事件流。
+ *   T18：支持随请求注入登录态 cookie（options.cookies）以抓取私有页。
  */
 
 import { extractPageText } from './extract-page-text.js';
 import { CollectErrorCode } from './collect-codes.js';
-import { navigateWithRetry, waitForHydration, autoScroll } from './page-navigation.js';
+import { navigateWithRetry, waitForHydration, autoScroll, applyCookies } from './page-navigation.js';
 
 const MIN_TEXT_LENGTH = 2;
 const MAX_TEXT_LENGTH = 300;
@@ -19,9 +20,11 @@ const MAX_CONCURRENT_PAGES = 3;
  * @param {import('puppeteer-core').Browser} browser - 已启动的浏览器实例
  * @param {string[]} targets - 已通过 SSRF 校验的目标 URL
  * @param {number} total - 目标总数（用于进度展示）
+ * @param {{ cookies?: Array<{ name: string, value: string, domain?: string, path?: string }> }} [options] - 可选 cookie 注入
  * @returns {AsyncGenerator<CollectEvent, Set<string>>} 事件流，最终返回汇总文本集合
  */
-export async function* collectBatch(browser, targets, total) {
+export async function* collectBatch(browser, targets, total, options = {}) {
+  const { cookies } = options;
   const allTexts = new Set();
   for (let start = 0; start < targets.length; start += MAX_CONCURRENT_PAGES) {
     const slice = targets.slice(start, start + MAX_CONCURRENT_PAGES);
@@ -32,6 +35,7 @@ export async function* collectBatch(browser, targets, total) {
         /** @type {CollectEvent[]} */
         const navEvents = [];
         try {
+          await applyCookies(page, cookies, target);
           for await (const ev of navigateWithRetry(page, target)) {
             navEvents.push(ev);
           }

@@ -1,7 +1,7 @@
 /**
  * 页面文本提取测试（T26 序列化回归）
  * @file tests/extract-page-text.test.mjs
- * @version 1.10.2
+ * @version 1.13.10
  * @description 用 jsdom 构造 DOM，并在隔离 vm 上下文执行 `extractPageText`（模拟 `page.evaluate`
  *   序列化：仅保留函数源码、剥离模块闭包），验证其自包含、实际提取到文本且正确降噪。
  */
@@ -53,4 +53,14 @@ test('无 SPA 根时回退到 body 提取', () => {
   const html = `<body><span>关于</span></body>`;
   const result = extractInIsolatedContext(html);
   assert.ok(result.includes('关于'), '无 #react-app 时应回退到 body 提取');
+});
+
+test('T18-c：无 SPA 根但有 header 时从 header 提取全局导航文案', () => {
+  const html = `
+    <body>
+      <header><a href="#">Dashboard</a></header>
+      <script>var x=1;</script>
+    </body>`;
+  const result = extractInIsolatedContext(html);
+  assert.ok(result.includes('Dashboard'), '无 #react-app 时应从 header 提取全局导航文案');
 });
