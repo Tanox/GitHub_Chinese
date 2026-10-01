@@ -19,6 +19,7 @@
     "format:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"scripts/**/*.cjs\" \"tests/**/*.{js,cjs,mjs}\" \"build.cjs\"",
     "validate": "node scripts/validate-bundle.cjs",
     "test:unit": "node --test",
+    "test:integration": "node --test tests/integration/",
     "test": "npm run lint && npm run lint:length && npm run build && npm run test:unit && npm run validate",
     "clean": "node -e \"const fs=require('fs');['build','dist','coverage','.next'].forEach(dir=>{if(fs.existsSync(dir)){fs.rmSync(dir,{recursive:true});console.log('已清理:',dir)}})\"",
     "dict:collect": "node scripts/collect-dict.cjs",
