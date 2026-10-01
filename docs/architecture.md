@@ -1,11 +1,11 @@
-# GitHub Chinese 简体中文插件架构文档
+# GitHub Chinese 简体中文架构文档
 
 > 版本：**v1.13.12** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 
 ### 1.1 项目简介
-GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitHub 提供全面的中文本地化支持。该项目采用模块化设计，使用现代 JavaScript 技术栈，提供高性能、可扩展的 GitHub 界面翻译功能。
+GitHub Chinese 简体中文是一个浏览器用户脚本，旨在为 GitHub 提供全面的中文本地化支持。该项目采用模块化设计，使用现代 JavaScript 技术栈，提供高性能、可扩展的 GitHub 界面翻译功能。
 
 项目由两条**相互独立、仅共享词典数据**的链路组成：
 
@@ -295,14 +295,13 @@ main.js
 
 ### 4.2 开发工具
 
-#### 4.2.1 Jest
-- **用途**：单元测试框架
+#### 4.2.1 Node 内置测试运行器（`node --test`）
+- **用途**：单元测试运行器（**无需 Jest**，与 `development.md` 一致）
 - **理由**：
-  - 简单易用的 API
-  - 内置 Mock 支持
-  - 完善的测试报告
-  - 支持 JSDOM 环境
-  - 与 Babel 集成
+  - Node 原生 `node:test` 模块，零额外依赖
+  - 支持子测试、Mock（`node:test/mock`）与覆盖率（c8）
+  - 与项目 ESM 构建天然兼容
+  - 命令：`npm run test:unit`（= `node --test`）
 
 #### 4.2.2 ESLint
 - **用途**：代码规范检查
@@ -378,8 +377,8 @@ GitHub_Chinese/
 │   ├── config.js + config/           # 全局配置与配置分片
 │   ├── version.js                    # 单一版本源
 │   ├── versionUtils.js / versionChecker/ / updateNotification/
-│   ├── app/                          # Next.js App Router：page / overview / design + api/*
-│   ├── components/                   # Shell / Rail / MobileNav（服务端）、navItems（导航源）、CollectorConsole（客户端岛）、叶组件
+│   ├── app/                          # Next.js App Router：console / overview / coverage / design / dictionary / dict-manage + api/*
+│   ├── components/                   # Shell / TopNav（服务端）、navItems（导航源）、CollectorConsole（客户端岛）、叶组件
 │   ├── hooks/useCollector.ts         # 采集状态管理
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts
 │   ├── types/                        # puppeteer-core.d.ts 等最小类型声明
@@ -410,7 +409,7 @@ GitHub_Chinese/
 ### 6.2 测试规范
 - 单元测试覆盖核心功能
 - 测试文件与源码文件对应
-- 使用 Jest 测试框架
+- 使用 Node 内置 `node --test`（无需 Jest，命令 `npm run test:unit`）
 
 ### 6.3 Git 提交规范
 - 提交前自动运行 lint 和测试
@@ -441,17 +440,21 @@ GitHub_Chinese/
 |------|------|------|
 | `/` | 静态 | 采集控制台；仅 `CollectorConsole` 及其叶组件为客户端组件 |
 | `/overview` | 静态 | 项目概览；由 `src/lib/project-metrics.ts` 在模块加载时一次性统计磁盘指标 |
+| `/coverage` | 静态(force-dynamic) | 覆盖率/缺口看板（T22）；服务端实时统计 |
 | `/design` | 静态 | 设计系统；展示 `src/app/styles/base.css` 的令牌与核心组件样式 |
+| `/dictionary` | 静态 | 词条字典浏览 |
+| `/dictionary/manage` | 静态 | 词条管理（增删改） |
 
-响应式导航（无额外客户端 JS）：
+顶部导航（无额外客户端 JS）：
 
 ```
-> 1024px : Shell → Rail（左侧栏，含品牌 / 导航 / 引擎状态）
-≤ 1024px : Shell → MobileNav（顶栏下方横向标签条，rail 隐藏）
-导航数据  : navItems.ts 单一来源，Rail 与 MobileNav 共同消费
+全局顶栏 TopNav（src/components/TopNav.tsx，服务端组件），按视口宽度自适应：
+  > 1024px : 横向导航条完整展开
+  ≤ 1024px : 折叠为横向可滚动标签条
+导航数据  : navItems.ts 单一来源（6 项：console / overview / coverage / design / dictionary / dict-manage）
 ```
 
-`Shell` / `Rail` / `MobileNav` 均为**服务端组件**——移动端导航由 CSS 媒体查询切换可见性，
+`TopNav` 为**服务端组件**，窄屏布局由 CSS 媒体查询切换可见性，
 不引入汉堡菜单状态机，因此窄屏不增加客户端包体积。
 
 要点：

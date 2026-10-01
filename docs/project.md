@@ -47,7 +47,7 @@ GitHub_Chinese/
 │   ├── versionUtils.js               # 版本比较与提取
 │   ├── versionChecker/               # 远程版本抓取
 │   ├── updateNotification/           # 更新通知 UI
-│   ├── app/                          # Next.js App Router（采集工作台，四页）
+│   ├── app/                          # Next.js App Router（采集工作台，六页：console / overview / coverage / design / dictionary / dict-manage）
 │   │   ├── page.tsx                  # 采集控制台（服务端外壳 + 客户端岛）
 │   │   ├── overview/page.tsx         # 项目概览（服务端实时指标）
 │   │   ├── coverage/page.tsx          # 覆盖率 / 缺口看板（T22）
@@ -56,7 +56,7 @@ GitHub_Chinese/
 │   │   ├── api/batch-collect/route.ts# 批量 URL 采集
 │   │   ├── layout.tsx / globals.css  # 外壳布局与 Tailwind 入口
 │   │   └── robots.ts / sitemap.ts    # SEO
-│   ├── components/                   # Shell / Rail / MobileNav（服务端）+ navItems（导航源）+ CollectorConsole（客户端岛）+ Dashboard / DataCenter / PreviewTable / ScriptInjector（叶组件）
+│   ├── components/                   # Shell / TopNav（服务端）+ navItems（导航源）+ CollectorConsole（客户端岛）+ Dashboard / DataCenter / PreviewTable / ScriptInjector（叶组件）
 │   ├── hooks/                        # useCollector.ts（状态 Hook）+ collector-types / constants / sse.ts（拆分模块）
 │   ├── lib/                          # 采集内核：collector-core / dictionary-processor / extract-page-text / page-navigation / collector-logic / request-body / url-guard（SSRF）/ browser-resolver / browser-semaphore / collect-codes / coverage-report / sse-stream / api-guard（鉴权限流）/ batch-collector / project-metrics
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
@@ -127,7 +127,7 @@ GitHub_Chinese/
 
 - `src/app/page.tsx`：采集控制台服务端外壳；交互收敛在 `src/components/CollectorConsole.tsx` 客户端岛
 - `src/app/overview/page.tsx` / `src/app/coverage/page.tsx` / `src/app/design/page.tsx`：项目概览、覆盖率/缺口看板（T22）、设计系统（均为静态预渲染，`coverage` 为 `force-dynamic` 服务端实时统计）
-- `src/components/Shell.tsx` / `Rail.tsx` / `MobileNav.tsx`：服务端外壳、侧栏与移动端导航；`navItems.ts` 为导航唯一数据源
+- `src/components/Shell.tsx` / `TopNav.tsx`：服务端外壳与顶部导航；`navItems.ts` 为导航唯一数据源
 - `src/components/CollectorConsole.tsx` 叶组件：`ScriptInjector`（探针复制）、`DataCenter`（文本/批量归集 + JSON 导出）、`PreviewTable`（词条预览）、`Dashboard`（实时进度/终端/备份）
 - `src/hooks/useCollector.ts`：采集状态与 SSE 事件流解析；`collector-types.ts` / `collector-constants.ts` / `collector-sse.ts` 按职责拆分
 - `src/lib/collector-core.js`：Headless 抓取与采集编排（链路唯一实现）

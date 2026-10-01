@@ -205,14 +205,14 @@ MAJOR.MINOR.PATCH
 项目当前的 `npm test` 为**质量流水线**，由三步构成：
 
 ```bash
-npm run lint      # ESLint（0 error 门禁）
+npm run lint      # ESLint（目标 0 error；当前 2 个已知预存错误，见 docs/project.md §量化指标）
 npm run build     # 构建用户脚本
 npm run validate  # 校验产物：存在性 / 体积 / 语法 / 未定义引用扫描
 ```
 
 此外 Next 工作台可单独做类型检查：`node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json`。
 
-> **说明**：`npm test` 的完整流水线见 `package.json`（lint → lint:length → build → test:unit → validate）；单元测试由 Node 内置 `node --test` 运行（`npm run test:unit`，当前 **140 用例 / 1 跳过 / 0 失败**），无需 Jest。
+> **说明**：`npm test` 的完整流水线见 `package.json`（lint → lint:length → build → test:unit → validate）；单元测试由 Node 内置 `node --test` 运行（`npm run test:unit`），无需 Jest。用例数随重构变化，以 `docs/project.md` §量化指标 或 `/overview` 实时统计为准（本文不硬编码）。
 
 ### 4.2 测试文件组织
 
@@ -255,9 +255,9 @@ npm run validate
 
 ### 4.4 测试执行
 
-- 单元测试：`node --test`（`npm run test:unit`），当前 **140 用例 / 1 跳过 / 0 失败**。
+- 单元测试：`node --test`（`npm run test:unit`）；用例数随重构变化，以 `docs/project.md` §量化指标 或 `/overview` 实时统计为准（本文不硬编码）。
 - 类型检查：`tsc --noEmit -p tsconfig.json`（`npm run typecheck`）。
-- 当前未强制覆盖率门禁；新增核心逻辑建议配套单测（见 [STANDARDS.md](../docs/code-review/STANDARDS.md) 测试检查点）。
+- 当前未强制覆盖率门禁；新增核心逻辑建议配套单测（见 [STANDARDS.md](code-review/STANDARDS.md) 测试检查点）。
 
 ### 4.5 测试规范
 

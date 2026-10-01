@@ -1,4 +1,18 @@
 # Changelog
+## [1.13.12] - 2026-10-01
+
+### Docs
+- 规范文档与记忆文档整理（统一术语与排版、删除矛盾/过时内容、补齐缺失规范）：
+  - 测试框架统一为 Node 内置 `node --test`（去除 `architecture.md` 过时的 Jest 描述，与 `development.md` 一致）。
+  - 导航布局统一为顶部 `TopNav`（去除 `project.md`/`architecture.md`/`prototype.md` 中已删除的 `Rail`/`MobileNav` 描述，与 `src/components/navItems.ts` 的 6 项 `NAV_ITEMS` 一致）。
+  - 页面数统一为 6（`console`/`overview`/`coverage`/`design`/`dictionary`/`dict-manage`），修正 `architecture.md` 路由表与 `prototype.md` 的「四页」描述。
+  - 函数长度阈值统一为 ≤100 行、单文件 ≤200 行（修正 `docs/README.md`、`code-review/STANDARDS.md`、`code-review/CHECKLIST.md` 中「函数<50/文件<300」与 `coding-style.md` 的冲突）。
+  - `docs/README.md` 索引补入 `code-review/` 审查模块；lint 门禁表述对齐当前 2 个已知预存错误。
+  - 版本展示位统一对齐至 v1.13.12（以 `src/userscript/version.js` 为单一版本源；`package.json` 已一致）。
+- 记忆文档：以 `.codebuddy/memory/MEMORY.md` 为耐久事实源，新增「关键决策时间线 / 可信度」与「易失效数据警示」章节；每日日志保留为原始时序档案。
+
+---
+
 ## [1.13.11] - 2026-10-01
 
 ### Docs

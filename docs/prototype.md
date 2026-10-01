@@ -20,12 +20,14 @@
 ```
 
 - 形态：Next.js（App Router）应用，入口 `src/app/`。
-- 四页面（由 `src/components/navItems.ts` 的 `NAV_ITEMS` 定义）：
+- 六页面（由 `src/components/navItems.ts` 的 `NAV_ITEMS` 定义，类型 `NavSection`）：
   - `/`（采集控制台，`CollectorConsole` 客户端岛）
   - `/overview`（项目概览：指标卡片 + 采集趋势 + 能力清单）
   - `/coverage`（覆盖率 / 缺口看板：整体覆盖率 + 按文件细分 + Top-N 缺口 + 重复/冲突检测，T22）
   - `/design`（设计系统展示：design tokens、按钮、状态徽标、词条表格）
-- 公共骨架：`src/components/Shell.tsx`（侧栏 `Rail` + 顶栏 + 移动端 `MobileNav`）。
+  - `/dictionary`（词条字典浏览）
+  - `/dictionary/manage`（词条管理：增删改）
+- 公共骨架：`src/components/Shell.tsx`（顶部导航 `TopNav` + 页头 + 内容 + 页脚）。
 
 ## 2. 整体架构流程
 

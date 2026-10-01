@@ -2,7 +2,7 @@
 /**
  * 导入 / 合并 / 入库补丁（T24 导入导出 · T20 合并入库 UI）
  * @file src/components/dictionary/MergePatchPanel.tsx
- * @version 1.13.9
+ * @version 1.13.12
  * @description 粘贴或上传词典 JSON，解析后：① 生成合并结果（T24，供手动入库）；
  *   ② 一键生成「入库补丁」（T20，added / updated 分离），预览 diff 并可下载。
  *   遵循「本地优先·离线可用」：不写服务器词典文件，仅产出结果供用户入库到 src/dictionaries/。
@@ -86,7 +86,7 @@ export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
         </h2>
       </div>
       <p className='card-desc'>
-        粘贴或上传词典 JSON（扁平对象或 [{(key, value)}
+        粘贴或上传词典 JSON（扁平对象或 [{'{'}(key, value){'}'}
         ]）：解析后仅生成合并结果与入库补丁供手动入库， 不写服务器词典文件。
       </p>
       <div className='field-stack'>

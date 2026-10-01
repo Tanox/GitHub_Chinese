@@ -17,6 +17,7 @@
 | 开发流程 | [development.md](./development.md) | 分支策略、提交规范、发布流程 |
 | 原型与设计规范 | [prototype.md](./prototype.md) | 原型设计理念与组件规范 |
 | 活动任务 | [tasks.md](./tasks.md) | 活动任务唯一清单（含优先级与验收要点） |
+| 代码审查 | [code-review/](./code-review/) | 审查标准、流程、清单与配置（独立审查模块） |
 
 ## 文档速览
 
@@ -36,14 +37,14 @@
 
 - **分支策略**：`main` 稳定发布；`feature/*` 新功能；`fix/*` 缺陷修复
 - **提交规范**：Conventional Commits `<type>(<scope>): <description>`
-- **质量门禁**：`npm run lint`（0 error）→ `npm run build` → `npm run validate`
+- **质量门禁**：`npm run lint`（当前 2 error，含已知预存问题；目标 0 error）→ `npm run build` → `npm run validate`
 - **发布流程**：更新 `src/userscript/version.js` 单一版本源 → 同步 `package.json` / `CHANGELOG.md` / `docs/` / `prototype/` 版本展示位 → `npm test` → 重建 `build/GitHub_zh-cn.user.js` → 打 Tag 推送
 
 ### 代码风格要点
 
 - 命名：目录 / CSS 类 kebab-case；文件 camelCase；类 / 组件 PascalCase；常量 UPPER_SNAKE_CASE；语义化 id kebab-case
 - 格式化：2 空格缩进、单引号、必须分号、多行尾随逗号、行宽 100、LF、`jsx` 单引号（Prettier）
-- 质量：函数 ≤ 50 行、单文件 ≤ 200 行（文档除外）、关键逻辑中文注释、禁止 `any` / `var`、`===`
+- 质量：函数 ≤ 100 行、单文件 ≤ 200 行（文档除外）、关键逻辑中文注释、禁止 `any` / `var`、`===`
 
 ### 原型设计要点
 
