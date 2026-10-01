@@ -388,9 +388,9 @@ GitHub_Chinese/
 ├── scripts/validate-bundle.cjs       # 构建产物校验
 ├── docs/                             # 正式规范文档（权威正文）
 ├── build/GitHub_zh-cn.user.js         # 用户脚本构建产物（纳入版本控制）
-├── build.cjs                         # 用户脚本构建入口
+├── scripts/build/build.cjs            # 用户脚本构建入口
 ├── scripts/collect-dict.cjs            # 词典采集工具（已随 v1.12.8 迁入 scripts/）
-├── server.js                         # 原型热更新预览服务器
+├── server/prototype.js               # 原型热更新预览服务器
 ├── next.config.mjs / tailwind.config.ts / postcss.config.mjs
 ├── eslint.config.js / tsconfig.json
 └── package.json / CHANGELOG.md / README.md
@@ -468,11 +468,11 @@ GitHub_Chinese/
 - **采集错误码约定（P2-7）**：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
   （纯数据模块，不含 `fs`/`child_process`，可安全被客户端导入）；服务端 `error` 事件均携带 `code`，
   前端 `useCollector` 与终端日志据此渲染 `E<code>` 徽标，便于按类型分流处理
-- `server.js`（原型热更新预览）复用 `collector-core.js` + `dictionary-processor.js`，仅保留 SSE 适配层
+- `server/prototype.js`（原型热更新预览）复用 `collector-core.js` + `dictionary-processor.js`，仅保留 SSE 适配层
 
 架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `proxy.ts`；
-用户脚本核心 `.js` 由 `build.cjs` 独立构建，二者互不打包
-（`build.cjs` 依 `NEXT_ONLY_SEGMENTS` 跳过 `app`/`components`/`lib`/`hooks`/`server` 目录）。
+用户脚本核心 `.js` 由 `scripts/build/build.cjs` 独立构建，二者互不打包
+（`scripts/build/build.cjs` 依 `NEXT_ONLY_SEGMENTS` 跳过 `app`/`components`/`lib`/`hooks`/`server` 目录）。
 
 ---
 

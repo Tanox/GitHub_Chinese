@@ -1,7 +1,7 @@
 /**
  * GitHub Chinese 简体中文构建脚本
- * @file build.cjs
- * @version 1.9.43
+ * @file scripts/build/build.cjs
+ * @version 1.13.13
  * @date 2026-09-19
  * @author Sut
  * @description 从入口自动解析模块依赖并拼接为单文件用户脚本（依赖 scripts/build/ 下的图谱与转换模块）
@@ -10,10 +10,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const { buildModuleOrder, listAllSources } = require('./scripts/build/moduleGraph.cjs');
-const { assembleBundle, findConflicts, readModules } = require('./scripts/build/transform.cjs');
+const { buildModuleOrder, listAllSources } = require('./moduleGraph.cjs');
+const { assembleBundle, findConflicts, readModules } = require('./transform.cjs');
 
-const PROJECT_ROOT = path.resolve(__dirname);
+const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 const OUTPUT_FILE = path.join(BUILD_DIR, 'GitHub_zh-cn.user.js');

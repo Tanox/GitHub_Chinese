@@ -1,7 +1,7 @@
 /**
  * 原型预览服务器（Express + WebSocket HMR）
- * @file server.js
- * @version 1.9.46
+ * @file server/prototype.js
+ * @version 1.13.13
  * @description 提供 prototype/ 的热更新预览、public/ 静态资源与采集 API；Next 工作台请使用 npm run dev
  */
 
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
 import chokidar from 'chokidar';
 import http from 'http';
-import { collectFromUrls, processRawData } from './src/lib/collector-core.js';
+import { collectFromUrls, processRawData } from '../src/lib/collector-core.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,7 +49,7 @@ watcher.on('change', (changedPath) => {
   });
 });
 
-app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
+app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
 app.use(express.json({ limit: '10mb' }));
 
 // Middleware to inject HMR script into prototype HTML files
@@ -58,6 +58,7 @@ app.use('/prototype', async (req, res, next) => {
     try {
       const filePath = path.join(
         __dirname,
+        '..',
         'prototype',
         req.path === '/' ? 'prototypes/index.html' : req.path,
       );
@@ -95,7 +96,7 @@ app.use('/prototype', async (req, res, next) => {
   next();
 });
 
-app.use('/prototype', express.static(path.join(__dirname, 'prototype')));
+app.use('/prototype', express.static(path.join(__dirname, '..', 'prototype')));
 
 /**
  * 初始化 SSE 响应头

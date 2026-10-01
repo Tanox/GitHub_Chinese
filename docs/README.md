@@ -27,7 +27,7 @@
 
 | 链路 | 交付物 | 构建方式 |
 |------|--------|---------|
-| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/userscript/main.js` 递归解析依赖图并拼接为 IIFE |
+| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `scripts/build/build.cjs` 从 `src/userscript/main.js` 递归解析依赖图并拼接为 IIFE |
 | B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
 - 用户脚本调用链：`src/userscript/main.js → main/lifecycle.js → versionChecker / translation-core / page-monitor / ui/configUI.js`

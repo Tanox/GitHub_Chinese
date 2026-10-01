@@ -15,8 +15,8 @@ const MAX_LINES = 200;
 const TOP_COUNT = 5;
 /** 扫描的目录 */
 const ROOTS = ['src', 'scripts', 'tests', 'server'];
-/** 仓库根目录下的独立代码文件（不在上述目录内，一并纳入门禁） */
-const ROOT_FILES = ['build.cjs', 'server.js'];
+/** 仓库根目录下的独立代码文件（build.cjs / server.js 已迁入 scripts/ / server/，无需单独登记） */
+const ROOT_FILES = [];
 /** 计入行数的代码扩展名 */
 const EXTENSIONS = new Set(['.js', '.cjs', '.mjs', '.ts', '.tsx']);
 /** 跳过的目录 */
