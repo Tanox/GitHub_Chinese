@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.13.11** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.12** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 

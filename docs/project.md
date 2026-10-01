@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.11** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.12** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -171,9 +171,9 @@ docs: 更新项目文档
 
 ### 代码质量
 
-- ESLint：`npm run lint`（当前 0 error / 0 warning）
+- ESLint：`npm run lint`（当前 2 error / 0 warning，已知预存问题，详见量化指标）
 - Prettier：`npm run format`
-- TypeScript：`tsc --noEmit`（当前通过）
+- TypeScript：`tsc --noEmit`（当前未通过，4 个 TS 错误，详见量化指标）
 - 单代码文件不超过 200 行，超出须按职责拆分
 - 主要容器与交互控件需带语义化 `id`
 
@@ -209,12 +209,12 @@ npm test               # lint → build → validate
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.11**（2026-10-01）。
+- 当前版本 **v1.13.12**（2026-10-01）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，六页 `/`、`/overview`、`/coverage`、`/design`、`/dictionary`、`/dict-manage`）。两链路仅共享词典数据。
 
 ### 量化指标
 
-量化指标随发版由对应命令实算，**禁止手填**（v1.13.11 发版实算快照，发版时重新实算）：
+量化指标随发版由对应命令实算，**禁止手填**（v1.13.12 发版实算快照，发版时重新实算）：
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
@@ -242,7 +242,7 @@ npm test               # lint → build → validate
 ### 已完成能力
 
 - **用户脚本引擎**：静态/动态翻译、Trie 部分匹配、LRU 缓存/虚拟 DOM/批处理、配置面板 + 性能监控、浮动入口 + 菜单命令、自动更新、输入净化。
-- **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、四页互通与响应式导航、项目概览（实时指标）、设计系统、**覆盖率/缺口看板（/coverage，T22）**。
+- **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、六页互通与响应式顶部导航、项目概览（实时指标）、设计系统、**覆盖率/缺口看板（/coverage，T22）**。
 - **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（170 用例）、a11y 自动化检查。
 
 ### 活动任务（以 docs/tasks.md 为唯一清单）
@@ -414,7 +414,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.13.11 |
+| **当前版本** | 1.13.12 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

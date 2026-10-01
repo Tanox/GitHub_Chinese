@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.13.11** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.12** ｜ 版本权威源：`src/userscript/version.js`
 
 面向开发者与贡献者的文档入口。设计规范与高保真原型由 `prototype/` 目录统一维护。
 

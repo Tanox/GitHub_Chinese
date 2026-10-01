@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.13.11**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.12**（版本单一来源：`src/userscript/version.js`）
 
 ## 命名与兼容性说明
 
