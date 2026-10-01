@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.13.5** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.6** ｜ 版本权威源：`src/userscript/version.js`
 
 面向开发者与贡献者的文档入口。设计规范与高保真原型由 `prototype/` 目录统一维护。
 
@@ -25,10 +25,10 @@
 
 | 链路 | 交付物 | 构建方式 |
 |------|--------|---------|
-| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/main.js` 递归解析依赖图并拼接为 IIFE |
+| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/userscript/main.js` 递归解析依赖图并拼接为 IIFE |
 | B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
-- 用户脚本调用链：`src/main.js → main/lifecycle.js → versionChecker / translation-core / page-monitor / ui/configUI.js`
+- 用户脚本调用链：`src/userscript/main.js → main/lifecycle.js → versionChecker / translation-core / page-monitor / ui/configUI.js`
 - 采集工作台调用链：`src/app/page.tsx → useCollector.ts → POST /api/collect | /api/batch-collect → collector-logic → puppeteer-core / spawn(scripts/collect-dict.cjs) → SSE 实时回传`
 
 ### 开发要点
@@ -36,7 +36,7 @@
 - **分支策略**：`main` 稳定发布；`feature/*` 新功能；`fix/*` 缺陷修复
 - **提交规范**：Conventional Commits `<type>(<scope>): <description>`
 - **质量门禁**：`npm run lint`（0 error）→ `npm run build` → `npm run validate`
-- **发布流程**：更新 `src/version.js` 单一版本源 → 同步 `package.json` / `CHANGELOG.md` / `docs/` / `prototype/` 版本展示位 → `npm test` → 重建 `build/GitHub_zh-cn.user.js` → 打 Tag 推送
+- **发布流程**：更新 `src/userscript/version.js` 单一版本源 → 同步 `package.json` / `CHANGELOG.md` / `docs/` / `prototype/` 版本展示位 → `npm test` → 重建 `build/GitHub_zh-cn.user.js` → 打 Tag 推送
 
 ### 代码风格要点
 

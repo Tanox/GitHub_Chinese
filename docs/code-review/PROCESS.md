@@ -222,8 +222,8 @@ PR 提交后，自动触发以下检查：
 ```bash
 # .github/CODEOWNERS
 # 核心模块需要特定人员审查
-src/core/* @reviewer1 @reviewer2
-src/translation-core/* @reviewer3
+src/userscript/core/* @reviewer1 @reviewer2
+src/userscript/translation-core/* @reviewer3
 ```
 
 #### 3.2 手动分配
@@ -366,11 +366,11 @@ git branch -d feature/your-feature-name
 * @team-lead
 
 # 核心模块需要核心团队成员审查
-/src/core/* @core-team1 @core-team2
-/src/translation-core/* @translation-team1 @translation-team2
+/src/userscript/core/* @core-team1 @core-team2
+/src/userscript/translation-core/* @translation-team1 @translation-team2
 
 # UI 相关需要前端专家审查
-/src/ui/* @frontend-expert
+/src/userscript/ui/* @frontend-expert
 
 # 构建脚本需要 DevOps 审查
 /build.* @devops-team

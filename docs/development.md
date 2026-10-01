@@ -1,6 +1,6 @@
 # 开发指南
 
-> 版本：**v1.13.4** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.4** ｜ 版本权威源：`src/userscript/version.js`
 
 本文档记录了项目的开发流程、分支策略、提交规范、发布流程和测试要求。
 
@@ -147,7 +147,7 @@ MAJOR.MINOR.PATCH
 
 #### 3.2.2 版本号更新
 
-1. 更新**单一版本源** `src/version.js` 中的 `VERSION`
+1. 更新**单一版本源** `src/userscript/version.js` 中的 `VERSION`
 2. 同步全局展示位：`package.json` 的 `version`
 3. 同步文档展示位：`README.md`、`docs/*.md`、``prototype/` 中出现的版本号
 4. 仅同步**本次实际改动文件**的头注释版本号；未改动文件保持不变，**禁止全仓库批量刷写头注释**
@@ -265,7 +265,7 @@ npm run validate
    - 所有工具函数必须有测试
    - 核心业务逻辑必须有测试
    - 词典文件除外（`src/dictionaries/*.js`）
-   - 主入口文件除外（`src/main.js`）
+   - 主入口文件除外（`src/userscript/main.js`）
 
 2. **测试命名规范**：
    - 使用 `describe` 组织测试套件

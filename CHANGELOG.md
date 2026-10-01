@@ -1,4 +1,21 @@
 # Changelog
+## [1.13.6] - 2026-10-01
+
+### Refactor（用户脚本引擎整体迁入 src/userscript/，与 Next 工作台分离）
+- 将用户脚本引擎（核心翻译运行时）从 `src/` 顶层整体迁移至 `src/userscript/`：`core/`、`page-monitor/`、`translation-core/`、`ui/`、`versionChecker`（`.js`+dir）、`updateNotification`（`.js`+dir）、`config`（`.js`+dir）、`main`（`.js`+dir）、`version.js`、`versionUtils.js`、`version.d.ts`。
+- 共享模块 `src/dictionaries/`、`src/utils/` 留在 `src/` 根：`dictionaries` 同时被引擎与 Next 工作台（`app/`、`lib/`）复用，`utils` 被引擎与 Next 服务端（`lib/collect-service-client.js` 的 logger）复用；引擎内对这两者的相对引用深度统一 +1。
+- 删除空死目录 `src/server/`（真实采集服务位于 `server/collect-service/`）。
+- `build.cjs` 入口 `ENTRY_FILE` 由 `src/main.js` 改为 `src/userscript/main.js`，版本读取由 `src/version.js` 改为 `src/userscript/version.js`；`src/userscript/main.js` 依赖图仍纳入 92 个模块，产物 `build/GitHub_zh-cn.user.js` 体积与结构不变。
+- 测试 `tests/` 对引擎的引用由 `../src/<module>` 改为 `../src/userscript/<module>`；`tests/smoke.test.cjs` 版本读取路径同步。
+- Next 工作台（`app/`、`components/`、`hooks/`、`lib/`、`proxy.ts`）与 `src/dictionaries`（`@/dictionaries` 别名）、`src/utils` 引用均不受影响，`tsconfig` 的 `@/*` 别名无需变动。
+- 新增相对引用解析校验：确认 `src/` 下全部相对 import/require 均可在磁盘解析；`npm run build:userscript` 与 `node --test`（144 用例）全绿。
+
+### Docs
+- README 与 `docs/` 下规范文档中对 `src/version.js`、`src/main.js`、`src/core`、`src/translation-core`、`src/ui`、`src/config` 等已迁移模块的引用统一改为 `src/userscript/...`；版本单一源说明同步至 `src/userscript/version.js`。
+- 版本号 bump 至 1.13.6（结构调整，refactor=patch）。
+
+---
+
 ## [1.13.5] - 2026-09-30
 
 ### Docs（合并 PROGRESS.md 至 project.md 后删除）

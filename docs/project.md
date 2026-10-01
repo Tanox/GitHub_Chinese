@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.5** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.5** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -165,7 +165,7 @@ docs: 更新项目文档
 ### 版本号管理
 
 - **格式**：SemVer（主版本.次版本.修订号）
-- **单一版本源**：`src/version.js` 的 `VERSION`
+- **单一版本源**：`src/userscript/version.js` 的 `VERSION`
 - **升级规则**：任意修改至少升 patch；新功能升 minor；破坏性变更升 major
 - **仅更新被改动文件的头注释版本号**，禁止全仓库批量刷写
 
@@ -195,7 +195,7 @@ npm test               # lint → build → validate
 
 ### 发布流程
 
-1. 更新 `src/version.js` 中的 `VERSION`
+1. 更新 `src/userscript/version.js` 中的 `VERSION`
 2. 同步 `package.json`、`CHANGELOG.md` 与文档中的版本展示位
 3. 运行 `npm test` 验证
 4. 重建并提交 `build/GitHub_zh-cn.user.js`
@@ -205,7 +205,7 @@ npm test               # lint → build → validate
 
 ## 开发现状
 
-> 版本权威源 `src/version.js`；迭代记录见本文档「迭代记录」节，变更历史见 [CHANGELOG.md](../CHANGELOG.md)（唯一归处），活动任务见 [tasks.md](./tasks.md)（唯一清单）。
+> 版本权威源 `src/userscript/version.js`；迭代记录见本文档「迭代记录」节，变更历史见 [CHANGELOG.md](../CHANGELOG.md)（唯一归处），活动任务见 [tasks.md](./tasks.md)（唯一清单）。
 
 ### 当前版本与双链路
 
@@ -289,7 +289,7 @@ npm test               # lint → build → validate
 - 重写 `docs/PROGRESS.md`：指标实算、任务状态、架构图与变更记录同步至 v1.9.26。
 - `docs/architecture.md` 同步工作台架构与目录结构。
 - `CHANGELOG.md` 新增 1.9.26 小节。
-- 版本同步范围：`src/version.js`、`package.json`、`README.md` 徽章、`CHANGELOG.md`、以及**本次实际改动文件**的头注释版本号。
+- 版本同步范围：`src/userscript/version.js`、`package.json`、`README.md` 徽章、`CHANGELOG.md`、以及**本次实际改动文件**的头注释版本号。
 
 ### 4.4 v1.9.27 · 移动端可用性
 
@@ -345,7 +345,7 @@ npm test               # lint → build → validate
 
 - 新增 `/coverage` 路由与服务端取数模块 `src/lib/coverage-report.ts`：实时扫描磁盘词典，计算整体翻译覆盖率、按文件（common/codespaces/explore）细分进度条、Top-N 采集缺口（读 `docs/untranslated-terms.txt`）、跨模块同键多值冲突与近似键聚类；服务端渲染（`force-dynamic`），不依赖浏览器，规避 W5 架构约束。
 - 复用 `Shell` 外壳与 `progress`/`showcase` 设计令牌，新增 `public/css/coverage.css`；`navItems.ts` 导航新增「覆盖率」项。
-- 版本同步至 1.11.16：`src/version.js`、`package.json`、`README.md`、`CHANGELOG.md` 与本次改动文件头注释。
+- 版本同步至 1.11.16：`src/userscript/version.js`、`package.json`、`README.md`、`CHANGELOG.md` 与本次改动文件头注释。
 
 ---
 
@@ -383,7 +383,7 @@ npm test               # lint → build → validate
 
 发版时必须逐项核对，避免长期脱节：
 
-1. `src/version.js` 的 `VERSION`（**单一版本源**）
+1. `src/userscript/version.js` 的 `VERSION`（**单一版本源**）
 2. `package.json` 的 `version`
 3. `CHANGELOG.md` 新增对应版本小节
 4. `README.md` 中的版本相关描述与结构说明

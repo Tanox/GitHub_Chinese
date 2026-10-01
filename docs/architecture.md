@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文插件架构文档
 
-> 版本：**v1.13.4** ｜ 版本权威源：`src/version.js`
+> 版本：**v1.13.4** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -11,7 +11,7 @@ GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitH
 
 | 链路 | 交付物 | 构建方式 |
 |------|--------|---------|
-| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/main.js` 递归解析依赖图并拼接 |
+| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/userscript/main.js` 递归解析依赖图并拼接 |
 | B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
 ### 1.2 架构特点
@@ -170,7 +170,7 @@ GitHub Chinese 简体中文插件是一个浏览器用户脚本，旨在为 GitH
 
 ### 2.7 生命周期编排 (main/lifecycle.js)
 
-`src/main.js` 仅作为薄入口，实际编排收敛在 `lifecycleManager`：
+`src/userscript/main.js` 仅作为薄入口，实际编排收敛在 `lifecycleManager`：
 
 - `init()`：版本检查 → 翻译核心初始化 → 首次翻译 → 页面监控 → 配置界面初始化
 - `startScript()`：根据 `document.readyState` 决定立即初始化或等待 `DOMContentLoaded`
