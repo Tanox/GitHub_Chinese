@@ -69,6 +69,8 @@ npm run dev     # 打开 http://localhost:3000
 
 > **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
 
+> **原型去耦（v1.13.14）**：原型预览服务器已迁至 `prototype/server.js`（不再位于 `server/`），且不引用采集引擎 `collector-core`、不暴露任何采集 API，原型回归纯静态高保真预览。`server/` 目录现仅保留独立采集服务 `collect-service`。
+
 本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
 
 | 模块 | 路径 | 说明 |
@@ -103,9 +105,9 @@ src/
 ├── versionChecker/          # 版本更新检查
 └── updateNotification/      # 更新通知 UI
 src/app/styles/             # 采集工作台样式（模块化，由 Next 构建打包）
-prototype/                   # 设计系统与高保真原型
+prototype/                   # 设计系统与高保真原型（含 prototype/server.js 预览服务器）
 scripts/                     # 构建依赖图、转换、产物校验与词典采集工具链
-server/                     # 独立采集服务（W5 解耦，可自托管部署的 Node 服务）
+server/                     # 独立采集服务（W5 解耦，仅含 collect-service，可自托管部署的 Node 服务）
 build/                       # 用户脚本构建产物（纳入版本控制）
 docs/                        # 项目规范文档（唯一权威正文）
 ```

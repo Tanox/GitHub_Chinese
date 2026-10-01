@@ -1,4 +1,12 @@
 # Changelog
+## [1.13.14] - 2026-10-02
+
+### Refactor
+- 原型系统去耦：将原型预览服务器由 `server/prototype.js` 迁移至 `prototype/server.js`，并移除其对采集引擎 `collector-core.js` 的引用与 `/api/collect`、`/api/batch-collect` 接口，使原型回归纯静态高保真预览，不再触及采集工具核心。
+- `server/` 目录现仅保留独立采集服务 `collect-service`，职责单一；`npm run dev:prototype` 指向 `prototype/server.js`，ESLint 与 200 行门禁同步覆盖 `prototype/server.js`。
+
+---
+
 ## [1.13.13] - 2026-10-01
 
 ### Docs & Chore

@@ -62,6 +62,7 @@ GitHub_Chinese/
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
 │   └── proxy.ts                      # 安全响应头 + nonce CSP（Next 16 起取代 middleware）
 ├── prototype/                        # 高保真原型
+│   ├── server.js                     # 原型热更新预览服务器（纯静态，不接入采集引擎）
 │   ├── assets/                       # 原型样式（CSS）
 │   └── prototypes/                   # index.html（唯一原型入口）
 ├── scripts/
@@ -72,7 +73,7 @@ GitHub_Chinese/
 ├── build/                            # 用户脚本构建产物（需纳入版本控制）
 ├── scripts/build/build.cjs            # 用户脚本构建入口
 ├── scripts/collect-dict.cjs            # 词典采集工具（已随 v1.12.8 迁入 scripts/）
-├── server/prototype.js               # 原型热更新预览服务器
+├── server/collect-service/           # 独立采集服务（W5 解耦，可自托管部署的 Node 服务）
 ├── next.config.mjs                   # Next 配置（根级，与 src 解耦）
 ├── tailwind.config.ts / postcss.config.mjs
 ├── eslint.config.js                  # ESLint Flat Config

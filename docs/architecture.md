@@ -383,14 +383,14 @@ GitHub_Chinese/
 │   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts
 │   ├── types/                        # puppeteer-core.d.ts 等最小类型声明
 │   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
-├── prototype/                        # 设计系统与高保真原型
+├── prototype/                        # 设计系统与高保真原型（含 prototype/server.js 预览服务器）
 ├── scripts/build/                    # moduleGraph.cjs / transform.cjs
 ├── scripts/validate-bundle.cjs       # 构建产物校验
 ├── docs/                             # 正式规范文档（权威正文）
 ├── build/GitHub_zh-cn.user.js         # 用户脚本构建产物（纳入版本控制）
 ├── scripts/build/build.cjs            # 用户脚本构建入口
 ├── scripts/collect-dict.cjs            # 词典采集工具（已随 v1.12.8 迁入 scripts/）
-├── server/prototype.js               # 原型热更新预览服务器
+├── server/collect-service/           # 独立采集服务（W5 解耦，可自托管部署的 Node 服务）
 ├── next.config.mjs / tailwind.config.ts / postcss.config.mjs
 ├── eslint.config.js / tsconfig.json
 └── package.json / CHANGELOG.md / README.md
@@ -468,7 +468,7 @@ GitHub_Chinese/
 - **采集错误码约定（P2-7）**：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
   （纯数据模块，不含 `fs`/`child_process`，可安全被客户端导入）；服务端 `error` 事件均携带 `code`，
   前端 `useCollector` 与终端日志据此渲染 `E<code>` 徽标，便于按类型分流处理
-- `server/prototype.js`（原型热更新预览）复用 `collector-core.js` + `dictionary-processor.js`，仅保留 SSE 适配层
+- 原型预览服务器已迁出 `server/`，现位于 `prototype/server.js`，为纯静态 HMR 预览，不引用 `collector-core.js`、不暴露采集 API；采集引擎仅由 Next 工作台（`src/app/api/*`）与自托管 `server/collect-service/` 使用。
 
 架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `proxy.ts`；
 用户脚本核心 `.js` 由 `scripts/build/build.cjs` 独立构建，二者互不打包
