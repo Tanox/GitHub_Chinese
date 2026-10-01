@@ -1,43 +1,14 @@
-# MEMORY.md
+# 长期记忆（GitHub_Chinese）
 
-## 项目事实（GitHub_Chinese，截至 2026-10-01，v1.13.10）
-- **双链路项目**：①用户脚本引擎（核心交付）现整体位于 `src/userscript/`——`build.cjs` 入口 `src/userscript/main.js`，递归依赖图→拓扑→剥离 import/export→单文件 IIFE，产物 `build/GitHub_zh-cn.user.js`（~194KB，~92 模块）。`build/` 须纳入版本控制。`src/dictionaries/`、`src/utils/` 为引擎与 Next 工作台共享，留在 `src/` 根（引擎内对它们的相对引用深度比原 `src/` 顶层多一级 `../`）。②词典采集工作台——Next.js 16 App Router（`src/` 模式），路由 `/`、`/overview`、`/design`；API `src/app/api/collect`、`batch-collect`；`src/lib/{collector-core,dictionary-processor,page-navigation}.js` + `batch-collector.js` + `browser-semaphore.js`。两链路仅共享词典数据。
-- **版本单一来源 = `src/userscript/version.js` 的 `VERSION`**（当前 **1.13.10**，HEAD 以 `git log` 实查）。全局展示位同步：`package.json`/README 徽章/CHANGELOG 小节/被改文件头注释。**每次改动 bump 最小版本（项目惯例按任务逐 patch 递增）；仅更新被改文件头注释，禁止全仓库批量刷写。**
-- **npm 脚本**：`build`=`next build && node build.cjs`；`build:userscript`=`node build.cjs`；`dev`=Next 工作台；`dev:prototype`=`server.js`；`validate`=`node scripts/validate-bundle.cjs`；`test:unit`=`node --test`；`test`=lint→**lint:length**(>200 行失败)→build→test:unit→validate。
-- **测试** = Node 内置 `node --test`（v1.9.30 起）。`tests/` 共 **165 用例**（164 通过 / 1 跳过 / 0 失败，a11y 无 `.next` 则 skip）。数据层单测覆盖 T17/T18/T19/T20/T23/T24/T25/T36。route.ts 因 `@/` 别名不直测，逻辑抽纯函数。
-- **Node >=22.22.2**（jsdom@30/undici@8 依赖 Node 22+；本地 Node 20 跑 a11y 会崩）。依赖 `puppeteer-core@^25.11.0`（已装，browser-resolver 解析系统 Chrome/Edge，支持 PUPPETEER_EXECUTABLE_PATH）。
-- **任务清单单一来源 = `docs/tasks.md`**；**项目进度文档收口**：`docs/PROGRESS.md` 已于 v1.13.5 删除，其非任务内容（量化指标 / 迭代记录 / 版本同步清单 / 路线图）并入 `docs/project.md`（`docs/architecture.md` / `docs/development.md` 已含架构 / 命令，不重复迁移）；变更历史统一收口至 `CHANGELOG.md`。详尽验收要点见 `CHANGELOG.md` 对应版本小节。`openspec/` 已于 v1.12.1 合并入 `docs/README.md` 并删除，`docs/` 为唯一权威正文。此后进度类内容三处收口：`docs/project.md`（概览 / 指标 / 迭代 / 路线图）、`docs/tasks.md`（任务唯一清单）、`CHANGELOG.md`（变更唯一归处）。
-- **安全加固（已完成勿重复）**：SSRF `src/lib/url-guard.js`（v1.13.1 非常规 IP 字面量归一化）；CSP `src/proxy.ts` nonce（x-nonce 请求头 + strict-dynamic，生产需 DevTools 核验）；OG/Twitter `layout.tsx`；`src/app/error.tsx` 生产环境不泄露原始 message（仅 digest）；`src/lib/browser-pool.js`（v1.13.2 浏览器单例复用，--no-sandbox 仅 root 启用）；`src/lib/api-guard.ts`（v1.13.3 限流客户端 IP 头信任显式 opt-in，默认归入 unknown 共享桶，防伪造 X-Forwarded-For 头轮换绕过每 IP 限流）。
+## 项目布局约定
+- 部署的 Next.js 工作台（`src/app`）采用**顶部导航 + 内容的上下布局**（全局 `TopNav` 顶栏 + 各页面 `Shell` 内的 `topbar` 页头 + 内容 + 页脚）。**不要**恢复左侧 `Rail` 侧栏。
+- 导航数据源唯一来源：`src/components/navItems.ts` 的 `NAV_ITEMS`（6 项：console/overview/coverage/design/dictionary/dict-manage），类型 `NavSection`。
+- 原型位于 `prototype/prototypes/index.html`（经 `npm run dev:prototype` 预览），为上下单页展示，定位"设计走查"，与 Next 应用是两套独立产物。
 
-## 任务状态（v1.13.10）
-- **全部任务已交付**：T1–T36 完成。**T18（采集源扩展）于 v1.13.10 交付**：T18-a 登录态 cookie 注入（collector-core `cookies` 选项 → `page-navigation.applyCookies` → batch-collect 路由 + 采集服务 `GITHUB_ZH_COOKIES` 环境变量）；T18-b HAR/会话导入（`scripts/har-import.cjs` + `src/lib/extract-html-text.js` Node 端 jsdom 提取器）；T18-c 扩展 UI 区域覆盖（作用域根并集含主根外全局头部，导出 `UI_REGION_SELECTORS`）。
-- **词库管理台（v1.13.8–1.13.9）**：`/dictionary/manage` 页 = `Shell` + 客户端岛 `Manager`，拆分为 `DictTable`/`ExportBar`/`MergePatchPanel`(T20+T24)/`HistoryCompare`(T23)；`src/lib/dictionary-io.js` 含 buildDictionaryPatch/applyPatch/renderDiffPreview/diffDictionaries。
-- **W5 架构阻塞（仅剩，非任务清单项）**：serverless(EdgeOne/Vercel) 无 Chrome，生产采集实际不可用；自托管采集服务（`server/collect-service`）可启用 cookie 采集，决策待定。`docs/collect-history.json` 由采集流程写入后 T23 历史对比自动生效（当前采集未写入，历史 UI 显示空态）。其余审查项 C1–C3/W1–W6/S1–S6 均已修。
-- **既有潜在 bug 修复（v1.13.10）**：`scripts/merge-dictionaries.cjs` 的 `PROJECT_ROOT = path.resolve(__dirname)` 误定位到 `scripts/`，导致 `DICT_DIR` 解析为 `scripts/src/dictionaries`（词典实际在 `<root>/src/dictionaries`）；改为 `path.resolve(__dirname, '..')`，使 `collect-dict.cjs` 与 `har-import.cjs` 的词典加载恢复正常。
+## 常见脚本
+- `npm run dev`（Next）、`npm run dev:prototype`（原型预览服务器 server.js）。
+- `npm run format` / `typecheck` / `lint` / `build`（build 含 `next build` + `node build.cjs`）。
+- 部署：GitHub Pages（`deploy-pages`），产物为 Next 应用而非原型。
 
-## 关键工程经验
-- **page.evaluate 序列化陷阱（T26）**：传入 `page.evaluate` 的函数仅序列化自身源码，模块级辅助/常量不注入浏览器上下文 → 运行时 ReferenceError。`extractPageText` 须自包含（辅助内联）；回归测试用 `vm.runInContext` 隔离模拟。
-- **会话间隙版本漂移**：任何写文档/改版本动作前先读 `src/version.js` + `git log` 实查 HEAD，勿按旧记忆盲写（本项目高频自行 bump）。
-- **并行编辑冲突**：用户可能在我发版编辑的同时自行 bump 版本并重写文档，导致 `replace_in_file` 因 old_str 已不匹配而整体失败；动手前先 `git status` / 重读目标文件确认无未保存的并行改动，失败后立即重读真实状态再修，勿假设旧快照。
-- **自动化提交会扫入运行产物**：本项目存在并行/自动化流程会在我未提交的工作树改动后自动 `git add -A` 并提交（含版本 bump）并推送 origin/main；`git add -A` 会把未跟踪的运行产物（Playwright CLI 快照 `.playwright-cli/` / `*.yml` / 截图 `*.png` / `*.log` / 采集报告 `docs/untranslated-terms.txt`）一并纳入提交。每次清理/发版后务必 `git status` 复核，对运行产物先写入 `.gitignore` 再操作，避免脏文件进库（v1.12.4 曾误纳入 8 个产物，已补 `.gitignore` 并提交 `9c1b648` 清理）。
-
-## 编码约定
-- 源码单文件 ≤200 行须按职责拆分（文档 .md 不拆）；每次修改 bump 最小版本且仅改被改文件头注释；主要容器/交互控件加语义化 kebab-case `id`。
-
-## 受保护 / 勿删
-- 根 `GEMINI.md`、`metadata.json`（Google AI Studio 必需）；`build/GitHub_zh-cn.user.js`（@updateURL 依赖，随仓库提交）。
-
-## 工具链陷阱（Windows/PowerShell）
-- `Get-Content` 读 UTF-8 中文乱码 → 用读取文件工具；`node -e "..."` 的 `$`/`[`/引号被吞 → 写临时 `.mjs` 执行；搜代码用 `search_content` 的 `ignore_globs`（勿用 `!{negated}`）；长任务 `node --test` 直跑、输出 `Select-String` 过滤；批量改写仓库文档用 node 脚本时：① 文档为 CRLF，正则须用 `\r?\n` 且 `[^\r\n]*` 而非 `[^\n]*`；② 含中文顿号 `、`(U+3001) 的字面量在脚本里易失配（曾因目录树行带反引号、且码位核对偏差导致多次 replace 失败），优先用 `replace_in_file` 工具或先 `codePointAt` 确认码位；③ 同一文件多次编辑用单个脚本原子完成，避免多工具并行竞态（本项目高频被用户并行编辑）。
-
-## 结构改进（2026-09-30 已完成，v1.12.9）
-- **A 脚本归位**：根目录 8 个游离 `.cjs`（coverage/history-diff/io-dictionary/merge-dictionaries/merge-into-dictionary/review-store/term-operations/collect-dict）迁入 `scripts/`；`package.json` 的 `dict:collect`/`lint`/`format` 路径、`src/lib/dictionary-processor.js`、`scripts/collect-history.cjs`、7 个测试 require 全部同步；根目录仅保留 `build.cjs`（用户脚本构建）与 `server.js`（prototype 预览）。
-- **B 同名消歧**：`src/utils/tools/dictionaryProcessor.js`（词典统计）重命名为 `dictionaryStats.js`、类名 `DictionaryStats`，消除与 `src/lib/dictionary-processor.js`（采集清洗桥接）歧义。
-- **D 统一日志**：新增 `src/utils/logger.js` 门面（统一前缀 + 级别过滤，Node 侧 `GITHUB_ZH_LOG` 调级）；供服务端/新代码（采集服务、客户端）使用；引擎调试日志仍由 `CONFIG.debugMode` 守卫，未做大面积 console 替换（避免破坏脚本 stdout 契约与高 churn）。
-- **E prototype 分工**：README 明确 `prototype/` = 轻量高保真预览（不接真实后端/无持久化），`src/app` Next 工作台 = 正式采集/审阅/词典沉淀环境，二者不重叠（用户选择不删文件）。
-- **G 引擎单测**：新增 5 个测试文件（Trie / LRU 缓存 / 部分匹配 / 词典管理 / 错误处理）共 **22 用例全过**；过程中发现并修复 `dictionaryManager.getTranslatedText` 未命中返回 `undefined`（应 `null`）的真实 bug——`=== null` 误判导致误缓存 undefined 及 `sanitizeText(undefined)` 崩溃，改为 `== null` 判断 + 返回 `null`。
-- **H W5 采集解耦**：新增 `server/collect-service/index.js`（可自托管 Node 服务，复用 `src/lib/collector-core`，HTTP+SSE 暴露 `/api/collect`/`/api/batch-collect`/`/health`）+ `src/lib/collect-service-client.js`（配置 `COLLECT_SERVICE_URL` 时代理 SSE，否则返回 null 走本地兜底）；采集路由 `collect`/`batch-collect` 已接入；新增 `npm run collect-service`。解决 serverless 无浏览器导致生产采集不可用。
-- **I 版本收口**：核查 `src/version.js` 为唯一版本源，`versionChecker/fetcher.js` 仅做远程比对、无重复版本逻辑，无需改代码。
-- **C @babel/core**：因生产采集子进程（`collect-dict.cjs`→`merge-dictionaries.cjs`）运行时依赖，仍保留于 `dependencies`；H 服务化后其归属由服务依赖接管（待办）。
-- **F public/css→Next import**：**已完成**——14 个样式经 `git mv` 等价迁移（文件工具实现，因 execute_command 审批通道不可用）至 `src/app/styles/`，`layout.tsx` 改为 `import` 引入（保持原级联顺序），删除空 `public/css/`；`globals.css`/`design/page.tsx` 注释与文案同步；版本 bump 至 v1.12.9。CSS 不在 `lint:length` 扩展名范围内（仅 js/cjs/mjs/ts/tsx），`layout.css` 212 行不受限。
-- 当前版本：**v1.13.10**（2026-10-01；截至此版本 T1–T36 全部交付，含用户脚本引擎整体迁入 `src/userscript/`（与 Next 工作台分离），共享模块 `src/dictionaries/`、`src/utils/` 留 `src/` 根）。
+## 待处理预存问题（2026-10-01 发现，与布局改造无关）
+- `batch-collect/route.ts:44` cookies 类型缺失；`MergePatchPanel.tsx:89` key/value 未定义；`tests/batch-collector.test.mjs` `_` 未使用。
