@@ -19,10 +19,7 @@ const version = raw.replace(/^v/, '').trim();
 const escaped = version.replace(/\./g, '\\.');
 
 const changelog = fs.readFileSync(path.join(ROOT, 'CHANGELOG.md'), 'utf8');
-const re = new RegExp(
-  `^##\\s+\\[${escaped}\\][\\s\\S]*?(?=\\n##\\s+\\[|\\n---)`,
-  'm',
-);
+const re = new RegExp(`^##\\s+\\[${escaped}\\][\\s\\S]*?(?=\\n##\\s+\\[|\\n---)`, 'm');
 const m = re.exec(changelog);
 if (!m) {
   console.error(`❌ CHANGELOG.md 中未找到版本 ${version} 的段落`);

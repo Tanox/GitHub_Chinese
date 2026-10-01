@@ -112,7 +112,9 @@ async function main() {
   }
 
   const { texts, pages, skipped } = await extractFromHar(har);
-  console.log(`[HAR 导入] 解析 GitHub HTML 页面 ${pages} 个，跳过 ${skipped} 个，提取文本 ${texts.length} 条`);
+  console.log(
+    `[HAR 导入] 解析 GitHub HTML 页面 ${pages} 个，跳过 ${skipped} 个，提取文本 ${texts.length} 条`,
+  );
 
   const dictionary = await mergeDictionaries();
   const { untranslated, translated, coverage } = analyzeTexts(texts, dictionary);

@@ -115,7 +115,10 @@ test('collectBatch 注入 cookies：每页 setCookie 命中匹配项（T18-a）'
 
   // 每个目标页各应注入 1 条匹配的 cookie（共 2 条）
   assert.equal(recorded.length, targets.length, '每页应注入匹配的主机 cookie');
-  assert.ok(recorded.every((c) => c.name === 'sess'), '仅注入与 github.com 匹配的 cookie');
+  assert.ok(
+    recorded.every((c) => c.name === 'sess'),
+    '仅注入与 github.com 匹配的 cookie',
+  );
 });
 
 test('collectBatch 无 cookies 时不调用 setCookie（向后兼容）', async () => {

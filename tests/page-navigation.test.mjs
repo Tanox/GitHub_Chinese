@@ -50,14 +50,21 @@ test('applyCookies 注入与目标主机匹配的 cookie，跳过不匹配的', 
     'https://github.com/foo/bar',
   );
   assert.equal(recorded.length, 2, '应注入 2 条（匹配 + 无 domain）');
-  assert.ok(recorded.some((c) => c.name === 'sess' && c.domain === 'github.com'), '前导点应被规范化');
+  assert.ok(
+    recorded.some((c) => c.name === 'sess' && c.domain === 'github.com'),
+    '前导点应被规范化',
+  );
   assert.ok(recorded.some((c) => c.name === 'noDomain' && c.url === 'https://github.com/foo/bar'));
   assert.ok(!recorded.some((c) => c.name === 'evil'), '不匹配主机的 cookie 应被跳过');
 });
 
 test('applyCookies 空列表 / 缺 setCookie 时安静返回', async () => {
   let called = false;
-  const page = { setCookie: async () => { called = true; } };
+  const page = {
+    setCookie: async () => {
+      called = true;
+    },
+  };
   await applyCookies(page, [], 'https://github.com');
   await applyCookies({ noop: true }, [{ name: 'a', value: 'b' }], 'https://github.com');
   assert.equal(called, false, '空列表不应调用 setCookie');
