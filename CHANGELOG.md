@@ -1,4 +1,14 @@
 # Changelog
+## [1.13.9] - 2026-10-01
+
+### Feat（T20 合并入库 · T23 历史对比 工作台 UI 接入）
+- **T20 合并入库 UI**：「词库管理」页导入区新增「生成入库补丁」——基于 `buildDictionaryPatch` 计算 added / updated 分离补丁（`dictionary-io.js`），预览 PR 式 diff 并下载 `dictionary-patch.json` 供手动入库到 `src/dictionaries/`，不写服务器词典文件。复用 T24 的解析与合并能力。
+- **T23 历史对比 UI**：服务端 `page.tsx` 只读读取 `docs/collect-history.json` 并传入客户端；新增 `HistoryCompare` 组件选择任意两轮进行词条级对比（added / removed / changed，基于 `diffDictionaries`），无 snapshot 时优雅降级提示。
+- **管理器拆分（<200 行规则）**：原 `Manager.tsx`（317 行）拆分为 `Manager`（编排）+ `DictTable`（展示）+ `MergePatchPanel`（导入/合并/补丁）+ `HistoryCompare`（历史对比），各组件单一职责。
+- 纯函数 `src/lib/dictionary-io.js` 新增 `buildDictionaryPatch` / `applyPatch` / `renderDiffPreview` / `diffDictionaries`；`tests/dictionary-io.test.mjs` 补充 4 例（共 11 例全过）。
+
+---
+
 ## [1.13.8] - 2026-10-01
 
 ### Feat（T19 / T24 / T25 工作台 UI 接入 · 词库管理台）

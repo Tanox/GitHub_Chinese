@@ -1,18 +1,19 @@
 # MEMORY.md
 
-## 项目事实（GitHub_Chinese，截至 2026-10-01，v1.13.6）
+## 项目事实（GitHub_Chinese，截至 2026-10-01，v1.13.9）
 - **双链路项目**：①用户脚本引擎（核心交付）现整体位于 `src/userscript/`——`build.cjs` 入口 `src/userscript/main.js`，递归依赖图→拓扑→剥离 import/export→单文件 IIFE，产物 `build/GitHub_zh-cn.user.js`（~194KB，~92 模块）。`build/` 须纳入版本控制。`src/dictionaries/`、`src/utils/` 为引擎与 Next 工作台共享，留在 `src/` 根（引擎内对它们的相对引用深度比原 `src/` 顶层多一级 `../`）。②词典采集工作台——Next.js 16 App Router（`src/` 模式），路由 `/`、`/overview`、`/design`；API `src/app/api/collect`、`batch-collect`；`src/lib/{collector-core,dictionary-processor,page-navigation}.js` + `batch-collector.js` + `browser-semaphore.js`。两链路仅共享词典数据。
-- **版本单一来源 = `src/userscript/version.js` 的 `VERSION`**（当前 **1.13.6**，HEAD 以 `git log` 实查）。全局展示位同步：`package.json`/README 徽章/CHANGELOG 小节/被改文件头注释。**每次改动 bump 最小版本（项目惯例按任务逐 patch 递增）；仅更新被改文件头注释，禁止全仓库批量刷写。**
+- **版本单一来源 = `src/userscript/version.js` 的 `VERSION`**（当前 **1.13.9**，HEAD 以 `git log` 实查）。全局展示位同步：`package.json`/README 徽章/CHANGELOG 小节/被改文件头注释。**每次改动 bump 最小版本（项目惯例按任务逐 patch 递增）；仅更新被改文件头注释，禁止全仓库批量刷写。**
 - **npm 脚本**：`build`=`next build && node build.cjs`；`build:userscript`=`node build.cjs`；`dev`=Next 工作台；`dev:prototype`=`server.js`；`validate`=`node scripts/validate-bundle.cjs`；`test:unit`=`node --test`；`test`=lint→**lint:length**(>200 行失败)→build→test:unit→validate。
-- **测试** = Node 内置 `node --test`（v1.9.30 起）。`tests/` 共 **144 用例**（143 通过 / 1 跳过 / 0 失败，含 a11y 3；a11y 用 axe-core+jsdom 仅 serious/critical 阻断，无 `.next` 则 skip）。数据层单测覆盖 T17/T19/T20/T23/T24/T25/T36。route.ts 因 `@/` 别名不直测，逻辑抽纯函数。
+- **测试** = Node 内置 `node --test`（v1.9.30 起）。`tests/` 共 **155 用例**（154 通过 / 1 跳过 / 0 失败，a11y 无 `.next` 则 skip）。数据层单测覆盖 T17/T19/T20/T23/T24/T25/T36。route.ts 因 `@/` 别名不直测，逻辑抽纯函数。
 - **Node >=22.22.2**（jsdom@30/undici@8 依赖 Node 22+；本地 Node 20 跑 a11y 会崩）。依赖 `puppeteer-core@^25.11.0`（已装，browser-resolver 解析系统 Chrome/Edge，支持 PUPPETEER_EXECUTABLE_PATH）。
 - **任务清单单一来源 = `docs/tasks.md`**；**项目进度文档收口**：`docs/PROGRESS.md` 已于 v1.13.5 删除，其非任务内容（量化指标 / 迭代记录 / 版本同步清单 / 路线图）并入 `docs/project.md`（`docs/architecture.md` / `docs/development.md` 已含架构 / 命令，不重复迁移）；变更历史统一收口至 `CHANGELOG.md`。详尽验收要点见 `CHANGELOG.md` 对应版本小节。`openspec/` 已于 v1.12.1 合并入 `docs/README.md` 并删除，`docs/` 为唯一权威正文。此后进度类内容三处收口：`docs/project.md`（概览 / 指标 / 迭代 / 路线图）、`docs/tasks.md`（任务唯一清单）、`CHANGELOG.md`（变更唯一归处）。
 - **安全加固（已完成勿重复）**：SSRF `src/lib/url-guard.js`（v1.13.1 非常规 IP 字面量归一化）；CSP `src/proxy.ts` nonce（x-nonce 请求头 + strict-dynamic，生产需 DevTools 核验）；OG/Twitter `layout.tsx`；`src/app/error.tsx` 生产环境不泄露原始 message（仅 digest）；`src/lib/browser-pool.js`（v1.13.2 浏览器单例复用，--no-sandbox 仅 root 启用）；`src/lib/api-guard.ts`（v1.13.3 限流客户端 IP 头信任显式 opt-in，默认归入 unknown 共享桶，防伪造 X-Forwarded-For 头轮换绕过每 IP 限流）。
 
-## 任务状态（v1.13.6）
-- **已完成（数据层/闭环）**：T12–T17（采集精准/动态/重试/限流/匹配增强/覆盖率度量）、T19（审阅状态机）、T20（合并入库）、T22（覆盖率看板 UI，v1.11.16）、T23（历史对比）、T24（导入导出）、T25（搜索批量）、T26（page.evaluate 序列化回归，v1.10.2）、T27–T36（URL 上限/SSRF重定向/鉴权限流/SSE复用/前端重构/词条事件解耦/T33/T34/T35/采集重构）。
-- **开放任务**：T18 采集源扩展(cookie/HAR, L)；T19/T20/T23/T24/T25 已落地数据层，待工作台 UI 接入（T21 词典助手页 v1.12.6、T22 覆盖率看板 v1.11.16 已交付）。
-- **W5 架构阻塞**：serverless(EdgeOne/Vercel) 无 Chrome，生产采集实际不可用，需自托管 Node 服务或任务队列（决策待定）。其余审查项 C1–C3/W1–W6/S1–S6 均已修。
+## 任务状态（v1.13.9）
+- **已完成（数据层 + 工作台 UI 全部收口）**：T12–T17（采集精准/动态/重试/限流/匹配增强/覆盖率度量）、T19（审阅状态机）、T20（合并入库 · 入库补丁 UI v1.13.9）、T22（覆盖率看板 UI v1.11.16）、T23（历史对比 UI v1.13.9）、T24（导入导出）、T25（搜索批量）、T26（page.evaluate 序列化回归 v1.10.2）、T27–T36（URL 上限/SSRF重定向/鉴权限流/SSE复用/前端重构/词条事件解耦等）。
+- **词库管理台（v1.13.8–1.13.9）**：`/dictionary/manage` 页 = `Shell` + 客户端岛 `Manager`，拆分为 `DictTable`(展示)/`ExportBar`(导出)/`MergePatchPanel`(导入·合并·入库补丁 T20+T24)/`HistoryCompare`(历史对比 T23)；纯函数 `src/lib/dictionary-io.js` 含 buildDictionaryPatch/applyPatch/renderDiffPreview/diffDictionaries。
+- **开放任务**：T18 采集源扩展(cookie/HAR, L，待架构决策)。
+- **W5 架构阻塞**：serverless(EdgeOne/Vercel) 无 Chrome，生产采集实际不可用，需自托管 Node 服务或任务队列（决策待定）；`docs/collect-history.json` 由采集流程写入后 T23 历史对比自动生效（当前采集未写入，历史 UI 显示空态）。其余审查项 C1–C3/W1–W6/S1–S6 均已修。
 
 ## 关键工程经验
 - **page.evaluate 序列化陷阱（T26）**：传入 `page.evaluate` 的函数仅序列化自身源码，模块级辅助/常量不注入浏览器上下文 → 运行时 ReferenceError。`extractPageText` 须自包含（辅助内联）；回归测试用 `vm.runInContext` 隔离模拟。

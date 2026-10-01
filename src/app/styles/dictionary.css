@@ -2,7 +2,7 @@
  * GitHub 中文 · 采集工作台 — 词典助手
  * 设计变量与基础类复用 base.css；本文件仅补充词典助手专属布局
  * @file src/app/styles/dictionary.css
- * @version 1.13.8
+ * @version 1.13.9
  */
 .dict-wrap {
   display: flex;
@@ -176,6 +176,85 @@
   color: var(--brand-strong);
   font-size: .9rem;
   margin: .5rem 0 0;
+}
+
+/* 入库补丁预览（T20） */
+.patch-preview {
+  margin-top: .8rem;
+  border-top: 1px dashed var(--border);
+  padding-top: .6rem;
+}
+
+.diff-block {
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .8rem;
+  font-size: .82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 320px;
+  overflow: auto;
+  margin: .4rem 0;
+}
+
+/* 采集历史对比（T23） */
+.hist-controls {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: .6rem;
+}
+
+.hist-label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .9rem;
+  color: var(--muted);
+}
+
+.hist-result {
+  margin-top: .8rem;
+  border-top: 1px dashed var(--border);
+  padding-top: .6rem;
+}
+
+.hist-group {
+  margin-top: .6rem;
+}
+
+.hist-h {
+  font-size: .9rem;
+  color: var(--ink);
+  margin: .2rem 0;
+}
+
+.hist-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: .85rem;
+  line-height: 1.6;
+}
+
+.hist-list code {
+  background: var(--canvas);
+  padding: .1rem .35rem;
+  border-radius: 5px;
+}
+
+.hist-add {
+  color: var(--brand-strong);
+}
+
+.hist-del {
+  color: var(--danger);
+}
+
+.hist-chg {
+  color: var(--warn, #b8914c);
 }
 
 @media (max-width: 640px) {

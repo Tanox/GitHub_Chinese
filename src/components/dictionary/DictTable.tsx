@@ -6,7 +6,7 @@
  * @description 纯展示组件：渲染当前词库条目，支持逐条选择与审阅勾选。
  */
 
-interface DictEntry {
+export interface DictEntry {
   key: string;
   value: string;
 }

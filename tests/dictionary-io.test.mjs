@@ -6,6 +6,10 @@ import {
   sortEntries,
   mergeDictionaries,
   parseImportedDictionary,
+  buildDictionaryPatch,
+  applyPatch,
+  renderDiffPreview,
+  diffDictionaries,
 } from '../src/lib/dictionary-io.js';
 
 test('toEntries 保持键顺序', () => {
@@ -58,4 +62,33 @@ test('parseImportedDictionary 空与非法', () => {
   assert.equal(parseImportedDictionary('').ok, false);
   assert.equal(parseImportedDictionary('not json').ok, false);
   assert.equal(parseImportedDictionary('[1,2,3]').ok, false);
+});
+
+test('buildDictionaryPatch 分离新增与更新，跳过同值', () => {
+  const patch = buildDictionaryPatch({ a: '1', b: '2' }, { a: '1', b: 'x', c: '3' });
+  assert.deepEqual(patch.added, { c: '3' });
+  assert.deepEqual(patch.updated, { b: 'x' });
+  assert.ok(!('a' in patch.added) && !('a' in patch.updated));
+});
+
+test('applyPatch 不可变应用补丁', () => {
+  const base = { a: '1' };
+  const next = applyPatch(base, { added: { c: '3' }, updated: { a: '9' } });
+  assert.deepEqual(next, { a: '9', c: '3' });
+  assert.deepEqual(base, { a: '1' });
+});
+
+test('renderDiffPreview PR 式文本，无变更返回占位', () => {
+  assert.equal(
+    renderDiffPreview({ added: { c: '3' }, updated: { a: '9' } }),
+    '+ "c": "3"\n~ "a": "9"',
+  );
+  assert.equal(renderDiffPreview({ added: {}, updated: {} }), '(无变更)');
+});
+
+test('diffDictionaries 计算新增/删除/变更', () => {
+  const d = diffDictionaries({ a: '1', b: '2', x: '9' }, { a: '1', b: 'y', c: '3' });
+  assert.deepEqual(d.added, [{ term: 'c', translation: '3' }]);
+  assert.deepEqual(d.removed, [{ term: 'x', translation: '9' }]);
+  assert.deepEqual(d.changed, [{ term: 'b', prev: '2', curr: 'y' }]);
 });
