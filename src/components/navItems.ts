@@ -2,19 +2,14 @@
  * 工作台导航定义
  * @file src/components/navItems.ts
  * @version 1.13.8
- * @description 侧栏（桌面）与移动端导航共用的唯一导航数据源，避免两处各写一份而漂移
+ * @description 顶部导航（桌面 / 移动端共用）的唯一导航数据源，避免两处各写一份而漂移
  */
 
-export type RailSection =
-  | 'console'
-  | 'overview'
-  | 'design'
-  | 'coverage'
-  | 'dictionary'
-  | 'dict-manage';
+export type NavSection =
+  'console' | 'overview' | 'design' | 'coverage' | 'dictionary' | 'dict-manage';
 
 export interface NavItem {
-  key: RailSection;
+  key: NavSection;
   label: string;
   href: string;
 }

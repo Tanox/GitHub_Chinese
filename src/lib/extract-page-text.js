@@ -102,22 +102,22 @@ export function extractPageText(minLength, maxLength) {
         let el = node.parentElement;
         let skip = false;
         while (el && el !== root) {
-        if (SKIP_TAGS.has(el.tagName) || isContentNoise(el)) {
-          skip = true;
-          break;
+          if (SKIP_TAGS.has(el.tagName) || isContentNoise(el)) {
+            skip = true;
+            break;
+          }
+          if (el.getAttribute('aria-hidden') === 'true' || el.hasAttribute('hidden')) {
+            skip = true;
+            break;
+          }
+          const cs = getComputedStyle(el);
+          if (cs.display === 'none' || cs.visibility === 'hidden') {
+            skip = true;
+            break;
+          }
+          el = el.parentElement;
         }
-        if (el.getAttribute('aria-hidden') === 'true' || el.hasAttribute('hidden')) {
-          skip = true;
-          break;
-        }
-        const cs = getComputedStyle(el);
-        if (cs.display === 'none' || cs.visibility === 'hidden') {
-          skip = true;
-          break;
-        }
-        el = el.parentElement;
-      }
-      if (!skip) collected.push(text);
+        if (!skip) collected.push(text);
       }
       node = walker.nextNode();
     }

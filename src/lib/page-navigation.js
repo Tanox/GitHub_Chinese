@@ -42,7 +42,11 @@ export const SCROLL_PAUSE_MS = 150;
  * @param {{ navigationTimeout?: number }} [options] - 导航超时配置
  * @returns {Promise<import('puppeteer-core').HTTPResponse | null>}
  */
-export async function gotoWithFallback(page, target, { navigationTimeout = NAVIGATION_TIMEOUT_MS } = {}) {
+export async function gotoWithFallback(
+  page,
+  target,
+  { navigationTimeout = NAVIGATION_TIMEOUT_MS } = {},
+) {
   // C2：防止 SSRF 经 HTTP 重定向绕过初始 url-guard（puppeteer 默认跟随重定向）。
   // 拦截所有导航/文档类请求，目标主机经 guardUrl 判定为内网/元数据/非公网则中止。
   const guardRequest = (req) => {
@@ -87,7 +91,11 @@ export async function gotoWithFallback(page, target, { navigationTimeout = NAVIG
  */
 export async function waitForHydration(
   page,
-  { selector = HYDRATION_SELECTOR, timeout = HYDRATION_TIMEOUT_MS, settleMs = HYDRATION_SETTLE_MS } = {},
+  {
+    selector = HYDRATION_SELECTOR,
+    timeout = HYDRATION_TIMEOUT_MS,
+    settleMs = HYDRATION_SETTLE_MS,
+  } = {},
 ) {
   try {
     await page.waitForSelector(selector, { timeout });

@@ -31,9 +31,11 @@ function downloadJson(filename: string, data: unknown): void {
 
 export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
   const [importText, setImportText] = useState('');
-  const [importResult, setImportResult] = useState<
-    { ok: boolean; count?: number; error?: string } | null
-  >(null);
+  const [importResult, setImportResult] = useState<{
+    ok: boolean;
+    count?: number;
+    error?: string;
+  } | null>(null);
   const [patch, setPatch] = useState<{
     addedCount: number;
     updatedCount: number;
@@ -84,8 +86,8 @@ export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
         </h2>
       </div>
       <p className='card-desc'>
-        粘贴或上传词典 JSON（扁平对象或 [{key,value}]）：解析后仅生成合并结果与入库补丁供手动入库，
-        不写服务器词典文件。
+        粘贴或上传词典 JSON（扁平对象或 [{(key, value)}
+        ]）：解析后仅生成合并结果与入库补丁供手动入库， 不写服务器词典文件。
       </p>
       <div className='field-stack'>
         <label htmlFor='dict-import-text' className='sr-only'>
@@ -141,7 +143,9 @@ export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
 
       {importResult &&
         (importResult.ok ? (
-          <p className='dict-import-ok'>已解析 {importResult.count} 条，可下载合并结果或生成入库补丁。</p>
+          <p className='dict-import-ok'>
+            已解析 {importResult.count} 条，可下载合并结果或生成入库补丁。
+          </p>
         ) : (
           <p className='dict-error'>{importResult.error}</p>
         ))}

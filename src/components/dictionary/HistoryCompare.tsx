@@ -46,7 +46,9 @@ export default function HistoryCompare({ history }: HistoryCompareProps) {
             采集历史对比
           </h2>
         </div>
-        <p className='card-desc'>暂无采集历史。采集流程写入 docs/collect-history.json 后此处展示轮次对比。</p>
+        <p className='card-desc'>
+          暂无采集历史。采集流程写入 docs/collect-history.json 后此处展示轮次对比。
+        </p>
       </section>
     );
   }

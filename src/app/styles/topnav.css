@@ -1,0 +1,120 @@
+/*
+ * GitHub 中文 · 采集工作台 — 顶部导航（上下布局，替代原左侧栏）
+ * @file src/app/styles/topnav.css
+ * @version 1.13.0
+ */
+.topnav {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 20;
+}
+
+.topnav-inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0 1.5rem;
+}
+
+.topnav-brand {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  text-decoration: none;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+.topnav-mark {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 0 0 1px rgba(46, 164, 79, .35), 0 4px 14px rgba(46, 164, 79, .25);
+}
+
+.topnav-name {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -.01em;
+}
+
+.topnav-links {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.topnav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: .5rem .85rem;
+  border-radius: 8px;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+
+.topnav-link:hover {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.topnav-link.active {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  box-shadow: inset 0 0 0 1px rgba(46, 164, 79, .25);
+}
+
+.topnav-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.topnav-meta {
+  font-size: .78rem;
+  color: var(--faint);
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.dot {
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--term);
+  box-shadow: 0 0 0 3px rgba(63, 185, 80, .18);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .topnav-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding: .75rem 1rem;
+  }
+
+  .topnav-links {
+    order: 3;
+    flex-basis: 100%;
+  }
+}

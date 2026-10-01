@@ -8,7 +8,12 @@
 
 import { extractPageText } from './extract-page-text.js';
 import { CollectErrorCode } from './collect-codes.js';
-import { navigateWithRetry, waitForHydration, autoScroll, applyCookies } from './page-navigation.js';
+import {
+  navigateWithRetry,
+  waitForHydration,
+  autoScroll,
+  applyCookies,
+} from './page-navigation.js';
 
 const MIN_TEXT_LENGTH = 2;
 const MAX_TEXT_LENGTH = 300;

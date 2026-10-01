@@ -39,3 +39,8 @@ collect-page.png
 docs/untranslated-terms.txt
 docs/har-imported-terms.txt
 *.sync-conflict-*
+
+# CI / 本地验证瞬时日志（勿提交）
+build-web.log
+integ.log
+release-notes.md

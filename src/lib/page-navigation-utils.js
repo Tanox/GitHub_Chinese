@@ -71,7 +71,9 @@ export async function applyCookies(page, cookies, target) {
   }
 
   for (const c of cookies) {
-    const domain = String(c.domain || '').replace(/^\./, '').toLowerCase();
+    const domain = String(c.domain || '')
+      .replace(/^\./, '')
+      .toLowerCase();
     // 仅注入与目标主机匹配的 cookie（含后缀匹配，如 .github.com 适配 github.com）
     if (domain && host && !host.endsWith(domain)) continue;
 

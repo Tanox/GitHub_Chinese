@@ -9,7 +9,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import './styles/base.css';
 import './styles/layout.css';
-import './styles/sidebar.css';
+import './styles/topnav.css';
 import './styles/cards.css';
 import './styles/buttons.css';
 import './styles/code.css';

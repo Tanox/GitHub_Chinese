@@ -1,22 +1,20 @@
 /**
  * 工作台外壳
  * @file src/components/Shell.tsx
- * @version 1.12.3
- * @description 服务端组件：侧栏 + 顶栏 + 移动端导航 + 内容区的公共骨架，供四个页面复用。
+ * @description 服务端组件：顶部导航（上下布局）+ 内容区的公共骨架，供各页面复用。
  *              contentClass 仅用于采集页承接 prototype.css 的组件级视觉对齐，不改变应用外壳本身。
  */
 
 import type { ReactNode } from 'react';
-import Rail from './Rail';
-import MobileNav from './MobileNav';
-import type { RailSection } from './navItems';
+import TopNav from './TopNav';
+import type { NavSection } from './navItems';
 
 interface ShellProps {
-  /** 当前激活的侧栏导航项 */
-  active: RailSection;
-  /** 标准顶栏标题 */
+  /** 当前激活的顶栏导航项 */
+  active: NavSection;
+  /** 标准页头标题 */
   title: string;
-  /** 标准顶栏副标题 */
+  /** 标准页头副标题 */
   subtitle: string;
   /** 顶栏右侧徽标，缺省为「本地优先 · 离线可用」 */
   badge?: ReactNode;
@@ -35,7 +33,7 @@ export default function Shell({
 }: ShellProps) {
   return (
     <div id='collector-workspace' className='app-shell'>
-      <Rail active={active} />
+      <TopNav active={active} badge={badge} />
 
       <main id='collector-main' className='workspace'>
         <div
@@ -51,16 +49,7 @@ export default function Shell({
             <h1>{title}</h1>
             <p className='topbar-sub'>{subtitle}</p>
           </div>
-          {badge ?? (
-            <div className='status-pill'>
-              <span className='dot' aria-hidden='true'></span>
-              本地优先 · 离线可用
-            </div>
-          )}
         </header>
-
-        {/* 窄屏替代侧栏，保证四个页面互通 */}
-        <MobileNav active={active} />
 
         <div id='collector-content' className='content scroll'>
           <div className={`content-inner ${contentClass}`}>{children}</div>
