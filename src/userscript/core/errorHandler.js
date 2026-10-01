@@ -4,7 +4,7 @@
  */
 
 import { CONFIG } from '../config.js';
-import { utils } from '../utils/utils.js';
+import { utils } from '../../utils/utils.js';
 import {
   ERROR_TYPES,
   DEFAULT_THRESHOLD,

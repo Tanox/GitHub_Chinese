@@ -3,7 +3,7 @@
  * @file src/userscript/versionChecker/fetcher.js
  */
 import { CONFIG } from '../config.js';
-import { utils } from '../utils/utils.js';
+import { utils } from '../../utils/utils.js';
 
 const FETCH_TIMEOUT_MS = 8000;
 const EXPONENTIAL_BASE = 2;

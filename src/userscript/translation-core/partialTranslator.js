@@ -6,7 +6,7 @@
  * @author Sut
  * @description 使用 Trie 树进行部分匹配翻译；查询上下文由调用方注入，避免与 dictionaryManager 形成循环依赖
  */
-import { utils } from '../utils/utils.js';
+import { utils } from '../../utils/utils.js';
 
 export const partialTranslator = {
   /**

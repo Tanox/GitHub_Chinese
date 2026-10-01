@@ -12,7 +12,7 @@ const DEFAULT_MAX_DICT_SIZE = 2000; // 默认最大词典大小
 const MAX_KEY_LENGTH_FOR_CASE_VARIANTS = 100; // 生成大小写变体的最大键长度
 
 import { CONFIG } from '../config.js';
-import { mergeAllDictionaries } from '../dictionaries/index.js';
+import { mergeAllDictionaries } from '../../dictionaries/index.js';
 import { CacheManager } from '../core/cacheManager.js';
 import { Trie } from '../core/trie.js';
 import { partialTranslator } from './partialTranslator.js';

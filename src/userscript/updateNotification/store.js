@@ -3,7 +3,7 @@
  * @file src/userscript/updateNotification/store.js
  */
 import { CONFIG } from '../config.js';
-import { utils } from '../utils/utils.js';
+import { utils } from '../../utils/utils.js';
 
 const NOTIFICATION_DISMISSED_KEY = 'githubZhUpdateNotificationDismissed';
 const LAST_NOTIFIED_VERSION_KEY = 'githubZhLastNotifiedVersion';

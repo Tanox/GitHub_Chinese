@@ -7,7 +7,7 @@
  * @description 监听URL路径变化
  */
 import { CONFIG } from '../config.js';
-import { utils } from '../utils/utils.js';
+import { utils } from '../../utils/utils.js';
 import { pageMonitorCache } from './cacheManager.js';
 
 export const pathListener = {

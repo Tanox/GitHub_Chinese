@@ -3,7 +3,7 @@
  * @file versionChecker.js
  */
 import { CONFIG } from './config.js';
-import { utils } from './utils/utils.js';
+import { utils } from '../utils/utils.js';
 import { extractVersion, isNewerVersion } from './versionUtils.js';
 import {
   showUpdateNotification,
