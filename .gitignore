@@ -44,3 +44,4 @@ docs/har-imported-terms.txt
 build-web.log
 integ.log
 release-notes.md
+.tmp-*
