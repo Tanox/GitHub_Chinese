@@ -3,7 +3,7 @@
  * @file src/userscript/page-monitor/domObserver/setup.js
  */
 import { CONFIG } from '../../config.js';
-import { utils } from '../../utils/utils.js';
+import { utils } from '../../../utils/utils.js';
 import { translationCore } from '../../translation-core/index.js';
 import { domObserverConfig } from '../domObserver.config.js';
 import { pageMonitorCache } from '../cacheManager.js';

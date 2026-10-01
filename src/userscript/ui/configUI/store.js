@@ -3,7 +3,7 @@
  * @file src/userscript/ui/configUI/store.js
  */
 import { CONFIG } from '../../config.js';
-import { utils } from '../../utils/utils.js';
+import { utils } from '../../../utils/utils.js';
 
 const CONFIG_STORAGE_KEY = 'github-i18n-config';
 
