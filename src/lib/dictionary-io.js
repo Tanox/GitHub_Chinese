@@ -1,7 +1,7 @@
 /**
  * 词典导入 / 导出 / 合并 / 筛选（纯函数，可在 Node 与浏览器复用）
  * @file src/lib/dictionary-io.js
- * @version 1.13.8
+ * @version 1.13.9
  * @description 供「词库管理台」使用的无副作用工具：扁平对象 ↔ 条目数组转换、
  *   关键字筛选、排序、浅合并与容错解析。下载（依赖 DOM）由调用方负责。
  */
@@ -85,4 +85,78 @@ export function parseImportedDictionary(text) {
   const count = Object.keys(out).length;
   if (count === 0) return { ok: false, error: '未解析到任何词条' };
   return { ok: true, data: out, count };
+}
+
+/**
+ * 计算词典补丁（added / updated 分离，值相同跳过）
+ * @param {Record<string, string>} base 当前合并词典
+ * @param {Record<string, string>} incoming 待入库词典
+ * @returns {{ added: Record<string, string>, updated: Record<string, string> }}
+ */
+export function buildDictionaryPatch(base, incoming) {
+  const patch = { added: {}, updated: {} };
+  const b = base || {};
+  const i = incoming || {};
+  for (const [k, v] of Object.entries(i)) {
+    if (Object.prototype.hasOwnProperty.call(b, k)) {
+      if (b[k] !== v) patch.updated[k] = v;
+    } else {
+      patch.added[k] = v;
+    }
+  }
+  return patch;
+}
+
+/**
+ * 应用补丁到词典（不可变，返回新对象）
+ * @param {Record<string, string>} base
+ * @param {{ added?: Record<string, string>, updated?: Record<string, string> }} patch
+ * @returns {Record<string, string>}
+ */
+export function applyPatch(base, patch) {
+  const next = { ...(base || {}) };
+  for (const [k, v] of Object.entries(patch.added || {})) next[k] = v;
+  for (const [k, v] of Object.entries(patch.updated || {})) next[k] = v;
+  return next;
+}
+
+/**
+ * 渲染 PR 式 diff 预览文本（供复制 / 下载）
+ * @param {{ added?: Record<string, string>, updated?: Record<string, string> }} patch
+ * @returns {string}
+ */
+export function renderDiffPreview(patch) {
+  const lines = [];
+  for (const [k, v] of Object.entries(patch.added || {})) lines.push(`+ "${k}": "${v}"`);
+  for (const [k, v] of Object.entries(patch.updated || {})) lines.push(`~ "${k}": "${v}"`);
+  return lines.length ? lines.join('\n') : '(无变更)';
+}
+
+/**
+ * 词条级 diff 两轮词典（T23 历史对比）
+ * @param {Record<string, string>} [prev]
+ * @param {Record<string, string>} [curr]
+ * @returns {{ added: Array<{ term: string, translation: string }>,
+ *   removed: Array<{ term: string, translation: string }>,
+ *   changed: Array<{ term: string, prev: string, curr: string }> }}
+ */
+export function diffDictionaries(prev, curr) {
+  const p = prev || {};
+  const c = curr || {};
+  const added = [];
+  const removed = [];
+  const changed = [];
+  const keys = new Set([...Object.keys(p), ...Object.keys(c)]);
+  for (const term of keys) {
+    const inP = term in p;
+    const inC = term in c;
+    if (inP && inC) {
+      if (p[term] !== c[term]) changed.push({ term, prev: p[term], curr: c[term] });
+    } else if (inC) {
+      added.push({ term, translation: c[term] });
+    } else {
+      removed.push({ term, translation: p[term] });
+    }
+  }
+  return { added, removed, changed };
 }

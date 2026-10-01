@@ -16,8 +16,12 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: '词库管理 · GitHub 中文' };
 
 export default function DictionaryManagePage() {
-  const dictionary = mergeAllDictionaries();
-  const stats = DictionaryStats.validateDictionary();
+  const dictionary = mergeAllDictionaries() as Record<string, string>;
+  const stats = DictionaryStats.validateDictionary() as {
+    totalEntries: number;
+    translatedEntries: number;
+    completionRate: string;
+  };
 
   return (
     <Shell

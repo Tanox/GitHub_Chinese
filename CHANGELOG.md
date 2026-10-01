@@ -1,4 +1,14 @@
 # Changelog
+## [1.13.8] - 2026-10-01
+
+### Feat（T19 / T24 / T25 工作台 UI 接入 · 词库管理台）
+- 新增「词库管理」页（`/dictionary/manage`，服务端 `Shell` + 客户端岛 `Manager`）：浏览合并词典，支持关键字搜索 / 排序 / 批量选择。
+- **T25 搜索与批量操作**：英文键或中文值关键字搜索（大小写不敏感）、排序、批量选择与「导出选中」。
+- **T24 导入导出增强**：导出全量 / 已审阅 / 选中词条为 JSON；导入扁平对象或 `[{key,value}]` 数组，解析后仅产出合并结果（`dictionary-merged.json`）供手动入库到 `src/dictionaries/`，不直接写服务器词典文件。
+- **T19 审阅状态机**：词条级审阅勾选，状态持久化至 `localStorage`（键 `ghzh:dict-review`），离线可用。
+- 纯函数模块 `src/lib/dictionary-io.js`（toEntries / filterEntries / sortEntries / mergeDictionaries / parseImportedDictionary）并补 `tests/dictionary-io.test.mjs`（7 用例）。
+- 导航新增「词库管理」项；`dictionary.css` 补充管理台样式类。
+
 ## [1.13.7] - 2026-10-01
 
 ### Refactor（修复 file+dir→index.js 迁移的引用深度与误改写）
