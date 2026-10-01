@@ -15,7 +15,6 @@ import {
   isRetryable,
   applyCookies,
   RETRY_MAX,
-  BACKOFF_BASE_MS,
 } from './page-navigation-utils.js';
 
 // 对外再导出纯逻辑，保持既有 import 路径稳定（测试从本模块导入）
