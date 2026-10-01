@@ -2,8 +2,8 @@
  * 翻译核心主模块
  * @file translationCore/index.js
  */
-import { CONFIG } from '../config.js';
-import { ErrorHandler } from '../core/errorHandler.js';
+import { CONFIG } from '../config/index.js';
+import { ErrorHandler } from '../core/errorHandler/index.js';
 import { dictionaryManager } from './dictionaryManager.js';
 import { pageModeDetector } from './pageModeDetector.js';
 import { elementTranslator } from './elementTranslator.js';

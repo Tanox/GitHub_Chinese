@@ -2,7 +2,7 @@
  * 虚拟DOM模块
  * @file virtualDom.js
  */
-import { VirtualDomManager } from './virtualDom/manager.js';
+import { VirtualDomManager } from './manager.js';
 
 const virtualDomManager = new VirtualDomManager();
 

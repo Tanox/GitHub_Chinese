@@ -2,7 +2,7 @@
  * DOM观察器触发逻辑模块
  * @file src/userscript/page-monitor/domObserver/trigger.js
  */
-import { CONFIG } from '../../config.js';
+import { CONFIG } from '../../config/index.js';
 import { translationCore } from '../../translation-core/index.js';
 import { pageAnalyzer } from '../pageAnalyzer.js';
 import {

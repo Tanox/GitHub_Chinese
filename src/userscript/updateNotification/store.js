@@ -2,7 +2,7 @@
  * 更新通知数据持久化模块
  * @file src/userscript/updateNotification/store.js
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { utils } from '../../utils/utils.js';
 
 const NOTIFICATION_DISMISSED_KEY = 'githubZhUpdateNotificationDismissed';

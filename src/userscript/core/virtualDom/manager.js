@@ -4,7 +4,7 @@
  * @version 1.9.24
  * @description 节点创建/查询与翻译状态判定；清理策略与生命周期钩子拆分到同目录子模块
  */
-import { CONFIG } from '../../config.js';
+import { CONFIG } from '../../config/index.js';
 import { CLEANUP_INTERVAL_MS, MAX_NODES_DEFAULT } from './constants.js';
 import { collectStaleNodeIds, removeNodes } from './cleanup.js';
 import { getOrCreateNode } from './nodes.js';

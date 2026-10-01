@@ -3,7 +3,7 @@
  * @file pageMonitor/domObserver.js
  */
 
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import {
   isElementImportant,
   isElementIgnored,

@@ -6,7 +6,7 @@
  * @author Sut
  * @description 监听URL路径变化
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { utils } from '../../utils/utils.js';
 import { pageMonitorCache } from './cacheManager.js';
 

@@ -3,7 +3,7 @@
  * @file errorHandler.js
  */
 
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { utils } from '../../utils/utils.js';
 import {
   ERROR_TYPES,
@@ -12,8 +12,8 @@ import {
   NETWORK_INTERVAL_MIN_MS,
   NETWORK_INTERVAL_MAX_MS,
   BATCH_DELAY_FALLBACK_MS,
-} from './errorHandler/constants.js';
-import { recoveryManager } from './errorHandler/recovery.js';
+} from './constants.js';
+import { recoveryManager } from './recovery.js';
 
 export const ErrorHandler = {
   // 错误计数器

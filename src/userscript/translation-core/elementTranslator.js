@@ -2,8 +2,8 @@
  * 元素翻译模块
  * @file translationCore/elementTranslator.js
  */
-import { CONFIG } from '../config.js';
-import virtualDomManager from '../core/virtualDom.js';
+import { CONFIG } from '../config/index.js';
+import virtualDomManager from '../core/virtualDom/index.js';
 import { dictionaryManager } from './dictionaryManager.js';
 import { elementSelector } from './elementSelector.js';
 import { initialPerformanceData } from './elementTranslator/stats.js';

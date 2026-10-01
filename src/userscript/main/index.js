@@ -3,10 +3,10 @@
  * @file main.js
  */
 
-import { CONFIG } from './config.js';
+import { CONFIG } from './config/index.js';
 import { translationCore } from './translation-core/index.js';
-import { configUI } from './ui/configUI.js';
-import { lifecycleManager } from './main/lifecycle.js';
+import { configUI } from './ui/configUI/index.js';
+import { lifecycleManager } from './lifecycle.js';
 
 // 初始化函数
 const init = () => lifecycleManager.init();

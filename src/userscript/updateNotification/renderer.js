@@ -2,7 +2,7 @@
  * 更新通知渲染模块
  * @file src/userscript/updateNotification/renderer.js
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 
 export const updateRenderer = {
   createNotification(newVersion, onHide) {

@@ -2,11 +2,11 @@
  * 脚本生命周期管理器
  * @file src/userscript/main/lifecycle.js
  */
-import { CONFIG } from '../config.js';
-import { versionChecker } from '../versionChecker.js';
+import { CONFIG } from '../config/index.js';
+import { versionChecker } from '../versionChecker/index.js';
 import { translationCore } from '../translation-core/index.js';
 import { pageMonitor } from '../page-monitor/index.js';
-import { configUI } from '../ui/configUI.js';
+import { configUI } from '../ui/configUI/index.js';
 
 export const lifecycleManager = {
   cleanup() {

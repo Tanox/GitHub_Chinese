@@ -2,7 +2,7 @@
  * 版本检查请求模块
  * @file src/userscript/versionChecker/fetcher.js
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { utils } from '../../utils/utils.js';
 
 const FETCH_TIMEOUT_MS = 8000;

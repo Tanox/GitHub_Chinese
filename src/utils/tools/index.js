@@ -2,9 +2,9 @@
  * 开发工具模块
  * @file tools.js
  */
-import { stringExtractor } from './tools/stringExtractor.js';
-import { AutoStringUpdater } from './tools/autoUpdater.js';
-import { DictionaryStats } from './tools/dictionaryStats.js';
+import { stringExtractor } from './stringExtractor.js';
+import { AutoStringUpdater } from './autoUpdater.js';
+import { DictionaryStats } from './dictionaryStats.js';
 
 export { stringExtractor, AutoStringUpdater, DictionaryStats };
 

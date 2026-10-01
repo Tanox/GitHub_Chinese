@@ -6,7 +6,7 @@
  * @author Sut
  * @description 检测当前页面的模式
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 
 export const pageModeDetector = {
   currentPageMode: null,

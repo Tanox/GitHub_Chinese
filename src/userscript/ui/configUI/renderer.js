@@ -3,7 +3,7 @@
  * @file src/userscript/ui/configUI/renderer.js
  */
 import { VERSION } from '../../version.js';
-import { createPerformanceMonitoringSection } from '../components/performanceMonitor.js';
+import { createPerformanceMonitoringSection } from '../components/perfPanel.js';
 
 export const configRenderer = {
   createHeader() {

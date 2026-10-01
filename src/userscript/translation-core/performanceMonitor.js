@@ -6,7 +6,7 @@
  * @author Sut
  * @description 监控翻译性能数据
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { elementTranslator } from './elementTranslator.js';
 
 export const performanceMonitor = {

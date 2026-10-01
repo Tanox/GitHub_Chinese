@@ -2,10 +2,10 @@
  * DOM观察器启动模块
  * @file src/userscript/page-monitor/domObserver/setup.js
  */
-import { CONFIG } from '../../config.js';
+import { CONFIG } from '../../config/index.js';
 import { utils } from '../../../utils/utils.js';
 import { translationCore } from '../../translation-core/index.js';
-import { domObserverConfig } from '../domObserver.config.js';
+import { domObserverConfig } from '../domObserver.config/index.js';
 import { pageMonitorCache } from '../cacheManager.js';
 
 export function setupDomObserver(domObserver, translationTriggerCallback) {

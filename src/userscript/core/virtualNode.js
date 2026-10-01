@@ -6,7 +6,7 @@
  * @author Sut
  * @description 虚拟DOM节点类，表示一个DOM元素的虚拟映射
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 
 const RANDOM_BASE = 36;
 const RANDOM_START_INDEX = 2;

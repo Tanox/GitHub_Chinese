@@ -2,8 +2,8 @@
  * 关键元素翻译模块
  * @file src/userscript/translation-core/elementTranslator/critical.js
  */
-import { CONFIG } from '../../config.js';
-import { ErrorHandler } from '../../core/errorHandler.js';
+import { CONFIG } from '../../config/index.js';
+import { ErrorHandler } from '../../core/errorHandler/index.js';
 
 /**
  * 翻译页面关键区域元素（失败降级策略的兜底实现）

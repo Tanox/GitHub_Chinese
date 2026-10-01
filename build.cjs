@@ -17,10 +17,10 @@ const PROJECT_ROOT = path.resolve(__dirname);
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 const OUTPUT_FILE = path.join(BUILD_DIR, 'GitHub_zh-cn.user.js');
-const ENTRY_FILE = path.join(SRC_DIR, 'userscript', 'main.js');
+const ENTRY_FILE = path.join(SRC_DIR, 'userscript', 'main', 'index.js');
 
 /** 未被入口引用、但需继续随用户脚本发布的模块 */
-const EXTRA_ENTRIES = [path.join(SRC_DIR, 'utils', 'tools.js')];
+const EXTRA_ENTRIES = [path.join(SRC_DIR, 'utils', 'tools', 'index.js')];
 
 const USER_SCRIPT_HEADER = `// ==UserScript==
 // @name         GitHub Chinese 简体中文

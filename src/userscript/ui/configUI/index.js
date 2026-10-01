@@ -3,12 +3,12 @@
  * @file configUI.js
  */
 
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { addConfigUIStyles } from './styles/configUI.styles.js';
-import { updatePerformanceStats, exportPerformanceStats } from './components/performanceMonitor.js';
-import { configStore } from './configUI/store.js';
-import { configRenderer } from './configUI/renderer.js';
-import { configBootstrap } from './configUI/bootstrap.js';
+import { updatePerformanceStats, exportPerformanceStats } from './components/perfPanel.js';
+import { configStore } from './store.js';
+import { configRenderer } from './renderer.js';
+import { configBootstrap } from './bootstrap.js';
 
 class ConfigUI {
   constructor() {

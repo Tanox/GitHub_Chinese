@@ -6,7 +6,7 @@
  * @author Sut
  * @description 管理翻译触发和节流
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { translationCore } from '../translation-core/index.js';
 import { pageAnalyzer } from './pageAnalyzer.js';
 

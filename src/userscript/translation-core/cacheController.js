@@ -2,8 +2,8 @@
  * 翻译缓存管理控制器
  * @file src/userscript/translation-core/cacheController.js
  */
-import { CONFIG } from '../config.js';
-import virtualDomManager from '../core/virtualDom.js';
+import { CONFIG } from '../config/index.js';
+import virtualDomManager from '../core/virtualDom/index.js';
 import { dictionaryManager } from './dictionaryManager.js';
 import { elementSelector } from './elementSelector.js';
 import { performanceMonitor } from './performanceMonitor.js';

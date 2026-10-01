@@ -2,15 +2,15 @@
  * 版本更新检查模块
  * @file versionChecker.js
  */
-import { CONFIG } from './config.js';
+import { CONFIG } from './config/index.js';
 import { utils } from '../utils/utils.js';
 import { extractVersion, isNewerVersion } from './versionUtils.js';
 import {
   showUpdateNotification,
   recordVersionHistory,
   clearNotificationDismissal,
-} from './updateNotification.js';
-import { versionFetcher } from './versionChecker/fetcher.js';
+} from './updateNotification/index.js';
+import { versionFetcher } from './fetcher.js';
 
 const DEFAULT_INTERVAL_HOURS = 24;
 const HOURS_TO_MS = 60 * 60 * 1000;

@@ -64,7 +64,7 @@
                         ▼
         ┌─────────────────────────────────────────────────┐
         │  scripts/dict-report.cjs → docs/untranslated-terms.txt│
-        │  scripts/collect-history.cjs → docs/collect-history.json│
+        │  scripts/collect-history.cjs → data/collect-history.json│
         │  （/overview 展示趋势）                              │
         └─────────────────────────────────────────────────┘
 ```
@@ -105,7 +105,7 @@
 
 - 实现：`dictionary-processor.js` `spawn(process.execPath, ['scripts/collect-dict.cjs', rawFile])`，stdout→`log` 事件；stderr 以 `[WARN]` 前缀视为 `log`，其余 → `error`（`SUBPROCESS_FAILED`）；`close` 补 `done` 事件（退出码≠0 且无错误行则补 error）。
 - `scripts/collect-dict.cjs`：`mergeDictionaries()`（babel 解析 `src/dictionaries/**/*.js` 提取 `{原文:译文}`）、`normalizeText()`（解码 HTML 实体 / 压缩空白 / 去首尾标点）、`findUntranslated(texts, dictionary)`（精确 + 归一化大小写不敏感匹配，返回 `{untranslated, translated}`）。
-- 报告：`scripts/dict-report.cjs` 写 `docs/untranslated-terms.txt` 并计算历史增量；`scripts/collect-history.cjs` 追加 `docs/collect-history.json`（保留 `MAX_ENTRIES = 30`）。`/overview` 读取并展示趋势。
+- 报告：`scripts/dict-report.cjs` 写 `docs/untranslated-terms.txt` 并计算历史增量；`scripts/collect-history.cjs` 追加 `data/collect-history.json`（保留 `MAX_ENTRIES = 30`）。`/overview` 读取并展示趋势。
 
 ## 4. API 契约与限流
 
@@ -148,7 +148,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
   - `waitForHydration`：超时降级不阻塞。
   - `navigateWithRetry`：`RETRY_MAX=3`，指数退避 `computeBackoffDelay`（`BACKOFF_BASE_MS=1000`），`isRetryable`（超时 / 网络 / 429 / 5xx）。
   - 注：原型「抓取超时，回退到文本粘贴通道」为装饰文本，真实回退发生在服务端批量抓取内部，不切换通道。
-- 自动备份 / 历史（真实落点 `scripts/dict-report.cjs` + `scripts/collect-history.cjs` 写 `docs/collect-history.json`、`docs/untranslated-terms.txt`，由 `/overview` 展示趋势）。原型中「系统自动备份已开启」为静态文案，当前 Next.js 控制台无独立备份逻辑。
+- 自动备份 / 历史（真实落点 `scripts/dict-report.cjs` + `scripts/collect-history.cjs` 写 `data/collect-history.json`、`docs/untranslated-terms.txt`，由 `/overview` 展示趋势）。原型中「系统自动备份已开启」为静态文案，当前 Next.js 控制台无独立备份逻辑。
 
 ## 7. 原型 ↔ 实现映射
 

@@ -3,7 +3,7 @@
  * @file src/userscript/core/virtualDom/nodes.js
  */
 
-import { CONFIG } from '../../config.js';
+import { CONFIG } from '../../config/index.js';
 import { VirtualNode } from '../virtualNode.js';
 import { NODES_REMOVE_RATIO } from './constants.js';
 import { pickOldestNodeIds, removeNodes } from './cleanup.js';

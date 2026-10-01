@@ -2,15 +2,15 @@
  * 翻译元素选择模块
  * @file translationCore/elementSelector.js
  */
-import { CONFIG } from '../config.js';
-import virtualDomManager from '../core/virtualDom.js';
+import { CONFIG } from '../config/index.js';
+import virtualDomManager from '../core/virtualDom/index.js';
 import {
   isSkipTag,
   hasSkipClass,
   hasSkipId,
   isHiddenElement,
   isNumericOrSpecialOnly,
-} from './selectorUtils.js';
+} from './selectorUtils/index.js';
 
 export const elementSelector = {
   elementCache: new WeakMap(),

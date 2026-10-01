@@ -6,7 +6,7 @@
  */
 
 import Link from 'next/link';
-import { VERSION } from '@/version';
+import { VERSION } from '@/userscript/version';
 import { NAV_ITEMS } from './navItems';
 import type { RailSection } from './navItems';
 

@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import { mergeAllDictionaries } from '@/dictionaries/index';
-import { VERSION } from '@/version';
+import { VERSION } from '@/userscript/version';
 
 /** 计入源码统计的扩展名 */
 const SOURCE_EXT_RE = /\.(js|cjs|mjs|ts|tsx|css)$/;
@@ -30,7 +30,7 @@ export interface ProjectMetrics {
   artifactKB: number;
 }
 
-/** 单次采集记录（由 `collect-dict.cjs` 写入 docs/collect-history.json） */
+/** 单次采集记录（由 `collect-dict.cjs` 写入 data/collect-history.json） */
 export interface CollectRecord {
   /** ISO 时间戳 */
   time: string;

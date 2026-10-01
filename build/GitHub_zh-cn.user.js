@@ -25,22 +25,6 @@
 (function() {
 'use strict';
 /**
- * 版本信息模块
- * @file version.js
- * @version 1.13.6
- * @date 2026-09-30
- * @author Sut
- * @description 统一管理 GitHub Chinese 简体中文的版本信息
- */
-
-/**
- * 当前工具版本号
- * @type {string}
- * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
- */
-const VERSION = '1.13.6';
-
-/**
  * GitHub 元素选择器列表配置
  * @file src/userscript/config/elements.js
  */
@@ -869,6 +853,217 @@ const utils = {
   obfuscateData,
   deobfuscateData,
   sha256Hash,
+};
+
+/**
+ * 版本检查请求模块
+ * @file src/userscript/versionChecker/fetcher.js
+ */
+
+const FETCH_TIMEOUT_MS = 8000;
+const EXPONENTIAL_BASE = 2;
+
+const KNOWN_SCRIPT_HASHES = {
+  'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_zh-cn.user.js':
+    'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
+};
+
+const versionFetcher = {
+  async fetchWithRetry(url, maxRetries = 2, retryDelay = 1000) {
+    let lastError;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (CONFIG.debugMode && attempt > 0) {
+          console.log(`[GitHub 中文翻译] 重试更新检查 (${attempt}/${maxRetries})...`);
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            Accept: 'text/javascript, text/plain, */*',
+          },
+          signal: controller.signal,
+          credentials: 'omit',
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`HTTP错误! 状态码: ${response.status}`);
+        }
+
+        const scriptContent = await response.text();
+
+        if (KNOWN_SCRIPT_HASHES[url]) {
+          const isValid = await this.verifyScriptIntegrity(scriptContent, url);
+          if (!isValid) {
+            if (CONFIG.debugMode) {
+              console.warn('[GitHub 中文翻译] 脚本完整性验证失败，可能存在安全风险');
+            }
+          }
+        }
+
+        return scriptContent;
+      } catch (error) {
+        lastError = error;
+
+        if (attempt === maxRetries) {
+          throw error;
+        }
+
+        await utils.delay(retryDelay * Math.pow(EXPONENTIAL_BASE, attempt));
+      }
+    }
+
+    throw lastError;
+  },
+
+  async verifyScriptIntegrity(scriptContent, url) {
+    try {
+      const expectedHash = KNOWN_SCRIPT_HASHES[url];
+      if (!expectedHash) {
+        return true;
+      }
+
+      const actualHash = await utils.sha256Hash(scriptContent);
+      const isValid = actualHash === expectedHash;
+
+      if (CONFIG.debugMode) {
+        console.log(`[GitHub 中文翻译] 脚本完整性验证: ${isValid ? '通过' : '失败'}`);
+      }
+
+      return isValid;
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 脚本完整性验证出错:', utils.sanitizeErrorMessage(error));
+      }
+      return false;
+    }
+  },
+};
+
+/**
+ * 版本更新检查模块
+ * @file versionChecker.js
+ */
+
+const DEFAULT_INTERVAL_HOURS = 24;
+const HOURS_TO_MS = 60 * 60 * 1000;
+const PARSE_INT_RADIX = 10;
+
+const versionChecker = {
+  async checkForUpdates() {
+    if (!CONFIG.updateCheck.enabled) {
+      if (CONFIG.debugMode) {
+        console.log('[GitHub 中文翻译] 已禁用更新检查');
+      }
+      return false;
+    }
+
+    const lastCheck = localStorage.getItem('githubZhLastUpdateCheck');
+    const now = Date.now();
+    const intervalMs = (CONFIG.updateCheck.intervalHours || DEFAULT_INTERVAL_HOURS) * HOURS_TO_MS;
+
+    if (lastCheck && now - parseInt(lastCheck, PARSE_INT_RADIX) < intervalMs) {
+      if (CONFIG.debugMode) {
+        console.log(
+          `[GitHub 中文翻译] 未达到更新检查间隔，跳过检查 (上次检查: ${new Date(parseInt(lastCheck, PARSE_INT_RADIX)).toLocaleString()})`,
+        );
+      }
+      return false;
+    }
+
+    try {
+      localStorage.setItem('githubZhLastUpdateCheck', now.toString());
+
+      const scriptContent = await versionFetcher.fetchWithRetry(CONFIG.updateCheck.scriptUrl);
+
+      const remoteVersion = extractVersion(scriptContent);
+
+      if (!remoteVersion) {
+        throw new Error('无法从远程脚本提取有效的版本号');
+      }
+
+      if (CONFIG.debugMode) {
+        console.log(`[GitHub 中文翻译] 当前版本: ${CONFIG.version}, 远程版本: ${remoteVersion}`);
+      }
+
+      if (isNewerVersion(remoteVersion, CONFIG.version)) {
+        showUpdateNotification(remoteVersion);
+
+        if (CONFIG.updateCheck.autoUpdateVersion) {
+          this.updateVersionInStorage(remoteVersion);
+        }
+
+        recordVersionHistory(remoteVersion);
+
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      const sanitizedError = utils.sanitizeErrorMessage(error);
+      const errorMsg = `[GitHub 中文翻译] 检查更新时发生错误: ${sanitizedError}`;
+      if (CONFIG.debugMode) {
+        console.error(errorMsg);
+      }
+
+      try {
+        localStorage.setItem(
+          'githubZhUpdateError',
+          JSON.stringify({
+            message: sanitizedError,
+            timestamp: now,
+          }),
+        );
+      } catch (_e) {
+        // 忽略存储错误
+      }
+
+      return false;
+    }
+  },
+
+  updateVersionInStorage(newVersion) {
+    try {
+      const cacheData = {
+        version: newVersion,
+        cachedAt: Date.now(),
+        currentVersion: CONFIG.version,
+      };
+
+      localStorage.setItem('githubZhCachedVersion', utils.safeJSONStringify(cacheData));
+
+      if (CONFIG.debugMode) {
+        console.log(
+          `[GitHub 中文翻译] 已缓存新版本号: ${newVersion} (缓存时间: ${new Date().toLocaleString()})`,
+        );
+      }
+
+      return true;
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 更新缓存版本号时出错:', error);
+      }
+      return false;
+    }
+  },
+
+  getCachedVersion() {
+    try {
+      const cachedData = utils.safeJSONParse(localStorage.getItem('githubZhCachedVersion'));
+      return cachedData;
+    } catch (_error) {
+      return null;
+    }
+  },
+
+  clearNotificationDismissal,
 };
 
 /**
@@ -4080,1578 +4275,6 @@ const translationCore = {
 };
 
 /**
- * 配置界面基础布局样式
- * @file src/userscript/ui/styles/configUI/base.js
- */
-
-const baseStyles = `
-    /* ========== 配置面板容器 ========== */
-    .github-i18n-config-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.55);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2147483200;
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
-        "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
-        sans-serif;
-    }
-
-    /* ========== 配置面板主体 ========== */
-    .github-i18n-config-panel {
-      background-color: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      width: 560px;
-      max-width: 90%;
-      max-height: 80vh;
-      overflow: hidden;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
-    }
-
-    /* ========== 面板头部 ========== */
-    .github-i18n-config-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      background-color: #0d1117;
-      border-bottom: 1px solid #21262d;
-    }
-
-    .github-i18n-config-header h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: #e6edf3;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .github-i18n-config-close {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      color: #8b949e;
-      padding: 0;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      transition: all 0.12s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .github-i18n-config-close:hover {
-      background-color: #21262d;
-      color: #e6edf3;
-    }
-
-    /* ========== 面板底部 ========== */
-    .github-i18n-config-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 20px;
-      background-color: #0d1117;
-      border-top: 1px solid #21262d;
-    }
-
-    .github-i18n-config-footer .github-i18n-config-footer-right {
-      display: flex;
-      gap: 8px;
-    }
-`;
-
-/**
- * 配置界面组件样式
- * @file src/userscript/ui/styles/configUI/components.js
- */
-
-const componentStyles = `
-    /* ========== 面板内容区 ========== */
-    .github-i18n-config-content {
-      padding: 24px;
-      max-height: calc(80vh - 120px);
-      overflow-y: auto;
-      display: grid;
-      gap: 20px;
-    }
-
-    /* 滚动条样式 */
-    .github-i18n-config-content::-webkit-scrollbar {
-      width: 8px;
-    }
-    .github-i18n-config-content::-webkit-scrollbar-track {
-      background: #010409;
-    }
-    .github-i18n-config-content::-webkit-scrollbar-thumb {
-      background: #30363d;
-      border-radius: 4px;
-    }
-    .github-i18n-config-content::-webkit-scrollbar-thumb:hover {
-      background: #484f58;
-    }
-
-    /* ========== 配置分组 ========== */
-    .github-i18n-config-section {
-      background-color: #0d1117;
-      border: 1px solid #21262d;
-      border-radius: 8px;
-      padding: 16px;
-    }
-
-    .github-i18n-config-section h4 {
-      margin: 0 0 12px 0;
-      font-size: 15px;
-      font-weight: 600;
-      color: #e6edf3;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* ========== 配置项行 ========== */
-    .github-i18n-config-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px dashed #21262d;
-    }
-
-    .github-i18n-config-item:last-child {
-      border-bottom: none;
-    }
-
-    .github-i18n-config-label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      font-size: 14px;
-      color: #e6edf3;
-      gap: 8px;
-      flex: 1;
-    }
-
-    .github-i18n-config-label input[type="checkbox"] {
-      margin: 0;
-      accent-color: #2ea44f;
-      width: 16px;
-      height: 16px;
-    }
-
-    /* ========== 配置项提示文字 ========== */
-    .github-i18n-config-hint {
-      font-size: 12px;
-      color: #6e7681;
-      margin-top: 2px;
-    }
-
-    /* ========== 性能监控网格 ========== */
-    .github-i18n-perf-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .github-i18n-perf-stat {
-      background-color: #010409;
-      border: 1px solid #21262d;
-      border-radius: 6px;
-      padding: 8px 10px;
-      text-align: left;
-    }
-
-    .github-i18n-perf-stat .k {
-      font-family: "JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas,
-        "Courier New", monospace;
-      font-size: 11px;
-      color: #6e7681;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .github-i18n-perf-stat .v {
-      font-size: 20px;
-      font-weight: 600;
-      color: #3fb950;
-      margin-top: 4px;
-    }
-
-    /* ========== 高级统计区 ========== */
-    .github-i18n-advanced-stats {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed #21262d;
-    }
-
-    /* ========== 操作按钮区 ========== */
-    .github-i18n-config-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed #21262d;
-    }
-`;
-
-/**
- * 配置界面按钮样式
- * @file src/userscript/ui/styles/configUI/buttons.js
- */
-
-const buttonStyles = `
-    .github-i18n-config-footer button {
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.12s cubic-bezier(0.22, 1, 0.36, 1);
-      font-family: inherit;
-    }
-
-    .github-i18n-config-reset {
-      background-color: transparent;
-      color: #8b949e;
-      border-color: transparent;
-    }
-
-    .github-i18n-config-reset:hover {
-      background-color: #21262d;
-      color: #e6edf3;
-    }
-
-    .github-i18n-config-cancel {
-      background-color: transparent;
-      color: #8b949e;
-      border-color: transparent;
-    }
-
-    .github-i18n-config-cancel:hover {
-      background-color: #21262d;
-      color: #e6edf3;
-    }
-
-    .github-i18n-config-save {
-      background-color: #2ea44f;
-      color: #ffffff;
-      border-color: rgba(240, 246, 252, 0.1);
-      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.25);
-    }
-
-    .github-i18n-config-save:hover {
-      background-color: #2c974b;
-    }
-
-    .github-i18n-config-save:active {
-      background-color: #298e46;
-      transform: translateY(1px);
-    }
-
-    /* ========== 浮动设置按钮 ========== */
-    .github-i18n-toggle-btn {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background-color: #2ea44f !important;
-      color: #ffffff !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      border-radius: 50% !important;
-      width: 56px !important;
-      height: 56px !important;
-      font-size: 22px !important;
-      cursor: pointer !important;
-      box-shadow: 0 6px 18px rgba(46, 160, 67, 0.22), 0 2px 6px rgba(0, 0, 0, 0.35) !important;
-      z-index: 2147483000 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1) !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      pointer-events: auto !important;
-    }
-
-    .github-i18n-toggle-btn:hover {
-      background-color: #2c974b !important;
-      transform: translateY(-2px) scale(1.05) !important;
-      box-shadow: 0 10px 28px rgba(46, 160, 67, 0.3),
-        0 4px 12px rgba(0, 0, 0, 0.35) !important;
-    }
-
-    .github-i18n-toggle-btn:active {
-      transform: translateY(1px) scale(0.98) !important;
-    }
-
-    .github-i18n-config-actions button {
-      flex: 1;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid #30363d;
-      background-color: #161b22;
-      color: #e6edf3;
-      transition: all 0.12s cubic-bezier(0.22, 1, 0.36, 1);
-      font-family: inherit;
-    }
-
-    .github-i18n-config-actions button:hover {
-      background-color: #21262d;
-      border-color: #484f58;
-    }
-`;
-
-/**
- * GitHub 中文翻译配置界面样式模块
- * @file configUI.styles.js
- */
-
-/**
- * 获取配置界面的完整样式
- * @returns {string} CSS样式字符串
- */
-function getConfigUIStyles() {
-  return baseStyles + componentStyles + buttonStyles;
-}
-
-/**
- * 将样式添加到页面
- */
-function addConfigUIStyles() {
-  const style = document.createElement('style');
-  style.textContent = getConfigUIStyles();
-  document.head.appendChild(style);
-}
-
-/**
- * GitHub 中文翻译性能监控组件
- * @file performanceMonitor.js
- * @version 1.13.2
- * @date 2026-09-23
- * @author Sut
- * @description 性能监控区域组件
- */
-
-/** 无数据时按钮反馈文案的自动复位时长（毫秒） */
-const NO_DATA_FEEDBACK_MS = 1500;
-
-/**
- * 创建性能监控区域
- * @returns {HTMLElement} 性能监控区域元素
- */
-function createPerformanceMonitoringSection() {
-  const section = document.createElement('div');
-  section.className = 'github-i18n-config-section';
-
-  const sectionTitle = document.createElement('h4');
-  const emojiSpan = document.createElement('span');
-  emojiSpan.style.color = '#d29922';
-  emojiSpan.textContent = '📊';
-  sectionTitle.appendChild(emojiSpan);
-  sectionTitle.appendChild(document.createTextNode(' 性能监控'));
-  section.appendChild(sectionTitle);
-
-  const perfGrid = document.createElement('div');
-  perfGrid.className = 'github-i18n-perf-grid';
-  perfGrid.id = 'github-i18n-performance-stats';
-
-  const stats = [
-    { key: 'duration', label: '总耗时', unit: 'ms', id: 'github-i18n-stat-duration' },
-    { key: 'elements', label: '翻译项', unit: '', id: 'github-i18n-stat-elements' },
-    { key: 'cacheRate', label: '命中率', unit: '%', id: 'github-i18n-stat-cache-rate' },
-  ];
-
-  stats.forEach((stat) => {
-    const statDiv = document.createElement('div');
-    statDiv.className = 'github-i18n-perf-stat';
-
-    const k = document.createElement('div');
-    k.className = 'k';
-    k.textContent = stat.label;
-
-    const v = document.createElement('div');
-    v.className = 'v';
-    v.id = stat.id;
-    v.textContent = '-';
-
-    statDiv.appendChild(k);
-    statDiv.appendChild(v);
-    perfGrid.appendChild(statDiv);
-  });
-
-  section.appendChild(perfGrid);
-
-  const advancedStatsDiv = document.createElement('div');
-  advancedStatsDiv.className = 'github-i18n-advanced-stats';
-
-  const advancedStats = [
-    { label: '缓存命中:', id: 'github-i18n-stat-cache-hits' },
-    { label: '缓存未命中:', id: 'github-i18n-stat-cache-misses' },
-    { label: 'DOM操作:', id: 'github-i18n-stat-dom' },
-    { label: '网络请求:', id: 'github-i18n-stat-network' },
-    { label: '批处理次数:', id: 'github-i18n-stat-batches' },
-  ];
-
-  advancedStats.forEach((stat) => {
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'github-i18n-config-item';
-
-    const label = document.createElement('span');
-    label.className = 'github-i18n-config-label';
-    label.textContent = stat.label;
-
-    const value = document.createElement('span');
-    value.id = stat.id;
-    value.style.fontFamily =
-      '"JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas, "Courier New", monospace';
-    value.style.color = '#8b949e';
-    value.textContent = '-';
-
-    itemDiv.appendChild(label);
-    itemDiv.appendChild(value);
-    advancedStatsDiv.appendChild(itemDiv);
-  });
-
-  section.appendChild(advancedStatsDiv);
-
-  const actionsDiv = document.createElement('div');
-  actionsDiv.className = 'github-i18n-config-actions';
-
-  const refreshBtn = document.createElement('button');
-  refreshBtn.id = 'github-i18n-refresh-stats';
-  refreshBtn.textContent = '刷新性能数据';
-  refreshBtn.addEventListener('click', updatePerformanceStats);
-
-  const exportBtn = document.createElement('button');
-  exportBtn.id = 'github-i18n-export-stats';
-  exportBtn.textContent = '导出性能数据';
-  exportBtn.addEventListener('click', () => {
-    const data = exportPerformanceStats();
-    if (!data) {
-      const original = exportBtn.textContent;
-      exportBtn.textContent = '暂无数据';
-      exportBtn.disabled = true;
-      setTimeout(() => {
-        exportBtn.textContent = original;
-        exportBtn.disabled = false;
-      }, NO_DATA_FEEDBACK_MS);
-    }
-  });
-
-  actionsDiv.appendChild(refreshBtn);
-  actionsDiv.appendChild(exportBtn);
-
-  section.appendChild(actionsDiv);
-
-  return section;
-}
-
-/**
- * 更新性能统计数据显示
- */
-function updatePerformanceStats() {
-  if (window.isPageUnloading) return;
-
-  if (window.translationCore && window.translationCore.getPerformanceStats) {
-    const stats = window.translationCore.getPerformanceStats();
-
-    const durationEl = document.getElementById('github-i18n-stat-duration');
-    if (durationEl) durationEl.textContent = `${stats.totalDuration} ms`;
-
-    const elementsEl = document.getElementById('github-i18n-stat-elements');
-    if (elementsEl) elementsEl.textContent = stats.elementsProcessed;
-
-    const textsEl = document.getElementById('github-i18n-stat-texts');
-    if (textsEl) textsEl.textContent = stats.textsTranslated;
-
-    const cacheRateEl = document.getElementById('github-i18n-stat-cache-rate');
-    if (cacheRateEl) cacheRateEl.textContent = `${stats.cacheHitRate}%`;
-
-    const cacheHitsEl = document.getElementById('github-i18n-stat-cache-hits');
-    if (cacheHitsEl) cacheHitsEl.textContent = stats.cacheHits;
-
-    const cacheMissesEl = document.getElementById('github-i18n-stat-cache-misses');
-    if (cacheMissesEl) cacheMissesEl.textContent = stats.cacheMisses;
-
-    const domOpsEl = document.getElementById('github-i18n-stat-dom');
-    if (domOpsEl) domOpsEl.textContent = stats.domOperations;
-
-    const networkEl = document.getElementById('github-i18n-stat-network');
-    if (networkEl) networkEl.textContent = stats.networkRequests;
-
-    const batchesEl = document.getElementById('github-i18n-stat-batches');
-    if (batchesEl) batchesEl.textContent = stats.batchProcessings;
-  }
-}
-
-/**
- * 导出性能数据
- * @returns {Object} 性能数据对象
- */
-function exportPerformanceStats() {
-  if (window.translationCore && window.translationCore.getPerformanceStats) {
-    const stats = window.translationCore.getPerformanceStats();
-    const exportData = {
-      timestamp: new Date().toISOString(),
-      version: VERSION,
-      ...stats,
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `github-i18n-performance-${Date.now()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    return exportData;
-  }
-  return null;
-}
-
-/**
- * 配置界面数据持久化模块
- * @file src/userscript/ui/configUI/store.js
- */
-
-const CONFIG_STORAGE_KEY = 'github-i18n-config';
-
-const configStore = {
-  loadUserSettings() {
-    try {
-      const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
-      if (!saved) return {};
-
-      // 尝试解码混淆的数据
-      const decoded = utils.deobfuscateData(saved);
-      if (decoded) {
-        return JSON.parse(decoded);
-      }
-
-      // 如果解码失败，尝试直接解析（兼容旧格式）
-      try {
-        return JSON.parse(saved);
-      } catch (_e) {
-        return {};
-      }
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 加载用户配置失败:', utils.sanitizeErrorMessage(error));
-      }
-      return {};
-    }
-  },
-
-  saveUserSettings(settings) {
-    try {
-      const jsonData = JSON.stringify(settings);
-      // 混淆存储配置数据
-      const obfuscatedData = utils.obfuscateData(jsonData);
-      localStorage.setItem(CONFIG_STORAGE_KEY, obfuscatedData);
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 保存用户配置失败:', utils.sanitizeErrorMessage(error));
-      }
-    }
-  },
-
-  resetUserSettings() {
-    localStorage.removeItem(CONFIG_STORAGE_KEY);
-  },
-
-  mergeUserConfig(target, source) {
-    const merge = (t, s) => {
-      for (const key in s) {
-        if (Object.prototype.hasOwnProperty.call(s, key)) {
-          if (s[key] && typeof s[key] === 'object' && !Array.isArray(s[key])) {
-            if (!t[key]) t[key] = {};
-            merge(t[key], s[key]);
-          } else {
-            t[key] = s[key];
-          }
-        }
-      }
-      return t;
-    };
-
-    return merge(target, source);
-  },
-};
-
-/**
- * 配置界面渲染模块
- * @file src/userscript/ui/configUI/renderer.js
- */
-
-const configRenderer = {
-  createHeader() {
-    const header = document.createElement('div');
-    header.className = 'github-i18n-config-header';
-
-    const title = document.createElement('h3');
-    title.textContent = 'GitHub 中文翻译';
-
-    const versionBadge = document.createElement('span');
-    versionBadge.style.fontFamily =
-      '"JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas, "Courier New", monospace';
-    versionBadge.style.fontSize = '11px';
-    versionBadge.style.color = '#6e7681';
-    versionBadge.style.padding = '2px 8px';
-    versionBadge.style.borderRadius = '4px';
-    versionBadge.style.background = '#010409';
-    versionBadge.style.border = '1px solid #21262d';
-    versionBadge.textContent = `v${VERSION}`;
-
-    const headerLeft = document.createElement('div');
-    headerLeft.style.display = 'flex';
-    headerLeft.style.alignItems = 'center';
-    headerLeft.style.gap = '10px';
-    headerLeft.appendChild(title);
-    headerLeft.appendChild(versionBadge);
-
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'github-i18n-config-close';
-    closeBtn.textContent = '×';
-
-    header.appendChild(headerLeft);
-    header.appendChild(closeBtn);
-
-    return header;
-  },
-
-  createFooter() {
-    const footer = document.createElement('div');
-    footer.className = 'github-i18n-config-footer';
-
-    const resetBtn = document.createElement('button');
-    resetBtn.className = 'github-i18n-config-reset';
-    resetBtn.textContent = '重置默认';
-
-    const footerRight = document.createElement('div');
-    footerRight.className = 'github-i18n-config-footer-right';
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.className = 'github-i18n-config-cancel';
-    cancelBtn.textContent = '取消';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'github-i18n-config-save';
-    saveBtn.textContent = '保存配置';
-
-    footerRight.appendChild(cancelBtn);
-    footerRight.appendChild(saveBtn);
-
-    footer.appendChild(resetBtn);
-    footer.appendChild(footerRight);
-
-    return footer;
-  },
-
-  createConfigSection(title, items) {
-    const section = document.createElement('div');
-    section.className = 'github-i18n-config-section';
-
-    const sectionTitle = document.createElement('h4');
-    sectionTitle.textContent = title;
-    section.appendChild(sectionTitle);
-
-    items.forEach((item) => {
-      const itemDiv = document.createElement('div');
-      itemDiv.className = 'github-i18n-config-item';
-
-      const label = document.createElement('label');
-      label.className = 'github-i18n-config-label';
-
-      const input = document.createElement('input');
-      input.type = item.type;
-      input.id = item.id;
-      if (item.checked !== undefined) {
-        input.checked = item.checked;
-      }
-
-      const textNode = document.createTextNode(item.label);
-
-      label.appendChild(input);
-      label.appendChild(textNode);
-      itemDiv.appendChild(label);
-      section.appendChild(itemDiv);
-    });
-
-    return section;
-  },
-
-  createContent(config) {
-    const content = document.createElement('div');
-    content.className = 'github-i18n-config-content';
-
-    const basicSection = this.createConfigSection('基本设置', [
-      {
-        type: 'checkbox',
-        id: 'github-i18n-debug-mode',
-        label: '启用调试模式',
-        checked: config.debugMode,
-      },
-      {
-        type: 'checkbox',
-        id: 'github-i18n-enable-partial-match',
-        label: '启用部分匹配',
-        checked: config.performance.enablePartialMatch,
-      },
-    ]);
-
-    const updateSection = this.createConfigSection('更新设置', [
-      {
-        type: 'checkbox',
-        id: 'github-i18n-auto-update',
-        label: '自动检查更新',
-        checked: config.updateCheck.enabled,
-      },
-    ]);
-
-    const performanceSection = this.createConfigSection('性能设置', [
-      {
-        type: 'checkbox',
-        id: 'github-i18n-translation-cache',
-        label: '启用翻译缓存',
-        checked: config.performance.enableTranslationCache,
-      },
-      {
-        type: 'checkbox',
-        id: 'github-i18n-virtual-dom',
-        label: '启用虚拟DOM优化',
-        checked: config.performance.enableVirtualDom,
-      },
-    ]);
-
-    const monitoringSection = createPerformanceMonitoringSection();
-
-    content.appendChild(basicSection);
-    content.appendChild(updateSection);
-    content.appendChild(performanceSection);
-    content.appendChild(monitoringSection);
-
-    return content;
-  },
-};
-
-/**
- * 配置界面启动引导模块
- * @file src/userscript/ui/configUI/bootstrap.js
- * @description 负责浮动入口按钮注入、用户脚本菜单注册与清理
- */
-
-/** 浮动按钮元素 ID（语义化，便于脚本选取与测试定位） */
-const FLOATING_BUTTON_ID = 'github-i18n-floating-button';
-
-const FLOATING_BUTTON_STYLE_ID = 'github-i18n-floating-button-style';
-
-const FLOATING_BUTTON_STYLES = `
-#${FLOATING_BUTTON_ID} {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 2px solid #2ea44f;
-  background: #0d1117;
-  color: #2ea44f;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 2147483646;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-}
-#${FLOATING_BUTTON_ID}:hover {
-  transform: scale(1.08);
-  background: #2ea44f;
-  color: #ffffff;
-}
-#${FLOATING_BUTTON_ID}:focus-visible {
-  outline: 2px solid #3fb950;
-  outline-offset: 2px;
-}
-`;
-
-const configBootstrap = {
-  /**
-   * 注入浮动按钮所需样式（幂等）
-   */
-  injectStyles() {
-    if (document.getElementById(FLOATING_BUTTON_STYLE_ID)) {
-      return;
-    }
-    const style = document.createElement('style');
-    style.id = FLOATING_BUTTON_STYLE_ID;
-    style.textContent = FLOATING_BUTTON_STYLES;
-    document.head.appendChild(style);
-  },
-
-  /**
-   * 创建页面右下角浮动入口按钮
-   * @param {Function} onClick - 点击回调
-   * @returns {HTMLButtonElement} 按钮元素
-   */
-  createFloatingButton(onClick) {
-    this.injectStyles();
-
-    const existing = document.getElementById(FLOATING_BUTTON_ID);
-    if (existing) {
-      return existing;
-    }
-
-    const button = document.createElement('button');
-    button.id = FLOATING_BUTTON_ID;
-    button.type = 'button';
-    button.title = '打开 GitHub 中文翻译设置';
-    button.setAttribute('aria-label', '打开 GitHub 中文翻译设置');
-    button.textContent = '中';
-    button.addEventListener('click', onClick);
-
-    document.body.appendChild(button);
-    return button;
-  },
-
-  /**
-   * 移除浮动入口按钮
-   */
-  removeFloatingButton() {
-    const button = document.getElementById(FLOATING_BUTTON_ID);
-    if (button && button.parentNode) {
-      button.parentNode.removeChild(button);
-    }
-  },
-
-  /**
-   * 注册用户脚本管理器菜单命令（管理器不支持时静默跳过）
-   * @param {{open: Function, translate: Function}} handlers - 菜单回调
-   */
-  registerMenuCommands(handlers) {
-    if (typeof GM_registerMenuCommand !== 'function') {
-      return;
-    }
-
-    try {
-      GM_registerMenuCommand('打开配置面板', handlers.open);
-      GM_registerMenuCommand('立即翻译页面', handlers.translate);
-    } catch (_error) {
-      // 菜单注册失败不影响主流程
-    }
-  },
-};
-
-/**
- * GitHub 中文翻译配置界面模块
- * @file configUI.js
- */
-
-class ConfigUI {
-  constructor() {
-    this.config = CONFIG;
-    this.userConfig = {};
-    this.isOpen = false;
-    this.container = null;
-    this.settings = configStore.loadUserSettings();
-    this.isPageUnloading = false;
-    this.eventListeners = [];
-
-    this.setupPageUnloadHandler();
-  }
-
-  /**
-   * 初始化配置界面：合并用户配置、注册脚本菜单、创建浮动入口按钮
-   */
-  init() {
-    this.mergeUserConfig();
-
-    configBootstrap.registerMenuCommands({
-      open: () => this.show(),
-      translate: () => window.GitHub_i18n?.translationCore?.translate?.(),
-    });
-
-    configBootstrap.createFloatingButton(() => this.toggle());
-  }
-
-  setupPageUnloadHandler() {
-    const handlePageUnload = () => {
-      this.isPageUnloading = true;
-      this.cleanup();
-    };
-
-    window.addEventListener('beforeunload', handlePageUnload, { once: true });
-    window.addEventListener('unload', handlePageUnload, { once: true });
-  }
-
-  cleanup() {
-    this.hide();
-    this.cleanupEventListeners();
-    configBootstrap.removeFloatingButton();
-    this.container = null;
-  }
-
-  saveUserSettings(settings) {
-    configStore.saveUserSettings(settings);
-    this.userConfig = { ...settings };
-    this.mergeUserConfig();
-  }
-
-  mergeUserConfig() {
-    configStore.mergeUserConfig(CONFIG, this.userConfig);
-  }
-
-  createUI() {
-    if (this.container) return;
-
-    this.container = document.createElement('div');
-    this.container.className = 'github-i18n-config-container';
-
-    const configPanel = document.createElement('div');
-    configPanel.className = 'github-i18n-config-panel';
-
-    const header = configRenderer.createHeader();
-    const content = configRenderer.createContent(this.config);
-    const footer = configRenderer.createFooter();
-
-    configPanel.appendChild(header);
-    configPanel.appendChild(content);
-    configPanel.appendChild(footer);
-
-    this.container.appendChild(configPanel);
-
-    addConfigUIStyles();
-    this.addEventListeners();
-  }
-
-  show() {
-    if (!this.container) {
-      this.createUI();
-    }
-
-    document.body.appendChild(this.container);
-    this.isOpen = true;
-
-    setTimeout(() => {
-      updatePerformanceStats();
-    }, 100);
-  }
-
-  hide() {
-    if (this.container && this.container.parentNode) {
-      this.container.parentNode.removeChild(this.container);
-    }
-    this.isOpen = false;
-  }
-
-  toggle() {
-    if (this.isOpen) {
-      this.hide();
-    } else {
-      this.show();
-    }
-  }
-
-  addEventListeners() {
-    if (!this.container) return;
-
-    const closeBtn = this.container.querySelector('.github-i18n-config-close');
-    const saveBtn = this.container.querySelector('.github-i18n-config-save');
-    const resetBtn = this.container.querySelector('.github-i18n-config-reset');
-    const cancelBtn = this.container.querySelector('.github-i18n-config-cancel');
-    const refreshBtn = this.container.querySelector('#github-i18n-refresh-stats');
-    const exportBtn = this.container.querySelector('#github-i18n-export-stats');
-
-    const handleClose = () => this.hide();
-    const handleSave = () => this.handleSave();
-    const handleReset = () => this.handleReset();
-    const handleRefresh = () => updatePerformanceStats();
-    const handleExport = () => exportPerformanceStats();
-    const handleContainerClick = (e) => {
-      if (e.target === this.container) {
-        this.hide();
-      }
-    };
-
-    closeBtn?.addEventListener('click', handleClose);
-    saveBtn?.addEventListener('click', handleSave);
-    resetBtn?.addEventListener('click', handleReset);
-    cancelBtn?.addEventListener('click', handleClose);
-    refreshBtn?.addEventListener('click', handleRefresh);
-    exportBtn?.addEventListener('click', handleExport);
-    this.container?.addEventListener('click', handleContainerClick);
-
-    this.eventListeners.push(
-      { element: closeBtn, event: 'click', handler: handleClose },
-      { element: saveBtn, event: 'click', handler: handleSave },
-      { element: resetBtn, event: 'click', handler: handleReset },
-      { element: cancelBtn, event: 'click', handler: handleClose },
-      { element: refreshBtn, event: 'click', handler: handleRefresh },
-      { element: exportBtn, event: 'click', handler: handleExport },
-      { element: this.container, event: 'click', handler: handleContainerClick },
-    );
-  }
-
-  cleanupEventListeners() {
-    this.eventListeners.forEach(({ element, event, handler }) => {
-      element?.removeEventListener(event, handler);
-    });
-    this.eventListeners = [];
-  }
-
-  handleSave() {
-    const newSettings = {
-      debugMode: document.getElementById('github-i18n-debug-mode')?.checked || false,
-      enablePartialMatch:
-        document.getElementById('github-i18n-enable-partial-match')?.checked || false,
-      autoUpdate: document.getElementById('github-i18n-auto-update')?.checked || false,
-      enableTranslationCache:
-        document.getElementById('github-i18n-translation-cache')?.checked || false,
-      enableVirtualDom: document.getElementById('github-i18n-virtual-dom')?.checked || false,
-    };
-
-    this.saveUserSettings(newSettings);
-    this.hide();
-  }
-
-  handleReset() {
-    configStore.resetUserSettings();
-    this.userConfig = {};
-    this.settings = {};
-    this.hide();
-  }
-}
-
-/** 全局配置界面单例（供脚本生命周期与菜单调用） */
-const configUI = new ConfigUI();
-
-/**
- * 版本工具模块
- * @file versionUtils.js
- * @version 1.9.24
- * @date 2026-09-19
- * @author Sut
- * @description 版本比较、提取等工具函数
- */
-
-/**
- * 从脚本内容中提取版本号
- * 支持多种版本号格式
- * @param {string} content - 脚本内容
- * @returns {string|null} 提取的版本号或null
- */
-function extractVersion(content) {
-  const patterns = [
-    /\/\*\s*@version\s+(\d+\.\d+\.\d+)\s*\*\//i,
-    /\/\/\s*@version\s+(\d+\.\d+\.\d+)/i,
-    /\/\/\s*version\s*:\s*(\d+\.\d+\.\d+)/i,
-    /version\s*=\s*['"](\d+\.\d+\.\d+)['"]/i,
-    /version:\s*['"](\d+\.\d+\.\d+)['"]/i,
-  ];
-
-  for (const pattern of patterns) {
-    const match = content.match(pattern);
-    if (match && match[1]) {
-      return match[1];
-    }
-  }
-
-  return null;
-}
-
-/**
- * 比较版本号，判断是否有新版本
- * @param {string} newVersion - 新版本号
- * @param {string} currentVersion - 当前版本号
- * @returns {boolean} 是否有新版本
- */
-function isNewerVersion(newVersion, currentVersion) {
-  const newParts = newVersion.split('.').map(Number);
-  const currentParts = currentVersion.split('.').map(Number);
-
-  for (let i = 0; i < Math.max(newParts.length, currentParts.length); i++) {
-    const newPart = newParts[i] || 0;
-    const currentPart = currentParts[i] || 0;
-
-    if (newPart > currentPart) {
-      return true;
-    } else if (newPart < currentPart) {
-      return false;
-    }
-  }
-
-  return false;
-}
-
-/**
- * 更新通知数据持久化模块
- * @file src/userscript/updateNotification/store.js
- */
-
-const NOTIFICATION_DISMISSED_KEY = 'githubZhUpdateNotificationDismissed';
-const LAST_NOTIFIED_VERSION_KEY = 'githubZhLastNotifiedVersion';
-const VERSION_HISTORY_KEY = 'githubZhVersionHistory';
-const MAX_HISTORY_LENGTH = 10;
-
-const updateStore = {
-  isDismissed() {
-    return localStorage.getItem(NOTIFICATION_DISMISSED_KEY) === 'dismissed';
-  },
-
-  setDismissed() {
-    localStorage.setItem(NOTIFICATION_DISMISSED_KEY, 'dismissed');
-  },
-
-  getLastNotifiedVersion() {
-    return localStorage.getItem(LAST_NOTIFIED_VERSION_KEY);
-  },
-
-  setLastNotifiedVersion(version) {
-    localStorage.setItem(LAST_NOTIFIED_VERSION_KEY, version);
-  },
-
-  clearNotificationDismissal() {
-    try {
-      localStorage.removeItem(NOTIFICATION_DISMISSED_KEY);
-      localStorage.removeItem(LAST_NOTIFIED_VERSION_KEY);
-      return true;
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 清除通知忽略状态失败:', error);
-      }
-      return false;
-    }
-  },
-
-  recordVersionHistory(version) {
-    try {
-      let history = utils.safeJSONParse(localStorage.getItem(VERSION_HISTORY_KEY), []);
-      if (!Array.isArray(history)) history = [];
-
-      history.push({
-        version,
-        detectedAt: Date.now(),
-      });
-
-      if (history.length > MAX_HISTORY_LENGTH) {
-        history = history.slice(-MAX_HISTORY_LENGTH);
-      }
-
-      localStorage.setItem(VERSION_HISTORY_KEY, JSON.stringify(history));
-    } catch (_error) {
-      // 忽略存储错误
-    }
-  },
-};
-
-/**
- * 更新通知渲染模块
- * @file src/userscript/updateNotification/renderer.js
- */
-
-const updateRenderer = {
-  createNotification(newVersion, onHide) {
-    const notification = document.createElement('div');
-    notification.className =
-      'fixed bottom-4 right-4 bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-lg z-50 max-w-md transform transition-all duration-300 translate-y-0 opacity-100';
-
-    const notificationId = `github-zh-update-${Date.now()}`;
-    notification.id = notificationId;
-
-    const flexContainer = document.createElement('div');
-    flexContainer.className = 'flex items-start';
-    notification.appendChild(flexContainer);
-
-    const iconContainer = document.createElement('div');
-    iconContainer.className = 'flex-shrink-0 bg-blue-100 rounded-full p-2';
-    flexContainer.appendChild(iconContainer);
-
-    const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgIcon.setAttribute('class', 'h-6 w-6 text-blue-600');
-    svgIcon.setAttribute('fill', 'none');
-    svgIcon.setAttribute('viewBox', '0 0 24 24');
-    svgIcon.setAttribute('stroke', 'currentColor');
-    iconContainer.appendChild(svgIcon);
-
-    const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    pathElement.setAttribute('stroke-linecap', 'round');
-    pathElement.setAttribute('stroke-linejoin', 'round');
-    pathElement.setAttribute('stroke-width', '2');
-    pathElement.setAttribute('d', 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
-    svgIcon.appendChild(pathElement);
-
-    const contentContainer = document.createElement('div');
-    contentContainer.className = 'ml-3 flex-1';
-    flexContainer.appendChild(contentContainer);
-
-    const titleElement = document.createElement('p');
-    titleElement.className = 'text-sm font-medium text-blue-800';
-    titleElement.textContent = 'GitHub 中文翻译脚本更新';
-    contentContainer.appendChild(titleElement);
-
-    const messageElement = document.createElement('p');
-    messageElement.className = 'text-sm text-blue-700 mt-1';
-    messageElement.textContent = `发现新版本 ${newVersion}，建议更新以获得更好的翻译体验。`;
-    contentContainer.appendChild(messageElement);
-
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'mt-3 flex space-x-2';
-    contentContainer.appendChild(buttonsContainer);
-
-    const updateButton = document.createElement('a');
-    updateButton.id = `${notificationId}-update-btn`;
-    updateButton.href = CONFIG.updateCheck.scriptUrl || '#';
-    updateButton.target = '_blank';
-    updateButton.rel = 'noopener noreferrer';
-    updateButton.className =
-      'inline-flex items-center px-3 py-1.5 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 transition-colors';
-    updateButton.textContent = '立即更新';
-    buttonsContainer.appendChild(updateButton);
-
-    const laterButton = document.createElement('button');
-    laterButton.id = `${notificationId}-later-btn`;
-    laterButton.className =
-      'inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-transparent hover:bg-blue-50 transition-colors';
-    laterButton.textContent = '稍后';
-    laterButton.addEventListener('click', () => {
-      onHide(notification, false);
-    });
-    buttonsContainer.appendChild(laterButton);
-
-    const dismissButton = document.createElement('button');
-    dismissButton.id = `${notificationId}-dismiss-btn`;
-    dismissButton.className =
-      'inline-flex items-center px-2 py-1 border border-transparent text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors';
-    dismissButton.textContent = '不再提醒';
-    dismissButton.addEventListener('click', () => {
-      onHide(notification, true);
-    });
-    buttonsContainer.appendChild(dismissButton);
-
-    return notification;
-  },
-};
-
-/**
- * 更新通知模块
- * @file updateNotification.js
- */
-
-const NOTIFICATION_AUTO_HIDE_MS = 20000;
-const NOTIFICATION_ANIMATION_MS = 300;
-
-/**
- * 显示更新通知
- * @param {string} newVersion - 新版本号
- */
-function showUpdateNotification(newVersion) {
-  const lastNotifiedVersion = updateStore.getLastNotifiedVersion();
-
-  if (updateStore.isDismissed() || lastNotifiedVersion === newVersion) {
-    if (CONFIG.debugMode && lastNotifiedVersion === newVersion) {
-      console.log(`[GitHub 中文翻译] 已经通知过版本 ${newVersion} 的更新`);
-    }
-    return;
-  }
-
-  try {
-    const notification = updateRenderer.createNotification(newVersion, hideNotification);
-
-    if (document.body) {
-      document.body.appendChild(notification);
-      updateStore.setLastNotifiedVersion(newVersion);
-
-      if (CONFIG.updateCheck.autoHideNotification !== false) {
-        setTimeout(() => {
-          hideNotification(notification, false);
-        }, NOTIFICATION_AUTO_HIDE_MS);
-      }
-
-      if (CONFIG.debugMode) {
-        console.log(`[GitHub 中文翻译] 显示更新通知: 版本 ${newVersion}`);
-      }
-    }
-  } catch (error) {
-    console.error('[GitHub 中文翻译] 创建更新通知失败:', error);
-  }
-}
-
-/**
- * 隐藏通知元素（带动画效果）
- * @param {HTMLElement} notification - 通知元素
- * @param {boolean} permanently - 是否永久隐藏
- */
-function hideNotification(notification, permanently = false) {
-  try {
-    notification.style.transform = 'translateY(20px)';
-    notification.style.opacity = '0';
-
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, NOTIFICATION_ANIMATION_MS);
-
-    if (permanently) {
-      updateStore.setDismissed();
-      if (CONFIG.debugMode) {
-        console.log('[GitHub 中文翻译] 更新通知已永久隐藏');
-      }
-    }
-  } catch (error) {
-    console.error('[GitHub 中文翻译] 隐藏通知失败:', error);
-  }
-}
-
-/**
- * 记录版本历史
- * @param {string} version - 版本号
- */
-function recordVersionHistory(version) {
-  updateStore.recordVersionHistory(version);
-}
-
-/**
- * 清除更新通知的忽略状态
- * @returns {boolean} 是否成功
- */
-function clearNotificationDismissal() {
-  return updateStore.clearNotificationDismissal();
-}
-
-/**
- * 版本检查请求模块
- * @file src/userscript/versionChecker/fetcher.js
- */
-
-const FETCH_TIMEOUT_MS = 8000;
-const EXPONENTIAL_BASE = 2;
-
-const KNOWN_SCRIPT_HASHES = {
-  'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_zh-cn.user.js':
-    'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
-};
-
-const versionFetcher = {
-  async fetchWithRetry(url, maxRetries = 2, retryDelay = 1000) {
-    let lastError;
-
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        if (CONFIG.debugMode && attempt > 0) {
-          console.log(`[GitHub 中文翻译] 重试更新检查 (${attempt}/${maxRetries})...`);
-        }
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache',
-            Accept: 'text/javascript, text/plain, */*',
-          },
-          signal: controller.signal,
-          credentials: 'omit',
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP错误! 状态码: ${response.status}`);
-        }
-
-        const scriptContent = await response.text();
-
-        if (KNOWN_SCRIPT_HASHES[url]) {
-          const isValid = await this.verifyScriptIntegrity(scriptContent, url);
-          if (!isValid) {
-            if (CONFIG.debugMode) {
-              console.warn('[GitHub 中文翻译] 脚本完整性验证失败，可能存在安全风险');
-            }
-          }
-        }
-
-        return scriptContent;
-      } catch (error) {
-        lastError = error;
-
-        if (attempt === maxRetries) {
-          throw error;
-        }
-
-        await utils.delay(retryDelay * Math.pow(EXPONENTIAL_BASE, attempt));
-      }
-    }
-
-    throw lastError;
-  },
-
-  async verifyScriptIntegrity(scriptContent, url) {
-    try {
-      const expectedHash = KNOWN_SCRIPT_HASHES[url];
-      if (!expectedHash) {
-        return true;
-      }
-
-      const actualHash = await utils.sha256Hash(scriptContent);
-      const isValid = actualHash === expectedHash;
-
-      if (CONFIG.debugMode) {
-        console.log(`[GitHub 中文翻译] 脚本完整性验证: ${isValid ? '通过' : '失败'}`);
-      }
-
-      return isValid;
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 脚本完整性验证出错:', utils.sanitizeErrorMessage(error));
-      }
-      return false;
-    }
-  },
-};
-
-/**
- * 版本更新检查模块
- * @file versionChecker.js
- */
-
-const DEFAULT_INTERVAL_HOURS = 24;
-const HOURS_TO_MS = 60 * 60 * 1000;
-const PARSE_INT_RADIX = 10;
-
-const versionChecker = {
-  async checkForUpdates() {
-    if (!CONFIG.updateCheck.enabled) {
-      if (CONFIG.debugMode) {
-        console.log('[GitHub 中文翻译] 已禁用更新检查');
-      }
-      return false;
-    }
-
-    const lastCheck = localStorage.getItem('githubZhLastUpdateCheck');
-    const now = Date.now();
-    const intervalMs = (CONFIG.updateCheck.intervalHours || DEFAULT_INTERVAL_HOURS) * HOURS_TO_MS;
-
-    if (lastCheck && now - parseInt(lastCheck, PARSE_INT_RADIX) < intervalMs) {
-      if (CONFIG.debugMode) {
-        console.log(
-          `[GitHub 中文翻译] 未达到更新检查间隔，跳过检查 (上次检查: ${new Date(parseInt(lastCheck, PARSE_INT_RADIX)).toLocaleString()})`,
-        );
-      }
-      return false;
-    }
-
-    try {
-      localStorage.setItem('githubZhLastUpdateCheck', now.toString());
-
-      const scriptContent = await versionFetcher.fetchWithRetry(CONFIG.updateCheck.scriptUrl);
-
-      const remoteVersion = extractVersion(scriptContent);
-
-      if (!remoteVersion) {
-        throw new Error('无法从远程脚本提取有效的版本号');
-      }
-
-      if (CONFIG.debugMode) {
-        console.log(`[GitHub 中文翻译] 当前版本: ${CONFIG.version}, 远程版本: ${remoteVersion}`);
-      }
-
-      if (isNewerVersion(remoteVersion, CONFIG.version)) {
-        showUpdateNotification(remoteVersion);
-
-        if (CONFIG.updateCheck.autoUpdateVersion) {
-          this.updateVersionInStorage(remoteVersion);
-        }
-
-        recordVersionHistory(remoteVersion);
-
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      const sanitizedError = utils.sanitizeErrorMessage(error);
-      const errorMsg = `[GitHub 中文翻译] 检查更新时发生错误: ${sanitizedError}`;
-      if (CONFIG.debugMode) {
-        console.error(errorMsg);
-      }
-
-      try {
-        localStorage.setItem(
-          'githubZhUpdateError',
-          JSON.stringify({
-            message: sanitizedError,
-            timestamp: now,
-          }),
-        );
-      } catch (_e) {
-        // 忽略存储错误
-      }
-
-      return false;
-    }
-  },
-
-  updateVersionInStorage(newVersion) {
-    try {
-      const cacheData = {
-        version: newVersion,
-        cachedAt: Date.now(),
-        currentVersion: CONFIG.version,
-      };
-
-      localStorage.setItem('githubZhCachedVersion', utils.safeJSONStringify(cacheData));
-
-      if (CONFIG.debugMode) {
-        console.log(
-          `[GitHub 中文翻译] 已缓存新版本号: ${newVersion} (缓存时间: ${new Date().toLocaleString()})`,
-        );
-      }
-
-      return true;
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 更新缓存版本号时出错:', error);
-      }
-      return false;
-    }
-  },
-
-  getCachedVersion() {
-    try {
-      const cachedData = utils.safeJSONParse(localStorage.getItem('githubZhCachedVersion'));
-      return cachedData;
-    } catch (_error) {
-      return null;
-    }
-  },
-
-  clearNotificationDismissal,
-};
-
-/**
  * 页面监控缓存管理模块
  * @file pageMonitor/cacheManager.js
  * @version 1.9.21
@@ -6230,123 +4853,6 @@ function checkWeightedThreshold(contentChanges, importantChanges, maxCheckCount,
  */
 
 /**
- * DOM观察器配置与节点选择模块
- * @file src/userscript/page-monitor/domObserver.config.js
- */
-
-const domObserverConfig = {
-  selectOptimalRootNode(pageMode) {
-    const effectivePageMode = pageMode || translationCore.detectPageMode();
-    let candidateSelectors;
-
-    switch (effectivePageMode) {
-      case 'search':
-        candidateSelectors = ['.codesearch-results', '#js-pjax-container', 'main', 'body'];
-        break;
-      case 'issues':
-      case 'pullRequests':
-        candidateSelectors = [
-          '.js-discussion',
-          '.issue-details',
-          '#js-issue-title',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'repository':
-        candidateSelectors = [
-          '#js-repo-pjax-container',
-          '.repository-content',
-          '.application-main',
-          'body',
-        ];
-        break;
-      case 'notifications':
-        candidateSelectors = [
-          '.notifications-list',
-          '.notification-shelf',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'wiki':
-        candidateSelectors = [
-          '.wiki-wrapper',
-          '.markdown-body',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'actions':
-        candidateSelectors = [
-          '.workflow-run-list',
-          '.workflow-jobs',
-          '.workflow-run-header',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      case 'projects':
-        candidateSelectors = [
-          '.project-layout',
-          '.project-columns',
-          '#js-pjax-container',
-          'main',
-          'body',
-        ];
-        break;
-      default:
-        candidateSelectors = ['#js-pjax-container', 'main', '.application-main', 'body'];
-    }
-
-    for (const selector of candidateSelectors) {
-      const element = document.querySelector(selector);
-      if (element && element.textContent.trim().length > 0) {
-        return element;
-      }
-    }
-
-    return document.body;
-  },
-
-  getOptimizedObserverConfig(inputPageMode) {
-    const pageMode = inputPageMode || translationCore.detectPageMode();
-    const baseConfig = { childList: true };
-
-    if (!CONFIG.performance?.ignoreCharacterDataMutations) {
-      baseConfig.characterData = true;
-    }
-
-    const complexPages = ['wiki', 'issues', 'pullRequests', 'markdown'];
-    const simplePages = ['search', 'codespaces', 'marketplace'];
-
-    if (complexPages.includes(pageMode)) {
-      baseConfig.subtree = CONFIG.performance?.observeSubtree;
-    } else if (simplePages.includes(pageMode)) {
-      baseConfig.subtree = false;
-    } else {
-      baseConfig.subtree = CONFIG.performance?.observeSubtree;
-    }
-
-    if (CONFIG.performance?.observeAttributes && !CONFIG.performance?.ignoreAttributeMutations) {
-      baseConfig.attributes = true;
-      baseConfig.attributeFilter = CONFIG.performance?.importantAttributes || [
-        'id',
-        'class',
-        'href',
-        'title',
-      ];
-    }
-
-    return baseConfig;
-  },
-};
-
-/**
  * DOM观察器启动模块
  * @file src/userscript/page-monitor/domObserver/setup.js
  */
@@ -6768,6 +5274,730 @@ const pageMonitor = {
     }, 100);
   },
 };
+
+/**
+ * 配置界面数据持久化模块
+ * @file src/userscript/ui/configUI/store.js
+ */
+
+const CONFIG_STORAGE_KEY = 'github-i18n-config';
+
+const configStore = {
+  loadUserSettings() {
+    try {
+      const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
+      if (!saved) return {};
+
+      // 尝试解码混淆的数据
+      const decoded = utils.deobfuscateData(saved);
+      if (decoded) {
+        return JSON.parse(decoded);
+      }
+
+      // 如果解码失败，尝试直接解析（兼容旧格式）
+      try {
+        return JSON.parse(saved);
+      } catch (_e) {
+        return {};
+      }
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 加载用户配置失败:', utils.sanitizeErrorMessage(error));
+      }
+      return {};
+    }
+  },
+
+  saveUserSettings(settings) {
+    try {
+      const jsonData = JSON.stringify(settings);
+      // 混淆存储配置数据
+      const obfuscatedData = utils.obfuscateData(jsonData);
+      localStorage.setItem(CONFIG_STORAGE_KEY, obfuscatedData);
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 保存用户配置失败:', utils.sanitizeErrorMessage(error));
+      }
+    }
+  },
+
+  resetUserSettings() {
+    localStorage.removeItem(CONFIG_STORAGE_KEY);
+  },
+
+  mergeUserConfig(target, source) {
+    const merge = (t, s) => {
+      for (const key in s) {
+        if (Object.prototype.hasOwnProperty.call(s, key)) {
+          if (s[key] && typeof s[key] === 'object' && !Array.isArray(s[key])) {
+            if (!t[key]) t[key] = {};
+            merge(t[key], s[key]);
+          } else {
+            t[key] = s[key];
+          }
+        }
+      }
+      return t;
+    };
+
+    return merge(target, source);
+  },
+};
+
+/**
+ * 版本信息模块
+ * @file version.js
+ * @version 1.13.6
+ * @date 2026-09-30
+ * @author Sut
+ * @description 统一管理 GitHub Chinese 简体中文的版本信息
+ */
+
+/**
+ * 当前工具版本号
+ * @type {string}
+ * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
+ */
+const VERSION = '1.13.6';
+
+/**
+ * GitHub 中文翻译性能监控组件
+ * @file performanceMonitor.js
+ * @version 1.13.2
+ * @date 2026-09-23
+ * @author Sut
+ * @description 性能监控区域组件
+ */
+
+/** 无数据时按钮反馈文案的自动复位时长（毫秒） */
+const NO_DATA_FEEDBACK_MS = 1500;
+
+/**
+ * 创建性能监控区域
+ * @returns {HTMLElement} 性能监控区域元素
+ */
+function createPerformanceMonitoringSection() {
+  const section = document.createElement('div');
+  section.className = 'github-i18n-config-section';
+
+  const sectionTitle = document.createElement('h4');
+  const emojiSpan = document.createElement('span');
+  emojiSpan.style.color = '#d29922';
+  emojiSpan.textContent = '📊';
+  sectionTitle.appendChild(emojiSpan);
+  sectionTitle.appendChild(document.createTextNode(' 性能监控'));
+  section.appendChild(sectionTitle);
+
+  const perfGrid = document.createElement('div');
+  perfGrid.className = 'github-i18n-perf-grid';
+  perfGrid.id = 'github-i18n-performance-stats';
+
+  const stats = [
+    { key: 'duration', label: '总耗时', unit: 'ms', id: 'github-i18n-stat-duration' },
+    { key: 'elements', label: '翻译项', unit: '', id: 'github-i18n-stat-elements' },
+    { key: 'cacheRate', label: '命中率', unit: '%', id: 'github-i18n-stat-cache-rate' },
+  ];
+
+  stats.forEach((stat) => {
+    const statDiv = document.createElement('div');
+    statDiv.className = 'github-i18n-perf-stat';
+
+    const k = document.createElement('div');
+    k.className = 'k';
+    k.textContent = stat.label;
+
+    const v = document.createElement('div');
+    v.className = 'v';
+    v.id = stat.id;
+    v.textContent = '-';
+
+    statDiv.appendChild(k);
+    statDiv.appendChild(v);
+    perfGrid.appendChild(statDiv);
+  });
+
+  section.appendChild(perfGrid);
+
+  const advancedStatsDiv = document.createElement('div');
+  advancedStatsDiv.className = 'github-i18n-advanced-stats';
+
+  const advancedStats = [
+    { label: '缓存命中:', id: 'github-i18n-stat-cache-hits' },
+    { label: '缓存未命中:', id: 'github-i18n-stat-cache-misses' },
+    { label: 'DOM操作:', id: 'github-i18n-stat-dom' },
+    { label: '网络请求:', id: 'github-i18n-stat-network' },
+    { label: '批处理次数:', id: 'github-i18n-stat-batches' },
+  ];
+
+  advancedStats.forEach((stat) => {
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'github-i18n-config-item';
+
+    const label = document.createElement('span');
+    label.className = 'github-i18n-config-label';
+    label.textContent = stat.label;
+
+    const value = document.createElement('span');
+    value.id = stat.id;
+    value.style.fontFamily =
+      '"JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas, "Courier New", monospace';
+    value.style.color = '#8b949e';
+    value.textContent = '-';
+
+    itemDiv.appendChild(label);
+    itemDiv.appendChild(value);
+    advancedStatsDiv.appendChild(itemDiv);
+  });
+
+  section.appendChild(advancedStatsDiv);
+
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'github-i18n-config-actions';
+
+  const refreshBtn = document.createElement('button');
+  refreshBtn.id = 'github-i18n-refresh-stats';
+  refreshBtn.textContent = '刷新性能数据';
+  refreshBtn.addEventListener('click', updatePerformanceStats);
+
+  const exportBtn = document.createElement('button');
+  exportBtn.id = 'github-i18n-export-stats';
+  exportBtn.textContent = '导出性能数据';
+  exportBtn.addEventListener('click', () => {
+    const data = exportPerformanceStats();
+    if (!data) {
+      const original = exportBtn.textContent;
+      exportBtn.textContent = '暂无数据';
+      exportBtn.disabled = true;
+      setTimeout(() => {
+        exportBtn.textContent = original;
+        exportBtn.disabled = false;
+      }, NO_DATA_FEEDBACK_MS);
+    }
+  });
+
+  actionsDiv.appendChild(refreshBtn);
+  actionsDiv.appendChild(exportBtn);
+
+  section.appendChild(actionsDiv);
+
+  return section;
+}
+
+/**
+ * 更新性能统计数据显示
+ */
+function updatePerformanceStats() {
+  if (window.isPageUnloading) return;
+
+  if (window.translationCore && window.translationCore.getPerformanceStats) {
+    const stats = window.translationCore.getPerformanceStats();
+
+    const durationEl = document.getElementById('github-i18n-stat-duration');
+    if (durationEl) durationEl.textContent = `${stats.totalDuration} ms`;
+
+    const elementsEl = document.getElementById('github-i18n-stat-elements');
+    if (elementsEl) elementsEl.textContent = stats.elementsProcessed;
+
+    const textsEl = document.getElementById('github-i18n-stat-texts');
+    if (textsEl) textsEl.textContent = stats.textsTranslated;
+
+    const cacheRateEl = document.getElementById('github-i18n-stat-cache-rate');
+    if (cacheRateEl) cacheRateEl.textContent = `${stats.cacheHitRate}%`;
+
+    const cacheHitsEl = document.getElementById('github-i18n-stat-cache-hits');
+    if (cacheHitsEl) cacheHitsEl.textContent = stats.cacheHits;
+
+    const cacheMissesEl = document.getElementById('github-i18n-stat-cache-misses');
+    if (cacheMissesEl) cacheMissesEl.textContent = stats.cacheMisses;
+
+    const domOpsEl = document.getElementById('github-i18n-stat-dom');
+    if (domOpsEl) domOpsEl.textContent = stats.domOperations;
+
+    const networkEl = document.getElementById('github-i18n-stat-network');
+    if (networkEl) networkEl.textContent = stats.networkRequests;
+
+    const batchesEl = document.getElementById('github-i18n-stat-batches');
+    if (batchesEl) batchesEl.textContent = stats.batchProcessings;
+  }
+}
+
+/**
+ * 导出性能数据
+ * @returns {Object} 性能数据对象
+ */
+function exportPerformanceStats() {
+  if (window.translationCore && window.translationCore.getPerformanceStats) {
+    const stats = window.translationCore.getPerformanceStats();
+    const exportData = {
+      timestamp: new Date().toISOString(),
+      version: VERSION,
+      ...stats,
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `github-i18n-performance-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    return exportData;
+  }
+  return null;
+}
+
+/**
+ * 配置界面渲染模块
+ * @file src/userscript/ui/configUI/renderer.js
+ */
+
+const configRenderer = {
+  createHeader() {
+    const header = document.createElement('div');
+    header.className = 'github-i18n-config-header';
+
+    const title = document.createElement('h3');
+    title.textContent = 'GitHub 中文翻译';
+
+    const versionBadge = document.createElement('span');
+    versionBadge.style.fontFamily =
+      '"JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas, "Courier New", monospace';
+    versionBadge.style.fontSize = '11px';
+    versionBadge.style.color = '#6e7681';
+    versionBadge.style.padding = '2px 8px';
+    versionBadge.style.borderRadius = '4px';
+    versionBadge.style.background = '#010409';
+    versionBadge.style.border = '1px solid #21262d';
+    versionBadge.textContent = `v${VERSION}`;
+
+    const headerLeft = document.createElement('div');
+    headerLeft.style.display = 'flex';
+    headerLeft.style.alignItems = 'center';
+    headerLeft.style.gap = '10px';
+    headerLeft.appendChild(title);
+    headerLeft.appendChild(versionBadge);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'github-i18n-config-close';
+    closeBtn.textContent = '×';
+
+    header.appendChild(headerLeft);
+    header.appendChild(closeBtn);
+
+    return header;
+  },
+
+  createFooter() {
+    const footer = document.createElement('div');
+    footer.className = 'github-i18n-config-footer';
+
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'github-i18n-config-reset';
+    resetBtn.textContent = '重置默认';
+
+    const footerRight = document.createElement('div');
+    footerRight.className = 'github-i18n-config-footer-right';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'github-i18n-config-cancel';
+    cancelBtn.textContent = '取消';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'github-i18n-config-save';
+    saveBtn.textContent = '保存配置';
+
+    footerRight.appendChild(cancelBtn);
+    footerRight.appendChild(saveBtn);
+
+    footer.appendChild(resetBtn);
+    footer.appendChild(footerRight);
+
+    return footer;
+  },
+
+  createConfigSection(title, items) {
+    const section = document.createElement('div');
+    section.className = 'github-i18n-config-section';
+
+    const sectionTitle = document.createElement('h4');
+    sectionTitle.textContent = title;
+    section.appendChild(sectionTitle);
+
+    items.forEach((item) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'github-i18n-config-item';
+
+      const label = document.createElement('label');
+      label.className = 'github-i18n-config-label';
+
+      const input = document.createElement('input');
+      input.type = item.type;
+      input.id = item.id;
+      if (item.checked !== undefined) {
+        input.checked = item.checked;
+      }
+
+      const textNode = document.createTextNode(item.label);
+
+      label.appendChild(input);
+      label.appendChild(textNode);
+      itemDiv.appendChild(label);
+      section.appendChild(itemDiv);
+    });
+
+    return section;
+  },
+
+  createContent(config) {
+    const content = document.createElement('div');
+    content.className = 'github-i18n-config-content';
+
+    const basicSection = this.createConfigSection('基本设置', [
+      {
+        type: 'checkbox',
+        id: 'github-i18n-debug-mode',
+        label: '启用调试模式',
+        checked: config.debugMode,
+      },
+      {
+        type: 'checkbox',
+        id: 'github-i18n-enable-partial-match',
+        label: '启用部分匹配',
+        checked: config.performance.enablePartialMatch,
+      },
+    ]);
+
+    const updateSection = this.createConfigSection('更新设置', [
+      {
+        type: 'checkbox',
+        id: 'github-i18n-auto-update',
+        label: '自动检查更新',
+        checked: config.updateCheck.enabled,
+      },
+    ]);
+
+    const performanceSection = this.createConfigSection('性能设置', [
+      {
+        type: 'checkbox',
+        id: 'github-i18n-translation-cache',
+        label: '启用翻译缓存',
+        checked: config.performance.enableTranslationCache,
+      },
+      {
+        type: 'checkbox',
+        id: 'github-i18n-virtual-dom',
+        label: '启用虚拟DOM优化',
+        checked: config.performance.enableVirtualDom,
+      },
+    ]);
+
+    const monitoringSection = createPerformanceMonitoringSection();
+
+    content.appendChild(basicSection);
+    content.appendChild(updateSection);
+    content.appendChild(performanceSection);
+    content.appendChild(monitoringSection);
+
+    return content;
+  },
+};
+
+/**
+ * 配置界面启动引导模块
+ * @file src/userscript/ui/configUI/bootstrap.js
+ * @description 负责浮动入口按钮注入、用户脚本菜单注册与清理
+ */
+
+/** 浮动按钮元素 ID（语义化，便于脚本选取与测试定位） */
+const FLOATING_BUTTON_ID = 'github-i18n-floating-button';
+
+const FLOATING_BUTTON_STYLE_ID = 'github-i18n-floating-button-style';
+
+const FLOATING_BUTTON_STYLES = `
+#${FLOATING_BUTTON_ID} {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #2ea44f;
+  background: #0d1117;
+  color: #2ea44f;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2147483646;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+#${FLOATING_BUTTON_ID}:hover {
+  transform: scale(1.08);
+  background: #2ea44f;
+  color: #ffffff;
+}
+#${FLOATING_BUTTON_ID}:focus-visible {
+  outline: 2px solid #3fb950;
+  outline-offset: 2px;
+}
+`;
+
+const configBootstrap = {
+  /**
+   * 注入浮动按钮所需样式（幂等）
+   */
+  injectStyles() {
+    if (document.getElementById(FLOATING_BUTTON_STYLE_ID)) {
+      return;
+    }
+    const style = document.createElement('style');
+    style.id = FLOATING_BUTTON_STYLE_ID;
+    style.textContent = FLOATING_BUTTON_STYLES;
+    document.head.appendChild(style);
+  },
+
+  /**
+   * 创建页面右下角浮动入口按钮
+   * @param {Function} onClick - 点击回调
+   * @returns {HTMLButtonElement} 按钮元素
+   */
+  createFloatingButton(onClick) {
+    this.injectStyles();
+
+    const existing = document.getElementById(FLOATING_BUTTON_ID);
+    if (existing) {
+      return existing;
+    }
+
+    const button = document.createElement('button');
+    button.id = FLOATING_BUTTON_ID;
+    button.type = 'button';
+    button.title = '打开 GitHub 中文翻译设置';
+    button.setAttribute('aria-label', '打开 GitHub 中文翻译设置');
+    button.textContent = '中';
+    button.addEventListener('click', onClick);
+
+    document.body.appendChild(button);
+    return button;
+  },
+
+  /**
+   * 移除浮动入口按钮
+   */
+  removeFloatingButton() {
+    const button = document.getElementById(FLOATING_BUTTON_ID);
+    if (button && button.parentNode) {
+      button.parentNode.removeChild(button);
+    }
+  },
+
+  /**
+   * 注册用户脚本管理器菜单命令（管理器不支持时静默跳过）
+   * @param {{open: Function, translate: Function}} handlers - 菜单回调
+   */
+  registerMenuCommands(handlers) {
+    if (typeof GM_registerMenuCommand !== 'function') {
+      return;
+    }
+
+    try {
+      GM_registerMenuCommand('打开配置面板', handlers.open);
+      GM_registerMenuCommand('立即翻译页面', handlers.translate);
+    } catch (_error) {
+      // 菜单注册失败不影响主流程
+    }
+  },
+};
+
+/**
+ * GitHub 中文翻译配置界面模块
+ * @file configUI.js
+ */
+
+class ConfigUI {
+  constructor() {
+    this.config = CONFIG;
+    this.userConfig = {};
+    this.isOpen = false;
+    this.container = null;
+    this.settings = configStore.loadUserSettings();
+    this.isPageUnloading = false;
+    this.eventListeners = [];
+
+    this.setupPageUnloadHandler();
+  }
+
+  /**
+   * 初始化配置界面：合并用户配置、注册脚本菜单、创建浮动入口按钮
+   */
+  init() {
+    this.mergeUserConfig();
+
+    configBootstrap.registerMenuCommands({
+      open: () => this.show(),
+      translate: () => window.GitHub_i18n?.translationCore?.translate?.(),
+    });
+
+    configBootstrap.createFloatingButton(() => this.toggle());
+  }
+
+  setupPageUnloadHandler() {
+    const handlePageUnload = () => {
+      this.isPageUnloading = true;
+      this.cleanup();
+    };
+
+    window.addEventListener('beforeunload', handlePageUnload, { once: true });
+    window.addEventListener('unload', handlePageUnload, { once: true });
+  }
+
+  cleanup() {
+    this.hide();
+    this.cleanupEventListeners();
+    configBootstrap.removeFloatingButton();
+    this.container = null;
+  }
+
+  saveUserSettings(settings) {
+    configStore.saveUserSettings(settings);
+    this.userConfig = { ...settings };
+    this.mergeUserConfig();
+  }
+
+  mergeUserConfig() {
+    configStore.mergeUserConfig(CONFIG, this.userConfig);
+  }
+
+  createUI() {
+    if (this.container) return;
+
+    this.container = document.createElement('div');
+    this.container.className = 'github-i18n-config-container';
+
+    const configPanel = document.createElement('div');
+    configPanel.className = 'github-i18n-config-panel';
+
+    const header = configRenderer.createHeader();
+    const content = configRenderer.createContent(this.config);
+    const footer = configRenderer.createFooter();
+
+    configPanel.appendChild(header);
+    configPanel.appendChild(content);
+    configPanel.appendChild(footer);
+
+    this.container.appendChild(configPanel);
+
+    addConfigUIStyles();
+    this.addEventListeners();
+  }
+
+  show() {
+    if (!this.container) {
+      this.createUI();
+    }
+
+    document.body.appendChild(this.container);
+    this.isOpen = true;
+
+    setTimeout(() => {
+      updatePerformanceStats();
+    }, 100);
+  }
+
+  hide() {
+    if (this.container && this.container.parentNode) {
+      this.container.parentNode.removeChild(this.container);
+    }
+    this.isOpen = false;
+  }
+
+  toggle() {
+    if (this.isOpen) {
+      this.hide();
+    } else {
+      this.show();
+    }
+  }
+
+  addEventListeners() {
+    if (!this.container) return;
+
+    const closeBtn = this.container.querySelector('.github-i18n-config-close');
+    const saveBtn = this.container.querySelector('.github-i18n-config-save');
+    const resetBtn = this.container.querySelector('.github-i18n-config-reset');
+    const cancelBtn = this.container.querySelector('.github-i18n-config-cancel');
+    const refreshBtn = this.container.querySelector('#github-i18n-refresh-stats');
+    const exportBtn = this.container.querySelector('#github-i18n-export-stats');
+
+    const handleClose = () => this.hide();
+    const handleSave = () => this.handleSave();
+    const handleReset = () => this.handleReset();
+    const handleRefresh = () => updatePerformanceStats();
+    const handleExport = () => exportPerformanceStats();
+    const handleContainerClick = (e) => {
+      if (e.target === this.container) {
+        this.hide();
+      }
+    };
+
+    closeBtn?.addEventListener('click', handleClose);
+    saveBtn?.addEventListener('click', handleSave);
+    resetBtn?.addEventListener('click', handleReset);
+    cancelBtn?.addEventListener('click', handleClose);
+    refreshBtn?.addEventListener('click', handleRefresh);
+    exportBtn?.addEventListener('click', handleExport);
+    this.container?.addEventListener('click', handleContainerClick);
+
+    this.eventListeners.push(
+      { element: closeBtn, event: 'click', handler: handleClose },
+      { element: saveBtn, event: 'click', handler: handleSave },
+      { element: resetBtn, event: 'click', handler: handleReset },
+      { element: cancelBtn, event: 'click', handler: handleClose },
+      { element: refreshBtn, event: 'click', handler: handleRefresh },
+      { element: exportBtn, event: 'click', handler: handleExport },
+      { element: this.container, event: 'click', handler: handleContainerClick },
+    );
+  }
+
+  cleanupEventListeners() {
+    this.eventListeners.forEach(({ element, event, handler }) => {
+      element?.removeEventListener(event, handler);
+    });
+    this.eventListeners = [];
+  }
+
+  handleSave() {
+    const newSettings = {
+      debugMode: document.getElementById('github-i18n-debug-mode')?.checked || false,
+      enablePartialMatch:
+        document.getElementById('github-i18n-enable-partial-match')?.checked || false,
+      autoUpdate: document.getElementById('github-i18n-auto-update')?.checked || false,
+      enableTranslationCache:
+        document.getElementById('github-i18n-translation-cache')?.checked || false,
+      enableVirtualDom: document.getElementById('github-i18n-virtual-dom')?.checked || false,
+    };
+
+    this.saveUserSettings(newSettings);
+    this.hide();
+  }
+
+  handleReset() {
+    configStore.resetUserSettings();
+    this.userConfig = {};
+    this.settings = {};
+    this.hide();
+  }
+}
+
+/** 全局配置界面单例（供脚本生命周期与菜单调用） */
+const configUI = new ConfigUI();
 
 /**
  * 脚本生命周期管理器

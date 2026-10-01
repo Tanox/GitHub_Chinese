@@ -2,9 +2,9 @@
  * 更新通知模块
  * @file updateNotification.js
  */
-import { CONFIG } from './config.js';
-import { updateStore } from './updateNotification/store.js';
-import { updateRenderer } from './updateNotification/renderer.js';
+import { CONFIG } from './config/index.js';
+import { updateStore } from './store.js';
+import { updateRenderer } from './renderer.js';
 
 const NOTIFICATION_AUTO_HIDE_MS = 20000;
 const NOTIFICATION_ANIMATION_MS = 300;

@@ -2,7 +2,7 @@
  * DOM观察器配置与节点选择模块
  * @file src/userscript/page-monitor/domObserver.config.js
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { translationCore } from '../translation-core/index.js';
 
 export const domObserverConfig = {

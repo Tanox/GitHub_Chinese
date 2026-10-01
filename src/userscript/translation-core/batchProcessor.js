@@ -2,9 +2,9 @@
  * 翻译批处理模块
  * @file src/userscript/translation-core/batchProcessor.js
  */
-import { CONFIG } from '../config.js';
-import { ErrorHandler } from '../core/errorHandler.js';
-import virtualDomManager from '../core/virtualDom.js';
+import { CONFIG } from '../config/index.js';
+import { ErrorHandler } from '../core/errorHandler/index.js';
+import virtualDomManager from '../core/virtualDom/index.js';
 import { elementTranslator } from './elementTranslator.js';
 
 export async function processElementsInBatches(inputElements, getCurrentPageModeConfig) {

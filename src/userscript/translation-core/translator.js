@@ -2,8 +2,8 @@
  * 翻译执行逻辑模块
  * @file src/userscript/translation-core/translator.js
  */
-import { CONFIG } from '../config.js';
-import { ErrorHandler } from '../core/errorHandler.js';
+import { CONFIG } from '../config/index.js';
+import { ErrorHandler } from '../core/errorHandler/index.js';
 import { dictionaryManager } from './dictionaryManager.js';
 import { elementSelector } from './elementSelector.js';
 import { elementTranslator } from './elementTranslator.js';

@@ -6,7 +6,7 @@
  * @author Sut
  * @description 管理页面监控中的缓存
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 
 export const pageMonitorCache = {
   nodeCheckCache: new Map(),

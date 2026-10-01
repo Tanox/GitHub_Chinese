@@ -4,8 +4,8 @@
  */
 
 import { VERSION } from './version.js';
-import { performanceConfig } from './config/performance.js';
-import { selectorsConfig, pagePatternsConfig } from './config/selectors.js';
+import { performanceConfig } from './performance.js';
+import { selectorsConfig, pagePatternsConfig } from './selectors.js';
 
 // 定义greasemonkeyInfo以避免未定义错误
 const greasemonkeyInfo = typeof window === 'undefined' ? {} : (window.GM_info ?? {});

@@ -6,7 +6,7 @@
  * @author Sut
  * @description 分析页面类型和关键区域
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 
 export const pageAnalyzer = {
   isComplexPage() {

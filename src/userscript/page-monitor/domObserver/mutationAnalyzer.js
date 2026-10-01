@@ -2,7 +2,7 @@
  * DOM观察器变化分析模块
  * @file src/userscript/page-monitor/domObserver/mutationAnalyzer.js
  */
-import { CONFIG } from '../../config.js';
+import { CONFIG } from '../../config/index.js';
 import { pageAnalyzer } from '../pageAnalyzer.js';
 import { PAGE_MODE_THRESHOLDS } from './constants.js';
 import { isElementIgnored, isElementImportant } from './elementChecker.js';

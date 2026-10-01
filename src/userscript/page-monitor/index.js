@@ -6,7 +6,7 @@
  * @author Sut
  * @description 页面监控主入口，整合所有子模块
  */
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config/index.js';
 import { pathListener } from './pathListener.js';
 import { domObserver } from './domObserver.js';
 import { translationTrigger } from './translationTrigger.js';

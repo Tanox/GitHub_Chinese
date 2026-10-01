@@ -2,7 +2,7 @@
  * 错误恢复逻辑模块
  * @file src/userscript/core/errorHandler/recovery.js
  */
-import { CONFIG } from '../../config.js';
+import { CONFIG } from '../../config/index.js';
 import { RECOVERY_BASE_DELAY_MS, RECOVERY_MAX_DELAY_MS } from './constants.js';
 
 export const recoveryManager = {
