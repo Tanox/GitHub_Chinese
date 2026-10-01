@@ -20,7 +20,7 @@
 
 ## 3. 版本权威源（高可信 · 强约束）
 
-- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-01 核查：二者均为 **1.13.12**）。
+- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-01 核查：二者均为 **1.13.13**）。
 - 旧 `src/version.js` 已于 v1.13.6 删除，勿再引用。
 - 每次修改（含纯文档）按规则 bump 最小版本（patch）；**仅更新被改文件的头注释版本**，禁止全仓库批量刷写。
 
@@ -36,12 +36,10 @@
 - 关键逻辑中文注释；禁止 `any` / `var`；用 `===`。
 - 测试框架：Node 内置 `node --test`（非 Jest）。
 
-## 6. 已知预存问题（中可信 · 待修，与布局改造无关）
+## 6. 已知预存问题（已清零，v1.13.13）
 
-- `src/app/api/batch-collect/route.ts:44` cookies 类型缺失。
-- `src/components/dictionary/Manager/MergePatchPanel.tsx:89` key/value 未定义。
-- `tests/batch-collector.test.mjs` 中 `_` 未使用。
-- 当前 `npm run lint` = **2 error**（上述预存）；`tsc --noEmit` = **4 个 TS 错误**（构建未通过）。属已知，非本次引入。
+- 历史预存项（`route.ts` cookies 类型 / `MergePatchPanel` key-value / `tests` `_` 未使用）经实查均已不存在：2026-10-01 实跑 `tsc --noEmit` = **0 错误**、`npm run lint` = **0 error**（仅 `eslint/rules/core.js:43` 一处 `no-magic-numbers` warning，非门禁）。
+- 记忆中"4 个 TS 错误 / 2 error"为过时记录，已被本次实查推翻，勿再引用。
 
 ## 7. 关键决策时间线 / 可信度（主题归类）
 
@@ -52,6 +50,8 @@
 | 2026-09-30 | 统一编码阈值：函数 ≤100 / 文件 ≤200（仅代码） | 高 | 见 `coding-style.md` §5.6/§5.8 |
 | 2026-10-01 | 导航由 Rail 侧栏改为 TopNav 顶栏 | 高 | 代码已落地（TopNav.tsx 存在、Rail.tsx 删除） |
 | 2026-10-01 | 文档/记忆整理：去 Jest→node --test、统一 6 页与 TopNav、阈值对齐、版本对齐 1.13.12 | 高 | 见 `CHANGELOG` [1.13.12] |
+
+| 2026-10-01 | 清理 tests 两处预存 lint 错误 + 全部文档头版本对齐 1.13.13 | 高 | 见 `CHANGELOG` [1.13.13] |
 
 ## 8. 易失效数据警示（低可信 · 须实查）
 
