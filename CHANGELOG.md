@@ -1,4 +1,12 @@
 # Changelog
+## [1.13.15] - 2026-10-02
+
+### Docs
+- 在 `docs/coding-style.md` 新增 §5.12「页脚版本信息展示」规范：应用页脚区须展示版本号（取自 `src/userscript/version.js` 的 `VERSION`）与更新日期，并带语义化 `id`。
+- 同步 README 版本徽章至 1.13.15（修正 v1.13.14 遗漏同步的漂移）。
+
+---
+
 ## [1.13.14] - 2026-10-02
 
 ### Refactor

@@ -20,13 +20,13 @@
 
 ## 3. 版本权威源（高可信 · 强约束）
 
-- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-02 核查：二者均为 **1.13.14**）。
+- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-02 核查：二者均为 **1.13.15**，本次为 `coding-style.md` 新增 §5.12 页脚规范 bump）。
 - 旧 `src/version.js` 已于 v1.13.6 删除，勿再引用。
 - 每次修改（含纯文档）按规则 bump 最小版本（patch）；**仅更新被改文件的头注释版本**，禁止全仓库批量刷写。
 
 ## 4. 受保护 / 已处置文件（高可信 · 当前有效）
 
-- `metadata.json`：仍存在（228 B）。历史上（2026-09-25）曾标记为 Google AI Studio 自动生成、须保留；2026-10-01 评估为可能冗余但仍保留。删除前须先确认，勿擅自移除。
+- `metadata.json`：**2026-10-02 实查已不存在**（仓库根无此文件）。曾记为 Google AI Studio 自动生成须保留，该记忆已失效，勿再引用其存在。
 - `GEMINI.md`：**已于 2026-10-01 删除**（当日经用户确认的低风险清理项）。勿再引用其存在或将其列为受保护文件。
 
 ## 5. 编码规范要点（高可信）
@@ -35,6 +35,7 @@
 - 命名：目录 / CSS 类 kebab-case；文件 camelCase；类 / 组件 PascalCase；常量 UPPER_SNAKE_CASE；语义化 id kebab-case。
 - 关键逻辑中文注释；禁止 `any` / `var`；用 `===`。
 - 测试框架：Node 内置 `node --test`（非 Jest）。
+- 应用页脚须展示版本号（取自 `src/userscript/version.js` 的 `VERSION`）与更新日期：见 `docs/coding-style.md` §5.12。
 
 ## 6. 已知预存问题（已清零，v1.13.13）
 
