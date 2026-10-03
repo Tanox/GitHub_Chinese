@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
 
-> 当前版本：**v1.13.16**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.17**（版本单一来源：`src/userscript/version.js`）
 
 ## 命名与兼容性说明
 
@@ -69,7 +69,7 @@ npm run dev     # 打开 http://localhost:3000
 
 > **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
 
-> **原型去耦（v1.13.14）**：原型预览服务器已迁至 `prototype/server.js`（不再位于 `server/`），且不引用采集引擎 `collector-core`、不暴露任何采集 API，原型回归纯静态高保真预览。`server/` 目录现仅保留独立采集服务 `collect-service`。
+> **原型单文件化（v1.13.17）**：原型已收敛为**单个自包含 HTML 文件** `prototype/prototypes/index.html`（CSS 全部内联，无外部依赖、无脚本、无服务器），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览。`server/` 目录仅保留独立采集服务 `collect-service`。
 
 本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
 
@@ -77,8 +77,7 @@ npm run dev     # 打开 http://localhost:3000
 |------|------|------|
 | 高保真原型 | [prototype/prototypes/index.html](prototype/prototypes/index.html) | 采集流程 / 探针脚本 / 数据中心 / 清洗预览 / 实时处理中心 |
 
-**快速入口**：执行 `npm run dev:prototype` 启动带热更新的本地预览，默认打开高保真原型；
-或直接用浏览器打开 [prototype/prototypes/index.html](prototype/prototypes/index.html)。
+**快速入口**：直接用浏览器打开 [prototype/prototypes/index.html](prototype/prototypes/index.html)（单文件自包含，无需服务器或构建）。
 
 ## 项目结构
 
@@ -105,7 +104,7 @@ src/
 ├── versionChecker/          # 版本更新检查
 └── updateNotification/      # 更新通知 UI
 src/app/styles/             # 采集工作台样式（模块化，由 Next 构建打包）
-prototype/                   # 设计系统与高保真原型（含 prototype/server.js 预览服务器）
+prototype/                   # 设计系统与高保真原型（单文件自包含 HTML，与应用代码分离）
 scripts/                     # 构建依赖图、转换、产物校验与词典采集工具链
 server/                     # 独立采集服务（W5 解耦，仅含 collect-service，可自托管部署的 Node 服务）
 build/                       # 用户脚本构建产物（纳入版本控制）
@@ -128,7 +127,6 @@ npm test        # lint → build → validate
 | `npm run build` | 构建用户脚本 → `build/GitHub_zh-cn.user.js` |
 | `npm run validate` | 校验构建产物（存在性 / 体积 / 语法 / 未定义引用） |
 | `npm run dev` | 启动 Next.js 采集工作台 |
-| `npm run dev:prototype` | 启动 `prototype/` 热更新预览 |
 | `npm run build:web` | 构建 Next.js 采集工作台 |
 | `npm run lint` / `lint:fix` | 代码检查 / 自动修复 |
 | `npm run format` / `format:check` | 代码格式化 / 格式校验 |

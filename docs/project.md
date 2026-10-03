@@ -61,10 +61,8 @@ GitHub_Chinese/
 │   ├── lib/                          # 采集内核：collector-core / dictionary-processor / extract-page-text / page-navigation / collector-logic / request-body / url-guard（SSRF）/ browser-resolver / browser-semaphore / collect-codes / coverage-report / sse-stream / api-guard（鉴权限流）/ batch-collector / project-metrics
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
 │   └── proxy.ts                      # 安全响应头 + nonce CSP（Next 16 起取代 middleware）
-├── prototype/                        # 高保真原型
-│   ├── server.js                     # 原型热更新预览服务器（纯静态，不接入采集引擎）
-│   ├── assets/                       # 原型样式（CSS）
-│   └── prototypes/                   # index.html（唯一原型入口）
+├── prototype/                        # 高保真原型（单文件自包含 HTML）
+│   └── prototypes/                   # index.html（唯一原型入口，CSS 内联、无服务器）
 ├── scripts/
 │   ├── build/moduleGraph.cjs         # 模块依赖图（拓扑排序 / 孤立检测）
 │   ├── build/transform.cjs           # ESM → 单作用域拼接
@@ -188,7 +186,7 @@ docs: 更新项目文档
 npm run build          # 构建用户脚本 → build/GitHub_zh-cn.user.js
 npm run validate       # 校验构建产物
 npm run dev            # 启动 Next 采集工作台
-npm run dev:prototype  # 启动 prototype 热更新预览
+# 原型为单文件 HTML，直接用浏览器打开 prototype/prototypes/index.html，无需命令
 npm run build:web      # 构建 Next 工作台
 npm run lint           # 代码检查
 npm test               # lint → build → validate

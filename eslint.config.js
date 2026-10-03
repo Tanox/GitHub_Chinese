@@ -1,7 +1,7 @@
 /**
  * ESLint 配置文件
  * @file eslint.config.js
- * @version 1.13.14
+ * @version 1.13.17
  * @description 项目代码规范配置；规则按类别拆分到 eslint/rules/ 下，此处仅做组装
  * @note 格式化相关规则由 Prettier 处理，ESLint 专注于代码质量和逻辑问题
  */
@@ -36,6 +36,7 @@ export default [
       'coverage/**',
       '.next/**',
       'docs/**',
+      'prototype/**',
       'public/**',
       'eslint.config.js',
     ],

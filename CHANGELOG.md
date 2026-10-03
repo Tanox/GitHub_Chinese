@@ -1,4 +1,12 @@
 # Changelog
+## [1.13.17] - 2026-10-03
+
+### Refactor
+- 原型单文件化：将 `prototype/assets/` 下 10 个 CSS（聚合 `prototype.css` + 9 个模块）全部内联进 `prototype/prototypes/index.html` 的 `<style>`，删除 `prototype/assets/` 与 `prototype/server.js` 预览服务器；原型成为单个自包含 HTML 文件（无外部依赖 / 无脚本 / 无服务器），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览。
+- 移除 `npm run dev:prototype`；`eslint` 扫描范围、`scripts/check-file-length.cjs` 的 `ROOTS` 与 `eslint.config.js` 忽略项同步回退（`prototype/` 已无 JS 文件）。`server/` 目录仅保留独立采集服务 `collect-service`。
+
+---
+
 ## [1.13.16] - 2026-10-03
 
 ### Docs

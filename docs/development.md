@@ -309,7 +309,7 @@ npm run validate
 | `npm run build` | 构建用户脚本 → `build/GitHub_zh-cn.user.js` |
 | `npm run validate` | 验证构建产物 |
 | `npm run dev` | 启动 Next.js 采集工作台 |
-| `npm run dev:prototype` | 启动 `prototype/` 热更新预览（Express + WebSocket） |
+| 原型预览 | 直接用浏览器打开 `prototype/prototypes/index.html`（单文件自包含） |
 | `npm run build:web` | 构建 Next.js 采集工作台 |
 | `npm run dict:collect -- <文件>` | 采集文本文件中的待翻译词条 |
 | `npm test` | 完整流水线：lint → build → validate |
