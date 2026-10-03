@@ -1,4 +1,15 @@
 # Changelog
+## [1.13.18] - 2026-10-03
+
+### Feat
+- 新增高保真原型 `prototype/app.html`：把工作台其余 5 个模块合并为单文件汇总原型（内联同源设计系统、单文件评审），覆盖 `/overview` 概览、`/coverage` 覆盖率与缺口看板、`/design` 设计系统展示、`/dictionary` 词条字典浏览、`/dictionary/manage` 词典管理（CRUD）。
+- `app.html` 含 SPA 顶部导航切换、KPI 数字滚动、采集趋势图、覆盖率环形与逐项进度、词条实时检索、模态新增/编辑/删除与 toast 反馈。
+
+### Fix
+- `wireframes.html` 补充缺失的 `@keyframes wf-ping`（业务组件 b-engine 的 Processing 脉冲此前无动画），并补齐 `:focus-visible` 统一焦点描边（使用规则已声明，此前 CSS 未实现）。
+
+---
+
 ## [1.13.17] - 2026-10-03
 
 ### Refactor

@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>高保真原型 · 工作台其余模块 · v1.13.18</title>
+    <style>
+      /* ===== 设计令牌（与 prototype.html / wireframes.html 同源） ===== */
+      :root {
+        /* 核心色彩 */
+        --c-bg: #0d1117;
+        --c-bg-elevated: #161b22;
+        --c-bg-inset: #010409;
+        --c-surface: #161b22;
+        --c-surface-hover: #1f2630;
+        --c-border: #30363d;
+        --c-border-subtle: #21262d;
+        --c-divider: #373e47;
+        --c-text: #e6edf3;
+        --c-text-muted: #8b949e;
+        --c-text-dim: #6e7681;
+        --c-text-link: #4493f8;
+        --c-primary: #2ea44f;
+        --c-primary-hover: #2c974b;
+        --c-primary-active: #298e46;
+        --c-primary-ink: #ffffff;
+        --c-accent: #4493f8;
+        --c-accent-hover: #58a6ff;
+        --c-warn: #d29922;
+        --c-danger: #f85149;
+        --c-purple: #a371f7;
+        --c-success-fg: #3fb950;
+        --c-success-bg: rgba(46, 160, 67, 0.15);
+        --c-info-fg: #58a6ff;
+        --c-info-bg: rgba(56, 139, 253, 0.15);
+        --c-warn-fg: #d29922;
+        --c-warn-bg: rgba(210, 153, 34, 0.15);
+        --c-danger-fg: #f85149;
+        --c-danger-bg: rgba(248, 81, 73, 0.15);
+        /* 排版 */
+        --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+          "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        --font-mono: "JetBrains Mono", "SF Mono", "SFMono-Regular", Menlo, Consolas,
+          "Courier New", monospace;
+        --font-display: "Noto Serif SC", "Source Han Serif SC", "PingFang SC", Georgia, serif;
+        --fs-xs: 11px; --fs-sm: 12px; --fs-base: 14px; --fs-md: 15px;
+        --fs-lg: 16px; --fs-xl: 18px; --fs-2xl: 20px; --fs-3xl: 24px; --fs-4xl: 32px;
+        --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+        /* 间距 */
+        --sp-1: 2px; --sp-2: 4px; --sp-3: 6px; --sp-4: 8px; --sp-5: 12px;
+        --sp-6: 16px; --sp-7: 20px; --sp-8: 24px; --sp-9: 32px; --sp-10: 40px; --sp-12: 64px;
+        /* 圆角 / 阴影 / 动效 */
+        --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px; --r-2xl: 16px; --r-full: 999px;
+        --sh-md: 0 4px 14px rgba(0, 0, 0, 0.35);
+        --sh-lg: 0 8px 28px rgba(0, 0, 0, 0.45);
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+        --t-fast: 120ms; --t-base: 200ms; --t-slow: 320ms;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: var(--c-bg); color: var(--c-text);
+        font-family: var(--font-ui); font-size: var(--fs-base); line-height: 1.5;
+        -webkit-font-smoothing: antialiased; }
+      a { color: var(--c-text-link); text-decoration: none; }
+      code, pre, kbd { font-family: var(--font-mono); }
+      a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible,
+      .tab:focus-visible, .app-nav a:focus-visible {
+        outline: 2px solid var(--c-accent); outline-offset: 2px; border-radius: var(--r-sm); }
+
+      /* ===== 顶栏 / 导航 ===== */
+      .app-topbar { background: var(--c-bg-elevated); border-bottom: 1px solid var(--c-border-subtle);
+        position: sticky; top: 0; z-index: 60; }
+      .app-topbar-inner { max-width: 1180px; margin: 0 auto; display: flex; align-items: center;
+        justify-content: space-between; gap: var(--sp-6); padding: var(--sp-5) var(--sp-8); }
+      .app-brand { font-weight: var(--fw-semibold); letter-spacing: -0.01em; }
+      .app-brand .v { color: var(--c-text-dim); font-family: var(--font-mono); font-size: var(--fs-sm); margin-left: 8px; }
+      .app-nav { background: var(--c-bg-elevated); border-bottom: 1px solid var(--c-border-subtle);
+        position: sticky; top: 57px; z-index: 55; }
+      .app-nav-inner { max-width: 1180px; margin: 0 auto; display: flex; gap: 4px; padding: 0 var(--sp-8);
+        overflow-x: auto; }
+      .app-nav a, .app-nav button { color: var(--c-text-muted); font-size: var(--fs-sm); font-family: var(--font-ui);
+        padding: 12px 16px; border: none; background: transparent; cursor: pointer; white-space: nowrap;
+        border-bottom: 2px solid transparent; transition: all var(--t-fast) var(--ease-out); }
+      .app-nav a:hover, .app-nav button:hover { color: var(--c-text); }
+      .app-nav a.active, .app-nav button.active { color: var(--c-text); border-bottom-color: var(--c-primary); font-weight: var(--fw-semibold); }
+
+      .app-main { max-width: 1180px; margin: 0 auto; padding: var(--sp-10) var(--sp-8) var(--sp-12); }
+      .eyebrow { display: inline-block; padding: 2px 8px; background: var(--c-success-bg); color: var(--c-success-fg);
+        font-size: var(--fs-sm); font-family: var(--font-mono); border-radius: var(--r-sm); letter-spacing: 0.04em; margin-bottom: var(--sp-4); }
+      .page-title { font-family: var(--font-display); font-size: var(--fs-4xl); font-weight: var(--fw-bold); margin: 0 0 var(--sp-4); letter-spacing: -0.01em; }
+      .lede { color: var(--c-text-muted); max-width: 680px; line-height: 1.7; margin: 0 0 var(--sp-10); }
+      .page { margin-bottom: var(--sp-12); }
+      .page[hidden] { display: none; }
+      .page h2 { font-family: var(--font-display); font-size: var(--fs-2xl); font-weight: var(--fw-semibold); margin: 0 0 var(--sp-2); }
+      .page .meta { color: var(--c-text-dim); font-family: var(--font-mono); font-size: var(--fs-sm); margin-bottom: var(--sp-6); }
+      .section { margin-bottom: var(--sp-10); }
+      .section > h3 { font-size: var(--fs-lg); font-weight: var(--fw-semibold); margin: 0 0 var(--sp-4); display: flex; align-items: center; gap: var(--sp-3); }
+      .section > h3 .badge { font-size: var(--fs-xs); }
+
+      /* ===== 按钮 / 输入 ===== */
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+        padding: var(--sp-3) var(--sp-5); font-family: var(--font-ui); font-size: var(--fs-base); font-weight: var(--fw-medium);
+        color: var(--c-text); background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-md);
+        cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+        user-select: none; white-space: nowrap; }
+      .btn:hover { background: var(--c-surface-hover); border-color: var(--c-divider); }
+      .btn:active { transform: translateY(1px); }
+      .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+      .btn-primary { background: var(--c-primary); border-color: rgba(240,246,252,0.1); color: var(--c-primary-ink); }
+      .btn-primary:hover { background: var(--c-primary-hover); }
+      .btn-danger { background: var(--c-danger); border-color: rgba(240,246,252,0.1); color: #fff; }
+      .btn-ghost { background: transparent; border-color: transparent; color: var(--c-text-muted); }
+      .btn-ghost:hover { background: var(--c-surface); color: var(--c-text); }
+      .btn-sm { padding: var(--sp-2) var(--sp-4); font-size: var(--fs-sm); border-radius: var(--r-sm); }
+      .input { background: var(--c-bg-inset); border: 1px solid var(--c-border); border-radius: var(--r-md);
+        color: var(--c-text); font-family: var(--font-ui); font-size: var(--fs-base); padding: var(--sp-3) var(--sp-5);
+        transition: border-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); min-width: 220px; }
+      .input:focus { outline: none; border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(68,147,248,0.3); }
+      .input::placeholder { color: var(--c-text-dim); }
+      .icon-btn { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+        border-radius: var(--r-md); background: transparent; border: 1px solid var(--c-border); color: var(--c-text-muted);
+        cursor: pointer; transition: all var(--t-fast) var(--ease-out); }
+      .icon-btn:hover { background: var(--c-surface-hover); color: var(--c-text); }
+      .icon-btn svg { width: 18px; height: 18px; }
+
+      /* ===== 卡片 / 徽标 / 表格 ===== */
+      .card { background: var(--c-bg-elevated); border: 1px solid var(--c-border); border-radius: var(--r-xl); padding: var(--sp-7); }
+      .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--r-full);
+        font-size: var(--fs-xs); font-family: var(--font-mono); letter-spacing: 0; border: 1px solid transparent; }
+      .badge.unt { background: var(--c-warn-bg); color: var(--c-warn-fg); border-color: rgba(210,153,34,0.4); }
+      .badge.tr { background: var(--c-success-bg); color: var(--c-success-fg); }
+      .badge.info { background: var(--c-info-bg); color: var(--c-info-fg); }
+      .badge.danger { background: var(--c-danger-bg); color: var(--c-danger-fg); }
+      .ds-table { width: 100%; border-collapse: collapse; font-size: var(--fs-base); }
+      .ds-table th, .ds-table td { text-align: left; padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--c-border-subtle); vertical-align: middle; }
+      .ds-table th { font-weight: var(--fw-semibold); color: var(--c-text-muted); font-family: var(--font-mono);
+        font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: 0.03em; background: var(--c-bg-inset); }
+      .ds-table td code { font-size: var(--fs-sm); color: var(--c-accent-hover); }
+      .ds-table tbody tr:hover { background: var(--c-surface-hover); }
+      .right { text-align: right; }
+
+      /* ===== KPI ===== */
+      .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-6); margin: var(--sp-8) 0 var(--sp-10); }
+      .kpi { background: var(--c-bg-elevated); border: 1px solid var(--c-border); border-radius: var(--r-xl); padding: var(--sp-6); }
+      .kpi .v { font-family: var(--font-mono); font-size: var(--fs-3xl); font-weight: var(--fw-bold); color: var(--c-text); }
+      .kpi .l { font-size: var(--fs-sm); color: var(--c-text-muted); margin-top: var(--sp-2); }
+      .kpi .bar { height: 6px; border-radius: var(--r-full); background: var(--c-border-subtle); margin-top: var(--sp-5); overflow: hidden; }
+      .kpi .bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--c-primary), var(--c-accent)); transition: width 1.2s var(--ease-out); }
+
+      /* ===== 采集趋势图 ===== */
+      .trend { display: flex; align-items: flex-end; gap: var(--sp-5); height: 200px; padding: var(--sp-5) 0 0;
+        border-bottom: 1px solid var(--c-border-subtle); }
+      .trend .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+      .trend .col .bar { width: 100%; max-width: 46px; background: linear-gradient(180deg, var(--c-primary), var(--c-accent));
+        border-radius: var(--r-sm) var(--r-sm) 0 0; height: 0; transition: height 1s var(--ease-out); position: relative; }
+      .trend .col .bar::after { content: attr(data-v); position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+        font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--c-text-muted); opacity: 0; transition: opacity var(--t-base) var(--ease-out); }
+      .trend .col:hover .bar::after { opacity: 1; }
+      .trend .col .lbl { font-size: var(--fs-xs); color: var(--c-text-dim); margin-top: var(--sp-3); font-family: var(--font-mono); }
+
+      /* ===== 覆盖率 ===== */
+      .cov-hero { display: flex; align-items: center; gap: var(--sp-8); }
+      .cov-ring { --p: 73.9; width: 128px; height: 128px; border-radius: 50%; flex-shrink: 0;
+        background: conic-gradient(var(--c-primary) calc(var(--p) * 1%), var(--c-border-subtle) 0);
+        display: flex; align-items: center; justify-content: center; position: relative; }
+      .cov-ring::before { content: ""; position: absolute; inset: 12px; border-radius: 50%; background: var(--c-bg-elevated); }
+      .cov-ring .num { position: relative; font-family: var(--font-mono); font-size: var(--fs-2xl); font-weight: var(--fw-bold); }
+      .mini-bar { height: 6px; border-radius: var(--r-full); background: var(--c-border-subtle); overflow: hidden; min-width: 90px; }
+      .mini-bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--c-primary), var(--c-accent)); }
+      .gap-list { list-style: none; margin: 0; padding: 0; }
+      .gap-list li { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-3) 0; border-bottom: 1px solid var(--c-border-subtle); }
+      .gap-list li:last-child { border-bottom: none; }
+      .gap-list .cnt { font-family: var(--font-mono); color: var(--c-warn-fg); font-size: var(--fs-sm); }
+      .alert { display: flex; gap: var(--sp-4); padding: var(--sp-4) var(--sp-5); border-radius: var(--r-lg); font-size: var(--fs-sm);
+        border: 1px solid; align-items: flex-start; }
+      .alert.warn { background: var(--c-warn-bg); border-color: rgba(210,153,34,0.4); color: var(--c-warn-fg); }
+      .alert.danger { background: var(--c-danger-bg); border-color: rgba(248,81,73,0.4); color: var(--c-danger-fg); }
+
+      /* ===== 能力清单 ===== */
+      .cap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-5); }
+      .cap { display: flex; gap: var(--sp-4); align-items: flex-start; background: var(--c-bg-elevated);
+        border: 1px solid var(--c-border); border-radius: var(--r-lg); padding: var(--sp-5); }
+      .cap .ico { color: var(--c-primary); flex-shrink: 0; }
+      .cap .t { font-weight: var(--fw-semibold); font-size: var(--fs-base); }
+      .cap .d { color: var(--c-text-muted); font-size: var(--fs-sm); margin-top: 2px; line-height: 1.5; }
+
+      /* ===== 设计系统展示 ===== */
+      .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-4); }
+      .swatch { border: 1px solid var(--c-border-subtle); border-radius: var(--r-lg); overflow: hidden; background: var(--c-bg-elevated); }
+      .swatch i { display: block; height: 56px; }
+      .swatch .m { padding: var(--sp-3) var(--sp-4); font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--c-text-dim); }
+      .demorow { display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: center; }
+
+      /* ===== 工具条 / 标签筛选 ===== */
+      .toolbar { display: flex; gap: var(--sp-4); align-items: center; flex-wrap: wrap; margin-bottom: var(--sp-6); }
+      .tabs { display: inline-flex; gap: var(--sp-2); background: var(--c-bg-inset); padding: var(--sp-1); border-radius: var(--r-lg); border: 1px solid var(--c-border-subtle); }
+      .tab { padding: var(--sp-3) var(--sp-5); border-radius: var(--r-md); color: var(--c-text-muted); font-size: var(--fs-sm);
+        font-weight: var(--fw-medium); cursor: pointer; transition: all var(--t-fast) var(--ease-out); border: none; background: transparent; }
+      .tab:hover { color: var(--c-text); }
+      .tab.active { background: var(--c-bg-elevated); color: var(--c-text); box-shadow: var(--sh-md); }
+
+      /* ===== 模态 / 吐司 ===== */
+      .overlay { position: fixed; inset: 0; background: rgba(1,4,9,0.6); display: flex; align-items: center; justify-content: center;
+        z-index: 100; opacity: 0; pointer-events: none; transition: opacity var(--t-base) var(--ease-out); }
+      .overlay.show { opacity: 1; pointer-events: auto; }
+      .modal { width: min(460px, 92vw); background: var(--c-bg-elevated); border: 1px solid var(--c-border);
+        border-radius: var(--r-xl); box-shadow: var(--sh-lg); transform: translateY(12px); transition: transform var(--t-base) var(--ease-out); }
+      .overlay.show .modal { transform: none; }
+      .modal .m-head { padding: var(--sp-6); border-bottom: 1px solid var(--c-border-subtle); font-size: var(--fs-lg); font-weight: var(--fw-semibold); }
+      .modal .m-body { padding: var(--sp-6); color: var(--c-text-muted); font-size: var(--fs-sm); line-height: 1.7; }
+      .modal .m-foot { padding: var(--sp-5) var(--sp-6); border-top: 1px solid var(--c-border-subtle); display: flex; justify-content: flex-end; gap: var(--sp-4); }
+      .field-label { display: block; font-size: var(--fs-sm); font-weight: var(--fw-medium); margin-bottom: var(--sp-3); }
+      .toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px); background: var(--c-surface);
+        border: 1px solid var(--c-border); color: var(--c-text); padding: 10px 18px; border-radius: var(--r-lg); font-size: var(--fs-sm);
+        box-shadow: var(--sh-md); opacity: 0; pointer-events: none; transition: all .3s var(--ease-out); z-index: 9999; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+      .app-footer { border-top: 1px solid var(--c-border-subtle); }
+      .app-footer-inner { max-width: 1180px; margin: 0 auto; padding: var(--sp-8); color: var(--c-text-dim);
+        font-size: var(--fs-sm); display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--sp-4); }
+
+      @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+      @media (max-width: 900px) {
+        .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+        .cap-grid { grid-template-columns: 1fr; }
+        .cov-hero { flex-direction: column; align-items: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-topbar" id="appTopbar">
+      <div class="app-topbar-inner">
+        <span class="app-brand">GitHub 中文 · 工作台<span class="v">v1.13.18</span></span>
+        <button class="icon-btn" type="button" aria-label="设置">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <nav class="app-nav" id="appNav" aria-label="工作台导航">
+      <div class="app-nav-inner">
+        <a href="prototype.html">控制台</a>
+        <button data-page="overview" class="active">概览</button>
+        <button data-page="coverage">覆盖率</button>
+        <button data-page="design">设计</button>
+        <button data-page="dictionary">词典</button>
+        <button data-page="dict-manage">词典管理</button>
+      </div>
+    </nav>
+
+    <main class="app-main" id="appMain">
+      <!-- ============ 概览 /overview ============ -->
+      <section class="page" id="page-overview" aria-labelledby="t-overview">
+        <span class="eyebrow">OVERVIEW</span>
+        <h1 class="page-title" id="t-overview">项目概览</h1>
+        <p class="lede">汇总词典采集工作台的全局指标、采集趋势与平台能力清单，帮助维护者快速掌握本地化进度。</p>
+
+        <div class="kpi-strip" id="appKpi">
+          <div class="kpi"><div class="v count" data-to="12480">0</div><div class="l">已采集词条</div></div>
+          <div class="kpi"><div class="v count" data-to="9216">0</div><div class="l">已翻译（占 73.9%）</div><div class="bar"><i data-w="73.9"></i></div></div>
+          <div class="kpi"><div class="v count" data-to="1204">0</div><div class="l">词典条目</div></div>
+          <div class="kpi"><div class="v count" data-to="36">0</div><div class="l">本次待翻译</div></div>
+        </div>
+
+        <div class="section" id="overviewTrendSection">
+          <h3>采集趋势 <span class="badge info">近 8 次</span></h3>
+          <div class="card">
+            <div class="trend" id="overviewTrend" role="img" aria-label="近 8 次采集量柱状图"></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>平台能力清单</h3>
+          <div class="cap-grid" id="capGrid"></div>
+        </div>
+      </section>
+
+      <!-- ============ 覆盖率 /coverage ============ -->
+      <section class="page" id="page-coverage" hidden aria-labelledby="t-coverage">
+        <span class="eyebrow">COVERAGE</span>
+        <h1 class="page-title" id="t-coverage">覆盖率 / 缺口看板</h1>
+        <p class="lede">按文件细分本地化覆盖率，定位 Top-N 翻译缺口，并检测词典中的重复与冲突条目（T22）。</p>
+
+        <div class="section">
+          <h3>整体覆盖率</h3>
+          <div class="card cov-hero">
+            <div class="cov-ring" id="covRing"><span class="num">73.9%</span></div>
+            <div>
+              <p class="lede" style="margin:0">已翻译 <strong>9,216</strong> / 共 <strong>12,480</strong> 条 UI 词条。覆盖率较上次采集提升 <span class="badge tr">+2.4%</span>。</p>
+              <p style="color:var(--c-text-dim);font-size:var(--fs-sm);margin:8px 0 0">覆盖率 = 已翻译词条数 ÷ 已采集词条数，按文件加权计算。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>按文件细分</h3>
+          <div class="card">
+            <table class="ds-table" id="coverageFiles">
+              <thead><tr><th>文件</th><th class="right">词条</th><th class="right">已翻译</th><th>覆盖率</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-6)">
+          <div>
+            <h3>Top-N 翻译缺口</h3>
+            <div class="card">
+              <ul class="gap-list" id="gapList"></ul>
+            </div>
+          </div>
+          <div>
+            <h3>重复 / 冲突检测</h3>
+            <div class="card">
+              <div class="alert warn" style="margin-bottom:var(--sp-4)">
+                <span>⚠</span><span><code>Compare changes</code> 存在 2 条冲突译文：<strong>比较更改</strong> / <strong>对比改动</strong>，建议保留高置信度条目。</span>
+              </div>
+              <div class="alert danger">
+                <span>✕</span><span><code>Watch</code> 检测到 2 处重复条目，已合并；<code>Repository settings</code> 置信度偏低待复核。</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 设计 /design ============ -->
+      <section class="page" id="page-design" hidden aria-labelledby="t-design">
+        <span class="eyebrow">DESIGN SYSTEM</span>
+        <h1 class="page-title" id="t-design">设计系统展示</h1>
+        <p class="lede">工作台统一的设计令牌、按钮、状态徽标与词条表格规范预览（完整组件库见 Wireframes 规范）。</p>
+
+        <div class="section">
+          <h3>设计令牌 · 语义色板</h3>
+          <div class="card"><div class="swatch-grid" id="swatchGrid"></div></div>
+        </div>
+        <div class="section">
+          <h3>按钮 Buttons</h3>
+          <div class="card"><div class="demorow">
+            <button class="btn btn-primary">主操作</button>
+            <button class="btn">默认</button>
+            <button class="btn btn-danger">删除</button>
+            <button class="btn btn-ghost">次级</button>
+            <button class="btn btn-sm">小号</button>
+            <button class="btn btn-lg">大号</button>
+            <button class="btn" disabled>禁用</button>
+          </div></div>
+        </div>
+        <div class="section">
+          <h3>状态徽标 Badges</h3>
+          <div class="card"><div class="demorow">
+            <span class="badge unt">待翻译</span>
+            <span class="badge tr">已翻译</span>
+            <span class="badge info">采集中</span>
+            <span class="badge danger">失败</span>
+          </div></div>
+        </div>
+        <div class="section">
+          <h3>词条表格 Term Table</h3>
+          <div class="card">
+            <table class="ds-table">
+              <thead><tr><th>英文源词</th><th>中文译词</th><th class="right">状态</th></tr></thead>
+              <tbody>
+                <tr><td><code>Pull requests</code></td><td>拉取请求</td><td class="right"><span class="badge tr">已翻译</span></td></tr>
+                <tr><td><code>Compare changes</code></td><td>—</td><td class="right"><span class="badge unt">待翻译</span></td></tr>
+                <tr><td><code>Notifications</code></td><td>通知</td><td class="right"><span class="badge tr">已翻译</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 词典 /dictionary ============ -->
+      <section class="page" id="page-dictionary" hidden aria-labelledby="t-dictionary">
+        <span class="eyebrow">DICTIONARY</span>
+        <h1 class="page-title" id="t-dictionary">词条字典浏览</h1>
+        <p class="lede">检索与浏览已沉淀的中文本地化词典，支持按关键词过滤与按翻译状态筛选。</p>
+
+        <div class="toolbar">
+          <input class="input" id="dictSearch" placeholder="搜索英文源词或中文译词…" aria-label="搜索词条" />
+          <div class="tabs" role="tablist" aria-label="状态筛选">
+            <button class="tab active" data-filter="all" role="tab">全部</button>
+            <button class="tab" data-filter="tr" role="tab">已翻译</button>
+            <button class="tab" data-filter="unt" role="tab">待翻译</button>
+          </div>
+          <span class="badge info" id="dictCount" style="margin-left:auto">0 条</span>
+        </div>
+
+        <div class="card">
+          <table class="ds-table" id="dictTable">
+            <thead><tr><th style="width:48px">序号</th><th>英文源词</th><th>中文译词</th><th class="right">状态</th></tr></thead>
+            <tbody id="dictBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 词典管理 /dictionary/manage ============ -->
+      <section class="page" id="page-dict-manage" hidden aria-labelledby="t-manage">
+        <span class="eyebrow">DICTIONARY MANAGE</span>
+        <h1 class="page-title" id="t-manage">词条管理</h1>
+        <p class="lede">对本地化词典进行增删改维护，支持检索、新增、编辑与删除词条。</p>
+
+        <div class="toolbar">
+          <input class="input" id="manageSearch" placeholder="搜索词条…" aria-label="搜索词条" />
+          <button class="btn btn-primary" id="btnAdd">+ 新增词条</button>
+        </div>
+
+        <div class="card">
+          <table class="ds-table" id="manageTable">
+            <thead><tr><th style="width:48px">序号</th><th>英文源词</th><th>中文译词</th><th class="right">状态</th><th class="right">操作</th></tr></thead>
+            <tbody id="manageBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer" id="appFooter">
+      <div class="app-footer-inner">
+        <span>高保真原型 · v1.13.18 · 仅供设计走查，不构成交付承诺</span>
+        <span>更新日期：2026-10-03</span>
+      </div>
+    </footer>
+
+    <!-- 词条新增/编辑模态 -->
+    <div class="overlay" id="dictModal">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dictModalT">
+        <div class="m-head" id="dictModalT">新增词条</div>
+        <div class="m-body">
+          <label class="field-label" for="dmEn">英文源词</label>
+          <input class="input" id="dmEn" style="width:100%;min-width:0" placeholder="例如 Notifications" />
+          <label class="field-label" for="dmZh" style="margin-top:12px">中文译词</label>
+          <input class="input" id="dmZh" style="width:100%;min-width:0" placeholder="例如 通知" />
+        </div>
+        <div class="m-foot">
+          <button class="btn" id="dmCancel">取消</button>
+          <button class="btn btn-primary" id="dmSave">保存</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="appToast"></div>
+
+    <script>
+      (function () {
+        var $ = function (s, r) { return (r || document).querySelector(s); };
+        var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+        function toast(msg) {
+          var t = $('#appToast');
+          t.textContent = msg; t.classList.add('show');
+          clearTimeout(t._t); t._timer = setTimeout(function () { t.classList.remove('show'); }, 1800);
+        }
+
+        /* ===== 1. SPA 导航切换 ===== */
+        var pages = ['overview', 'coverage', 'design', 'dictionary', 'dict-manage'];
+        $$('#appNav button[data-page]').forEach(function (b) {
+          b.addEventListener('click', function () { showPage(b.dataset.page); });
+        });
+        function showPage(p) {
+          pages.forEach(function (id) {
+            var s = $('#page-' + id);
+            if (s) s.hidden = (id !== p);
+          });
+          $$('#appNav button[data-page]').forEach(function (b) {
+            b.classList.toggle('active', b.dataset.page === p);
+          });
+          if (p === 'overview') { runKpi(); runTrend(); }
+          if (p === 'coverage') { runCoverage(); }
+          if (p === 'design') { buildSwatches(); }
+          if (p === 'dictionary') { renderDict(); }
+          if (p === 'dict-manage') { renderManage(); }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ===== 2. 数字滚动 / KPI ===== */
+        function countUp(el) {
+          var to = +el.dataset.to, dur = 1100, t0 = performance.now();
+          function fmt(n) { return n.toLocaleString('en-US'); }
+          function step(t) {
+            var p = Math.min(1, (t - t0) / dur);
+            var v = Math.floor((1 - Math.pow(1 - p, 3)) * to);
+            el.textContent = fmt(v);
+            if (p < 1) requestAnimationFrame(step); else el.textContent = fmt(to);
+          }
+          requestAnimationFrame(step);
+        }
+        var kpiDone = false;
+        function runKpi() {
+          if (kpiDone) return; kpiDone = true;
+          $$('#appKpi .count').forEach(countUp);
+          $$('#appKpi .bar > i').forEach(function (i) { i.style.width = i.dataset.w + '%'; });
+        }
+
+        /* ===== 3. 采集趋势图 ===== */
+        var trendData = [820, 940, 760, 1100, 980, 1240, 1080, 1320];
+        var trendDone = false;
+        function runTrend() {
+          var box = $('#overviewTrend');
+          if (!box || trendDone) return; trendDone = true;
+          var max = Math.max.apply(null, trendData);
+          trendData.forEach(function (v, i) {
+            var col = document.createElement('div'); col.className = 'col';
+            var bar = document.createElement('div'); bar.className = 'bar'; bar.dataset.v = v;
+            var lbl = document.createElement('div'); lbl.className = 'lbl'; lbl.textContent = '#' + (i + 1);
+            col.appendChild(bar); col.appendChild(lbl); box.appendChild(col);
+            setTimeout(function () { bar.style.height = (v / max * 100) + '%'; }, 60 + i * 70);
+          });
+        }
+
+        /* ===== 4. 能力清单 ===== */
+        var caps = [
+          { t: '探针采集', d: '在 GitHub 页面注入 TreeWalker 脚本提取可见 UI 文本', ico: 'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z' },
+          { t: '批量 URL 并发', d: 'SSRF 防护 + 信号量限流，批量抓取 GitHub 页面', ico: 'M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1' },
+          { t: '智能清洗', d: '去重、压缩空白、归一化大小写与标点', ico: 'M4 7h16M4 12h10M4 17h7' },
+          { t: 'SSE 实时日志', d: '流式进度与处理中心日志，可清空回看', ico: 'M4 5h16v10H7l-3 3z' },
+          { t: '覆盖率看板', d: '按文件细分覆盖率与 Top-N 缺口检测', ico: 'M4 19V9m6 10V5m6 14v-7' },
+          { t: '词典管理', d: '词条 CRUD、重复与冲突检测、置信度标记', ico: 'M12 5v14M5 12h14' }
+        ];
+        function buildCaps() {
+          var g = $('#capGrid'); if (!g || g.childElementCount) return;
+          caps.forEach(function (c) {
+            var el = document.createElement('div'); el.className = 'cap';
+            el.innerHTML = '<svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + c.ico + '"/></svg>' +
+              '<div><div class="t">' + c.t + '</div><div class="d">' + c.d + '</div></div>';
+            g.appendChild(el);
+          });
+        }
+
+        /* ===== 5. 覆盖率 ===== */
+        var covFiles = [
+          { f: 'src/app/overview/page.tsx', t: 320, tr: 280 },
+          { f: 'src/components/CollectorConsole.tsx', t: 210, tr: 150 },
+          { f: 'src/app/coverage/page.tsx', t: 180, tr: 120 },
+          { f: 'src/components/DataCenter.tsx', t: 260, tr: 190 },
+          { f: 'src/app/dictionary/page.tsx', t: 140, tr: 90 },
+          { f: 'src/lib/collector-core.js', t: 410, tr: 280 }
+        ];
+        var gaps = [
+          { t: 'Compare changes', c: 12 }, { t: 'Your repositories', c: 9 },
+          { t: 'Compare & pull request', c: 7 }, { t: 'Repository settings', c: 5 }, { t: 'Dismiss', c: 4 }
+        ];
+        var covDone = false;
+        function runCoverage() {
+          if (covDone) return; covDone = true;
+          var tb = $('#coverageFiles tbody');
+          covFiles.forEach(function (r) {
+            var pct = Math.round(r.tr / r.t * 1000) / 10;
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><code>' + r.f + '</code></td><td class="right">' + r.t + '</td><td class="right">' + r.tr + '</td>' +
+              '<td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><i style="width:' + pct + '%"></i></div><span style="font-family:var(--font-mono);font-size:var(--fs-sm)">' + pct + '%</span></div></td>';
+            tb.appendChild(tr);
+          });
+          var gl = $('#gapList');
+          gaps.forEach(function (g) {
+            var li = document.createElement('li');
+            li.innerHTML = '<span><code>' + g.t + '</code></span><span class="cnt">' + g.c + ' 处未翻译</span>';
+            gl.appendChild(li);
+          });
+        }
+
+        /* ===== 6. 设计令牌色板 ===== */
+        var swatches = [
+          ['--c-bg', '#0d1117'], ['--c-bg-elevated', '#161b22'], ['--c-primary', '#2ea44f'],
+          ['--c-accent', '#4493f8'], ['--c-warn', '#d29922'], ['--c-danger', '#f85149'],
+          ['--c-purple', '#a371f7'], ['--c-text', '#e6edf3'], ['--c-border', '#30363d']
+        ];
+        function buildSwatches() {
+          var g = $('#swatchGrid'); if (!g || g.childElementCount) return;
+          swatches.forEach(function (s) {
+            var d = document.createElement('div'); d.className = 'swatch';
+            d.innerHTML = '<i style="background:' + s[1] + '"></i><div class="m">' + s[0] + '<br>' + s[1] + '</div>';
+            g.appendChild(d);
+          });
+        }
+
+        /* ===== 7. 词典浏览 ===== */
+        var dictData = [
+          { en: 'Pull requests', zh: '拉取请求', st: 'tr' },
+          { en: 'Sign in', zh: '登录', st: 'tr' },
+          { en: 'Open a pull request', zh: '发起拉取请求', st: 'tr' },
+          { en: 'Compare changes', zh: '', st: 'unt' },
+          { en: 'Actions', zh: '操作', st: 'tr' },
+          { en: 'Settings', zh: '设置', st: 'tr' },
+          { en: 'Notifications', zh: '通知', st: 'tr' },
+          { en: 'Your repositories', zh: '', st: 'unt' },
+          { en: 'Watch', zh: '关注', st: 'tr' },
+          { en: 'Star', zh: '星标', st: 'tr' },
+          { en: 'Fork', zh: '复刻', st: 'tr' },
+          { en: 'New pull request', zh: '新建拉取请求', st: 'tr' },
+          { en: 'Compare & pull request', zh: '', st: 'unt' },
+          { en: 'Repository settings', zh: '仓库设置', st: 'tr' }
+        ];
+        var dictFilter = 'all';
+        function renderDict() {
+          var q = ($('#dictSearch').value || '').toLowerCase();
+          var rows = dictData.filter(function (d) {
+            if (dictFilter !== 'all' && d.st !== dictFilter) return false;
+            if (q && (d.en.toLowerCase().indexOf(q) < 0 && (d.zh || '').toLowerCase().indexOf(q) < 0)) return false;
+            return true;
+          });
+          var tb = $('#dictBody'); tb.innerHTML = '';
+          rows.forEach(function (d, i) {
+            var tr = document.createElement('tr');
+            var badge = d.st === 'tr' ? '<span class="badge tr">已翻译</span>' : '<span class="badge unt">待翻译</span>';
+            var zh = d.zh || '<span style="color:var(--c-text-dim)">—</span>';
+            tr.innerHTML = '<td>' + (i + 1) + '</td><td><code>' + d.en + '</code></td><td>' + zh + '</td><td class="right">' + badge + '</td>';
+            tb.appendChild(tr);
+          });
+          $('#dictCount').textContent = rows.length + ' 条';
+        }
+        $('#dictSearch').addEventListener('input', renderDict);
+        $$('#page-dictionary .tab').forEach(function (t) {
+          t.addEventListener('click', function () {
+            $$('#page-dictionary .tab').forEach(function (x) { x.classList.toggle('active', x === t); });
+            dictFilter = t.dataset.filter; renderDict();
+          });
+        });
+
+        /* ===== 8. 词典管理 CRUD ===== */
+        var manageData = [
+          { en: 'Pull requests', zh: '拉取请求' },
+          { en: 'Sign in', zh: '登录' },
+          { en: 'Open a pull request', zh: '发起拉取请求' },
+          { en: 'Notifications', zh: '通知' },
+          { en: 'Repository settings', zh: '仓库设置' }
+        ];
+        var editIdx = -1;
+        function renderManage() {
+          var q = ($('#manageSearch').value || '').toLowerCase();
+          var rows = manageData.filter(function (d) {
+            return !q || d.en.toLowerCase().indexOf(q) >= 0 || (d.zh || '').toLowerCase().indexOf(q) >= 0;
+          });
+          var tb = $('#manageBody'); tb.innerHTML = '';
+          rows.forEach(function (d, i) {
+            var tr = document.createElement('tr');
+            var st = d.zh ? '<span class="badge tr">已翻译</span>' : '<span class="badge unt">待翻译</span>';
+            var zh = d.zh || '<span style="color:var(--c-text-dim)">—</span>';
+            tr.innerHTML = '<td>' + (i + 1) + '</td><td><code>' + d.en + '</code></td><td>' + zh + '</td><td class="right">' + st + '</td>' +
+              '<td class="right"><button class="btn btn-sm" data-edit="' + manageData.indexOf(d) + '">编辑</button> ' +
+              '<button class="btn btn-sm btn-danger" data-del="' + manageData.indexOf(d) + '">删除</button></td>';
+            tb.appendChild(tr);
+          });
+          $$('#manageBody [data-edit]').forEach(function (b) {
+            b.addEventListener('click', function () { openModal(+b.dataset.edit); });
+          });
+          $$('#manageBody [data-del]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var i = +b.dataset.del; var removed = manageData.splice(i, 1)[0];
+              renderManage(); toast('已删除词条：' + removed.en);
+            });
+          });
+        }
+        $('#manageSearch').addEventListener('input', renderManage);
+
+        var modal = $('#dictModal');
+        function openModal(idx) {
+          editIdx = idx;
+          $('#dictModalT').textContent = idx < 0 ? '新增词条' : '编辑词条';
+          $('#dmEn').value = idx < 0 ? '' : manageData[idx].en;
+          $('#dmZh').value = idx < 0 ? '' : (manageData[idx].zh || '');
+          modal.classList.add('show');
+          setTimeout(function () { $('#dmEn').focus(); }, 60);
+        }
+        function closeModal() { modal.classList.remove('show'); editIdx = -1; }
+        $('#btnAdd').addEventListener('click', function () { openModal(-1); });
+        $('#dmCancel').addEventListener('click', closeModal);
+        modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+        $('#dmSave').addEventListener('click', function () {
+          var en = $('#dmEn').value.trim(), zh = $('#dmZh').value.trim();
+          if (!en) { toast('英文源词不能为空'); $('#dmEn').focus(); return; }
+          if (editIdx < 0) { manageData.push({ en: en, zh: zh }); toast('已新增词条：' + en); }
+          else { manageData[editIdx] = { en: en, zh: zh }; toast('已保存词条：' + en); }
+          closeModal(); renderManage();
+        });
+
+        /* ===== 初始化首屏 ===== */
+        buildCaps();
+        runKpi();
+        runTrend();
+        buildSwatches();
+        renderDict();
+        renderManage();
+      })();
+    </script>
+  </body>
+</html>
