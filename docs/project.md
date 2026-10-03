@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.13** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.16** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -246,10 +246,9 @@ npm test               # lint → build → validate
 - **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、六页互通与响应式顶部导航、项目概览（实时指标）、设计系统、**覆盖率/缺口看板（/coverage，T22）**。
 - **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（170 用例）、a11y 自动化检查。
 
-### 活动任务（以 docs/tasks.md 为唯一清单）
+### 活动任务
 
-- **T18** 采集源扩展（L）：登录态 cookie / HAR 导入，覆盖更多私有 UI 区域。
-- **T21** 翻译建议（L）：LLM/翻译记忆建议译文，失败降级（无 key 跳过）。
+> 全部活动任务、优先级与验收要点以 [docs/tasks.md](./tasks.md) 为**唯一清单**，本节不再维护任务条目。当前无开放任务（T1–T38 已全部交付；仅 W5 serverless 架构阻塞待定，详见 tasks.md）。
 
 ### 迭代里程碑（节选，详见 CHANGELOG）
 

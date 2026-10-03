@@ -20,7 +20,7 @@
 
 ## 3. 版本权威源（高可信 · 强约束）
 
-- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-02 核查：二者均为 **1.13.15**，本次为 `coding-style.md` 新增 §5.12 页脚规范 bump）。
+- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-03 核查：二者均为 **1.13.16**，本次为任务单源收口 bump `docs/tasks.md` 与 `docs/project.md`）。
 - 旧 `src/version.js` 已于 v1.13.6 删除，勿再引用。
 - 每次修改（含纯文档）按规则 bump 最小版本（patch）；**仅更新被改文件的头注释版本**，禁止全仓库批量刷写。
 
@@ -36,6 +36,7 @@
 - 关键逻辑中文注释；禁止 `any` / `var`；用 `===`。
 - 测试框架：Node 内置 `node --test`（非 Jest）。
 - 应用页脚须展示版本号（取自 `src/userscript/version.js` 的 `VERSION`）与更新日期：见 `docs/coding-style.md` §5.12。
+- 任务记录**单一来源**：`docs/tasks.md` 为所有任务（活动 / 优先级 / 验收要点）的唯一清单；其他文档（如 `docs/project.md`「活动任务」小节）仅引用、不维护任务条目。2026-10-03 收口，无独立冗余任务文档（历史 `TASKS.md` / `PROGRESS.md` / `IMPROVEMENT-TASKS.md` 已合并删除；`code-review/*` 为审查治理体系，保留）。
 
 ## 6. 已知预存问题（已清零，v1.13.13）
 
