@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:prototype": "node prototype/server.js",
     "build": "next build && node scripts/build/build.cjs",
     "build:web": "next build",
     "build:userscript": "node scripts/build/build.cjs",

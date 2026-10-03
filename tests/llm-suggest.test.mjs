@@ -85,11 +85,18 @@ test('挂起端点在超时后降级 null 而不是永久等待（回归）', as
   // 模拟真实 fetch：监听 signal，abort（超时）时以 AbortError reject
   const mock = mockFetch((_url, init) => {
     return new Promise((_resolve, reject) => {
-      init.signal.addEventListener('abort', () => {
+      const keepAlive = setInterval(() => {}, 10);
+      const onAbort = () => {
+        clearInterval(keepAlive);
         const error = new Error('The operation was aborted due to timeout');
         error.name = 'TimeoutError';
         reject(error);
-      });
+      };
+      if (init.signal.aborted) {
+        onAbort();
+        return;
+      }
+      init.signal.addEventListener('abort', onAbort, { once: true });
     });
   });
   const started = Date.now();
