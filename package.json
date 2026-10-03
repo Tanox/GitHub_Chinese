@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "next dev",
     "dev:prototype": "node prototype/server.js",
-    "build": "next build && node scripts/build/build.cjs",
-    "build:web": "next build",
+    "build": "NODE_ENV=production next build && node scripts/build/build.cjs",
+    "build:web": "NODE_ENV=production next build",
     "build:userscript": "node scripts/build/build.cjs",
     "start": "next start",
     "lint": "eslint src/ scripts/ tests/ server/ prototype/server.js",

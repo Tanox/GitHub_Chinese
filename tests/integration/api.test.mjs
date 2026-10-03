@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
 
-const PORT = process.env.PORT || '3123';
+const PORT = process.env.INTEGRATION_PORT || '3123';
 const BASE = `http://127.0.0.1:${PORT}`;
 
 let server;
