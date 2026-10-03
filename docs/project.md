@@ -61,8 +61,9 @@ GitHub_Chinese/
 │   ├── lib/                          # 采集内核：collector-core / dictionary-processor / extract-page-text / page-navigation / collector-logic / request-body / url-guard（SSRF）/ browser-resolver / browser-semaphore / collect-codes / coverage-report / sse-stream / api-guard（鉴权限流）/ batch-collector / project-metrics
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
 │   └── proxy.ts                      # 安全响应头 + nonce CSP（Next 16 起取代 middleware）
-├── prototype/                        # 高保真原型（单文件自包含 HTML）
-│   └── prototypes/                   # index.html（唯一原型入口，CSS 内联、无服务器）
+├── prototype/                        # 高保真原型（单文件自包含 HTML，CSS 内联、无服务器）
+│   ├── prototype.html                # 高保真可交互原型（动效 + 真实数据）
+│   └── wireframes.html               # 组件库规范（基础 / 复合 / 业务组件 + 使用规则）
 ├── scripts/
 │   ├── build/moduleGraph.cjs         # 模块依赖图（拓扑排序 / 孤立检测）
 │   ├── build/transform.cjs           # ESM → 单作用域拼接
