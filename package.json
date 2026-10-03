@@ -1,18 +1,18 @@
 {
   "name": "github-chinese",
-  "version": "1.13.18",
+  "version": "1.13.16",
   "description": "GitHub Chinese 简体中文 - GitHub 中文本地化解决方案",
   "main": "src/userscript/main.js",
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "dev:prototype": "node prototype/server.js",
-    "build": "next build && node scripts/build/build.cjs",
-    "build:web": "next build",
+    "build": "NODE_ENV=production next build && node scripts/build/build.cjs",
+    "build:web": "NODE_ENV=production next build",
     "build:userscript": "node scripts/build/build.cjs",
     "start": "next start",
-    "lint": "eslint src/ scripts/ tests/ server/",
-    "lint:fix": "eslint src/ scripts/ tests/ server/ --fix",
+    "lint": "eslint src/ scripts/ tests/ server/ prototype/server.js",
+    "lint:fix": "eslint src/ scripts/ tests/ server/ prototype/server.js --fix",
     "lint:length": "node scripts/check-file-length.cjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\" \"scripts/**/*.cjs\" \"tests/**/*.{js,cjs,mjs}\"",
@@ -25,6 +25,19 @@
     "dict:collect": "node scripts/collect-dict.cjs",
     "collect-service": "node server/collect-service/index.js",
     "prepare": "husky"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "useTabs": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "printWidth": 100,
+    "endOfLine": "lf",
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": true
   },
   "keywords": [
     "github",

@@ -144,7 +144,7 @@ export const translationCore = {
 
 ### 3.1 Prettier 配置
 
-项目使用 Prettier 进行代码格式化，配置如下：
+项目使用 Prettier 进行代码格式化，配置内嵌于 `package.json` 的 `"prettier"` 字段（与 package.json 集中统一维护），配置如下：
 
 ```json
 {

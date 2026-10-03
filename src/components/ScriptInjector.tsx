@@ -1,7 +1,8 @@
+'use client';
 /**
  * 探针脚本面板
  * @file src/components/ScriptInjector.tsx
- * @version 1.9.24
+ * @version 1.13.16
  * @description 提供在 GitHub 页面控制台执行的文本采集探针脚本与一键复制
  */
 

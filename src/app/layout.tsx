@@ -19,7 +19,6 @@ import './styles/terminal.css';
 import './styles/toast.css';
 import './styles/showcase.css';
 import './styles/coverage.css';
-import './styles/prototype.css';
 import './styles/dictionary.css';
 
 /** 站点基础地址（可由 NEXT_PUBLIC_SITE_URL 覆盖，用于生成绝对 OG URL） */
