@@ -16,6 +16,16 @@
   border-radius: var(--radius);
   padding: 1.15rem 1.25rem;
   box-shadow: var(--shadow);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease;
+  will-change: transform, box-shadow;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px rgba(46, 164, 79, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .stat-label {

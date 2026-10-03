@@ -15,8 +15,8 @@ export class AutoStringUpdater {
     const stringsToAdd = AutoStringUpdater.findStringsToAdd();
     return {
       timestamp: new Date().toISOString(),
-      pageUrl: window.location.href,
-      pageTitle: document.title,
+      pageUrl: typeof window === 'undefined' ? '' : window.location.href,
+      pageTitle: typeof document === 'undefined' ? '' : document.title,
       stringsToAdd: Array.from(stringsToAdd),
       totalNew: stringsToAdd.size,
     };

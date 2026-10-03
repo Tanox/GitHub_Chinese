@@ -23,10 +23,12 @@ export const lifecycleManager = {
         configUI.cleanup();
       }
 
-      window.removeEventListener('beforeunload', this.cleanup.bind(this));
-      window.removeEventListener('unload', this.cleanup.bind(this));
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('beforeunload', this.cleanup.bind(this));
+        window.removeEventListener('unload', this.cleanup.bind(this));
+      }
 
-      if (window.visibilityChangeHandler) {
+      if (typeof document !== 'undefined' && typeof window !== 'undefined' && window.visibilityChangeHandler) {
         document.removeEventListener('visibilitychange', window.visibilityChangeHandler);
         window.visibilityChangeHandler = null;
       }
@@ -66,24 +68,31 @@ export const lifecycleManager = {
         configUI.init();
       }
 
-      window.addEventListener('beforeunload', this.cleanup.bind(this));
-      window.addEventListener('unload', this.cleanup.bind(this));
+      if (typeof window !== 'undefined') {
+        window.addEventListener('beforeunload', this.cleanup.bind(this));
+        window.addEventListener('unload', this.cleanup.bind(this));
+      }
 
       const visibilityChangeHandler = () => {
-        if (document.visibilityState === 'hidden') {
+        if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
           if (translationCore && typeof translationCore.cleanCache === 'function') {
             translationCore.cleanCache();
           }
         }
       };
-      document.addEventListener('visibilitychange', visibilityChangeHandler);
-      window.visibilityChangeHandler = visibilityChangeHandler;
+      if (typeof document !== 'undefined') {
+        document.addEventListener('visibilitychange', visibilityChangeHandler);
+      }
+      if (typeof window !== 'undefined') {
+        window.visibilityChangeHandler = visibilityChangeHandler;
+      }
     } catch (error) {
       console.error('[GitHub 中文翻译] 脚本初始化失败:', error);
     }
   },
 
   startScript() {
+    if (typeof document === 'undefined') return;
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', async () => {
         try {

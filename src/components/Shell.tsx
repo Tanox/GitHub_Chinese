@@ -6,8 +6,11 @@
  */
 
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import TopNav from './TopNav';
+import { FOOTER_NAV_ITEMS } from './navItems';
 import type { NavSection } from './navItems';
+import { VERSION } from '@/userscript/version';
 
 interface ShellProps {
   /** 当前激活的顶栏导航项 */
@@ -45,9 +48,11 @@ export default function Shell({
         ></div>
 
         <header className='topbar'>
-          <div>
-            <h1>{title}</h1>
-            <p className='topbar-sub'>{subtitle}</p>
+          <div className='topbar-inner'>
+            <div>
+              <h1>{title}</h1>
+              <p className='topbar-sub'>{subtitle}</p>
+            </div>
           </div>
         </header>
 
@@ -55,14 +60,27 @@ export default function Shell({
           <div className={`content-inner ${contentClass}`}>{children}</div>
         </div>
 
-        <footer className='footer'>
+        <footer id='site-footer' className='footer'>
           <div className='footer-inner'>
-            <span className='fnote'>GitHub 中文 · 采集工作台</span>
-            <nav className='flinks' aria-label='页脚链接'>
-              <a href='/overview'>项目概览</a>
-              <a href='/coverage'>覆盖率</a>
-              <a href='/design'>设计系统</a>
-            </nav>
+            <div className='footer-meta'>
+              <span className='fnote'>GitHub 中文 · 采集工作台</span>
+              <span className='fnote-ver'>v{VERSION}</span>
+              <span className='fnote-date'>更新时间：2026-10-03</span>
+            </div>
+            {FOOTER_NAV_ITEMS.length > 0 && (
+              <nav className='flinks' aria-label='页脚快捷导航'>
+                {FOOTER_NAV_ITEMS.map((item) => (
+                  <Link
+                    key={`footer-${item.key}`}
+                    href={item.href}
+                    className={`footer-link ${item.key === active ? 'active' : ''}`}
+                    prefetch
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
           </div>
         </footer>
       </main>

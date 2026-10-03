@@ -102,6 +102,7 @@ export default function DictionaryHelper({
   }
 
   function exportJson() {
+    if (typeof window === 'undefined') return;
     const blob = new Blob([JSON.stringify(pending, null, 2)], {
       type: 'application/json',
     });

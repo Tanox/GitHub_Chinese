@@ -7,6 +7,7 @@ import { translationModule } from '../../dictionaries/index.js';
 
 export const stringExtractor = {
   collectStrings(showInConsole = true) {
+    if (typeof document === 'undefined') return new Set();
     const strings = new Set();
     utils.collectTextNodes(document.body, strings);
 

@@ -110,3 +110,226 @@
   font-size: .8rem;
   margin: 0 0 1rem;
 }
+
+/* Data Center Card 优化样式 */
+.data-center-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.75rem;
+}
+
+.card-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.card-desc-inline {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.tabbar .tab-icon {
+  margin-right: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.dc-preset-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--canvas);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm, 10px);
+}
+
+.dc-preset-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dc-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dc-preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dc-preset-chip:hover {
+  border-color: var(--brand);
+  color: var(--brand-strong);
+  background: var(--brand-soft);
+  transform: translateY(-1px);
+}
+
+.dc-preset-chip.matched {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-weight: 600;
+}
+
+.dc-preset-chip .chip-plus {
+  font-size: 0.75rem;
+  color: var(--brand);
+}
+
+.input-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.input-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.input-count-badge {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  padding: 0.15rem 0.5rem;
+  background: var(--canvas);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  color: var(--muted);
+}
+
+.dc-textarea {
+  min-height: 140px;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.dc-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-soft);
+  flex-wrap: wrap;
+}
+
+.dc-stats-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.dc-stats-info strong {
+  color: var(--brand-strong);
+  font-size: 0.95rem;
+}
+
+.dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.dc-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Script Injector Card 优化的专有样式 */
+.script-injector-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.75rem;
+}
+
+.probe-instruction-box {
+  background: var(--canvas);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm, 10px);
+  padding: 0.75rem 1rem;
+}
+
+.probe-instruction-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.probe-instruction-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.probe-instruction-list kbd {
+  font-family: var(--mono);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.75rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+
+.probe-code-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.code-lang {
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}

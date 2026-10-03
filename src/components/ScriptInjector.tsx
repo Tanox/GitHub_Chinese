@@ -60,24 +60,37 @@ export default function ScriptInjector() {
   };
 
   return (
-    <section id='script-injector-card' className='card'>
+    <section id='script-injector-card' className='card script-injector-card'>
       <div className='card-head'>
-        <h2 className='card-title'>
-          <span className='step-badge'>1</span>探针脚本
-        </h2>
+        <div className='card-title-group'>
+          <h2 className='card-title'>
+            <span className='step-badge'>1</span>探针脚本
+          </h2>
+          <p className='card-desc-inline'>GitHub 控制台 DOM 文本智能提取探针</p>
+        </div>
         <button
           id='copy-probe-script-btn'
           type='button'
           className={`btn btn-copy ${isCopied ? 'is-copied' : ''}`}
           onClick={handleCopy}
         >
-          {isCopied ? '已复制' : '复制脚本'}
+          {isCopied ? '✓ 已复制' : '📋 复制脚本'}
         </button>
       </div>
-      <p className='card-desc'>
-        在 GitHub 页面控制台执行下方脚本，引擎会提取当前视图中的全部有效 UI 文本块。
-      </p>
-      <div className='code-block'>
+
+      <div className='probe-instruction-box'>
+        <p className='probe-instruction-title'>💡 使用说明：</p>
+        <ol className='probe-instruction-list'>
+          <li>点击右上角<strong>「复制脚本」</strong>按钮</li>
+          <li>打开 GitHub 任意页面，按下 <kbd>F12</kbd> 打开开发者工具控制台 (Console)</li>
+          <li>粘贴执行脚本，将自动复制提取到的文本，并在右侧选择<strong>「文本粘贴」</strong>完成清洗</li>
+        </ol>
+      </div>
+
+      <div className='code-block probe-code-wrapper'>
+        <div className='code-block-header'>
+          <span className='code-lang'>JavaScript (Browser Console)</span>
+        </div>
         <pre id='probe-script-code'>{PROBE_SCRIPT}</pre>
       </div>
     </section>

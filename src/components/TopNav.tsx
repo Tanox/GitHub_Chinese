@@ -7,20 +7,17 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { VERSION } from '@/userscript/version';
-import { NAV_ITEMS } from './navItems';
+import { HEADER_NAV_ITEMS } from './navItems';
 import type { NavSection } from './navItems';
 
 interface TopNavProps {
   /** 当前激活的导航项 */
   active: NavSection;
-  /** 顶栏右侧徽标，缺省为「本地优先 · 离线可用」+ 引擎版本 / 采集模式 */
+  /** 顶栏右侧徽标，缺省为「本地优先 · 离线可用」 */
   badge?: ReactNode;
 }
 
 export default function TopNav({ active, badge }: TopNavProps) {
-  // 未配置独立采集服务时走本地回退，状态文案随之调整，避免误导
-  const collectServiceConfigured = Boolean(process.env.COLLECT_SERVICE_URL);
   return (
     <header id='collector-topnav' className='topnav'>
       <div className='topnav-inner'>
@@ -32,7 +29,7 @@ export default function TopNav({ active, badge }: TopNavProps) {
         </Link>
 
         <nav className='topnav-links' aria-label='工作台导航'>
-          {NAV_ITEMS.map((item) => {
+          {HEADER_NAV_ITEMS.map((item) => {
             const isActive = item.key === active;
             return (
               <Link
@@ -56,9 +53,6 @@ export default function TopNav({ active, badge }: TopNavProps) {
               本地优先 · 离线可用
             </div>
           )}
-          <span className='topnav-meta'>
-            v{VERSION} · {collectServiceConfigured ? '采集服务' : '本地采集'}
-          </span>
         </div>
       </div>
     </header>
