@@ -1821,5 +1821,142 @@ https://docs.github.com/zh/actions</textarea>
         </div>
       </footer>
     </div>
+  <script>
+    (function () {
+      var $ = function (s, r) { return (r || document).querySelector(s); };
+      var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+      function toast(msg) {
+        var t = $('#protoToast');
+        if (!t) { t = document.createElement('div'); t.className = 'proto-toast'; t.id = 'protoToast'; document.body.appendChild(t); }
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._timer); t._timer = setTimeout(function () { t.classList.remove('show'); }, 1800);
+      }
+      // 1. 导航 scroll-spy + 平滑滚动
+      var navLinks = $$('#protoNav a');
+      var sections = navLinks.map(function (a) { return $(a.getAttribute('href')); });
+      if ('IntersectionObserver' in window) {
+        var spy = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              var id = '#' + e.target.id;
+              navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === id); });
+            }
+          });
+        }, { rootMargin: '-45% 0px -50% 0px' });
+        sections.forEach(function (s) { if (s) spy.observe(s); });
+      }
+      navLinks.forEach(function (a) {
+        a.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          var t = $(a.getAttribute('href'));
+          if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+      // 2. 进入动画
+      if ('IntersectionObserver' in window) {
+        var revObs = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); } });
+        }, { threshold: 0.12 });
+        $$('.reveal').forEach(function (el) { revObs.observe(el); });
+      } else {
+        $$('.reveal').forEach(function (el) { el.classList.add('in'); });
+      }
+      // 3. 数字滚动
+      function countUp(el) {
+        var to = +el.dataset.to, suf = el.dataset.suffix || '', dur = 1100, t0 = performance.now();
+        function fmt(n) { return n.toLocaleString('en-US'); }
+        function step(t) {
+          var p = Math.min(1, (t - t0) / dur);
+          var v = Math.floor((1 - Math.pow(1 - p, 3)) * to);
+          el.textContent = fmt(v) + suf;
+          if (p < 1) requestAnimationFrame(step); else el.textContent = fmt(to) + suf;
+        }
+        requestAnimationFrame(step);
+      }
+      if ('IntersectionObserver' in window) {
+        var kpiObs = new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (e.isIntersecting) {
+              $$('.count', e.target).forEach(countUp);
+              $$('.bar > i', e.target).forEach(function (i) { i.style.width = i.dataset.w + '%'; });
+              kpiObs.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.4 });
+        var ks = $('#kpiStrip'); if (ks) kpiObs.observe(ks);
+      } else {
+        var ks2 = $('#kpiStrip');
+        if (ks2) { $$('.count', ks2).forEach(countUp); $$('.bar > i', ks2).forEach(function (i) { i.style.width = i.dataset.w + '%'; }); }
+      }
+      // 4. 数据中心 tab 切换
+      $$('.ct-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var name = tab.dataset.tab;
+          $$('.ct-tab').forEach(function (t) { t.classList.toggle('active', t === tab); });
+          $$('.ct-panel').forEach(function (p) { p.hidden = p.dataset.panel !== name; });
+        });
+      });
+      // 5. 复制探针脚本
+      var cp = $('#copyProbe');
+      if (cp) cp.addEventListener('click', function () {
+        var code = $('#probeCode').innerText;
+        if (navigator.clipboard) navigator.clipboard.writeText(code).catch(function () {});
+        toast('探针脚本已复制到剪贴板');
+      });
+      // 6. 导出 JSON
+      var ex = $('#exportPanel'), btnEx = $('#btnExport');
+      if (btnEx) btnEx.addEventListener('click', function () {
+        ex.hidden = !ex.hidden;
+        if (!ex.hidden) toast('已生成 collector-terms.json 预览');
+      });
+      var cpj = $('#copyJson');
+      if (cpj) cpj.addEventListener('click', function () {
+        if (navigator.clipboard) navigator.clipboard.writeText($('#jsonOut').innerText).catch(function () {});
+        toast('JSON 已复制到剪贴板');
+      });
+      // 7. 智能清洗
+      var bc = $('#btnClean');
+      if (bc) bc.addEventListener('click', function () { toast('已智能清洗：去重 2 条，过滤空白 0 条'); });
+      // 8. 开始分析：模拟 SSE 流式日志 + 进度
+      var ba = $('#btnAnalyze'), analyzing = false;
+      var logs = [
+        ['info', '探针已注入，提取文本节点 1,248 个'],
+        ['info', '正在清洗：去除空白与重复…'],
+        ['info', '命中词典 612 条，新增 36 条'],
+        ['warn', '抓取超时，回退到文本粘贴通道'],
+        ['info', '解析入库完成，待翻译 36 条']
+      ];
+      if (ba) ba.addEventListener('click', function () {
+        if (analyzing) return; analyzing = true; ba.classList.add('is-loading');
+        var body = $('#termBody'), fill = $('#progFill'), pct = $('#progPct'), task = $('#taskText');
+        var p = 0;
+        var timer = setInterval(function () {
+          p = Math.min(100, p + Math.random() * 9 + 4);
+          if (fill) fill.style.width = p + '%';
+          if (pct) pct.textContent = Math.floor(p) + '%';
+          if (p >= 100) {
+            clearInterval(timer); ba.classList.remove('is-loading'); analyzing = false;
+            if (task) task.textContent = '分析完成，等待导出'; toast('分析完成 ✓');
+          }
+        }, 260);
+        var i = 0;
+        var lt = setInterval(function () {
+          if (i >= logs.length) { clearInterval(lt); return; }
+          var lv = logs[i][0], m = logs[i][1]; i++;
+          var now = new Date();
+          var ts = '[' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0') + ']';
+          var line = document.createElement('div');
+          line.className = 'ct-log-line ' + lv + ' new';
+          line.innerHTML = '<span class="t">' + ts + '</span><span class="m">' + m + '</span>';
+          body.appendChild(line); body.scrollTop = body.scrollHeight;
+        }, 620);
+      });
+      // 9. 清空终端
+      var cl = $('#termClear');
+      if (cl) cl.addEventListener('click', function () { var b = $('#termBody'); if (b) b.innerHTML = ''; });
+      // 10. 进度条初始动画
+      window.addEventListener('load', function () { var f = $('#progFill'); if (f) setTimeout(function () { f.classList.add('done'); }, 300); });
+    })();
+  </script>
   </body>
 </html>
