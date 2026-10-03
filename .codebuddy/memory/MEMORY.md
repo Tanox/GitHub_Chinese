@@ -9,18 +9,18 @@
 - 部署的 Next.js 工作台（`src/app`）采用**顶部导航 + 内容的上下布局**：全局 `TopNav` 顶栏 + 各页面 `Shell` 内的 `topbar` 页头 + 内容 + 页脚。**不要**恢复左侧 `Rail` 侧栏（2026-10-01 改造，`Rail.tsx`/`MobileNav.tsx` 已删除，`TopNav.tsx` 已落地）。
 - 导航数据源**唯一来源**：`src/components/navItems.ts` 的 `NAV_ITEMS`（6 项：`console`/`overview`/`coverage`/`design`/`dictionary`/`dict-manage`，类型 `NavSection`）。
 - 6 个页面路由：`/`、`/overview`、`/coverage`、`/design`、`/dictionary`、`/dictionary/manage`（与 `NAV_ITEMS` 对齐）。
-- 原型位于 `prototype/prototypes/index.html`（经 `npm run dev:prototype` 预览），为上下单页展示，定位「设计走查」，与 Next 应用是两套独立产物。原型预览服务器于 v1.13.14 由 `server/prototype.js` 迁至 `prototype/server.js`，并移除对采集引擎 `collector-core` 的引用与 `/api/collect`、`/api/batch-collect` 接口，回归纯静态 HMR 预览；`server/` 目录现**仅含** `collect-service/`，不再承载原型系统。
+- 原型位于 `prototype/prototypes/index.html`，为**单个自包含 HTML 文件**（CSS 全部内联，无外部依赖 / 无脚本 / 无服务器），直接用浏览器打开即可预览，与应用代码（`src/` / `server/` / `scripts/`）完全分离。无 `prototype/assets/`、`prototype/server.js`。`server/` 目录仅含 `collect-service/`。
 
 ## 2. 常见脚本（高可信）
 
-- 运行：`npm run dev`（Next）、`npm run dev:prototype`（原型预览服务器 `prototype/server.js`）。
+- 运行：`npm run dev`（Next）。原型为单文件 HTML（`prototype/prototypes/index.html`），直接用浏览器打开，无预览命令。
 - 质量：`npm run format` / `typecheck` / `lint` / `build`（`build` = `next build` + `node build.cjs`）。
 - 测试：`npm test`（lint → lint:length → build → test:unit → validate）；`npm run test:unit` = `node --test`（**无需 Jest**）。
 - 部署：GitHub Pages（`deploy-pages`），产物为 Next 应用而非原型。
 
 ## 3. 版本权威源（高可信 · 强约束）
 
-- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-03 核查：二者均为 **1.13.16**，本次为任务单源收口 bump `docs/tasks.md` 与 `docs/project.md`）。
+- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-03 核查：二者均为 **1.13.17**，本次为原型单文件化；版本常被外部 bump，引用前以 `src/userscript/version.js` 实查为准）。
 - 旧 `src/version.js` 已于 v1.13.6 删除，勿再引用。
 - 每次修改（含纯文档）按规则 bump 最小版本（patch）；**仅更新被改文件的头注释版本**，禁止全仓库批量刷写。
 
@@ -56,6 +56,8 @@
 | 2026-10-01 | 清理 tests 两处预存 lint 错误 + 全部文档头版本对齐 1.13.13 | 高 | 见 `CHANGELOG` [1.13.13] |
 
 | 2026-10-02 | 原型系统去耦：预览服务器由 `server/prototype.js` 迁至 `prototype/server.js`，移除 `collector-core` 引用与采集 API；`server/` 仅留 `collect-service` | 高 | 见 `CHANGELOG` [1.13.14] |
+
+| 2026-10-03 | 原型单文件化：10 个 CSS 内联进 index.html，删除 `prototype/assets/` 与 `prototype/server.js`，移除 `npm run dev:prototype`；原型成单文件 HTML，与应用代码彻底分离 | 高 | 见 `CHANGELOG` [1.13.17] |
 
 ## 8. 易失效数据警示（低可信 · 须实查）
 
