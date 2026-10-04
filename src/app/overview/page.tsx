@@ -9,6 +9,7 @@ import type { Metadata } from 'next';
 import Shell from '@/components/Shell';
 import { getProjectMetrics, getCollectHistory } from '@/lib/project-metrics';
 import { NAV_ITEMS } from '@/components/navItems';
+import TrendChart from '@/components/TrendChart';
 
 export const dynamic = 'force-dynamic';
 
@@ -126,12 +127,15 @@ export default function OverviewPage() {
 
       {collectHistory.length > 0 && (
         <section className='card' aria-label='采集趋势'>
-          <h2 className='section-title'>采集趋势</h2>
+          <h2 className='section-title'>采集趋势可视化</h2>
           <p className='section-desc'>
             由 collect-dict.cjs 记录，展示最近 {Math.min(collectHistory.length, MAX_TREND)}{' '}
-            次采集的待翻译词条变化。
+            次采集的新增与移除词条变化趋势。
           </p>
-          <ul className='trend-list'>
+
+          <TrendChart data={collectHistory.slice(-MAX_TREND)} />
+
+          <ul className='trend-list' style={{ marginTop: '1.25rem' }}>
             {collectHistory
               .slice(-MAX_TREND)
               .reverse()
