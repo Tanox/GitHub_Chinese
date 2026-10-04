@@ -20,7 +20,7 @@
 
 ## 3. 版本权威源（高可信 · 强约束）
 
-- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-03 核查：二者均为 **1.13.17**，本次为原型单文件化；版本常被外部 bump，引用前以 `src/userscript/version.js` 实查为准）。
+- 权威版本**单一来源**：`src/userscript/version.js` 的 `VERSION`。`package.json` 的 `version` 须与其**一致**（2026-10-04 核查：二者均为 **1.13.18**，T39 页脚日期单一来源化并入该版本；版本常被外部 bump，引用前以 `src/userscript/version.js` 实查为准）。
 - 旧 `src/version.js` 已于 v1.13.6 删除，勿再引用。
 - 每次修改（含纯文档）按规则 bump 最小版本（patch）；**仅更新被改文件的头注释版本**，禁止全仓库批量刷写。
 
@@ -58,6 +58,8 @@
 | 2026-10-02 | 原型系统去耦：预览服务器由 `server/prototype.js` 迁至 `prototype/server.js`，移除 `collector-core` 引用与采集 API；`server/` 仅留 `collect-service` | 高 | 见 `CHANGELOG` [1.13.14] |
 
 | 2026-10-03 | 原型单文件化：10 个 CSS 内联进 index.html，删除 `prototype/assets/` 与 `prototype/server.js`，移除 `npm run dev:prototype`；原型成单文件 HTML，与应用代码彻底分离 | 高 | 见 `CHANGELOG` [1.13.17] |
+
+| 2026-10-04 | 任务进度复核 + T39 页脚更新时间单一来源化（`version.js` 新增 `BUILD_DATE`，`Shell.tsx` 改用，消除硬编码漂移）；W5 仍阻塞；版本被外部 bump 至 1.13.18 | 高 | 见 `CHANGELOG` [1.13.18]、`docs/tasks.md` |
 
 ## 8. 易失效数据警示（低可信 · 须实查）
 

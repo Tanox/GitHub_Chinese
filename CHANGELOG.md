@@ -7,6 +7,7 @@
 
 ### Fix
 - `wireframes.html` 补充缺失的 `@keyframes wf-ping`（业务组件 b-engine 的 Processing 脉冲此前无动画），并补齐 `:focus-visible` 统一焦点描边（使用规则已声明，此前 CSS 未实现）。
+- **T39 页脚更新日期单一来源化**：`src/userscript/version.js` 新增 `BUILD_DATE` 单一来源（与 `VERSION` 同步），`src/components/Shell.tsx` 页脚「更新时间」改用 `BUILD_DATE`，消除此前硬编码 `2026-10-03` 的漂移（版本号早已取自 `VERSION`，符合 `docs/coding-style.md` §5.12）。
 
 ---
 
