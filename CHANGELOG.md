@@ -13,6 +13,7 @@
 ### Chore
 - `.gitignore` 以通配规则忽略本地验证输出（`*-out.txt` / `.*.log` / `.*.txt`）。
 - 单一版本源 `src/userscript/version.js`、`package.json`、README 与 docs 适用版本行同步至 1.13.21，并重建用户脚本产物。
+- 同步原型展示位（`prototype/app.html`、`prototype/wireframes.html`、`prototype/prototype.html` 的页面版本徽标）至 1.13.21，消除原型与发布版本脱节。
 
 ---
 
