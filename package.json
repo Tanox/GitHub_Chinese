@@ -8,6 +8,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:web": "next build",
+    "build:userscript": "node scripts/build/build.cjs",
     "start": "next start",
     "lint": "eslint src/ scripts/ tests/ server/",
     "lint:fix": "eslint src/ scripts/ tests/ server/ --fix",

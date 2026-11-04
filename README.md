@@ -119,20 +119,19 @@ docs/                        # 项目规范文档（唯一权威正文）
 git clone https://github.com/Tanox/GitHub_i18n.git
 cd GitHub_i18n
 npm install
-npm test        # lint → build → validate
+npm test        # lint → 长度门禁 → 构建 → 单测（含产物冒烟）
 ```
 
 ### 开发命令
 
 | 命令 | 说明 |
 |------|------|
-| `npm run build` | 构建用户脚本 → `build/GitHub_zh-cn.user.js` |
-| `npm run validate` | 校验构建产物（存在性 / 体积 / 语法 / 未定义引用） |
+| `npm run build` / `build:web` | 构建 Next.js 采集工作台 |
+| `npm run build:userscript` | 构建用户脚本 → `build/GitHub_zh-cn.user.js`（须纳入版本控制） |
 | `npm run dev` | 启动 Next.js 采集工作台 |
-| `npm run build:web` | 构建 Next.js 采集工作台 |
 | `npm run lint` / `lint:fix` | 代码检查 / 自动修复 |
 | `npm run format` / `format:check` | 代码格式化 / 格式校验 |
-| `npm test` | 完整流水线：lint → build → validate |
+| `npm test` | 完整流水线：lint → 长度门禁 → 工作台构建 → 单测（含产物冒烟） |
 | `npm run dict:collect -- <文件>` | 采集文本文件中的待翻译词条 |
 
 ### 文档
