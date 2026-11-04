@@ -1,4 +1,17 @@
 # Changelog
+## [1.13.23] - 2026-11-04
+
+### Style
+- 原型 id 全面规范为 kebab-case（`docs/coding-style.md` §5.9）：`prototype.html` 15 个、`wireframes.html` 6 个、`app.html` 28 个 camelCase id 改为 kebab-case，并同步更新 `id` 属性、`getElementById` / `$('#…')` 引用、CSS 选择器与 ARIA 关联；JS 动态创建的 Toast 元素 id `protoToast` → `proto-toast`。重命名后校验：0 残留 camelCase id、无重复 id、无断裂 ARIA 引用、三个文件内联 JS 语法检查全部通过。
+
+### Docs
+- 全量文档「适用版本」行统一同步至 1.13.23（`docs/README.md`、`docs/architecture.md`、`docs/coding-style.md`、`docs/development.md`、`docs/project.md`、`docs/prototype.md`、`docs/tasks.md`），消除文档与发布版本脱节。
+
+### Chore
+- 单一版本源 `src/userscript/version.js`、`package.json`、`package-lock.json`、README 版本行与原型展示位（标题 / 品牌 / 页脚 / 文件头）同步至 1.13.23，并重建用户脚本产物。
+
+---
+
 ## [1.13.22] - 2026-11-04
 
 ### Fix

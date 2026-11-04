@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>高保真原型 · 工作台其余模块 · v1.13.22</title>
+    <title>高保真原型 · 工作台其余模块 · v1.13.23</title>
     <style>
       /* ===== 设计令牌（与 prototype.html / wireframes.html 同源） ===== */
       :root {
@@ -228,9 +228,9 @@
     </style>
   </head>
   <body>
-    <header class="app-topbar" id="appTopbar">
+    <header class="app-topbar" id="app-topbar">
       <div class="app-topbar-inner">
-        <span class="app-brand">GitHub 中文 · 工作台<span class="v">v1.13.22</span></span>
+        <span class="app-brand">GitHub 中文 · 工作台<span class="v">v1.13.23</span></span>
         <button class="icon-btn" type="button" aria-label="设置">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="3"></circle>
@@ -240,7 +240,7 @@
       </div>
     </header>
 
-    <nav class="app-nav" id="appNav" aria-label="工作台导航">
+    <nav class="app-nav" id="app-nav" aria-label="工作台导航">
       <div class="app-nav-inner">
         <a href="prototype.html">控制台</a>
         <button data-page="overview" class="active">概览</button>
@@ -251,30 +251,30 @@
       </div>
     </nav>
 
-    <main class="app-main" id="appMain">
+    <main class="app-main" id="app-main">
       <!-- ============ 概览 /overview ============ -->
       <section class="page" id="page-overview" aria-labelledby="t-overview">
         <span class="eyebrow">OVERVIEW</span>
         <h1 class="page-title" id="t-overview">项目概览</h1>
         <p class="lede">汇总词典采集工作台的全局指标、采集趋势与平台能力清单，帮助维护者快速掌握本地化进度。</p>
 
-        <div class="kpi-strip" id="appKpi">
+        <div class="kpi-strip" id="app-kpi">
           <div class="kpi"><div class="v count" data-to="12480">0</div><div class="l">已采集词条</div></div>
           <div class="kpi"><div class="v count" data-to="9216">0</div><div class="l">已翻译（占 73.9%）</div><div class="bar"><i data-w="73.9"></i></div></div>
           <div class="kpi"><div class="v count" data-to="1204">0</div><div class="l">词典条目</div></div>
           <div class="kpi"><div class="v count" data-to="36">0</div><div class="l">本次待翻译</div></div>
         </div>
 
-        <div class="section" id="overviewTrendSection">
+        <div class="section" id="overview-trend-section">
           <h3>采集趋势 <span class="badge info">近 8 次</span></h3>
           <div class="card">
-            <div class="trend" id="overviewTrend" role="img" aria-label="近 8 次采集量柱状图"></div>
+            <div class="trend" id="overview-trend" role="img" aria-label="近 8 次采集量柱状图"></div>
           </div>
         </div>
 
         <div class="section" id="overview-cap-section">
           <h3>平台能力清单</h3>
-          <div class="cap-grid" id="capGrid"></div>
+          <div class="cap-grid" id="cap-grid"></div>
         </div>
       </section>
 
@@ -287,7 +287,7 @@
         <div class="section">
           <h3>整体覆盖率</h3>
           <div class="card cov-hero">
-            <div class="cov-ring" id="covRing"><span class="num">73.9%</span></div>
+            <div class="cov-ring" id="cov-ring"><span class="num">73.9%</span></div>
             <div>
               <p class="lede" style="margin:0">已翻译 <strong>9,216</strong> / 共 <strong>12,480</strong> 条 UI 词条。覆盖率较上次采集提升 <span class="badge tr">+2.4%</span>。</p>
               <p style="color:var(--c-text-dim);font-size:var(--fs-sm);margin:8px 0 0">覆盖率 = 已翻译词条数 ÷ 已采集词条数，按文件加权计算。</p>
@@ -298,7 +298,7 @@
         <div class="section" id="coverage-files-section">
           <h3>按文件细分</h3>
           <div class="card">
-            <table class="ds-table" id="coverageFiles">
+            <table class="ds-table" id="coverage-files">
               <thead><tr><th>文件</th><th class="right">词条</th><th class="right">已翻译</th><th>覆盖率</th></tr></thead>
               <tbody></tbody>
             </table>
@@ -309,7 +309,7 @@
           <div id="coverage-gaps">
             <h3>Top-N 翻译缺口</h3>
             <div class="card">
-              <ul class="gap-list" id="gapList"></ul>
+              <ul class="gap-list" id="gap-list"></ul>
             </div>
           </div>
           <div id="coverage-duplicates">
@@ -334,7 +334,7 @@
 
         <div class="section" id="design-tokens-section">
           <h3>设计令牌 · 语义色板</h3>
-          <div class="card"><div class="swatch-grid" id="swatchGrid"></div></div>
+          <div class="card"><div class="swatch-grid" id="swatch-grid"></div></div>
         </div>
         <div class="section" id="design-buttons-section">
           <h3>按钮 Buttons</h3>
@@ -379,19 +379,19 @@
         <p class="lede">检索与浏览已沉淀的中文本地化词典，支持按关键词过滤与按翻译状态筛选。</p>
 
         <div class="toolbar">
-          <input class="input" id="dictSearch" placeholder="搜索英文源词或中文译词…" aria-label="搜索词条" />
+          <input class="input" id="dict-search" placeholder="搜索英文源词或中文译词…" aria-label="搜索词条" />
           <div class="tabs" role="tablist" aria-label="状态筛选">
             <button class="tab active" data-filter="all" role="tab">全部</button>
             <button class="tab" data-filter="tr" role="tab">已翻译</button>
             <button class="tab" data-filter="unt" role="tab">待翻译</button>
           </div>
-          <span class="badge info" id="dictCount" style="margin-left:auto">0 条</span>
+          <span class="badge info" id="dict-count" style="margin-left:auto">0 条</span>
         </div>
 
         <div class="card">
-          <table class="ds-table" id="dictTable">
+          <table class="ds-table" id="dict-table">
             <thead><tr><th style="width:48px">序号</th><th>英文源词</th><th>中文译词</th><th class="right">状态</th></tr></thead>
-            <tbody id="dictBody"></tbody>
+            <tbody id="dict-body"></tbody>
           </table>
         </div>
       </section>
@@ -403,43 +403,43 @@
         <p class="lede">对本地化词典进行增删改维护，支持检索、新增、编辑与删除词条。</p>
 
         <div class="toolbar">
-          <input class="input" id="manageSearch" placeholder="搜索词条…" aria-label="搜索词条" />
-          <button class="btn btn-primary" id="btnAdd">+ 新增词条</button>
+          <input class="input" id="manage-search" placeholder="搜索词条…" aria-label="搜索词条" />
+          <button class="btn btn-primary" id="btn-add">+ 新增词条</button>
         </div>
 
         <div class="card">
-          <table class="ds-table" id="manageTable">
+          <table class="ds-table" id="manage-table">
             <thead><tr><th style="width:48px">序号</th><th>英文源词</th><th>中文译词</th><th class="right">状态</th><th class="right">操作</th></tr></thead>
-            <tbody id="manageBody"></tbody>
+            <tbody id="manage-body"></tbody>
           </table>
         </div>
       </section>
     </main>
 
-    <footer class="app-footer" id="appFooter">
+    <footer class="app-footer" id="app-footer">
       <div class="app-footer-inner">
-        <span>高保真原型 · v1.13.22 · 仅供设计走查，不构成交付承诺</span>
+        <span>高保真原型 · v1.13.23 · 仅供设计走查，不构成交付承诺</span>
         <span>更新日期：2026-10-03</span>
       </div>
     </footer>
 
     <!-- 词条新增/编辑模态 -->
-    <div class="overlay" id="dictModal">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dictModalT">
-        <div class="m-head" id="dictModalT">新增词条</div>
+    <div class="overlay" id="dict-modal">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dict-modal-title">
+        <div class="m-head" id="dict-modal-title">新增词条</div>
         <div class="m-body">
-          <label class="field-label" for="dmEn">英文源词</label>
-          <input class="input" id="dmEn" style="width:100%;min-width:0" placeholder="例如 Notifications" />
-          <label class="field-label" for="dmZh" style="margin-top:12px">中文译词</label>
-          <input class="input" id="dmZh" style="width:100%;min-width:0" placeholder="例如 通知" />
+          <label class="field-label" for="dm-en">英文源词</label>
+          <input class="input" id="dm-en" style="width:100%;min-width:0" placeholder="例如 Notifications" />
+          <label class="field-label" for="dm-zh" style="margin-top:12px">中文译词</label>
+          <input class="input" id="dm-zh" style="width:100%;min-width:0" placeholder="例如 通知" />
         </div>
         <div class="m-foot">
-          <button class="btn" id="dmCancel">取消</button>
-          <button class="btn btn-primary" id="dmSave">保存</button>
+          <button class="btn" id="dm-cancel">取消</button>
+          <button class="btn btn-primary" id="dm-save">保存</button>
         </div>
       </div>
     </div>
-    <div class="toast" id="appToast"></div>
+    <div class="toast" id="app-toast"></div>
 
     <script>
       (function () {
@@ -454,14 +454,14 @@
         }
 
         function toast(msg) {
-          var t = $('#appToast');
+          var t = $('#app-toast');
           t.textContent = msg; t.classList.add('show');
           clearTimeout(t._t); t._timer = setTimeout(function () { t.classList.remove('show'); }, 1800);
         }
 
         /* ===== 1. SPA 导航切换 ===== */
         var pages = ['overview', 'coverage', 'design', 'dictionary', 'dict-manage'];
-        $$('#appNav button[data-page]').forEach(function (b) {
+        $$('#app-nav button[data-page]').forEach(function (b) {
           b.addEventListener('click', function () { showPage(b.dataset.page); });
         });
         function showPage(p) {
@@ -469,7 +469,7 @@
             var s = $('#page-' + id);
             if (s) s.hidden = (id !== p);
           });
-          $$('#appNav button[data-page]').forEach(function (b) {
+          $$('#app-nav button[data-page]').forEach(function (b) {
             b.classList.toggle('active', b.dataset.page === p);
           });
           if (p === 'overview') { runKpi(); runTrend(); }
@@ -495,15 +495,15 @@
         var kpiDone = false;
         function runKpi() {
           if (kpiDone) return; kpiDone = true;
-          $$('#appKpi .count').forEach(countUp);
-          $$('#appKpi .bar > i').forEach(function (i) { i.style.width = i.dataset.w + '%'; });
+          $$('#app-kpi .count').forEach(countUp);
+          $$('#app-kpi .bar > i').forEach(function (i) { i.style.width = i.dataset.w + '%'; });
         }
 
         /* ===== 3. 采集趋势图 ===== */
         var trendData = [820, 940, 760, 1100, 980, 1240, 1080, 1320];
         var trendDone = false;
         function runTrend() {
-          var box = $('#overviewTrend');
+          var box = $('#overview-trend');
           if (!box || trendDone) return; trendDone = true;
           var max = Math.max.apply(null, trendData);
           trendData.forEach(function (v, i) {
@@ -525,7 +525,7 @@
           { t: '词典管理', d: '词条 CRUD、重复与冲突检测、置信度标记', ico: 'M12 5v14M5 12h14' }
         ];
         function buildCaps() {
-          var g = $('#capGrid'); if (!g || g.childElementCount) return;
+          var g = $('#cap-grid'); if (!g || g.childElementCount) return;
           caps.forEach(function (c) {
             var el = document.createElement('div'); el.className = 'cap';
             el.innerHTML = '<svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + c.ico + '"/></svg>' +
@@ -550,7 +550,7 @@
         var covDone = false;
         function runCoverage() {
           if (covDone) return; covDone = true;
-          var tb = $('#coverageFiles tbody');
+          var tb = $('#coverage-files tbody');
           covFiles.forEach(function (r) {
             var pct = Math.round(r.tr / r.t * 1000) / 10;
             var tr = document.createElement('tr');
@@ -558,7 +558,7 @@
               '<td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><i style="width:' + pct + '%"></i></div><span style="font-family:var(--font-mono);font-size:var(--fs-sm)">' + pct + '%</span></div></td>';
             tb.appendChild(tr);
           });
-          var gl = $('#gapList');
+          var gl = $('#gap-list');
           gaps.forEach(function (g) {
             var li = document.createElement('li');
             li.innerHTML = '<span><code>' + g.t + '</code></span><span class="cnt">' + g.c + ' 处未翻译</span>';
@@ -573,7 +573,7 @@
           ['--c-purple', '#a371f7'], ['--c-text', '#e6edf3'], ['--c-border', '#30363d']
         ];
         function buildSwatches() {
-          var g = $('#swatchGrid'); if (!g || g.childElementCount) return;
+          var g = $('#swatch-grid'); if (!g || g.childElementCount) return;
           swatches.forEach(function (s) {
             var d = document.createElement('div'); d.className = 'swatch';
             d.innerHTML = '<i style="background:' + s[1] + '"></i><div class="m">' + s[0] + '<br>' + s[1] + '</div>';
@@ -600,13 +600,13 @@
         ];
         var dictFilter = 'all';
         function renderDict() {
-          var q = ($('#dictSearch').value || '').toLowerCase();
+          var q = ($('#dict-search').value || '').toLowerCase();
           var rows = dictData.filter(function (d) {
             if (dictFilter !== 'all' && d.st !== dictFilter) return false;
             if (q && (d.en.toLowerCase().indexOf(q) < 0 && (d.zh || '').toLowerCase().indexOf(q) < 0)) return false;
             return true;
           });
-          var tb = $('#dictBody'); tb.innerHTML = '';
+          var tb = $('#dict-body'); tb.innerHTML = '';
           rows.forEach(function (d, i) {
             var tr = document.createElement('tr');
             var badge = d.st === 'tr' ? '<span class="badge tr">已翻译</span>' : '<span class="badge unt">待翻译</span>';
@@ -614,9 +614,9 @@
             tr.innerHTML = '<td>' + (i + 1) + '</td><td><code>' + esc(d.en) + '</code></td><td>' + zh + '</td><td class="right">' + badge + '</td>';
             tb.appendChild(tr);
           });
-          $('#dictCount').textContent = rows.length + ' 条';
+          $('#dict-count').textContent = rows.length + ' 条';
         }
-        $('#dictSearch').addEventListener('input', renderDict);
+        $('#dict-search').addEventListener('input', renderDict);
         $$('#page-dictionary .tab').forEach(function (t) {
           t.addEventListener('click', function () {
             $$('#page-dictionary .tab').forEach(function (x) { x.classList.toggle('active', x === t); });
@@ -634,11 +634,11 @@
         ];
         var editIdx = -1;
         function renderManage() {
-          var q = ($('#manageSearch').value || '').toLowerCase();
+          var q = ($('#manage-search').value || '').toLowerCase();
           var rows = manageData.filter(function (d) {
             return !q || d.en.toLowerCase().indexOf(q) >= 0 || (d.zh || '').toLowerCase().indexOf(q) >= 0;
           });
-          var tb = $('#manageBody'); tb.innerHTML = '';
+          var tb = $('#manage-body'); tb.innerHTML = '';
           rows.forEach(function (d, i) {
             var tr = document.createElement('tr');
             var st = d.zh ? '<span class="badge tr">已翻译</span>' : '<span class="badge unt">待翻译</span>';
@@ -648,35 +648,35 @@
               '<button class="btn btn-sm btn-danger" data-del="' + manageData.indexOf(d) + '">删除</button></td>';
             tb.appendChild(tr);
           });
-          $$('#manageBody [data-edit]').forEach(function (b) {
+          $$('#manage-body [data-edit]').forEach(function (b) {
             b.addEventListener('click', function () { openModal(+b.dataset.edit); });
           });
-          $$('#manageBody [data-del]').forEach(function (b) {
+          $$('#manage-body [data-del]').forEach(function (b) {
             b.addEventListener('click', function () {
               var i = +b.dataset.del; var removed = manageData.splice(i, 1)[0];
               renderManage(); toast('已删除词条：' + removed.en);
             });
           });
         }
-        $('#manageSearch').addEventListener('input', renderManage);
+        $('#manage-search').addEventListener('input', renderManage);
 
-        var modal = $('#dictModal');
+        var modal = $('#dict-modal');
         function openModal(idx) {
           editIdx = idx;
-          $('#dictModalT').textContent = idx < 0 ? '新增词条' : '编辑词条';
-          $('#dmEn').value = idx < 0 ? '' : manageData[idx].en;
-          $('#dmZh').value = idx < 0 ? '' : (manageData[idx].zh || '');
+          $('#dict-modal-title').textContent = idx < 0 ? '新增词条' : '编辑词条';
+          $('#dm-en').value = idx < 0 ? '' : manageData[idx].en;
+          $('#dm-zh').value = idx < 0 ? '' : (manageData[idx].zh || '');
           modal.classList.add('show');
-          setTimeout(function () { $('#dmEn').focus(); }, 60);
+          setTimeout(function () { $('#dm-en').focus(); }, 60);
         }
         function closeModal() { modal.classList.remove('show'); editIdx = -1; }
-        $('#btnAdd').addEventListener('click', function () { openModal(-1); });
-        $('#dmCancel').addEventListener('click', closeModal);
+        $('#btn-add').addEventListener('click', function () { openModal(-1); });
+        $('#dm-cancel').addEventListener('click', closeModal);
         modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
-        $('#dmSave').addEventListener('click', function () {
-          var en = $('#dmEn').value.trim(), zh = $('#dmZh').value.trim();
-          if (!en) { toast('英文源词不能为空'); $('#dmEn').focus(); return; }
+        $('#dm-save').addEventListener('click', function () {
+          var en = $('#dm-en').value.trim(), zh = $('#dm-zh').value.trim();
+          if (!en) { toast('英文源词不能为空'); $('#dm-en').focus(); return; }
           if (editIdx < 0) { manageData.push({ en: en, zh: zh }); toast('已新增词条：' + en); }
           else { manageData[editIdx] = { en: en, zh: zh }; toast('已保存词条：' + en); }
           closeModal(); renderManage();

@@ -1,7 +1,7 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.22
+ * @version 1.13.23
  * @date 2026-11-04
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
@@ -12,7 +12,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-export const VERSION = '1.13.22';
+export const VERSION = '1.13.23';
 
 /**
  * 当前发版日期（YYYY-MM-DD）

@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>高保真原型 · GitHub 页面字符串采集工具 · v1.13.22</title>
+    <title>高保真原型 · GitHub 页面字符串采集工具 · v1.13.23</title>
     <style>
 /*
  * GitHub 中文 · 原型设计系统样式入口
  * @file prototype/assets/prototype.css
- * @version 1.13.22
+ * @version 1.13.23
  * @description 原样式表已按分节拆分为多个模块，此处仅做聚合导入
  */
 
@@ -16,7 +16,7 @@
 /*
  * GitHub 中文 · 原型 — 设计令牌（色彩 / 排版 / 间距 / 圆角 / 阴影 / 动效 / 布局）
  * @file prototype/assets/prototype.tokens.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 :root {
   /* ============ 核心色彩 ============ */
@@ -152,7 +152,7 @@
 /*
  * GitHub 中文 · 原型 — 基础重置与原型页面壳
  * @file prototype/assets/prototype.base.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ================== 基础重置 ================== */
 *,
@@ -325,7 +325,7 @@ samp {
 /*
  * GitHub 中文 · 原型 — 色卡 / 排版样例 / 间距展示 / 组件预览卡片
  * @file prototype/assets/prototype.examples.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ========== 色卡 ========== */
 .swatch-grid {
@@ -480,7 +480,7 @@ samp {
 /*
  * GitHub 中文 · 原型 — 按钮系统 / 切换开关 / 输入框
  * @file prototype/assets/prototype.controls.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ========== 按钮系统 ========== */
 .btn {
@@ -653,7 +653,7 @@ samp {
 /*
  * GitHub 中文 · 原型 — 卡片 / 徽章 / 表格 / 标签导航 / 状态指示器 / Toast / 规则列表
  * @file prototype/assets/prototype.surfaces.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ========== 卡片 ========== */
 .card {
@@ -830,7 +830,7 @@ samp {
 /*
  * GitHub 中文 · 原型 — 模拟 GitHub 页面展示 / 浮动按钮
  * @file prototype/assets/prototype.mockup.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ========== 模拟 GitHub 页面展示 ========== */
 .gh-window {
@@ -924,7 +924,7 @@ samp {
 /*
  * GitHub 中文 · 原型 — 配置面板 / 性能面板 / 移动端原型框
  * @file prototype/assets/prototype.panels.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ========== 配置面板（桌面） ========== */
 .config-panel {
@@ -1073,7 +1073,7 @@ samp {
 /*
  * GitHub 中文 · 原型 — 图标栅格 / 动效示例 / 错误与空状态 / 组件规则代码块
  * @file prototype/assets/prototype.effects.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ========== 图标栅格 ========== */
 .icon-grid {
@@ -1193,7 +1193,7 @@ samp {
 /*
  * GitHub 中文 · 原型 — 响应式适配
  * @file prototype/assets/prototype.responsive.css
- * @version 1.13.22
+ * @version 1.13.23
  */
 /* ========== 响应式 ========== */
 @media (max-width: 900px) {
@@ -1604,7 +1604,7 @@ samp {
           </button>
         </div>
       </header>
-      <nav class="proto-nav" id="protoNav" aria-label="原型导航">
+      <nav class="proto-nav" id="proto-nav" aria-label="原型导航">
         <div class="proto-nav-inner">
           <a href="#sec-flow" class="active">采集流程</a>
           <a href="#sec-entry">采集入口</a>
@@ -1619,7 +1619,7 @@ samp {
           从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典。原型覆盖探针植入、文本 / 批量 URL 采集、实时处理中心与 JSON 导出全流程。
         </p>
 
-        <div class="kpi-strip" id="kpiStrip">
+        <div class="kpi-strip" id="kpi-strip">
           <div class="kpi"><div class="v count" data-to="12480">0</div><div class="l">已采集词条</div></div>
           <div class="kpi"><div class="v count" data-to="9216">0</div><div class="l">已翻译（占 73.9%）</div><div class="bar"><i data-w="73.9"></i></div></div>
           <div class="kpi"><div class="v count" data-to="1204">0</div><div class="l">词典条目</div></div>
@@ -1660,13 +1660,13 @@ samp {
                 <h3 class="ct-card-title">
                   <span class="ct-step-badge">1</span>探针脚本
                 </h3>
-                <button class="btn btn-sm" id="copyProbe">复制脚本</button>
+                <button class="btn btn-sm" id="copy-probe">复制脚本</button>
               </div>
               <p class="ct-card-desc">
                 在 GitHub 页面控制台执行下方脚本，引擎会提取当前视图中的全部有效 UI 文本块。
               </p>
               <div class="ct-code">
-                <pre id="probeCode">const textNodes = [];
+                <pre id="probe-code">const textNodes = [];
 const walker = document.createTreeWalker(
   document.body, NodeFilter.SHOW_TEXT, null, false
 );
@@ -1709,13 +1709,13 @@ https://github.com/settings/profile
 https://docs.github.com/zh/actions</textarea>
               </div>
               <div class="ct-btn-row">
-                <button class="btn" id="btnClean">智能清洗</button>
-                <button class="btn" id="btnExport">导出 JSON</button>
-                <button class="btn btn-primary" id="btnAnalyze">开始分析</button>
+                <button class="btn" id="btn-clean">智能清洗</button>
+                <button class="btn" id="btn-export">导出 JSON</button>
+                <button class="btn btn-primary" id="btn-analyze">开始分析</button>
               </div>
-              <div class="ct-export" id="exportPanel" hidden>
-                <div class="ct-export-head"><span>导出预览 · collector-terms.json</span><button class="btn btn-sm" id="copyJson">复制 JSON</button></div>
-                <pre class="ct-export-code" id="jsonOut">{
+              <div class="ct-export" id="export-panel" hidden>
+                <div class="ct-export-head"><span>导出预览 · collector-terms.json</span><button class="btn btn-sm" id="copy-json">复制 JSON</button></div>
+                <pre class="ct-export-code" id="json-out">{
   "source": "github.com",
   "collectedAt": "2026-10-03T10:24:05+08:00",
   "terms": [
@@ -1782,12 +1782,12 @@ https://docs.github.com/zh/actions</textarea>
             <div class="ct-progress-meta">
               <div class="lbl">当前任务</div>
               <div class="row">
-                <span class="task" id="taskText">分析并清洗词典…</span>
-                <span class="pct" id="progPct">68%</span>
+                <span class="task" id="task-text">分析并清洗词典…</span>
+                <span class="pct" id="prog-pct">68%</span>
               </div>
             </div>
             <div class="ct-progress-track" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100">
-              <div class="ct-progress-fill" id="progFill"></div>
+              <div class="ct-progress-fill" id="prog-fill"></div>
             </div>
             <span class="ct-backup-pill">系统自动备份已开启</span>
 
@@ -1797,9 +1797,9 @@ https://docs.github.com/zh/actions</textarea>
                   <i class="r"></i><i class="y"></i><i class="g"></i>
                 </div>
                 <span class="ct-term-title">i18n-engine --stream</span>
-                <button class="ct-term-clear" id="termClear">Clear</button>
+                <button class="ct-term-clear" id="term-clear">Clear</button>
               </div>
-              <div class="ct-term-body" id="termBody" role="log" aria-live="polite">
+              <div class="ct-term-body" id="term-body" role="log" aria-live="polite">
                 <div class="ct-log-line info"><span class="t">[10:24:01]</span><span class="m">探针已注入，提取文本节点 1,248 个</span></div>
                 <div class="ct-log-line info"><span class="t">[10:24:02]</span><span class="m">正在清洗：去除空白与重复…</span></div>
                 <div class="ct-log-line info"><span class="t">[10:24:03]</span><span class="m">命中词典 612 条，新增 36 条</span></div>
@@ -1812,7 +1812,7 @@ https://docs.github.com/zh/actions</textarea>
       </main>
       <footer class="proto-footer" id="proto-footer">
         <div class="proto-footer-inner">
-          <span class="fnote">高保真原型 · v1.13.22 · 仅供设计走查，不构成交付承诺</span>
+          <span class="fnote">高保真原型 · v1.13.23 · 仅供设计走查，不构成交付承诺</span>
           <nav class="flinks" aria-label="页脚链接">
             <a href="#">原型说明</a>
             <a href="#">设计规范</a>
@@ -1826,13 +1826,13 @@ https://docs.github.com/zh/actions</textarea>
       var $ = function (s, r) { return (r || document).querySelector(s); };
       var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
       function toast(msg) {
-        var t = $('#protoToast');
-        if (!t) { t = document.createElement('div'); t.className = 'proto-toast'; t.id = 'protoToast'; document.body.appendChild(t); }
+        var t = $('#proto-toast');
+        if (!t) { t = document.createElement('div'); t.className = 'proto-toast'; t.id = 'proto-toast'; document.body.appendChild(t); }
         t.textContent = msg; t.classList.add('show');
         clearTimeout(t._timer); t._timer = setTimeout(function () { t.classList.remove('show'); }, 1800);
       }
       // 1. 导航 scroll-spy + 平滑滚动
-      var navLinks = $$('#protoNav a');
+      var navLinks = $$('#proto-nav a');
       var sections = navLinks.map(function (a) { return $(a.getAttribute('href')); });
       if ('IntersectionObserver' in window) {
         var spy = new IntersectionObserver(function (entries) {
@@ -1883,9 +1883,9 @@ https://docs.github.com/zh/actions</textarea>
             }
           });
         }, { threshold: 0.4 });
-        var ks = $('#kpiStrip'); if (ks) kpiObs.observe(ks);
+        var ks = $('#kpi-strip'); if (ks) kpiObs.observe(ks);
       } else {
-        var ks2 = $('#kpiStrip');
+        var ks2 = $('#kpi-strip');
         if (ks2) { $$('.count', ks2).forEach(countUp); $$('.bar > i', ks2).forEach(function (i) { i.style.width = i.dataset.w + '%'; }); }
       }
       // 4. 数据中心 tab 切换
@@ -1897,28 +1897,28 @@ https://docs.github.com/zh/actions</textarea>
         });
       });
       // 5. 复制探针脚本
-      var cp = $('#copyProbe');
+      var cp = $('#copy-probe');
       if (cp) cp.addEventListener('click', function () {
-        var code = $('#probeCode').innerText;
+        var code = $('#probe-code').innerText;
         if (navigator.clipboard) navigator.clipboard.writeText(code).catch(function () {});
         toast('探针脚本已复制到剪贴板');
       });
       // 6. 导出 JSON
-      var ex = $('#exportPanel'), btnEx = $('#btnExport');
+      var ex = $('#export-panel'), btnEx = $('#btn-export');
       if (btnEx) btnEx.addEventListener('click', function () {
         ex.hidden = !ex.hidden;
         if (!ex.hidden) toast('已生成 collector-terms.json 预览');
       });
-      var cpj = $('#copyJson');
+      var cpj = $('#copy-json');
       if (cpj) cpj.addEventListener('click', function () {
-        if (navigator.clipboard) navigator.clipboard.writeText($('#jsonOut').innerText).catch(function () {});
+        if (navigator.clipboard) navigator.clipboard.writeText($('#json-out').innerText).catch(function () {});
         toast('JSON 已复制到剪贴板');
       });
       // 7. 智能清洗
-      var bc = $('#btnClean');
+      var bc = $('#btn-clean');
       if (bc) bc.addEventListener('click', function () { toast('已智能清洗：去重 2 条，过滤空白 0 条'); });
       // 8. 开始分析：模拟 SSE 流式日志 + 进度
-      var ba = $('#btnAnalyze'), analyzing = false;
+      var ba = $('#btn-analyze'), analyzing = false;
       var logs = [
         ['info', '探针已注入，提取文本节点 1,248 个'],
         ['info', '正在清洗：去除空白与重复…'],
@@ -1928,7 +1928,7 @@ https://docs.github.com/zh/actions</textarea>
       ];
       if (ba) ba.addEventListener('click', function () {
         if (analyzing) return; analyzing = true; ba.classList.add('is-loading');
-        var body = $('#termBody'), fill = $('#progFill'), pct = $('#progPct'), task = $('#taskText');
+        var body = $('#term-body'), fill = $('#prog-fill'), pct = $('#prog-pct'), task = $('#task-text');
         var p = 0;
         var timer = setInterval(function () {
           p = Math.min(100, p + Math.random() * 9 + 4);
@@ -1952,10 +1952,10 @@ https://docs.github.com/zh/actions</textarea>
         }, 620);
       });
       // 9. 清空终端
-      var cl = $('#termClear');
-      if (cl) cl.addEventListener('click', function () { var b = $('#termBody'); if (b) b.innerHTML = ''; });
+      var cl = $('#term-clear');
+      if (cl) cl.addEventListener('click', function () { var b = $('#term-body'); if (b) b.innerHTML = ''; });
       // 10. 进度条初始动画
-      window.addEventListener('load', function () { var f = $('#progFill'); if (f) setTimeout(function () { f.classList.add('done'); }, 300); });
+      window.addEventListener('load', function () { var f = $('#prog-fill'); if (f) setTimeout(function () { f.classList.add('done'); }, 300); });
     })();
   </script>
   </body>

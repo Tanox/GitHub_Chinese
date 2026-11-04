@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.22** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.23** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -209,7 +209,7 @@ npm test               # lint → build → validate
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.21**（2026-11-04）。
+- 当前版本 **v1.13.23**（2026-11-04）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，六页 `/`、`/overview`、`/coverage`、`/design`、`/dictionary`、`/dict-manage`）。两链路仅共享词典数据。
 
 ### 量化指标
@@ -237,7 +237,7 @@ npm test               # lint → build → validate
 
 > 工作台「项目概览」页（`/overview`）已把多数指标改为服务端实时统计，不再依赖本文档的手工数字。
 
-> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.22 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
+> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.23 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
 
 ### 已完成能力
 
@@ -413,7 +413,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_Chinese |
-| **当前版本** | 1.13.22 |
+| **当前版本** | 1.13.23 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

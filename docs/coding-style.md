@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.13.22** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.23** ｜ 版本权威源：`src/userscript/version.js`
 
 本文档定义了项目的代码风格规范，包括命名约定、代码格式、注释规范和最佳实践。
 
@@ -613,7 +613,7 @@ function calculate(operation, a, b) {
 ```html
 <footer id="site-footer">
   <span>GitHub 中文 · 采集工具</span>
-  <span>v1.13.22 · build 202611040930</span>
+  <span>v1.13.23 · build 202611040930</span>
 </footer>
 ```
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>组件库规范 · Wireframes · v1.13.22</title>
+    <title>组件库规范 · Wireframes · v1.13.23</title>
     <style>
       /* ===== 设计令牌（与 prototype.html 同源） ===== */
       :root {
@@ -300,7 +300,7 @@
   <body>
     <header id="wf-topbar" class="wf-topbar">
       <div class="wf-topbar-inner">
-        <span class="wf-brand">组件库规范 · Wireframes<span class="v">v1.13.22</span></span>
+        <span class="wf-brand">组件库规范 · Wireframes<span class="v">v1.13.23</span></span>
         <button class="btn btn-sm" onclick="wfToast('已复制本规范链接')">复制规范</button>
       </div>
     </header>
@@ -371,17 +371,17 @@
             <h3>文本输入与文本域</h3>
             <div class="wf-demo col">
               <div>
-                <label class="field-label" for="wfName">仓库名称</label>
-                <input class="field" id="wfName" placeholder="例如 github-chinese" />
+                <label class="field-label" for="wf-name">仓库名称</label>
+                <input class="field" id="wf-name" placeholder="例如 github-chinese" />
                 <span class="field-help">仅支持字母、数字与连字符。</span>
               </div>
               <div>
-                <label class="field-label" for="wfUrl">批量 URL（每行一个）</label>
-                <textarea class="field" id="wfUrl" placeholder="https://github.com/..."></textarea>
+                <label class="field-label" for="wf-url">批量 URL（每行一个）</label>
+                <textarea class="field" id="wf-url" placeholder="https://github.com/..."></textarea>
               </div>
               <div>
-                <label class="field-label" for="wfErr">采集失败重试次数</label>
-                <input class="field invalid" id="wfErr" value="NaN" />
+                <label class="field-label" for="wf-err">采集失败重试次数</label>
+                <input class="field invalid" id="wf-err" value="NaN" />
                 <span class="field-error">请输入 1–10 之间的整数。</span>
               </div>
             </div>
@@ -513,7 +513,7 @@
           <div class="wf-card">
             <h3>确认操作</h3>
             <div class="wf-demo">
-              <button class="btn btn-danger" onclick="document.getElementById('wfModal').classList.add('show')">删除词条库</button>
+              <button class="btn btn-danger" onclick="document.getElementById('wf-modal').classList.add('show')">删除词条库</button>
             </div>
           </div>
         </section>
@@ -739,21 +739,21 @@ https://docs.github.com/zh/actions</textarea>
     </div>
 
     <!-- 模态 -->
-    <div class="overlay" id="wfModal">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wfModalT">
-        <div class="m-head" id="wfModalT">删除词条库</div>
+    <div class="overlay" id="wf-modal">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wf-modal-title">
+        <div class="m-head" id="wf-modal-title">删除词条库</div>
         <div class="m-body">此操作将永久删除当前采集到的词条与本地缓存，且不可恢复。是否继续？</div>
         <div class="m-foot">
-          <button class="btn" onclick="document.getElementById('wfModal').classList.remove('show')">取消</button>
-          <button class="btn btn-danger" onclick="document.getElementById('wfModal').classList.remove('show');wfToast('已删除词条库')">确认删除</button>
+          <button class="btn" onclick="document.getElementById('wf-modal').classList.remove('show')">取消</button>
+          <button class="btn btn-danger" onclick="document.getElementById('wf-modal').classList.remove('show');wfToast('已删除词条库')">确认删除</button>
         </div>
       </div>
     </div>
-    <div class="toast" id="wfToastEl"></div>
+    <div class="toast" id="wf-toast"></div>
 
     <footer id="wf-footer" class="wf-footer">
       <div class="wf-footer-inner">
-        <span>组件库规范 · v1.13.22 · 与 prototype.html 同源设计令牌</span>
+        <span>组件库规范 · v1.13.23 · 与 prototype.html 同源设计令牌</span>
         <span>仅供设计走查，不构成交付承诺</span>
       </div>
     </footer>
@@ -761,7 +761,7 @@ https://docs.github.com/zh/actions</textarea>
     <script>
       (function () {
         function wfToast(msg) {
-          var t = document.getElementById('wfToastEl');
+          var t = document.getElementById('wf-toast');
           t.textContent = msg; t.classList.add('show');
           clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('show'); }, 1800);
         }
@@ -778,7 +778,7 @@ https://docs.github.com/zh/actions</textarea>
           });
         });
         // 点击遮罩关闭模态
-        var modal = document.getElementById('wfModal');
+        var modal = document.getElementById('wf-modal');
         modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('show'); });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') modal.classList.remove('show'); });
       })();
