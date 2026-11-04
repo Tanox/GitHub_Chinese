@@ -1,7 +1,8 @@
 /*
  * GitHub 中文 · 采集工作台 — 布局（顶栏 / 内容 / 步骤条 / 栅格 / 响应式）
  * @file src/app/styles/layout.css
- * @version 1.12.9
+ * @version 1.13.22
+ * @description 应用外壳布局；页脚样式见 footer.css（按职责拆分）。
  */
 /* 应用外壳：顶栏 + 主区（纵向排布，上下布局） */
 .app-shell {
@@ -143,73 +144,4 @@
   .content {
     padding: 1rem;
   }
-}
-
-/* 页脚（对齐原型 proto-footer） */
-.footer {
-  flex-shrink: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border-soft);
-}
-
-.footer-inner {
-  max-width: var(--container-max-width, 76rem);
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  padding: 1rem var(--container-padding, 1.5rem);
-}
-
-.footer-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.footer .fnote {
-  color: var(--muted);
-  font-size: .82rem;
-  font-weight: 500;
-}
-
-.footer .fnote-ver {
-  font-family: var(--mono);
-  font-size: .78rem;
-  color: var(--faint);
-  background: var(--canvas);
-  padding: 0.1rem 0.45rem;
-  border-radius: 6px;
-  border: 1px solid var(--border-soft);
-}
-
-.footer .fnote-build {
-  font-family: var(--mono);
-  font-size: .78rem;
-  color: var(--faint);
-}
-
-.footer .flinks {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.footer .footer-link {
-  color: var(--muted);
-  font-size: .82rem;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.footer .footer-link:hover {
-  color: var(--brand-strong);
-}
-
-.footer .footer-link.active {
-  color: var(--brand-strong);
-  font-weight: 600;
 }

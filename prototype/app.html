@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>高保真原型 · 工作台其余模块 · v1.13.21</title>
+    <title>高保真原型 · 工作台其余模块 · v1.13.22</title>
     <style>
       /* ===== 设计令牌（与 prototype.html / wireframes.html 同源） ===== */
       :root {
@@ -230,7 +230,7 @@
   <body>
     <header class="app-topbar" id="appTopbar">
       <div class="app-topbar-inner">
-        <span class="app-brand">GitHub 中文 · 工作台<span class="v">v1.13.21</span></span>
+        <span class="app-brand">GitHub 中文 · 工作台<span class="v">v1.13.22</span></span>
         <button class="icon-btn" type="button" aria-label="设置">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="3"></circle>
@@ -272,7 +272,7 @@
           </div>
         </div>
 
-        <div class="section">
+        <div class="section" id="overview-cap-section">
           <h3>平台能力清单</h3>
           <div class="cap-grid" id="capGrid"></div>
         </div>
@@ -295,7 +295,7 @@
           </div>
         </div>
 
-        <div class="section">
+        <div class="section" id="coverage-files-section">
           <h3>按文件细分</h3>
           <div class="card">
             <table class="ds-table" id="coverageFiles">
@@ -305,14 +305,14 @@
           </div>
         </div>
 
-        <div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-6)">
-          <div>
+        <div class="section" id="coverage-detect-section" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-6)">
+          <div id="coverage-gaps">
             <h3>Top-N 翻译缺口</h3>
             <div class="card">
               <ul class="gap-list" id="gapList"></ul>
             </div>
           </div>
-          <div>
+          <div id="coverage-duplicates">
             <h3>重复 / 冲突检测</h3>
             <div class="card">
               <div class="alert warn" style="margin-bottom:var(--sp-4)">
@@ -332,11 +332,11 @@
         <h1 class="page-title" id="t-design">设计系统展示</h1>
         <p class="lede">工作台统一的设计令牌、按钮、状态徽标与词条表格规范预览（完整组件库见 Wireframes 规范）。</p>
 
-        <div class="section">
+        <div class="section" id="design-tokens-section">
           <h3>设计令牌 · 语义色板</h3>
           <div class="card"><div class="swatch-grid" id="swatchGrid"></div></div>
         </div>
-        <div class="section">
+        <div class="section" id="design-buttons-section">
           <h3>按钮 Buttons</h3>
           <div class="card"><div class="demorow">
             <button class="btn btn-primary">主操作</button>
@@ -348,7 +348,7 @@
             <button class="btn" disabled>禁用</button>
           </div></div>
         </div>
-        <div class="section">
+        <div class="section" id="design-badges-section">
           <h3>状态徽标 Badges</h3>
           <div class="card"><div class="demorow">
             <span class="badge unt">待翻译</span>
@@ -418,7 +418,7 @@
 
     <footer class="app-footer" id="appFooter">
       <div class="app-footer-inner">
-        <span>高保真原型 · v1.13.21 · 仅供设计走查，不构成交付承诺</span>
+        <span>高保真原型 · v1.13.22 · 仅供设计走查，不构成交付承诺</span>
         <span>更新日期：2026-10-03</span>
       </div>
     </footer>
@@ -445,6 +445,13 @@
       (function () {
         var $ = function (s, r) { return (r || document).querySelector(s); };
         var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+        /** HTML 转义：任何动态值渲染进 innerHTML 前必须转义（防原型内 XSS） */
+        function esc(s) {
+          return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+          });
+        }
 
         function toast(msg) {
           var t = $('#appToast');
@@ -603,8 +610,8 @@
           rows.forEach(function (d, i) {
             var tr = document.createElement('tr');
             var badge = d.st === 'tr' ? '<span class="badge tr">已翻译</span>' : '<span class="badge unt">待翻译</span>';
-            var zh = d.zh || '<span style="color:var(--c-text-dim)">—</span>';
-            tr.innerHTML = '<td>' + (i + 1) + '</td><td><code>' + d.en + '</code></td><td>' + zh + '</td><td class="right">' + badge + '</td>';
+            var zh = d.zh ? esc(d.zh) : '<span style="color:var(--c-text-dim)">—</span>';
+            tr.innerHTML = '<td>' + (i + 1) + '</td><td><code>' + esc(d.en) + '</code></td><td>' + zh + '</td><td class="right">' + badge + '</td>';
             tb.appendChild(tr);
           });
           $('#dictCount').textContent = rows.length + ' 条';
@@ -635,8 +642,8 @@
           rows.forEach(function (d, i) {
             var tr = document.createElement('tr');
             var st = d.zh ? '<span class="badge tr">已翻译</span>' : '<span class="badge unt">待翻译</span>';
-            var zh = d.zh || '<span style="color:var(--c-text-dim)">—</span>';
-            tr.innerHTML = '<td>' + (i + 1) + '</td><td><code>' + d.en + '</code></td><td>' + zh + '</td><td class="right">' + st + '</td>' +
+            var zh = d.zh ? esc(d.zh) : '<span style="color:var(--c-text-dim)">—</span>';
+            tr.innerHTML = '<td>' + (i + 1) + '</td><td><code>' + esc(d.en) + '</code></td><td>' + zh + '</td><td class="right">' + st + '</td>' +
               '<td class="right"><button class="btn btn-sm" data-edit="' + manageData.indexOf(d) + '">编辑</button> ' +
               '<button class="btn btn-sm btn-danger" data-del="' + manageData.indexOf(d) + '">删除</button></td>';
             tb.appendChild(tr);

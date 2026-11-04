@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className='content-inner'>
+    <div id='not-found-root' className='content-inner'>
       <section className='card'>
         <h2 className='section-title'>页面不存在</h2>
         <p className='section-desc'>你访问的页面可能已被移动或删除。</p>

@@ -71,6 +71,12 @@ export async function applyCookies(page, cookies, target) {
   }
 
   for (const c of cookies) {
+    // 结构校验：非对象或缺少合法 name 的条目直接跳过（畸形输入不再注入 name="undefined"）
+    if (!c || typeof c !== 'object') continue;
+    const name = typeof c.name === 'string' ? c.name.trim() : '';
+    const value = typeof c.value === 'string' ? c.value : '';
+    if (!name) continue;
+
     const domain = String(c.domain || '')
       .replace(/^\./, '')
       .toLowerCase();
@@ -78,7 +84,7 @@ export async function applyCookies(page, cookies, target) {
     if (domain && host && !host.endsWith(domain)) continue;
 
     /** @type {Record<string, string>} */
-    const cookie = { name: String(c.name), value: String(c.value) };
+    const cookie = { name, value };
     if (domain) cookie.domain = domain;
     else cookie.url = target;
     if (c.path) cookie.path = String(c.path);

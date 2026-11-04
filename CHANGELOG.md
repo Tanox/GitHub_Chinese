@@ -1,4 +1,37 @@
 # Changelog
+## [1.13.22] - 2026-11-04
+
+### Fix
+- `useCollector`：组件卸载时中断在飞 SSE 请求（修复卸载后继续写入状态）；被新请求中断的旧请求不再把 `isProcessing` 提前置回 false（修复连发请求时按钮提前解锁的竞态）。
+- `sse-stream`：错误兜底分支的 `controller.enqueue` 自带 try/catch，流已因客户端断开而出错时不再二次抛异常。
+- `api-guard`：限流桶淘汰改为「先清过期桶，再按 resetAt 淘汰最旧桶」，不再整表 `clear()`——消除攻击者借大量伪造 IP 制造「限流重置」窗口绕过限流的可能。
+- `DictionaryHelper`：建议请求增加 15s 超时兜底（超时提示「请求超时」），服务端挂起时 UI 不再永久 loading。
+- `page-navigation-utils.applyCookies`：注入前校验 cookie 结构，非对象 / 缺 name 的畸形条目直接跳过，不再注入 `name="undefined"`。
+- `collect-service`：`/api/collect` 对 `body.data` 做字符串类型守卫，非字符串输入降级为空串，不再依赖外层 catch 兜底。
+
+### Security
+- `prototype/app.html`：新增 `esc()` HTML 转义助手，词典浏览与管理台表格渲染动态值（含「新增词条」模态输入）前统一转义，消除原型内自注入 XSS。
+
+### Style
+- 全工作台补齐语义化 `id`（§5.9）：Shell 顶栏 `collector-topbar`、Dashboard `dashboard-card`/`dashboard-progress`/`engine-terminal`、词典管理台 `dict-manage-root`/`dict-stats`/`dict-actions`/`dict-table`/`dict-export-bar`/`dict-patch-preview`/`dict-history-result`/`dict-helper-root`、概览页 `overview-stats`/`overview-trend`/`overview-spec-*`、`loading-root`/`not-found-root`/`global-error-root`；camelCase id 规范为 kebab-case（`toastContainer`→`toast-container`、`previewContainer`→`preview-container`、`termCount`→`term-count`）。
+- 原型补齐骨架容器语义化 `id`：`wireframes.html`（`wf-topbar`/`wf-main`/`wf-footer`）、`app.html` 各功能区 section（`overview-cap-section`、`coverage-files-section`、`coverage-detect-section`、`coverage-gaps`、`coverage-duplicates`、`design-tokens-section`、`design-buttons-section`、`design-badges-section`）。
+
+### Refactor
+- 拆分超 200 行样式文件（门禁此前未覆盖 CSS）：`cards.css`（335 行）→ `cards-data-center.css` + `cards-probe.css`；`dictionary.css`（270 行）→ `dictionary-manage.css`；`layout.css`（215 行）→ `footer.css`；`layout.tsx` 注册新模块，外部行为不变。
+- 行数门禁 `check-file-length.cjs` 纳入 `.css` 扩展名，防止样式文件超限漏检。
+- 补齐文件头注释版本字段：`Shell.tsx`、`TopNav.tsx`、`Dashboard.tsx`、`main/index.js`（修正 `@file` 路径）、`main/lifecycle.js`；`layout.tsx` 补 `@date/@author`。
+- `prototype/prototype.html` 内联脚本块头 `@version 1.9.24`（10 处）同步为当前版本。
+
+### Docs
+- 修正 `docs/project.md` 过期指标：lint 0 error、`tsc --noEmit` 通过、单元测试 162 用例全绿、Next 构建通过、原型资源数 3 个自包含 HTML、工作台路由 5 个（`/design` 已裁撤，设计系统展示保留于原型）。
+- `docs/coding-style.md` §5.12 更新为「页脚展示版本号 + build 编号（构建时自动注入）」，与 v1.13.21 落地的全局规范对齐。
+
+### Chore
+- `layout.tsx` `metadataBase` 旧仓库名 `GitHub_i18n` 修正为 `GitHub_Chinese`。
+- 单一版本源 `src/userscript/version.js`、`package.json`、README 与 `docs/project.md`、`docs/coding-style.md` 适用版本行同步至 1.13.22，原型展示位同步至 1.13.22，并重建用户脚本产物。
+
+---
+
 ## [1.13.21] - 2026-11-04
 
 ### Fix

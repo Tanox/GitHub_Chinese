@@ -1,6 +1,10 @@
 /**
  * 脚本生命周期管理器
  * @file src/userscript/main/lifecycle.js
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
+ * @description 管理 init / start / cleanup 生命周期编排：翻译核心、页面监控与 UI 的启停
  */
 import { CONFIG } from '../config/index.js';
 import { versionChecker } from '../versionChecker/index.js';

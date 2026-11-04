@@ -1,7 +1,9 @@
 /**
  * 全局布局
  * @file src/app/layout.tsx
- * @version 1.12.9
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
  * @description 加载 Tailwind 入口与 src/app/styles 下的自包含样式模块（经 Next 打包，不再依赖 public 静态目录），提供全站元数据
  */
 
@@ -9,8 +11,11 @@ import type { Metadata } from 'next';
 import './globals.css';
 import './styles/base.css';
 import './styles/layout.css';
+import './styles/footer.css';
 import './styles/topnav.css';
 import './styles/cards.css';
+import './styles/cards-data-center.css';
+import './styles/cards-probe.css';
 import './styles/buttons.css';
 import './styles/code.css';
 import './styles/terms.css';
@@ -20,9 +25,10 @@ import './styles/toast.css';
 import './styles/showcase.css';
 import './styles/coverage.css';
 import './styles/dictionary.css';
+import './styles/dictionary-manage.css';
 
 /** 站点基础地址（可由 NEXT_PUBLIC_SITE_URL 覆盖，用于生成绝对 OG URL） */
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tanox.github.io/GitHub_i18n';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tanox.github.io/GitHub_Chinese';
 
 const SITE_TITLE = '词典采集工作台 · GitHub 中文';
 const SITE_DESCRIPTION = '从 GitHub 原生界面抓取 UI 词条，沉淀中文本地化词典';

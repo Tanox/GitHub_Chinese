@@ -1,7 +1,9 @@
 /**
  * 项目概览页
  * @file src/app/overview/page.tsx
- * @version 1.11.2
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
  * @description 服务端页面：展示由磁盘实时统计的项目指标、已交付能力与剩余任务
  */
 
@@ -115,7 +117,7 @@ export default function OverviewPage() {
         </div>
       }
     >
-      <section className='stat-grid' aria-label='项目指标'>
+      <section id='overview-stats' className='stat-grid' aria-label='项目指标'>
         {stats.map((stat) => (
           <div key={stat.label} className='stat-card'>
             <p className='stat-label'>{stat.label}</p>
@@ -126,7 +128,7 @@ export default function OverviewPage() {
       </section>
 
       {collectHistory.length > 0 && (
-        <section className='card' aria-label='采集趋势'>
+        <section id='overview-trend' className='card' aria-label='采集趋势'>
           <h2 className='section-title'>采集趋势可视化</h2>
           <p className='section-desc'>
             由 collect-dict.cjs 记录，展示最近 {Math.min(collectHistory.length, MAX_TREND)}{' '}
@@ -152,8 +154,8 @@ export default function OverviewPage() {
         </section>
       )}
 
-      {SPEC_GROUPS.map((group) => (
-        <section key={group.title} className='card'>
+      {SPEC_GROUPS.map((group, gi) => (
+        <section key={group.title} id={`overview-spec-${gi}`} className='card'>
           <h2 className='section-title'>{group.title}</h2>
           <p className='section-desc'>{group.desc}</p>
           <ul className='spec-list' style={{ marginTop: '1rem' }}>

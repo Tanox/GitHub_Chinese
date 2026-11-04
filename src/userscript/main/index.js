@@ -1,6 +1,10 @@
 /**
  * GitHub 中文翻译主入口文件
- * @file main.js
+ * @file src/userscript/main/index.js
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
+ * @description 用户脚本入口：装配配置 / 翻译核心 / 配置面板，并委托生命周期管理器启动
  */
 
 import { CONFIG } from '../config/index.js';

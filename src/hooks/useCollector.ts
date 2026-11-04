@@ -5,7 +5,7 @@
  * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { IDLE_PROGRESS, PERCENT_MAX } from './collector-constants';
 import { readSseStream } from './collector-sse';
 import type {
@@ -99,6 +99,9 @@ export function useCollector() {
 
   const abortRef = useRef<AbortController | null>(null);
 
+  // 卸载时中断在飞请求，避免 SSE 流在组件卸载后继续写入状态（内存泄漏 / 更新已卸载组件）
+  useEffect(() => () => abortRef.current?.abort(), []);
+
   const runRequest = useCallback(
     async (endpoint: string, payload: Record<string, unknown>, startMessage: string) => {
       // 取消上一次可能仍在进行的请求，避免重复点击产生多个并行流
@@ -124,7 +127,8 @@ export function useCollector() {
         }
         addLog('error', `请求失败: ${describeError(error)}`);
       } finally {
-        setIsProcessing(false);
+        // 仅当本次请求仍是当前活动请求时才解锁，防止被新请求中断的旧请求提前解锁按钮
+        if (abortRef.current === controller) setIsProcessing(false);
       }
     },
     [addLog, clearLogs, handleStream],

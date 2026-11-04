@@ -15,10 +15,10 @@ export default function PreviewTable({ terms }: PreviewTableProps) {
   if (terms.length === 0) return null;
 
   return (
-    <section id='previewContainer' className='card'>
+    <section id='preview-container' className='card'>
       <div className='card-head'>
         <h2 className='card-title'>清洗结果预览</h2>
-        <span id='termCount' className='term-badge'>
+        <span id='term-count' className='term-badge'>
           {terms.length} 词条
         </span>
       </div>

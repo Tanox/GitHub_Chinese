@@ -1,3 +1,12 @@
+/**
+ * 引擎实时处理中心
+ * @file src/components/Dashboard.tsx
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
+ * @description 采集进度卡：状态徽标 / 任务标签 / 进度条 / 实时日志终端（新日志自动滚动到底部）。
+ */
+
 import React, { useRef, useEffect } from 'react';
 import { LogEntry, ProgressState } from '@/hooks/useCollector';
 
@@ -17,7 +26,7 @@ export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
   }, [logs]);
 
   return (
-    <section className='progress-card'>
+    <section id='dashboard-card' className='progress-card'>
       <div className='progress-head'>
         <h2>引擎实时处理中心</h2>
         <div className={`status-indicator ${progress.type !== 'idle' ? 'active' : ''}`}>
@@ -48,6 +57,7 @@ export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
       </div>
 
       <div
+        id='dashboard-progress'
         className='progress-track'
         role='progressbar'
         aria-label='采集进度'
@@ -62,7 +72,7 @@ export default function Dashboard({ logs, progress, onClear }: DashboardProps) {
         {progress.type === 'idle' ? '等待首次自动备份...' : '系统自动备份已开启'}
       </div>
 
-      <div className='terminal'>
+      <div id='engine-terminal' className='terminal'>
         <div className='term-bar'>
           <div className='term-dots' aria-hidden='true'>
             <i className='r'></i>

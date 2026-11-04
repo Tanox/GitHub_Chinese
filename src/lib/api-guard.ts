@@ -28,6 +28,30 @@ const TRUSTED_IP_HEADER = (process.env.COLLECT_TRUSTED_IP_HEADER ?? '').trim().t
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
+/** 桶数量软上限：超过后触发淘汰，防止长期运行内存膨胀 */
+const BUCKET_MAX = 5000;
+
+/**
+ * 淘汰限流桶：先清已过期桶；仍超上限则按窗口重置时间淘汰最旧的一批。
+ * 不能整表 clear()——那会让所有 IP 计数同时归零，
+ * 攻击者可借大量伪造 IP 制造「限流重置」窗口绕过限流。
+ */
+function evictBuckets(now: number): void {
+  if (buckets.size <= BUCKET_MAX) return;
+  // 1) 已过期桶对限流不再生效，直接移除
+  for (const [key, b] of buckets) {
+    if (now >= b.resetAt) buckets.delete(key);
+  }
+  // 2) 仍超上限：按 resetAt 升序淘汰最旧桶，降至上限一半
+  if (buckets.size > BUCKET_MAX) {
+    const target = Math.floor(BUCKET_MAX / 2);
+    const oldest = [...buckets.entries()]
+      .sort((a, b) => a[1].resetAt - b[1].resetAt)
+      .slice(0, buckets.size - target);
+    for (const [key] of oldest) buckets.delete(key);
+  }
+}
+
 /**
  * 推导限流用客户端标识。
  * 安全模型：只读取运维通过 COLLECT_TRUSTED_IP_HEADER 显式信任的那一个头；
@@ -75,7 +99,7 @@ export function checkApiAccess(req: NextRequest): Response | null {
   const now = Date.now();
   const bucket = buckets.get(ip);
   if (!bucket || now >= bucket.resetAt) {
-    if (buckets.size > 5000) buckets.clear(); // 防止长期运行内存膨胀
+    evictBuckets(now); // 只淘汰过期/最旧桶，防止内存膨胀且不产生「限流重置」窗口
     buckets.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
   } else {
     bucket.count += 1;

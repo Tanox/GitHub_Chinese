@@ -16,7 +16,7 @@ export default function GlobalError({
   return (
     <html lang='zh-CN'>
       <body>
-        <div style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
+        <div id='global-error-root' style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
           <h2>系统出现严重异常</h2>
           <p>{error?.message || '应用程序发生未知错误'}</p>
           <button

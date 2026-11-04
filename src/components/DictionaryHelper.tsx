@@ -62,6 +62,12 @@ export default function DictionaryHelper({
     setError('');
     setResult(null);
     setLoading(true);
+    // 请求超时兜底：服务端挂起时不能让 UI 永久 loading
+    let timedOut = false;
+    const timer = setTimeout(() => {
+      timedOut = true;
+      ac.abort();
+    }, 15_000);
     try {
       const resp = await fetch(`/api/dictionary/suggest?term=${encodeURIComponent(q)}`, {
         signal: ac.signal,
@@ -79,9 +85,13 @@ export default function DictionaryHelper({
       setResult(narrowed);
     } catch (err) {
       // 主动中断的陈旧请求：不更新任何 UI，状态由新请求负责
-      if (err instanceof DOMException && err.name === 'AbortError') return;
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        if (timedOut) setError('请求超时，请重试');
+        return;
+      }
       setError('网络错误，请重试');
     } finally {
+      clearTimeout(timer);
       if (abortRef.current === ac) setLoading(false);
     }
   }
@@ -115,7 +125,7 @@ export default function DictionaryHelper({
   }
 
   return (
-    <div className='dict-wrap'>
+    <div id='dict-helper-root' className='dict-wrap'>
       <SuggestPanel
         term={term}
         onTermChange={setTerm}

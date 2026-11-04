@@ -1,7 +1,7 @@
 /**
  * 代码文件行数门禁
  * @file scripts/check-file-length.cjs
- * @version 1.13.17
+ * @version 1.13.22
  * @date 2026-09-30
  * @description 扫描代码文件（src / scripts / tests / server），任何文件超过 200 行即失败；
  *   同时输出最大行数 TOP 5，便于随发版刷新「防回潮」基线。
@@ -17,8 +17,8 @@ const TOP_COUNT = 5;
 const ROOTS = ['src', 'scripts', 'tests', 'server'];
 /** 仓库根目录下的独立代码文件（build.cjs / server.js 已迁入 scripts/ / server/，无需单独登记） */
 const ROOT_FILES = [];
-/** 计入行数的代码扩展名 */
-const EXTENSIONS = new Set(['.js', '.cjs', '.mjs', '.ts', '.tsx']);
+/** 计入行数的代码扩展名（含样式文件，避免 CSS 超限漏检） */
+const EXTENSIONS = new Set(['.js', '.cjs', '.mjs', '.ts', '.tsx', '.css']);
 /** 跳过的目录 */
 const IGNORED_DIRS = new Set(['node_modules', '.next', 'build', 'dist', 'coverage']);
 

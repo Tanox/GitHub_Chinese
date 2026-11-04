@@ -1,0 +1,66 @@
+/*
+ * GitHub 中文 · 采集工作台 — Script Injector 卡片专属样式
+ * @file src/app/styles/cards-probe.css
+ * @version 1.13.22
+ * @description 自 cards.css 按职责拆分：探针说明、代码块头部与语言标签。
+ */
+/* Script Injector Card 优化的专有样式 */
+.script-injector-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.75rem;
+}
+
+.probe-instruction-box {
+  background: var(--canvas);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm, 10px);
+  padding: 0.75rem 1rem;
+}
+
+.probe-instruction-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.probe-instruction-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.probe-instruction-list kbd {
+  font-family: var(--mono);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.75rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+
+.probe-code-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.code-lang {
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}

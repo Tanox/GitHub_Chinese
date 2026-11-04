@@ -7,7 +7,7 @@
 
 export default function Loading() {
   return (
-    <div className='content-inner'>
+    <div id='loading-root' className='content-inner'>
       <div className='card'>
         <div className='card-head'>
           <h2 className='card-title'>加载中…</h2>

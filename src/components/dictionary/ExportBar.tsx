@@ -47,7 +47,7 @@ export default function ExportBar({ dictionary, reviewed, selected, shown }: Exp
   }
 
   return (
-    <div className='dict-actions'>
+    <div id='dict-export-bar' className='dict-actions'>
       <button
         id='dict-export-sel'
         type='button'

@@ -1,6 +1,9 @@
 /**
  * 工作台顶部导航
  * @file src/components/TopNav.tsx
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
  * @description 服务端组件：上下布局的全局顶栏，承载品牌、页面导航（Next Link 预取）与引擎状态，
  *              替代原左侧 Rail 侧栏。窄屏下导航链接横向滚动，无需独立的移动端导航组件。
  */

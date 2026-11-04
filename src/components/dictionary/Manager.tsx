@@ -2,7 +2,9 @@
 /**
  * 词库管理台（T19 审阅 / T24 导入导出 / T25 搜索批量 / T20 合并入库 / T23 历史对比）
  * @file src/components/dictionary/Manager.tsx
- * @version 1.13.9
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
  * @description 编排层：搜索 / 排序 / 批量 / 审阅 + 子组件 DictTable（展示）、
  *   MergePatchPanel（导入·合并·入库补丁）、HistoryCompare（历史对比）。
  *   遵循「本地优先·离线可用」：服务端只读词典 + 客户端 localStorage 审阅态。
@@ -86,8 +88,8 @@ export default function Manager({ dictionary, stats, history }: ManagerProps) {
   const shownSelectedCount = shown.filter((e) => selected.has(e.key)).length;
 
   return (
-    <div className='dict-manage'>
-      <div className='dict-stats' aria-live='polite'>
+    <div id='dict-manage-root' className='dict-manage'>
+      <div id='dict-stats' className='dict-stats' aria-live='polite'>
         <span className='dict-badge'>完成率 {stats.completionRate}%</span>
         <span className='dict-badge'>总词条 {stats.totalEntries}</span>
         <span className='dict-badge'>已审阅 {reviewed.size}</span>
@@ -122,7 +124,7 @@ export default function Manager({ dictionary, stats, history }: ManagerProps) {
         </select>
       </div>
 
-      <div className='dict-actions'>
+      <div id='dict-actions' className='dict-actions'>
         <button id='dict-select-all' type='button' className='btn' onClick={selectAllShown}>
           全选当前
         </button>

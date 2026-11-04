@@ -1,6 +1,9 @@
 /**
  * 工作台外壳
  * @file src/components/Shell.tsx
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
  * @description 服务端组件：顶部导航（上下布局）+ 内容区的公共骨架，供各页面复用。
  *              contentClass 仅用于采集页承接 prototype.css 的组件级视觉对齐，不改变应用外壳本身。
  */
@@ -43,14 +46,14 @@ export default function Shell({
 
       <main id='collector-main' className='workspace'>
         <div
-          id='toastContainer'
+          id='toast-container'
           className='toast-wrap'
           role='status'
           aria-live='polite'
           aria-atomic='true'
         ></div>
 
-        <header className='topbar'>
+        <header id='collector-topbar' className='topbar'>
           <div className='topbar-inner'>
             <div>
               <h1>{title}</h1>

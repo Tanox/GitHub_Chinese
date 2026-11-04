@@ -120,7 +120,7 @@ export default function HistoryCompare({ history }: HistoryCompareProps) {
       </div>
 
       {result && hasSnapshot && (
-        <div className='hist-result' aria-live='polite'>
+        <div id='dict-history-result' className='hist-result' aria-live='polite'>
           <p className='meta'>
             新增 <b className='hist-add'>{result.added.length}</b> · 删除{' '}
             <b className='hist-del'>{result.removed.length}</b> · 变更{' '}

@@ -152,7 +152,7 @@ export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
         ))}
 
       {patch && (
-        <div className='patch-preview' aria-live='polite'>
+        <div id='dict-patch-preview' className='patch-preview' aria-live='polite'>
           <p className='meta'>
             入库补丁：新增 <b>{patch.addedCount}</b> 条 · 更新 <b>{patch.updatedCount}</b> 条
           </p>

@@ -86,7 +86,9 @@ function sse(handler) {
 
 app.post(
   '/api/collect',
-  sse((req, signal) => processRawData(req.body?.data ?? '', { signal })),
+  sse((req, signal) =>
+    processRawData(typeof req.body?.data === 'string' ? req.body.data : '', { signal }),
+  ),
 );
 
 app.post(

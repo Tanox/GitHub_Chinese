@@ -27,7 +27,7 @@ export default function DictTable({
   onToggleReview,
 }: DictTableProps) {
   return (
-    <div className='dict-table' role='table' aria-label='词库条目'>
+    <div id='dict-table' className='dict-table' role='table' aria-label='词库条目'>
       <div className='dict-thead' role='row'>
         <span role='columnheader' className='c-sel'>
           选择

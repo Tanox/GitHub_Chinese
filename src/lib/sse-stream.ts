@@ -43,9 +43,14 @@ export function createSseResponse(
         }
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : '未知错误';
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: 'error', message })}\n\n`),
-        );
+        // 流可能已因客户端断开而出错，enqueue 需自兜底，避免错误分支二次抛异常
+        try {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'error', message })}\n\n`),
+          );
+        } catch {
+          /* 流已关闭或出错，忽略 */
+        }
       } finally {
         clearInterval(ping);
         try {

@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.13.21** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.22** ｜ 版本权威源：`src/userscript/version.js`
 
 本文档定义了项目的代码风格规范，包括命名约定、代码格式、注释规范和最佳实践。
 
@@ -602,10 +602,10 @@ function calculate(operation, a, b) {
 
 ### 5.12 页脚版本信息展示
 
-应用页脚区（footer）应展示当前**版本号**与**更新日期**，便于用户与维护者快速核对当前构建版本：
+应用页脚区（footer）应展示当前**版本号**与 **build 编号**（取代旧「更新日期」展示），便于用户与维护者快速核对当前构建版本：
 
 - 版本号取自项目单一版本源 `src/userscript/version.js` 的 `VERSION`，**禁止硬编码**；
-- 更新日期为最近发版 / 构建日期，格式 `YYYY-MM-DD`；
+- build 编号格式 `yyyymmddhhmm`，由构建流程在 dev / build 启动时自动生成并注入 `NEXT_PUBLIC_BUILD_ID`，注入缺失时回退为版本号，无需手工维护、杜绝脱节；
 - 页脚容器应带语义化 `id`（如 `site-footer` 或 `app-footer`），便于测试定位与无障碍关联（见 §5.9）。
 
 **示例**：
@@ -613,7 +613,7 @@ function calculate(operation, a, b) {
 ```html
 <footer id="site-footer">
   <span>GitHub 中文 · 采集工具</span>
-  <span>v1.13.15 · 2026-10-02</span>
+  <span>v1.13.22 · build 202611040930</span>
 </footer>
 ```
 

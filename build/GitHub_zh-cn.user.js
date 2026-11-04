@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_Chinese
-// @version      1.13.21
+// @version      1.13.22
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,7 +27,7 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.21
+ * @version 1.13.22
  * @date 2026-11-04
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.21';
+const VERSION = '1.13.22';
 
 /**
  * 当前发版日期（YYYY-MM-DD）
@@ -6779,6 +6779,10 @@ const pageMonitor = {
 /**
  * 脚本生命周期管理器
  * @file src/userscript/main/lifecycle.js
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
+ * @description 管理 init / start / cleanup 生命周期编排：翻译核心、页面监控与 UI 的启停
  */
 
 const lifecycleManager = {
@@ -6886,7 +6890,11 @@ const lifecycleManager = {
 
 /**
  * GitHub 中文翻译主入口文件
- * @file main.js
+ * @file src/userscript/main/index.js
+ * @version 1.13.22
+ * @date 2026-11-04
+ * @author Sut
+ * @description 用户脚本入口：装配配置 / 翻译核心 / 配置面板，并委托生命周期管理器启动
  */
 
 // 初始化函数

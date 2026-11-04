@@ -1,0 +1,185 @@
+/*
+ * GitHub 中文 · 采集工作台 — 词库管理台
+ * @file src/app/styles/dictionary-manage.css
+ * @version 1.13.22
+ * @description 自 dictionary.css 按职责拆分：管理台（T19/T24/T25）、补丁预览（T20）、
+ *   采集历史对比（T23）与窄屏适配。
+ */
+/* 词库管理台（T19 / T24 / T25） */
+.dict-manage {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dict-stats {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.dict-badge {
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .2rem .7rem;
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+.dict-toolbar {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.dict-select {
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.dict-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.dict-table {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.dict-thead,
+.dict-tr {
+  display: grid;
+  grid-template-columns: 64px 1fr 1fr 64px;
+  gap: .5rem;
+  padding: .55rem .7rem;
+  align-items: center;
+}
+
+.dict-thead {
+  background: var(--canvas);
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+.dict-tr {
+  border-top: 1px solid var(--border);
+}
+
+.dict-tr:nth-child(even) {
+  background: var(--canvas);
+}
+
+.dict-key code {
+  font-size: .85rem;
+  word-break: break-all;
+}
+
+.dict-val {
+  word-break: break-all;
+}
+
+.dict-import-ok {
+  color: var(--brand-strong);
+  font-size: .9rem;
+  margin: .5rem 0 0;
+}
+
+/* 入库补丁预览（T20） */
+.patch-preview {
+  margin-top: .8rem;
+  border-top: 1px dashed var(--border);
+  padding-top: .6rem;
+}
+
+.diff-block {
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .8rem;
+  font-size: .82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 320px;
+  overflow: auto;
+  margin: .4rem 0;
+}
+
+/* 采集历史对比（T23） */
+.hist-controls {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: .6rem;
+}
+
+.hist-label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .9rem;
+  color: var(--muted);
+}
+
+.hist-result {
+  margin-top: .8rem;
+  border-top: 1px dashed var(--border);
+  padding-top: .6rem;
+}
+
+.hist-group {
+  margin-top: .6rem;
+}
+
+.hist-h {
+  font-size: .9rem;
+  color: var(--ink);
+  margin: .2rem 0;
+}
+
+.hist-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: .85rem;
+  line-height: 1.6;
+}
+
+.hist-list code {
+  background: var(--canvas);
+  padding: .1rem .35rem;
+  border-radius: 5px;
+}
+
+.hist-add {
+  color: var(--brand-strong);
+}
+
+.hist-del {
+  color: var(--danger);
+}
+
+.hist-chg {
+  color: var(--warn, #b8914c);
+}
+
+@media (max-width: 640px) {
+  .dict-thead,
+  .dict-tr {
+    grid-template-columns: 48px 1fr 48px;
+  }
+
+  .dict-thead .c-val,
+  .dict-tr .c-val {
+    display: none;
+  }
+}

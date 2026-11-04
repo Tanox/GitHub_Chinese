@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.21** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.22** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -171,9 +171,9 @@ docs: 更新项目文档
 
 ### 代码质量
 
-- ESLint：`npm run lint`（当前 2 error / 0 warning，已知预存问题，详见量化指标）
+- ESLint：`npm run lint`（当前 0 error / 0 warning）
 - Prettier：`npm run format`
-- TypeScript：`tsc --noEmit`（当前未通过，4 个 TS 错误，详见量化指标）
+- TypeScript：`tsc --noEmit`（strict 模式，当前通过）
 - 单代码文件不超过 200 行，超出须按职责拆分
 - 主要容器与交互控件需带语义化 `id`
 
@@ -223,26 +223,26 @@ npm test               # lint → build → validate
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 1（`src/utils/logger.js`） | 同上 |
 | 构建期循环引用 | 0 | 同上 |
-| 用户脚本产物大小 | 194.86 KB（build.cjs 输出） | `build/GitHub_zh-cn.user.js` |
+| 用户脚本产物大小 | 195.93 KB（build.cjs 输出） | `build/GitHub_zh-cn.user.js` |
 | 翻译词典词条数 | 459 | `mergeAllDictionaries()` 合并计数 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
-| 原型资源数 | 1 个 HTML + 10 个 CSS | `prototype/` |
-| 工作台页面路由 | 6（console·overview·coverage·design·dictionary·dict-manage） | `src/components/navItems.ts` |
-| 代码检查 | 2 error / 0 warning | `npm run lint` |
-| 类型检查 | 未通过（`next build` 报 4 个 TS 错误，strict 模式启用） | `npm run build:web` |
+| 原型资源数 | 3 个自包含 HTML（prototype / wireframes / app） | `prototype/` |
+| 工作台页面路由 | 5（console·overview·coverage·dictionary·dict-manage） | `src/components/navItems.ts` |
+| 代码检查 | 0 error / 0 warning | `npm run lint` |
+| 类型检查 | 通过（strict 模式，0 错误） | `npm run typecheck` |
 | 产物校验 | 通过（build.cjs 生成成功，vm 编译校验通过） | `npm run build:userscript` |
-| 单元测试 | 170 用例（161 通过 / 5 集成测试因 Next 服务未就绪失败 / 4 跳过） | `node --test` |
-| 超长代码文件（>200 行） | 0 | 递归扫描全部代码文件 |
-| Next 构建告警 | 构建失败（类型检查未通过，阻断 `next build`） | `npm run build:web` |
+| 单元测试 | 162 用例全部通过（含 a11y 自动化） | `node --test` |
+| 超长代码文件（>200 行） | 0（含 CSS，行数门禁覆盖 js/cjs/mjs/ts/tsx/css） | `npm run lint:length` |
+| Next 构建 | 通过（npm test 全流水线绿灯） | `npm run build:web` |
 
 > 工作台「项目概览」页（`/overview`）已把多数指标改为服务端实时统计，不再依赖本文档的手工数字。
 
-> ⚠️ 「类型检查」与「Next 构建告警」当前为**未通过 / 构建失败**，系 `src/app/api/batch-collect/route.ts` 与 `src/components/dictionary/MergePatchPanel.tsx` 的 4 个 TypeScript 错误所致（`next build` 类型检查阶段即报错）。此为**已知预存问题**，非本次文档变更引入，修复另行跟进。
+> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.22 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
 
 ### 已完成能力
 
 - **用户脚本引擎**：静态/动态翻译、Trie 部分匹配、LRU 缓存/虚拟 DOM/批处理、配置面板 + 性能监控、浮动入口 + 菜单命令、自动更新、输入净化。
-- **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、六页互通与响应式顶部导航、项目概览（实时指标）、设计系统、**覆盖率/缺口看板（/coverage，T22）**。
+- **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、五页互通与响应式顶部导航、项目概览（实时指标）、**覆盖率/缺口看板（/coverage，T22）**、词典助手与管理台（/dictionary、/dictionary/manage）。（设计系统展示保留于原型 `prototype/app.html` 的 /design 页，应用路由已裁撤。）
 - **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（170 用例）、a11y 自动化检查。
 
 ### 活动任务
@@ -413,7 +413,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_Chinese |
-| **当前版本** | 1.13.21 |
+| **当前版本** | 1.13.22 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
