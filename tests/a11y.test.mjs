@@ -1,49 +1,33 @@
 /**
- * 可访问性（a11y）自动化检查
+ * 可访问性（a11y）自动化检查：静态预渲染产物
  * @file tests/a11y.test.mjs
- * @version 1.9.40
- * @description 用 axe-core + jsdom 对 `next build` 的静态预渲染页面做走查，
- *   仅将 serious / critical 级违规视为失败；若未发现构建产物则跳过（CI 中先跑 build:web 即生效）。
+ * @version 1.13.21
+ * @description 用 axe-core + jsdom 对 `next build` 生成的静态 HTML 做走查，
+ *   仅将 serious / critical 级违规视为失败。动态渲染页面由集成测试对真实服务检查。
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { JSDOM } from 'jsdom';
-import axeCore from 'axe-core';
+import { collectBlockingViolations } from './helpers/axe-html.mjs';
 
 const APP_DIR = path.join(import.meta.dirname, '..', '.next', 'server', 'app');
 
-/** 关键页面（与 sitemap 一致） */
-const PAGES = ['index', 'overview', 'design', 'dictionary'];
+/** 实际产出的静态页面（Next 动态页不生成 .html，交由集成测试覆盖） */
+const STATIC_HTML = fs.existsSync(APP_DIR)
+  ? fs.readdirSync(APP_DIR).filter((file) => file.endsWith('.html') && !file.startsWith('_'))
+  : [];
 
-/** 视为阻断级的问题影响等级 */
-const BLOCKING_IMPACTS = new Set(['serious', 'critical']);
-
-/**
- * 对给定 HTML 运行 axe，返回阻断级违规
- * @param {string} html - 页面 HTML 字符串
- * @returns {Promise<Array<{id: string, impact: string, help: string}>>} 违规列表
- */
-async function collectBlockingViolations(html) {
-  const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true });
-  dom.window.eval(axeCore.source);
-  const results = await dom.window.axe.run(dom.window.document);
-  // 注意：axe 返回的是 jsdom realm 的数组，须用 Array.from 转回本 realm，否则断言会因原型不同而失败
-  return Array.from(results.violations)
-    .filter((violation) => BLOCKING_IMPACTS.has(violation.impact))
-    .map((violation) => ({ id: violation.id, impact: violation.impact, help: violation.help }));
+if (STATIC_HTML.length === 0) {
+  test('a11y: 静态预渲染页面', (t) => {
+    t.skip('未找到 next 构建产物，请先执行 npm run build:web');
+  });
 }
 
-for (const page of PAGES) {
-  test(`a11y: ${page} 页面无 serious / critical 违规`, async (t) => {
-    const file = path.join(APP_DIR, `${page}.html`);
-    if (!fs.existsSync(file)) {
-      t.skip('未找到 next 构建产物，请先执行 npm run build:web');
-      return;
-    }
-
-    const violations = await collectBlockingViolations(fs.readFileSync(file, 'utf-8'));
+for (const file of STATIC_HTML) {
+  test(`a11y: ${file} 无 serious / critical 违规`, async () => {
+    const html = fs.readFileSync(path.join(APP_DIR, file), 'utf-8');
+    const violations = await collectBlockingViolations(html);
     assert.equal(violations.length, 0, `存在阻断级违规：${JSON.stringify(violations, null, 2)}`);
   });
 }

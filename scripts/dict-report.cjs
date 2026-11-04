@@ -1,7 +1,7 @@
 /**
  * 词典采集报告
  * @file scripts/dict-report.cjs
- * @version 1.11.15
+ * @version 1.13.21
  * @description 生成待翻译报告（含历史增量对比），并把本次统计写入采集历史
  */
 const fs = require('fs');
@@ -47,13 +47,14 @@ function readPreviousSet() {
  *   - dictionary：合并后的完整词典（用于写词条级历史快照，支持 T23 轮次对比/回滚）
  *   - coverage：`analyzeTexts` 计算的覆盖率（T17 数据层消费者，可选输出）
  *   - reportFile / historyFile：可选路径注入（默认 docs/ 下固定文件），便于单测隔离
+ *   - 环境变量 COLLECT_HISTORY_FILE：子进程未注入路径时覆盖历史文件，供集成测试隔离
  * @returns {{total:number, added:number, removed:number, coverage?:object}} 本次采集统计
  */
 function generateReport(untranslated, opts = {}) {
   const dictionary = opts.dictionary || {};
   const coverage = opts.coverage;
   const reportFile = opts.reportFile || REPORT_PATH;
-  const historyFile = opts.historyFile;
+  const historyFile = opts.historyFile || process.env.COLLECT_HISTORY_FILE;
 
   const unique = [...new Set(untranslated)].sort();
   const oldSet = readPreviousSet();

@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_Chinese?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_Chinese?display_name=tag&color=green)](https://github.com/Tanox/GitHub_Chinese/releases)
 
-> 当前版本：**v1.13.20**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.21**（版本单一来源：`src/userscript/version.js`）
 
 ## 命名与兼容性说明
 
@@ -69,7 +69,7 @@ npm run dev     # 打开 http://localhost:3000
 
 > **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
 
-> **原型（v1.13.20）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
+> **原型（v1.13.21）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
 
 本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
 

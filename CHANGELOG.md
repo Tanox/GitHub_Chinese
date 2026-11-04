@@ -1,4 +1,21 @@
 # Changelog
+## [1.13.21] - 2026-11-04
+
+### Fix
+- 修复集成测试在 Windows 下 `spawn('npx')` 触发 ENOENT 并空等 120 秒的问题：改用 `process.execPath` 执行本地 `node_modules/next/dist/bin/next`，监听 `error` / `exit` 快速失败，超时缩短至 60 秒。
+- 修正 a11y 覆盖失真：`tests/a11y.test.mjs` 不再硬编码已删除的 `/design` 路由，改为自动发现 `.next/server/app` 下真实静态产物；动态渲染页由集成测试对真实服务 HTML 断言，覆盖 `/`、`/overview`、`/coverage`、`/dictionary`、`/dictionary/manage` 共 5 个路由，消除 3 个永久跳过用例。
+- 抽离 `tests/helpers/axe-html.mjs` 作为单元测试与集成测试共用的 axe 断言模块。
+- 隔离集成测试写入：`scripts/dict-report.cjs` 支持 `COLLECT_HISTORY_FILE` 环境变量，集成测试把采集历史重定向到 `.tmp-integration-history.json`（已被 `.tmp-*` 忽略）并在结束时清理，避免真实 `/api/collect` 请求污染 `docs/collect-history.json`。
+
+### Feat
+- 页脚按全局规范改展示 `v{VERSION}` + `build {yyyymmddhhmm}`：`next.config.mjs` 在 dev / build 启动时自动生成并注入 `NEXT_PUBLIC_BUILD_ID`，注入缺失时回退为版本号，移除「更新时间」展示。
+
+### Chore
+- `.gitignore` 以通配规则忽略本地验证输出（`*-out.txt` / `.*.log` / `.*.txt`）。
+- 单一版本源 `src/userscript/version.js`、`package.json`、README 与 docs 适用版本行同步至 1.13.21，并重建用户脚本产物。
+
+---
+
 ## [1.13.20] - 2026-11-04
 
 ### Docs

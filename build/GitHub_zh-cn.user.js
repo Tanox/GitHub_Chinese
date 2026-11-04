@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_Chinese
-// @version      1.13.20
+// @version      1.13.21
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,7 +27,7 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.20
+ * @version 1.13.21
  * @date 2026-11-04
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
@@ -38,12 +38,12 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.20';
+const VERSION = '1.13.21';
 
 /**
- * 当前构建 / 发版日期（YYYY-MM-DD）
+ * 当前发版日期（YYYY-MM-DD）
  * @type {string}
- * @description 页脚「更新时间」单一来源；与 VERSION 同步，避免硬编码漂移。
+ * @description 用户脚本元数据与文档使用；工作台页脚改由构建流程注入 build 编号展示。
  */
 const BUILD_DATE = '2026-11-04';
 

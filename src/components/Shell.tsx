@@ -10,7 +10,10 @@ import Link from 'next/link';
 import TopNav from './TopNav';
 import { FOOTER_NAV_ITEMS } from './navItems';
 import type { NavSection } from './navItems';
-import { VERSION, BUILD_DATE } from '@/userscript/version';
+import { VERSION } from '@/userscript/version';
+
+/** 构建编号由 next.config.mjs 注入；缺失时回退为版本号 */
+const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID || VERSION;
 
 interface ShellProps {
   /** 当前激活的顶栏导航项 */
@@ -65,7 +68,7 @@ export default function Shell({
             <div className='footer-meta'>
               <span className='fnote'>GitHub 中文 · 采集工作台</span>
               <span className='fnote-ver'>v{VERSION}</span>
-              <span className='fnote-date'>更新时间：{BUILD_DATE}</span>
+              <span className='fnote-build'>build {BUILD_ID}</span>
             </div>
             {FOOTER_NAV_ITEMS.length > 0 && (
               <nav className='flinks' aria-label='页脚快捷导航'>

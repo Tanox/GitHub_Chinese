@@ -185,7 +185,7 @@
   border: 1px solid var(--border-soft);
 }
 
-.footer .fnote-date {
+.footer .fnote-build {
   font-family: var(--mono);
   font-size: .78rem;
   color: var(--faint);
