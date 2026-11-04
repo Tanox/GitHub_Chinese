@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文架构文档
 
-> 版本：**v1.13.13** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.19** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -468,7 +468,7 @@ GitHub_Chinese/
 - **采集错误码约定（P2-7）**：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
   （纯数据模块，不含 `fs`/`child_process`，可安全被客户端导入）；服务端 `error` 事件均携带 `code`，
   前端 `useCollector` 与终端日志据此渲染 `E<code>` 徽标，便于按类型分流处理
-- 原型已收敛为单个自包含 HTML 文件 `prototype/prototypes/index.html`（CSS 内联、无脚本、无服务器），与应用代码完全分离；`server/` 仅含 `collect-service/`，采集引擎仅由 Next 工作台（`src/app/api/*`）与自托管 `server/collect-service/` 使用。
+- 原型为一组轻量高保真静态预览（`prototype/prototype.html` 等高保真原型、`prototype/wireframes.html` 组件库规范、`prototype/app.html` 应用预览），与应用代码完全分离；`server/` 仅含 `collect-service/`，采集引擎仅由 Next 工作台（`src/app/api/*`）与自托管 `server/collect-service/` 使用。
 
 架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `proxy.ts`；
 用户脚本核心 `.js` 由 `scripts/build/build.cjs` 独立构建，二者互不打包

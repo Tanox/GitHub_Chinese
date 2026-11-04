@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.13.13** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.19** ｜ 版本权威源：`src/userscript/version.js`
 
 面向开发者与贡献者的文档入口。设计规范与高保真原型由 `prototype/` 目录统一维护。
 
@@ -54,7 +54,7 @@
 
 ## 高保真原型
 
-- 高保真原型：[../prototype/prototypes/index.html](../prototype/prototypes/index.html)
+- 高保真原型：[../prototype/prototype.html](../prototype/prototype.html)
 
 ## 备注
 

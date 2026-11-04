@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.16** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.19** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -187,7 +187,7 @@ docs: 更新项目文档
 npm run build          # 构建用户脚本 → build/GitHub_zh-cn.user.js
 npm run validate       # 校验构建产物
 npm run dev            # 启动 Next 采集工作台
-# 原型为单文件 HTML，直接用浏览器打开 prototype/prototypes/index.html，无需命令
+# 原型为静态预览，直接用浏览器打开 prototype/prototype.html，无需命令
 npm run build:web      # 构建 Next 工作台
 npm run lint           # 代码检查
 npm test               # lint → build → validate
@@ -209,7 +209,7 @@ npm test               # lint → build → validate
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.12**（2026-10-01）。
+- 当前版本 **v1.13.19**（2026-11-04）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，六页 `/`、`/overview`、`/coverage`、`/design`、`/dictionary`、`/dict-manage`）。两链路仅共享词典数据。
 
 ### 量化指标
@@ -413,7 +413,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_i18n |
-| **当前版本** | 1.13.12 |
+| **当前版本** | 1.13.19 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
