@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# 提交前门禁：由 lint-staged 对暂存文件执行 ESLint --fix 与 Prettier --write。
+# 配置见 package.json 的 "lint-staged" 字段；husky 由 "prepare": "husky" 安装。
+npx lint-staged

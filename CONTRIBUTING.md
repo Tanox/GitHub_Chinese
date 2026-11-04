@@ -1,257 +1,92 @@
 # 贡献指南
 
-感谢您对 GitHub 中文翻译插件项目的关注！本文档将帮助您了解如何为项目做出贡献。
-
-## 📋 目录
-
-- [行为准则](#行为准则)
-- [如何贡献](#如何贡献)
-  - [报告问题](#报告问题)
-  - [提交功能请求](#提交功能请求)
-  - [提交代码](#提交代码)
-- [开发环境设置](#开发环境设置)
-- [代码规范](#代码规范)
-- [提交信息规范](#提交信息规范)
-- [翻译词条贡献](#翻译词条贡献)
-- [审查流程](#审查流程)
+感谢您对 GitHub Chinese 简体中文项目的关注！本文是贡献入口；**所有规范正文以 `docs/` 为唯一权威来源**，本文不重复定义，只做导航。
 
 ## 行为准则
 
-- 保持友善和尊重
-- 接受建设性的批评
-- 关注对社区最有利的事情
-- 对其他社区成员表示同理心
+- 保持友善和尊重，接受建设性批评
+- 关注对社区最有利的事情，对其他社区成员表示同理心
 
 ## 如何贡献
 
 ### 报告问题
 
-如果您发现了 bug 或有改进建议，请通过 [GitHub Issues](https://github.com/Tanox/GitHub_Chinese/issues) 提交。
+通过 [GitHub Issues](https://github.com/Tanox/GitHub_Chinese/issues) 提交，使用 [.github/ISSUE_TEMPLATE/bug_report.md](.github/ISSUE_TEMPLATE/bug_report.md) 模板，包含：问题描述、复现步骤、期望 / 实际行为、环境信息（浏览器、Tampermonkey、用户脚本版本、操作系统）与必要截图。
 
-提交问题时，请包含以下信息：
-
-- **问题描述**：清晰描述问题
-- **复现步骤**：详细说明如何复现问题
-- **期望行为**：描述您期望的行为
-- **实际行为**：描述实际发生的行为
-- **环境信息**：
-  - 浏览器版本
-  - Tampermonkey 版本
-  - 脚本版本
-  - 操作系统
-- **截图**：如有必要，请附上截图
+安全漏洞请勿公开提交，按 [.github/SECURITY.md](.github/SECURITY.md) 的流程私下报告。
 
 ### 提交功能请求
 
-功能请求也应通过 Issues 提交，请包含：
-
-- **功能描述**：清晰描述您想要的功能
-- **使用场景**：描述这个功能的使用场景
-- **可能的实现方案**：如果您有实现思路，请分享
+同样通过 Issues（模板 `.github/ISSUE_TEMPLATE/feature_request.md`），说明功能描述、使用场景与可能的实现思路。
 
 ### 提交代码
 
-1. Fork 本仓库
-2. 创建您的功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交您的更改 (`git commit -m 'feat: 添加某个功能'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 打开一个 Pull Request
+1. Fork 或克隆本仓库，`npm ci` 安装依赖（自动安装 Git 钩子）
+2. 从 `main` 创建功能分支（命名规则见 [docs/development.md](docs/development.md) §3）
+3. 开发并提交（提交信息格式见 [docs/development.md](docs/development.md) §4）
+4. 本地跑 `npm test` 全绿
+5. 推送分支并创建 PR，按 `.github/pull_request_template.md` 填写
 
-## 开发环境设置
-
-### 前置要求
-
-- Node.js >= 22.22.2
-- npm >= 9.0.0
-
-### 安装步骤
+## 快速上手
 
 ```bash
-# 克隆仓库
 git clone https://github.com/Tanox/GitHub_Chinese.git
 cd GitHub_Chinese
-
-# 安装依赖
-npm install
-
-# 运行测试
-npm test
-
-# 构建项目
-npm run build
+npm ci
+npm test        # lint → 行数门禁 → 构建 → 单测
+npm run dev     # 启动词典采集工作台 http://localhost:3000
 ```
 
-### 开发命令
-
-```bash
-# 运行完整测试流水线（lint → build → validate）
-npm test
-
-# 运行代码检查
-npm run lint
-
-# 自动修复代码问题
-npm run lint:fix
-
-# 格式化代码
-npm run format
-
-# 检查代码格式
-npm run format:check
-
-# 构建项目
-npm run build
-
-# 验证构建产物
-npm run validate
-```
+环境要求与完整命令表见 [docs/development.md](docs/development.md) §1–§2（权威来源为 `package.json` 的 `scripts`）。
 
 ## 代码规范
 
-### ESLint 规则
+编码风格、命名约定、目录组织、注释与安全红线的唯一正文是 [docs/coding-style.md](docs/coding-style.md)；要点：
 
-项目使用 ESLint 进行代码检查，主要规则包括：
+- 命名：目录 / CSS 类 / 语义化 id 用 kebab-case；`src/userscript/`、`src/utils/` 文件用 camelCase；`src/lib/`、`src/app/` 路由与样式文件用 kebab-case；组件 PascalCase；常量 UPPER_SNAKE_CASE
+- 格式化：Prettier（2 空格、单引号、分号、多行尾随逗号、行宽 100、LF），配置内嵌于 `package.json`
+- 质量约束：单文件 ≤ 200 行（行数门禁）、函数 ≤ 150 有效行、参数 ≤ 5、圈复杂度 ≤ 30（均与 ESLint 配置一致）、禁止 `any` / `var`、必须 `===`、关键逻辑中文注释
 
-- 使用 ES6+ 语法
-- 使用单引号
-- 2 空格缩进
-- 语句末尾使用分号
-- 对象和数组使用尾随逗号
+## 审查流程
 
-### 代码风格
-
-- 使用有意义的变量名
-- 函数长度不超过 100 行
-- 函数参数不超过 4 个
-- 复杂度不超过 20（与 ESLint 规则一致）
-
-### 注释规范
-
-- 所有函数都应包含 JSDoc 注释
-- 复杂逻辑需要添加行内注释
-- 使用中文注释
-
-示例：
-
-```javascript
-/**
- * 翻译单个元素
- * @param {HTMLElement} element - 要翻译的元素
- * @param {Object} dictionary - 翻译词典
- * @returns {boolean} 是否成功翻译
- */
-function translateElement(element, dictionary) {
-  // 实现逻辑
-}
-```
-
-## 提交信息规范
-
-我们使用 [Conventional Commits](https://www.conventionalcommits.org/) 规范。
-
-### 格式
-
-```
-<类型>(<范围>): <描述>
-
-[可选的正文]
-
-[可选的脚注]
-```
-
-### 类型
-
-- **feat**: 新功能
-- **fix**: 修复 bug
-- **docs**: 文档更新
-- **style**: 代码格式调整（不影响功能）
-- **refactor**: 代码重构
-- **perf**: 性能优化
-- **test**: 测试相关
-- **chore**: 构建过程或辅助工具的变动
-- **ci**: CI/CD 相关
-- **build**: 构建系统相关
-- **revert**: 回滚提交
-
-### 示例
-
-```
-feat: 添加对 GitHub Projects 页面的翻译支持
-
-fix: 修复某些下拉菜单无法翻译的问题
-
-docs: 更新安装说明
-
-test: 添加缓存管理器的单元测试
-```
+提交 PR 后由 `CODEOWNERS` 分配审查者，首次响应通常在 1 个工作日内；按审查意见修改并通过 CI 后以 merge commit 合并。角色、SLA 与判定标准见 [docs/code-review/PROCESS.md](docs/code-review/PROCESS.md) 与 [STANDARDS.md](docs/code-review/STANDARDS.md)。合并后改动将随下一个版本发布（发布流程见 [docs/development.md](docs/development.md) §8）。
 
 ## 翻译词条贡献
 
 ### 词典文件位置
 
-- `src/dictionaries/common.js` - 通用翻译
-- `src/dictionaries/codespaces.js` - Codespaces 相关
-- `src/dictionaries/explore.js` - Explore 页面相关
+- `src/dictionaries/common.js`（及 `common/` 分片）— 通用翻译
+- `src/dictionaries/codespaces.js` — Codespaces 相关
+- `src/dictionaries/explore.js` — Explore 页面相关
+- 新页面词典经 `src/dictionaries/index.js` 汇总注册
 
 ### 添加新词条
 
-1. 找到对应的词典文件
-2. 按照字母顺序添加新词条
-3. 确保键名使用英文原文（小写，空格用下划线替换）
-4. 值使用简体中文
-
-示例：
+1. 找到对应词典文件，遵循文件内既有风格（键为英文原文小写、空格用下划线，值为简体中文）
+2. 按字母顺序插入，保持文件行数 ≤ 200 行（超出时拆入 `common/` 分片）
+3. 更新 `docs/CHANGELOG.md` 与词典覆盖相关文档
 
 ```javascript
 export const commonDictionary = {
   // ... 已有词条
-  "pull_requests": "拉取请求",
-  "new_feature": "新功能",  // 新增词条
+  pull_requests: '拉取请求',
+  new_feature: '新功能', // 新增词条
 };
 ```
 
 ### 翻译原则
 
-- 保持 GitHub 官方中文文档的术语一致性
-- 优先使用技术社区通用的翻译
-- 保持简洁，避免过长的翻译
-- 对于专有名词（如 GitHub、Git），保持原文
+- 保持 GitHub 官方中文文档的术语一致性，优先使用技术社区通用译法
+- 简洁，避免过长翻译；专有名词（GitHub、Git 等）保持原文
 
-### 常用术语对照表
-
-| 英文 | 中文 |
-|------|------|
-| Repository | 仓库 |
-| Pull Request | 拉取请求 |
-| Issue | 议题/问题 |
-| Commit | 提交 |
-| Branch | 分支 |
-| Fork | 复刻 |
-| Star | 星标 |
-| Watch | 关注 |
-| Wiki | 维基 |
-| Milestone | 里程碑 |
-| Label | 标签 |
-
-## 审查流程
-
-1. 提交 Pull Request 后，维护者会在 7 天内进行审查
-2. 可能需要根据反馈进行修改
-3. 通过审查后，代码将被合并到主分支
-4. 合并后，更改将在下一个版本中发布
+常用术语对照：Repository 仓库、Pull Request 拉取请求、Issue 议题、Commit 提交、Branch 分支、Fork 复刻、Star 星标、Watch 关注、Wiki 维基、Milestone 里程碑、Label 标签。
 
 ## 获取帮助
 
-如果您在贡献过程中遇到问题，可以：
-
-- 查看 [GitHub Issues](https://github.com/Tanox/GitHub_Chinese/issues) 是否有类似问题
-- 创建新的 Issue 寻求帮助
-- 通过邮件联系维护者
+- 查看 [GitHub Issues](https://github.com/Tanox/GitHub_Chinese/issues) 是否有类似问题，或创建新 Issue
+- 文档入口：[docs/README.md](docs/README.md)（文档地图、术语表、权威来源分工）
+- 支持渠道与联系方式见 [.github/SUPPORT.md](.github/SUPPORT.md)
 
 ## 许可证
 
 通过贡献代码，您同意您的贡献将在 [GPL-2.0](LICENSE) 许可证下发布。
-
----
-
-再次感谢您对项目的贡献！🎉

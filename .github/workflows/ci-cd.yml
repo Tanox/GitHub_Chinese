@@ -58,8 +58,11 @@ jobs:
     - name: 安装依赖
       run: npm ci
 
-    - name: 构建项目（Next 站点 + 用户脚本）
+    - name: 构建 Next 站点
       run: npm run build
+
+    - name: 构建用户脚本产物（供后续校验与上传）
+      run: npm run build:userscript
 
     - name: 运行单元测试
       run: npm run test:unit

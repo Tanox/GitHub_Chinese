@@ -1,49 +1,41 @@
-# CODEOWNERS - 自动审查者分配规则
-# 当修改匹配的文件时，会自动请求相应的团队成员进行审查
+# CODEOWNERS — 自动审查者分配规则
+# 语法：最后一条匹配的规则生效；仓库当前维护者统一为 @sutandkb。
+# 本文件只保留真实存在的路径（对齐 docs/development.md 的目录组织规范）。
 
-# 默认审查者（所有文件）
+# 默认所有者：未命中下列规则的所有文件
 * @sutandkb
 
-# 核心模块 - 需要核心团队成员审查
-/src/core/* @sutandkb
-/src/core/trie.js @sutandkb
-/src/core/cacheManager.js @sutandkb
-/src/core/errorHandler.js @sutandkb
-/src/core/virtualDom.js @sutandkb
+# 用户脚本引擎（src/userscript/）
+/src/userscript/ @sutandkb
+/src/userscript/main/ @sutandkb
+/src/userscript/core/ @sutandkb
+/src/userscript/translation-core/ @sutandkb
+/src/userscript/page-monitor/ @sutandkb
+/src/userscript/ui/ @sutandkb
+/src/userscript/config/ @sutandkb
+/src/userscript/version.js @sutandkb
 
-# 翻译核心模块
-/src/translation-core/* @sutandkb
+# 词典数据
+/src/dictionaries/ @sutandkb
 
-# 页面监控模块
-/src/page-monitor/* @sutandkb
+# 词典采集工作台（Next.js App Router）
+/src/app/ @sutandkb
+/src/app/api/ @sutandkb
+/src/components/ @sutandkb
+/src/hooks/ @sutandkb
+/src/lib/ @sutandkb
 
-# UI 组件
-/src/ui/* @sutandkb
-
-# 词典文件
-/src/dictionaries/* @sutandkb
-
-# 配置和主入口
-/src/config.js @sutandkb
-/src/main.js @sutandkb
-/src/version.js @sutandkb
-/src/i18n.js @sutandkb
-
-# 构建相关
-/build.* @sutandkb
-/build.cjs @sutandkb
-/babel.config.json @sutandkb
+# 工具链、产物与配置
+/scripts/ @sutandkb
+/scripts/build/ @sutandkb
+/server/ @sutandkb
+/build/ @sutandkb
 /package.json @sutandkb
 /package-lock.json @sutandkb
+/.github/ @sutandkb
+/.husky/ @sutandkb
 
-# 文档
+# 文档与原型
 /*.md @sutandkb
-/docs/* @sutandkb
-
-# GitHub 配置
-/.github/* @sutandkb
-
-# 注意：
-# 1. 最后匹配的规则生效（从上到下）
-# 2. 如果没有配置 CODEOWNERS，需要手动分配审查者
-# 3. 团队成员可以在 GitHub 上设置自己的通知偏好
+/docs/ @sutandkb
+/prototype/ @sutandkb
