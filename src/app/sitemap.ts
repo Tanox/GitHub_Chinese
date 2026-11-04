@@ -1,7 +1,7 @@
 /**
  * 站点地图
  * @file src/app/sitemap.ts
- * @version 1.10.1
+ * @version 1.13.19
  * @description 列举工作台公开路由，便于搜索引擎收录
  */
 

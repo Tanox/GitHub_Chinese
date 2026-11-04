@@ -1,4 +1,22 @@
 # Changelog
+## [1.13.19] - 2026-11-04
+
+### Fix
+- 修复 TypeScript 严格类型检查 4 处错误：`src/userscript/version.d.ts` 补声明 `BUILD_DATE`（此前 `Shell.tsx` 页脚导入报错）；`src/app/sitemap.ts` 移除对已删除 `/design` 路由的死链引用（避免 404）；补齐缺失的 `recharts` 依赖（`/overview` 趋势图依赖）；清理 `.next` 陈旧校验器缓存。
+- 移除 `sitemap.ts` 中指向已废弃 `/design` 路由的条目，与 `navItems.ts`（仅 5 个项目板块）保持一致。
+
+### Refactor
+- 拆分超 200 行的 `src/components/DataCenter.tsx`（244 行）：抽离预设常量至 `src/components/data-center/presets.ts`、词条导出工具至 `src/components/data-center/download-terms.ts`，主文件降至约 170 行，保持导出契约不变。
+
+### Docs
+- 同步 `docs/*.md` 与 README 的版本行至 1.13.19，修正「当前版本」陈述与发版日期。
+- 修正 README / `docs/README.md` / `docs/project.md` / `docs/development.md` / `docs/architecture.md` 中指向不存在的 `prototype/prototypes/index.html` 的引用，改为真实文件 `prototype/prototype.html`（CHANGELOG 历史记录保持原样）。
+
+### Chore
+- 单一版本源 `src/userscript/version.js` 的 `VERSION` / `BUILD_DATE` 与 `package.json` 同步 bump 至 1.13.19。
+
+---
+
 ## [1.13.18] - 2026-10-03
 
 ### Feat
