@@ -17,7 +17,7 @@
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\" \"scripts/**/*.cjs\" \"tests/**/*.{js,cjs,mjs}\"",
     "format:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"scripts/**/*.cjs\" \"tests/**/*.{js,cjs,mjs}\"",
     "test:unit": "node --test",
-    "test:integration": "node --test tests/integration/",
+    "test:integration": "node --test tests/integration/api.integration.mjs",
     "test": "npm run lint && npm run lint:length && npm run build && npm run test:unit",
     "clean": "node -e \"const fs=require('fs');['build','dist','coverage','.next'].forEach(dir=>{if(fs.existsSync(dir)){fs.rmSync(dir,{recursive:true});console.log('已清理:',dir)}})\"",
     "dict:collect": "node scripts/collect-dict.cjs",

@@ -1,7 +1,7 @@
 /**
  * ESLint 配置文件
  * @file eslint.config.js
- * @version 1.13.17
+ * @version 1.13.19
  * @description 项目代码规范配置；规则按类别拆分到 eslint/rules/ 下，此处仅做组装
  * @note 格式化相关规则由 Prettier 处理，ESLint 专注于代码质量和逻辑问题
  */
@@ -96,7 +96,7 @@ export default [
   },
   {
     // 测试文件（node:test；.mjs 直跑、.cjs 走 CommonJS 块、TS 由 Node 原生类型擦除执行）
-    files: ['**/*.test.js', '**/*.test.mjs', '**/__tests__/**/*.js'],
+    files: ['**/*.test.js', '**/*.test.mjs', '**/*.integration.mjs', '**/__tests__/**/*.js'],
     languageOptions: {
       globals: {
         ...globals.node,
