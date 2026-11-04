@@ -2,15 +2,15 @@
 
 让 GitHub 以中文的节奏呼吸。这是一套为 GitHub Chinese 简体中文插件量身定制的设计系统。它承袭 GitHub 的深色美学、精确排版与克制交互，同时以中文衬线字体、语义色彩与细腻动效，塑造属于插件自身的独立识别。
 
-[![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_i18n?color=blue)](LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_i18n?display_name=tag&color=green)](https://github.com/Tanox/GitHub_i18n/releases)
+[![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_Chinese?color=blue)](LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_Chinese?display_name=tag&color=green)](https://github.com/Tanox/GitHub_Chinese/releases)
 
-> 当前版本：**v1.13.19**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.20**（版本单一来源：`src/userscript/version.js`）
 
 ## 命名与兼容性说明
 
 - **产品名**：GitHub Chinese 简体中文（文档与界面统一使用此名）。
-- **仓库名（历史保留）**：仓库地址仍为 `github.com/Tanox/GitHub_i18n`，全局变量仍为 `window.GitHub_i18n`。
+- **仓库名**：仓库已更名为 `github.com/Tanox/GitHub_Chinese`；全局变量仍保留 `window.GitHub_i18n` 以兼容历史安装。
 - **用户脚本文件名**：`GitHub_zh-cn.user.js`（自 v1.9.43 起由旧名 `GitHub_i18n.user.js` 更名，更贴合「简体中文」语义）。
   注意：更名会使旧安装（指向旧 `@updateURL` 的 `GitHub_i18n.user.js`）无法自动更新，需用户重新一键安装新脚本。
 
@@ -36,7 +36,7 @@
 
 ### 2. 安装脚本
 
-点击 [一键安装](https://github.com/Tanox/GitHub_i18n/raw/refs/heads/main/build/GitHub_zh-cn.user.js)，然后在 Tampermonkey 中点击「安装」。
+点击 [一键安装](https://github.com/Tanox/GitHub_Chinese/raw/refs/heads/main/build/GitHub_zh-cn.user.js)，然后在 Tampermonkey 中点击「安装」。
 
 > 安装链接指向仓库内的构建产物，因此 `build/GitHub_zh-cn.user.js` **必须纳入版本控制**。
 
@@ -69,7 +69,7 @@ npm run dev     # 打开 http://localhost:3000
 
 > **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
 
-> **原型（v1.13.19）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
+> **原型（v1.13.20）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
 
 本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
 
@@ -116,8 +116,8 @@ docs/                        # 项目规范文档（唯一权威正文）
 ## 参与开发
 
 ```bash
-git clone https://github.com/Tanox/GitHub_i18n.git
-cd GitHub_i18n
+git clone https://github.com/Tanox/GitHub_Chinese.git
+cd GitHub_Chinese
 npm install
 npm test        # lint → 长度门禁 → 构建 → 单测（含产物冒烟）
 ```

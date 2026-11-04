@@ -94,7 +94,7 @@ test('POST /api/batch-collect 对合法 URL 返回 SSE 流（无浏览器则报�
   const r = await fetch(`${BASE}/api/batch-collect`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ urls: ['https://github.com/Tanox/GitHub_i18n'] }),
+    body: JSON.stringify({ urls: ['https://github.com/Tanox/GitHub_Chinese'] }),
   });
   assert.equal(r.status, 200);
   const ct = r.headers.get('content-type') || '';

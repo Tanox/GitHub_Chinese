@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
-// @namespace    https://github.com/Tanox/GitHub_i18n
-// @version      1.13.19
+// @namespace    https://github.com/Tanox/GitHub_Chinese
+// @version      1.13.20
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -16,10 +16,10 @@
 // @connect      github.com
 // @run-at       document-idle
 // @noframes
-// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
-// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
+// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_Chinese/main/build/GitHub_zh-cn.user.js
+// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_Chinese/main/build/GitHub_zh-cn.user.js
 // @license      GPL-2.0
-// @homepage     https://github.com/Tanox/GitHub_i18n
+// @homepage     https://github.com/Tanox/GitHub_Chinese
 // ==/UserScript==
 
 (function() {
@@ -27,7 +27,7 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.19
+ * @version 1.13.20
  * @date 2026-11-04
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.19';
+const VERSION = '1.13.20';
 
 /**
  * 当前构建 / 发版日期（YYYY-MM-DD）
@@ -300,7 +300,7 @@ const CONFIG = {
   updateCheck: {
     enabled: true,
     intervalHours: 24,
-    scriptUrl: 'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_zh-cn.user.js',
+    scriptUrl: 'https://github.com/Tanox/GitHub_Chinese/raw/main/build/GitHub_zh-cn.user.js',
     autoUpdateVersion: true,
   },
   externalTranslation: {
@@ -5456,7 +5456,7 @@ const FETCH_TIMEOUT_MS = 8000;
 const EXPONENTIAL_BASE = 2;
 
 const KNOWN_SCRIPT_HASHES = {
-  'https://github.com/Tanox/GitHub_i18n/raw/main/build/GitHub_zh-cn.user.js':
+  'https://github.com/Tanox/GitHub_Chinese/raw/main/build/GitHub_zh-cn.user.js':
     'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
 };
 

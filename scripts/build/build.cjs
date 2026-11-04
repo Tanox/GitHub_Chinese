@@ -1,7 +1,7 @@
 /**
  * GitHub Chinese 简体中文构建脚本
  * @file scripts/build/build.cjs
- * @version 1.13.13
+ * @version 1.13.20
  * @date 2026-09-19
  * @author Sut
  * @description 从入口自动解析模块依赖并拼接为单文件用户脚本（依赖 scripts/build/ 下的图谱与转换模块）
@@ -24,7 +24,7 @@ const EXTRA_ENTRIES = [path.join(SRC_DIR, 'utils', 'tools', 'index.js')];
 
 const USER_SCRIPT_HEADER = `// ==UserScript==
 // @name         GitHub Chinese 简体中文
-// @namespace    https://github.com/Tanox/GitHub_i18n
+// @namespace    https://github.com/Tanox/GitHub_Chinese
 // @version      {VERSION}
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
@@ -40,10 +40,10 @@ const USER_SCRIPT_HEADER = `// ==UserScript==
 // @connect      github.com
 // @run-at       document-idle
 // @noframes
-// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
-// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_i18n/main/build/GitHub_zh-cn.user.js
+// @updateURL    https://raw.githubusercontent.com/Tanox/GitHub_Chinese/main/build/GitHub_zh-cn.user.js
+// @downloadURL  https://raw.githubusercontent.com/Tanox/GitHub_Chinese/main/build/GitHub_zh-cn.user.js
 // @license      GPL-2.0
-// @homepage     https://github.com/Tanox/GitHub_i18n
+// @homepage     https://github.com/Tanox/GitHub_Chinese
 // ==/UserScript==
 
 (function() {

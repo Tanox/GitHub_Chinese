@@ -26,7 +26,7 @@
 
 ### 报告问题
 
-如果您发现了 bug 或有改进建议，请通过 [GitHub Issues](https://github.com/Tanox/GitHub_i18n/issues) 提交。
+如果您发现了 bug 或有改进建议，请通过 [GitHub Issues](https://github.com/Tanox/GitHub_Chinese/issues) 提交。
 
 提交问题时，请包含以下信息：
 
@@ -68,8 +68,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/Tanox/GitHub_i18n.git
-cd GitHub_i18n
+git clone https://github.com/Tanox/GitHub_Chinese.git
+cd GitHub_Chinese
 
 # 安装依赖
 npm install
@@ -244,7 +244,7 @@ export const commonDictionary = {
 
 如果您在贡献过程中遇到问题，可以：
 
-- 查看 [GitHub Issues](https://github.com/Tanox/GitHub_i18n/issues) 是否有类似问题
+- 查看 [GitHub Issues](https://github.com/Tanox/GitHub_Chinese/issues) 是否有类似问题
 - 创建新的 Issue 寻求帮助
 - 通过邮件联系维护者
 

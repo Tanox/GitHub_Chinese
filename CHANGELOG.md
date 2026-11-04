@@ -1,4 +1,16 @@
 # Changelog
+## [1.13.20] - 2026-11-04
+
+### Docs
+- 统一仓库地址引用：README、`package.json`（`repository`/`bugs`/`homepage`）与 `CONTRIBUTING.md`、`docs/project.md` 由旧名 `Tanox/GitHub_i18n` 改为实际仓库名 `Tanox/GitHub_Chinese`（旧名已 301 重定向，链接仍可用，本次规范化以消除歧义）。保留代码中的 `window.GitHub_i18n` 全局变量名不变。
+- 修正 README「命名与兼容性说明」中「仓库地址仍为 GitHub_i18n」的过时陈述，反映仓库已更名为 `GitHub_Chinese`。
+- 通过 GitHub API 更新仓库 About 信息：描述重写为更丰富的中文简介；标签（topics）由 5 个扩充至 13 个（覆盖 github / chinese / localization / i18n / translation / userscript / tampermonkey / greasemonkey / browser-extension / github-translation / zh-cn / web / javascript）。
+
+### Chore
+- 单一版本源 `src/userscript/version.js` 的 `VERSION` 与 `package.json` 同步 bump 至 1.13.20。
+
+---
+
 ## [1.13.19] - 2026-11-04
 
 ### Fix
