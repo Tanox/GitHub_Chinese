@@ -1,5 +1,0 @@
-CRED_OUTPUT:
-protocol=https
-host=github.com
-username=sutchan
-password=****
