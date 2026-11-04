@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_ENV=production next build",
-    "build:web": "NODE_ENV=production next build",
+    "build": "next build",
+    "build:web": "next build",
     "start": "next start",
     "lint": "eslint src/ scripts/ tests/ server/",
     "lint:fix": "eslint src/ scripts/ tests/ server/ --fix",
