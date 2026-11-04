@@ -150,7 +150,7 @@ userscript/
 | `no-console` | warn | 允许 `log` / `warn` / `error`（日志约定见 §6） |
 | `no-throw-literal` / `prefer-promise-reject-errors` | error | 只抛 `Error` 对象 |
 | `no-return-await` / `no-async-promise-executor` | error | — |
-| `no-eval` / `no-imaged-eval` / `no-script-url` | error | 防代码注入 |
+| `no-eval` / `no-implied-eval` / `no-script-url` | error | 防代码注入 |
 | `no-unused-vars` | warn | `_` 前缀豁免 |
 | `.ts/.tsx` | — | `no-undef` / `no-unused-vars` 等交由 `tsc`（strict）处理 |
 | 测试文件 | — | `no-console`、`max-lines-per-function` 关闭 |
@@ -317,7 +317,7 @@ userscript/
 |------|------|----------|
 | 用户脚本产物体积 | 约 196 KB；冒烟下限 50 KB | `tests/smoke.test.cjs` + `npm run validate` |
 | 批量采集 URL 数 | ≤ 50 / 批 | `MAX_URLS` 常量 |
-| 无头浏览器并发 | 槽位 2（超排venth队）；单批页并发 ≤ 3 | `browser-semaphore.js` / `batch-collector.js` |
+| 无头浏览器并发 | 槽位 2（超出排队）；单批页并发 ≤ 3 | `browser-semaphore.js` / `batch-collector.js` |
 | 请求超时 | 词典建议 15s；采集页 30s | `AbortController` + `setTimeout` |
 | 限流窗口 | 60s 30 次 / IP（可配） | `api-guard.ts` |
 | 行数 | 单文件 ≤ 200 行 | 行数门禁 |

@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文 · 字符串采集工作台原型设计
 
-> 版本：**v1.13.23** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.24** ｜ 版本权威源：`src/userscript/version.js`
 >
 > 说明：本文档描述「词典采集工作台」（亦名 GitHub 页面字符串采集工具）的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/`](../prototype/)：[高保真原型（采集流程）](../prototype/prototype.html) 与 [组件库规范 Wireframes](../prototype/wireframes.html)。
 >
@@ -20,13 +20,14 @@
 ```
 
 - 形态：Next.js（App Router）应用，入口 `src/app/`。
-- 六页面（由 `src/components/navItems.ts` 的 `NAV_ITEMS` 定义，类型 `NavSection`）：
+- 五页面（由 `src/components/navItems.ts` 的 `NAV_ITEMS` 定义，类型 `NavSection`）：
   - `/`（采集控制台，`CollectorConsole` 客户端岛）
   - `/overview`（项目概览：指标卡片 + 采集趋势 + 能力清单）
-  - `/coverage`（覆盖率 / 缺口看板：整体覆盖率 + 按文件细分 + Top-N 缺口 + 重复/冲突检测，T22）
-  - `/design`（设计系统展示：design tokens、按钮、状态徽标、词条表格）
-  - `/dictionary`（词条字典浏览）
-  - `/dictionary/manage`（词条管理：增删改）
+  - `/coverage`（覆盖率看板：整体覆盖率 + 按文件细分 + Top-N 缺口 + 重复/冲突检测，T22）
+  - `/dictionary`（词典助手：翻译建议 + 采纳导出）
+  - `/dictionary/manage`（词库管理台：审阅 / 合并 / 历史 / 导入导出）
+
+  > 设计系统展示由 `prototype/wireframes.html` 与 `prototype/app.html` 承载，应用不设 `/design` 路由。
 - 公共骨架：`src/components/Shell.tsx`（顶部导航 `TopNav` + 页头 + 内容 + 页脚）。
 
 ## 2. 整体架构流程
@@ -65,8 +66,8 @@
         └───────────────┬───────────────────────────────────┘
                         ▼
         ┌─────────────────────────────────────────────────┐
-        │  scripts/dict-report.cjs → docs/untranslated-terms.txt│
-        │  scripts/collect-history.cjs → data/collect-history.json│
+        │  scripts/dict-report.cjs → docs/untranslated-terms.txt   │
+        │  scripts/collect-history.cjs → docs/collect-history.json │
         │  （/overview 展示趋势）                              │
         └─────────────────────────────────────────────────┘
 ```
@@ -107,7 +108,7 @@
 
 - 实现：`dictionary-processor.js` `spawn(process.execPath, ['scripts/collect-dict.cjs', rawFile])`，stdout→`log` 事件；stderr 以 `[WARN]` 前缀视为 `log`，其余 → `error`（`SUBPROCESS_FAILED`）；`close` 补 `done` 事件（退出码≠0 且无错误行则补 error）。
 - `scripts/collect-dict.cjs`：`mergeDictionaries()`（babel 解析 `src/dictionaries/**/*.js` 提取 `{原文:译文}`）、`normalizeText()`（解码 HTML 实体 / 压缩空白 / 去首尾标点）、`findUntranslated(texts, dictionary)`（精确 + 归一化大小写不敏感匹配，返回 `{untranslated, translated}`）。
-- 报告：`scripts/dict-report.cjs` 写 `docs/untranslated-terms.txt` 并计算历史增量；`scripts/collect-history.cjs` 追加 `data/collect-history.json`（保留 `MAX_ENTRIES = 30`）。`/overview` 读取并展示趋势。
+- 报告：`scripts/dict-report.cjs` 写 `docs/untranslated-terms.txt` 并计算历史增量；`scripts/collect-history.cjs` 追加 `docs/collect-history.json`（保留 `MAX_ENTRIES = 30`）。`/overview` 读取并展示趋势。
 
 ## 4. API 契约与限流
 
@@ -150,7 +151,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
   - `waitForHydration`：超时降级不阻塞。
   - `navigateWithRetry`：`RETRY_MAX=3`，指数退避 `computeBackoffDelay`（`BACKOFF_BASE_MS=1000`），`isRetryable`（超时 / 网络 / 429 / 5xx）。
   - 注：原型「抓取超时，回退到文本粘贴通道」为装饰文本，真实回退发生在服务端批量抓取内部，不切换通道。
-- 自动备份 / 历史（真实落点 `scripts/dict-report.cjs` + `scripts/collect-history.cjs` 写 `data/collect-history.json`、`docs/untranslated-terms.txt`，由 `/overview` 展示趋势）。原型中「系统自动备份已开启」为静态文案，当前 Next.js 控制台无独立备份逻辑。
+- 自动备份 / 历史（真实落点 `scripts/dict-report.cjs` + `scripts/collect-history.cjs` 写 `docs/collect-history.json`、`docs/untranslated-terms.txt`，由 `/overview` 展示趋势）。原型中「系统自动备份已开启」为静态文案，当前 Next.js 控制台无独立备份逻辑。
 
 ## 7. 原型 ↔ 实现映射
 

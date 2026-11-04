@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.23** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.24** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -32,52 +32,55 @@ GitHub Chinese 简体中文是一个浏览器用户脚本项目，为 GitHub 网
 ```
 GitHub_Chinese/
 ├── src/                              # 源码根目录（用户脚本 + 采集工作台）
-│   ├── main.js                       # 用户脚本唯一入口
-│   ├── main/                         # 生命周期编排
-│   ├── core/                         # 基础设施（缓存 / 错误 / Trie / 虚拟 DOM）
-│   ├── translation-core/             # 翻译核心引擎
-│   ├── page-monitor/                 # DOM 与路由监听
+│   ├── userscript/                   # 用户脚本引擎
+│   │   ├── main/                     # 入口 index.js + 生命周期编排 lifecycle.js
+│   │   ├── core/                     # 基础设施（缓存 / 错误 / Trie / 虚拟 DOM）
+│   │   ├── translation-core/         # 翻译核心引擎
+│   │   ├── page-monitor/             # DOM 与路由监听
+│   │   ├── ui/                       # 配置界面（configUI/）与样式分片（styles/configUI/）
+│   │   ├── config/                   # 全局配置与配置分片（performance / selectors / elements）
+│   │   ├── versionChecker/           # 远程版本抓取
+│   │   ├── updateNotification/       # 更新通知 UI
+│   │   ├── version.js                # 版本信息（单一版本源）
+│   │   └── versionUtils.js           # 版本比较与提取
 │   ├── dictionaries/                 # 翻译词典
 │   │   └── common/                   # 通用词典（nav / repo / pr / issue / misc）
-│   ├── ui/                           # 配置界面与样式
-│   ├── utils/                        # 通用工具函数
-│   ├── config.js                     # 全局配置
-│   ├── config/                       # 配置分片（performance / selectors / elements）
-│   ├── version.js                    # 版本信息（单一版本源）
-│   ├── versionUtils.js               # 版本比较与提取
-│   ├── versionChecker/               # 远程版本抓取
-│   ├── updateNotification/           # 更新通知 UI
-│   ├── app/                          # Next.js App Router（采集工作台，六页：console / overview / coverage / design / dictionary / dict-manage）
+│   ├── app/                          # Next.js App Router（采集工作台，五页：/ ·/overview ·/coverage ·/dictionary ·/dictionary/manage）
 │   │   ├── page.tsx                  # 采集控制台（服务端外壳 + 客户端岛）
 │   │   ├── overview/page.tsx         # 项目概览（服务端实时指标）
-│   │   ├── coverage/page.tsx          # 覆盖率 / 缺口看板（T22）
-│   │   ├── design/page.tsx           # 设计系统（令牌与组件展示）
+│   │   ├── coverage/page.tsx         # 覆盖率 / 缺口看板（T22）
+│   │   ├── dictionary/               # 词典助手页 + dictionary/manage 词库管理台
 │   │   ├── api/collect/route.ts      # 文本粘贴采集
 │   │   ├── api/batch-collect/route.ts# 批量 URL 采集
-│   │   ├── layout.tsx / globals.css  # 外壳布局与 Tailwind 入口
+│   │   ├── styles/                   # 模块化 CSS（17 个文件，layout.tsx 统一注册）
+│   │   ├── layout.tsx / globals.css  # 外壳布局与全局样式入口
 │   │   └── robots.ts / sitemap.ts    # SEO
 │   ├── components/                   # Shell / TopNav（服务端）+ navItems（导航源）+ CollectorConsole（客户端岛）+ Dashboard / DataCenter / PreviewTable / ScriptInjector（叶组件）
 │   ├── hooks/                        # useCollector.ts（状态 Hook）+ collector-types / constants / sse.ts（拆分模块）
 │   ├── lib/                          # 采集内核：collector-core / dictionary-processor / extract-page-text / page-navigation / collector-logic / request-body / url-guard（SSRF）/ browser-resolver / browser-semaphore / collect-codes / coverage-report / sse-stream / api-guard（鉴权限流）/ batch-collector / project-metrics
+│   ├── utils/                        # 双端通用工具（string/、tools/ 分片）
 │   ├── types/puppeteer-core.d.ts     # 可选依赖类型声明
 │   └── proxy.ts                      # 安全响应头 + nonce CSP（Next 16 起取代 middleware）
 ├── prototype/                        # 高保真原型（单文件自包含 HTML，CSS 内联、无服务器）
 │   ├── prototype.html                # 高保真可交互原型（动效 + 真实数据）
-│   └── wireframes.html               # 组件库规范（基础 / 复合 / 业务组件 + 使用规则）
+│   ├── wireframes.html               # 组件库规范（基础 / 复合 / 业务组件 + 使用规则）
+│   └── app.html                      # 应用级页面走查
 ├── scripts/
-│   ├── build/moduleGraph.cjs         # 模块依赖图（拓扑排序 / 孤立检测）
-│   ├── build/transform.cjs           # ESM → 单作用域拼接
-│   └── validate-bundle.cjs           # 构建产物校验
-├── docs/                             # 正式规范文档（权威正文）
-├── build/                            # 用户脚本构建产物（需纳入版本控制）
-├── scripts/build/build.cjs            # 用户脚本构建入口
-├── scripts/collect-dict.cjs            # 词典采集工具（已随 v1.12.8 迁入 scripts/）
+│   ├── build/                        # build.cjs 构建入口 + moduleGraph.cjs 依赖图 + transform.cjs ESM 拼接
+│   ├── check-file-length.cjs         # 行数门禁（≤200 行）
+│   ├── check-version-consistency.cjs # 版本一致性校验（发布作业）
+│   ├── extract-release-notes.cjs     # Release Notes 抽取（发布作业）
+│   └── collect-dict.cjs 等           # 词典采集 / 清洗 / 合并 / 审阅工具链
+├── tests/                            # 单测（node --test）、integration/、helpers/
 ├── server/collect-service/           # 独立采集服务（W5 解耦，可自托管部署的 Node 服务）
+├── docs/                             # 正式规范文档（权威正文，入口 docs/README.md）
+├── build/                            # 用户脚本构建产物（需纳入版本控制）
 ├── next.config.mjs                   # Next 配置（根级，与 src 解耦）
 ├── tailwind.config.ts / postcss.config.mjs
-├── eslint.config.js                  # ESLint Flat Config
-├── tsconfig.json                     # TypeScript 配置
-├── package.json                      # NPM 包配置
+├── eslint.config.js + eslint/rules/  # ESLint Flat Config（规则按类拆分）
+├── .husky/pre-commit                 # 提交前钩子（lint-staged）
+├── tsconfig.json                     # TypeScript 配置（strict + @/* 别名）
+├── package.json                      # NPM 包配置（含 Prettier 与 lint-staged 配置）
 └── CHANGELOG.md
 ```
 
@@ -114,9 +117,9 @@ GitHub_Chinese/
 - `errorHandler.js`（+ `errorHandler/constants.js`、`recovery.js`）：分级错误处理与恢复
 - `virtualDom.js`（+ `virtualDom/manager.js`、`constants.js`）、`virtualNode.js`：减少真实 DOM 操作
 
-### 4. ui（用户界面）
+### 4. ui（用户界面，`src/userscript/ui/`）
 
-- `configUI.js`：配置面板主类与全局单例
+- `configUI/index.js`：配置面板主类与全局单例
 - `configUI/store.js`：用户配置持久化（`localStorage` + 轻量混淆）
 - `configUI/renderer.js`：面板 DOM 渲染
 - `configUI/bootstrap.js`：浮动入口按钮与用户脚本菜单命令
@@ -144,23 +147,7 @@ GitHub_Chinese/
 
 ## 开发规范
 
-### 分支策略
-
-- `main`：稳定发布分支
-- `feature/*`：新功能开发
-- `fix/*`：缺陷修复
-
-### 提交规范
-
-遵循 Conventional Commits：
-
-```
-<type>(<scope>): <description>
-
-feat(translationCore): 添加部分匹配翻译功能
-fix(pageMonitor): 修复 DOM 变化监听问题
-docs: 更新项目文档
-```
+> 分支策略、提交信息格式、代码审查流程、质量门禁与测试规范的唯一权威正文见 [development.md](./development.md)；编码风格与命名见 [coding-style.md](./coding-style.md)。本节仅保留版本号管理要点。
 
 ### 版本号管理
 
@@ -184,22 +171,24 @@ docs: 更新项目文档
 ### 命令
 
 ```bash
-npm run build          # 构建用户脚本 → build/GitHub_zh-cn.user.js
-npm run validate       # 校验构建产物
-npm run dev            # 启动 Next 采集工作台
+npm run build:userscript  # 构建用户脚本 → build/GitHub_zh-cn.user.js
+npm run validate          # 产物校验（存在性 / 体积 / 元数据 / 语法）
+npm run dev               # 启动 Next 采集工作台
 # 原型为静态预览，直接用浏览器打开 prototype/prototype.html，无需命令
-npm run build:web      # 构建 Next 工作台
-npm run lint           # 代码检查
-npm test               # lint → build → validate
+npm run build             # 构建 Next 工作台（= build:web）
+npm run lint              # 代码检查
+npm test                  # lint → lint:length → build → test:unit
 ```
+
+完整命令表见 [development.md §2](./development.md)（权威来源为 `package.json` 的 `scripts`）。
 
 ### 发布流程
 
-1. 更新 `src/userscript/version.js` 中的 `VERSION`
-2. 同步 `package.json`、`CHANGELOG.md` 与文档中的版本展示位
-3. 运行 `npm test` 验证
-4. 重建并提交 `build/GitHub_zh-cn.user.js`
-5. 创建 Git Tag（`git tag v1.9.24`）并推送，CI 自动产出 Release 资产
+唯一权威正文见 [development.md §8](./development.md)。要点：
+
+1. 更新单一版本源 `src/userscript/version.js` 的 `VERSION`，按发版清单同步全部展示位并重建产物；
+2. `npm test` 全绿；
+3. 推送 `main` 后创建并推送 `v<版本号>` tag，CI 自动校验版本一致性、抽取 Release Notes 并创建 GitHub Release。
 
 ---
 
@@ -209,12 +198,12 @@ npm test               # lint → build → validate
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.23**（2026-11-04）。
-- 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，六页 `/`、`/overview`、`/coverage`、`/design`、`/dictionary`、`/dict-manage`）。两链路仅共享词典数据。
+- 当前版本 **v1.13.24**（2026-11-04）。
+- 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，五页 `/`、`/overview`、`/coverage`、`/dictionary`、`/dictionary/manage`）。两链路仅共享词典数据。
 
 ### 量化指标
 
-量化指标随发版由对应命令实算，**禁止手填**（v1.13.12 发版实算快照，发版时重新实算）：
+量化指标随发版由对应命令实算，**禁止手填**（最近实算：v1.13.22 发版；每次发版重新实算）：
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
@@ -227,7 +216,7 @@ npm test               # lint → build → validate
 | 翻译词典词条数 | 459 | `mergeAllDictionaries()` 合并计数 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 3 个自包含 HTML（prototype / wireframes / app） | `prototype/` |
-| 工作台页面路由 | 5（console·overview·coverage·dictionary·dict-manage） | `src/components/navItems.ts` |
+| 工作台页面路由 | 5（/ ·/overview ·/coverage ·/dictionary ·/dictionary/manage） | `src/components/navItems.ts` |
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（strict 模式，0 错误） | `npm run typecheck` |
 | 产物校验 | 通过（build.cjs 生成成功，vm 编译校验通过） | `npm run build:userscript` |
@@ -237,13 +226,13 @@ npm test               # lint → build → validate
 
 > 工作台「项目概览」页（`/overview`）已把多数指标改为服务端实时统计，不再依赖本文档的手工数字。
 
-> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.23 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
+> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.24 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
 
 ### 已完成能力
 
 - **用户脚本引擎**：静态/动态翻译、Trie 部分匹配、LRU 缓存/虚拟 DOM/批处理、配置面板 + 性能监控、浮动入口 + 菜单命令、自动更新、输入净化。
 - **采集工作台**：探针一键复制、文本粘贴/批量 URL 采集（Headless）、词条预览表、实时处理中心（进度/终端日志）、智能清洗/导出 JSON、五页互通与响应式顶部导航、项目概览（实时指标）、**覆盖率/缺口看板（/coverage，T22）**、词典助手与管理台（/dictionary、/dictionary/manage）。（设计系统展示保留于原型 `prototype/app.html` 的 /design 页，应用路由已裁撤。）
-- **工程化**：依赖图构建 + 循环/孤立检测、产物校验、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build→validate→artifact→release）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（170 用例）、a11y 自动化检查。
+- **工程化**：依赖图构建 + 循环/孤立检测、产物校验（`npm run validate`）、ESLint（Flat）/Prettier/Husky/lint-staged、CI/CD（lint→build/integration/security→release/deploy-pages/notify）、GitHub Pages 部署、TS 严格模式、`middleware`→`proxy` 迁移、语义化 `id`、单文件 ≤200 行、Node 内置 test runner（162 用例）、a11y 自动化检查。
 
 ### 活动任务
 
@@ -345,7 +334,7 @@ npm test               # lint → build → validate
 ### 4.9 v1.11.16 · 覆盖率看板（T22）
 
 - 新增 `/coverage` 路由与服务端取数模块 `src/lib/coverage-report.ts`：实时扫描磁盘词典，计算整体翻译覆盖率、按文件（common/codespaces/explore）细分进度条、Top-N 采集缺口（读 `docs/untranslated-terms.txt`）、跨模块同键多值冲突与近似键聚类；服务端渲染（`force-dynamic`），不依赖浏览器，规避 W5 架构约束。
-- 复用 `Shell` 外壳与 `progress`/`showcase` 设计令牌，新增 `public/css/coverage.css`；`navItems.ts` 导航新增「覆盖率」项。
+- 复用 `Shell` 外壳与 `progress`/`showcase` 设计令牌，新增覆盖率页样式（当时位于 `public/css/coverage.css`，后随样式模块化迁至 `src/app/styles/coverage.css`）；`navItems.ts` 导航新增「覆盖率」项。
 - 版本同步至 1.11.16：`src/userscript/version.js`、`package.json`、`README.md`、`CHANGELOG.md` 与本次改动文件头注释。
 
 ---
@@ -358,7 +347,7 @@ npm test               # lint → build → validate
 ## 4.11 v1.12.2 · 采集页整页复刻原型
 
 - 采集工具首页（`/`）脱离标准 `Shell`，改用原型外壳：`proto-topbar`（品牌「GitHub 中文 · 采集工具」+ 设置齿轮）、hero（eyebrow / 标题 / 导语）、页脚「高保真原型 · 仅供设计走查」；隐藏深侧栏，导航经页脚链接与移动端导航保留。
-- 新增 `public/css/prototype.css`：在 `.proto-page` 作用域内对齐原型 `ct-*` 组件值（步骤徽标绿底 26px、卡片内边距 16px / 标题 16px·600、栅格 16px、tab 下划线式、输入框 / 代码块 / 词条表 / 进度卡 / 终端尺寸与圆角对齐）；覆盖仅作用于采集页，不影响 `/overview` `/coverage` `/design`。
+- 新增 `public/css/prototype.css`（该目录后随样式模块化移除，组件级覆盖现由 `src/app/styles/` 相关模块承载）：在 `.proto-page` 作用域内对齐原型 `ct-*` 组件值（步骤徽标绿底 26px、卡片内边距 16px / 标题 16px·600、栅格 16px、tab 下划线式、输入框 / 代码块 / 词条表 / 进度卡 / 终端尺寸与圆角对齐）；覆盖仅作用于采集页，不影响 `/overview` `/coverage` `/design`。
 
 ## 4.12 v1.12.3 · 采集页恢复标准应用框架
 
@@ -382,16 +371,7 @@ npm test               # lint → build → validate
 
 ## 版本与文档同步清单
 
-发版时必须逐项核对，避免长期脱节：
-
-1. `src/userscript/version.js` 的 `VERSION`（**单一版本源**）
-2. `package.json` 的 `version`
-3. `CHANGELOG.md` 新增对应版本小节
-4. `README.md` 中的版本相关描述与结构说明
-5. **本次实际编辑**的文档版本行（`docs/*.md`，含本文档）；未编辑的文档不批量刷写版本行，避免无意义 diff
-6. `docs/` 下结构调整文档（`project.md`／`architecture.md`／`development.md`／`coding-style.md`／`prototype.md`）
-7. 本次**实际改动**文件的头注释版本号（未改动文件保持不变）
-8. 发版后重新执行 `node build.cjs` 并确认 `git status` 干净（产物须可复现）
+发版同步的唯一权威清单见 [development.md §8](./development.md)（含单一版本源、`package.json` / `package-lock.json`、文档与原型展示位、CHANGELOG、按文件惰性更新的头注释与产物重建）。
 
 ## 路线图（Roadmap）
 
@@ -413,7 +393,7 @@ npm test               # lint → build → validate
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_Chinese |
-| **当前版本** | 1.13.23 |
+| **当前版本** | 1.13.24 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
@@ -423,10 +403,4 @@ npm test               # lint → build → validate
 
 ## 规范文档索引
 
-| 文档 | 说明 |
-|------|------|
-| [architecture.md](./architecture.md) | 系统架构设计、模块关系、技术选型 |
-| [development.md](./development.md) | 开发流程、分支策略、发布规范 |
-| [coding-style.md](./coding-style.md) | 命名规范、代码格式、注释要求 |
-| [prototype.md](./prototype.md) | 原型设计、交互规格与数据结构 |
-| [tasks.md](./tasks.md) | 活动任务唯一清单（含优先级与验收要点） |
+完整文档地图、单一权威来源（SSOT）分工与统一术语表见 [README.md](./README.md)；核心规范：[architecture.md](./architecture.md)（架构）、[development.md](./development.md)（流程）、[coding-style.md](./coding-style.md)（编码）、[prototype.md](./prototype.md)（原型）、[tasks.md](./tasks.md)（任务）。

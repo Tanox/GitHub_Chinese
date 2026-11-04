@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_Chinese?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_Chinese?display_name=tag&color=green)](https://github.com/Tanox/GitHub_Chinese/releases)
 
-> 当前版本：**v1.13.23**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.24**（版本单一来源：`src/userscript/version.js`）
 
 ## 命名与兼容性说明
 
@@ -69,7 +69,7 @@ npm run dev     # 打开 http://localhost:3000
 
 > **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
 
-> **原型（v1.13.23）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
+> **原型（v1.13.24）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
 
 本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
 
@@ -85,32 +85,33 @@ npm run dev     # 打开 http://localhost:3000
 
 ```
 src/
-├── core/                    # 基础设施（LRU 缓存 / 错误处理 / Trie / 虚拟 DOM）
-├── dictionaries/            # 翻译词典（common/codespaces/explore）
-├── page-monitor/            # 页面监控（DOM 监听、路径监听、翻译触发）
-├── translation-core/        # 翻译核心（词典管理、元素翻译、部分匹配、性能监控）
-├── ui/                      # UI 组件（配置面板、浮动入口、性能监控）
-├── utils/                   # 工具函数
-├── app/                     # Next.js 采集工作台（App Router）
-│   └── api/                 # collect / batch-collect 流式接口
-├── components/              # 工作台组件（服务端外壳 + 客户端岛）
-├── hooks/                   # 工作台状态 Hook
-├── lib/                     # 工作台服务端逻辑（采集核心 / 指标统计）
-├── types/                   # 类型声明
-├── config.js + config/      # 全局配置与配置分片
-├── main.js                  # 用户脚本入口
-├── main/                    # 生命周期编排
-├── proxy.ts                 # 安全响应头（Next 16 取代 middleware）
-├── version.js               # 版本信息（单一版本源）
-├── versionUtils.js          # 版本工具函数
-├── versionChecker/          # 版本更新检查
-└── updateNotification/      # 更新通知 UI
-src/app/styles/             # 采集工作台样式（模块化，由 Next 构建打包）
+├── app/                     # 词典采集工作台（Next.js 16 App Router）
+│   ├── api/                 # collect / batch-collect / dictionary/suggest 流式接口
+│   ├── overview|coverage|dictionary/   # 指标 / 覆盖率看板 / 词典助手 + 词库管理台
+│   └── styles/              # 工作台样式（17 个模块化 CSS，由 Next 构建打包）
+├── components/              # 工作台组件（服务端外壳 + 'use client' 客户端岛）
+├── hooks/                   # 工作台状态 Hook（useCollector 等）
+├── lib/                     # 工作台服务端逻辑（采集核心 / api-guard / SSE / 指标）
+├── dictionaries/            # 翻译词典（common[+common/ 分片] / codespaces / explore）
+├── types/                   # 类型声明（puppeteer-core.d.ts 等）
+├── userscript/              # 用户脚本引擎
+│   ├── main/                # 入口（index.js）与生命周期编排（lifecycle.js）
+│   ├── core/                # 基础设施（LRU 缓存 / 错误处理 / Trie / 虚拟 DOM）
+│   ├── translation-core/    # 翻译核心（词典管理 / 元素翻译 / 部分匹配 / 性能监控）
+│   ├── page-monitor/        # 页面监控（DOM / 路径监听）
+│   ├── ui/                  # 配置面板（configUI/）与样式分片
+│   ├── config/              # 全局配置与配置分片
+│   ├── versionChecker/ + updateNotification/  # 版本检查与更新通知
+│   └── version.js           # 版本信息（单一版本源）
+├── utils/                   # 双端共用工具（string/、tools/ 分片）
+└── proxy.ts                 # 安全响应头（Next 16 取代 middleware）
 prototype/                   # 设计系统与高保真原型（单文件自包含 HTML，与应用代码分离）
-scripts/                     # 构建依赖图、转换、产物校验与词典采集工具链
-server/                     # 独立采集服务（W5 解耦，仅含 collect-service，可自托管部署的 Node 服务）
+scripts/                     # 构建依赖图、行数门禁、版本一致性、词典采集工具链
+scripts/build/               # 用户脚本构建器（入口 src/userscript/main/index.js）
+server/collect-service/      # 独立采集服务（自托管 Node 服务）
 build/                       # 用户脚本构建产物（纳入版本控制）
-docs/                        # 项目规范文档（唯一权威正文）
+tests/                       # 单测（node --test）、integration/、helpers/
+docs/                        # 项目规范文档（唯一权威正文，入口 docs/README.md）
 ```
 
 ## 参与开发
@@ -138,10 +139,12 @@ npm test        # lint → 长度门禁 → 构建 → 单测（含产物冒烟�
 
 | 文档 | 说明 |
 |------|------|
-| [docs/project.md](docs/project.md) | 项目概述、目录结构与核心模块 |
+| [docs/README.md](docs/README.md) | 文档索引、单一权威来源（SSOT）与术语表 |
+| [docs/project.md](docs/project.md) | 项目概述、目录结构与量化指标 |
 | [docs/architecture.md](docs/architecture.md) | 系统架构与技术选型 |
-| [docs/development.md](docs/development.md) | 开发流程与发布规范 |
-| [docs/coding-style.md](docs/coding-style.md) | 代码风格规范 |
+| [docs/development.md](docs/development.md) | 分支 / 提交 / 审查 / 测试 / 发布规范 |
+| [docs/coding-style.md](docs/coding-style.md) | 编码风格与命名规范 |
+| [docs/code-review/](docs/code-review/) | 代码审查标准、清单、流程与配置 |
 | [docs/tasks.md](docs/tasks.md) | 活动任务唯一清单 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更记录 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献指南 |

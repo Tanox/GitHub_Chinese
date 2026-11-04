@@ -125,15 +125,11 @@ npm run test
 ```bash
 # 从主分支创建新分支
 git checkout main
-git pull upstream main
+git pull origin main
 git checkout -b feature/your-feature-name
 ```
 
-**分支命名规范**:
-- 新功能: `feature/功能描述`
-- Bug 修复: `fix/问题描述`
-- 重构: `refactor/模块名`
-- 文档: `docs/描述`
+**分支命名规范**: 统一见 [development.md §3](../development.md)（`feature/*`、`fix/*`、`refactor/*`、`docs/*`、`test/*`、`chore/*`、`hotfix/*`，小写 kebab-case）。
 
 #### 1.2 编写代码并提交
 
@@ -148,23 +144,7 @@ git add .
 git commit -m "feat: 添加 XXX 功能"
 ```
 
-**Commit Message 规范**:
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-**Type 类型**:
-- `feat`: 新功能
-- `fix`: Bug 修复
-- `docs`: 文档更新
-- `style`: 代码格式（不影响功能）
-- `refactor`: 重构
-- `test`: 测试相关
-- `chore`: 构建/工具相关
+**Commit Message 规范**: 统一见 [development.md §4](../development.md)（`<type>(<scope>): <描述>`，type 固定 11 类小写，scope 可选 kebab-case，中文描述动词开头 ≤ 50 字符）。
 
 **示例**:
 ```bash
@@ -191,25 +171,19 @@ git push origin feature/your-feature-name
 
 #### 2.1 CI/CD 自动检查
 
-PR 提交后，自动触发以下检查：
+PR 提交后，自动触发 CI 流水线（`.github/workflows/ci-cd.yml`，作业明细见 [development.md §6](../development.md)）：
 
-- ✅ **Lint 检查** — ESLint 自动检查代码风格
-- ✅ **构建检查** — 确保代码可以正常构建
-- ✅ **单元测试** — 运行自动化测试（如果有）
-- ✅ **代码覆盖率** — 检查测试覆盖率（如果配置了）
+- ✅ **Lint 检查** — ESLint + Prettier 校验 + 行数门禁 + TypeScript 类型检查
+- ✅ **构建检查** — Next 构建 + 用户脚本构建 + 产物校验（`npm run validate`）
+- ✅ **单元测试** — `node --test` 全量用例（含 a11y 与产物冒烟）
+- ✅ **集成测试** — 真实启动 Next 服务对 API 做 HTTP 断言
+- ✅ **安全扫描** — `npm audit --audit-level=high`
 
-**注意**: 如果任何检查失败，PR 会被 Block，无法合并。
+当前未配置覆盖率门禁。任何检查失败，PR 会被 Block，无法合并。
 
-#### 2.2 预提交检查 (可选)
+#### 2.2 预提交检查
 
-如果配置了 `lint-staged`，每次提交会自动运行：
-
-```json
-// package.json
-"lint-staged": {
-  "*.js": ["eslint --fix", "prettier --write"]
-}
-```
+项目已配置 Husky + `lint-staged`（`.husky/pre-commit`）：每次提交自动对暂存的 `*.{js,cjs,mjs,ts,tsx}` 运行 `eslint --fix` 与 `prettier --write`（配置见 `package.json` 的 `lint-staged` 字段）。
 
 ---
 
@@ -220,10 +194,10 @@ PR 提交后，自动触发以下检查：
 如果使用 GitHub CODEOWNERS 文件：
 
 ```bash
-# .github/CODEOWNERS
+# .github/CODEOWNERS（示意：实际配置见该文件）
 # 核心模块需要特定人员审查
-src/userscript/core/* @reviewer1 @reviewer2
-src/userscript/translation-core/* @reviewer3
+/src/userscript/core/ @sutandkb
+/src/userscript/translation-core/ @sutandkb
 ```
 
 #### 3.2 手动分配
@@ -357,24 +331,7 @@ git branch -d feature/your-feature-name
 
 ### 自动分配规则
 
-使用 `.github/CODEOWNERS` 文件：
-
-```bash
-# .github/CODEOWNERS
-
-# 默认审查者
-* @team-lead
-
-# 核心模块需要核心团队成员审查
-/src/userscript/core/* @core-team1 @core-team2
-/src/userscript/translation-core/* @translation-team1 @translation-team2
-
-# UI 相关需要前端专家审查
-/src/userscript/ui/* @frontend-expert
-
-# 构建脚本需要 DevOps 审查
-/build.* @devops-team
-```
+使用 `.github/CODEOWNERS` 文件（**唯一权威配置，规则以该文件为准**）：默认所有者为 `@sutandkb`，并按 `src/userscript/`、`src/app/`、`src/lib/`、`scripts/`、`docs/` 等目录显式声明重点区域。本文档不再复制配置内容。
 
 ### 手动分配建议
 
@@ -472,16 +429,15 @@ git branch -d feature/your-feature-name
 
 2. **快速修复并提交**
    ```bash
-   # 快速修复...
+   # 从 main 创建 hotfix 分支，修复后经 PR 优先合并
+   git checkout -b hotfix/fix-critical-issue main
    git add .
-   git commit -m "hotfix: 修复严重的 XXX 问题"
+   git commit -m "fix: 修复严重的 XXX 问题"
    ```
 
 3. **简化审查** — 只检查 Blocker 问题
 
-4. **快速合并** — 批准后立即合并
-
-5. **同步到开发分支** — 确保修复也应用到开发分支
+4. **快速合并** — 批准后立即合并回 `main`（分支策略见 [development.md §3](../development.md)）
 
 ---
 
@@ -510,59 +466,19 @@ Branch name pattern: main
 
 #### 2. PR 模板
 
-创建 `.github/pull_request_template.md`，参见 [PR-TEMPLATE.md](./PR-TEMPLATE.md)
+已维护于 `.github/pull_request_template.md`（唯一权威模板，其他文档只引用）。
 
 #### 3. Issue 模板
 
-创建 `.github/ISSUE_TEMPLATE/`，用于标准化 Issue 提交。
+已维护于 `.github/ISSUE_TEMPLATE/`（bug_report / feature_request）。
 
 ---
 
 ### 自动检查配置
 
-#### 1. GitHub Actions 配置示例
+CI 流水线的唯一权威配置是 `.github/workflows/ci-cd.yml`（7 个作业：lint / build / integration / security / release / deploy-pages / notify，明细见 [development.md §6](../development.md)），本文档不复制 YAML。
 
-创建 `.github/workflows/ci.yml`:
-
-```yaml
-name: CI
-
-on:
-  pull_request:
-    branches: [main]
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-      - run: npm ci
-      - run: npm run lint
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-      - run: npm ci
-      - run: npm run build
-      - run: npm run validate
-```
-
-#### 2. Lint-staged 配置
-
-在 `package.json` 中：
-
-```json
-"lint-staged": {
-  "*.js": ["eslint --fix", "prettier --write"]
-}
-```
+Lint-staged 配置位于 `package.json` 的 `lint-staged` 字段（对暂存的 `*.{js,cjs,mjs,ts,tsx}` 运行 `eslint --fix` + `prettier --write`），由 `.husky/pre-commit` 触发。
 
 ---
 
@@ -600,6 +516,7 @@ jobs:
 | 版本 | 日期 | 作者 | 变更内容 |
 |------|------|------|----------|
 | 1.0.0 | 2026-09-30 | - | 初始版本 |
+| 1.13.24 | 2026-11-04 | Sut | 与代码实况对齐：分支 / 提交 / CI / CODEOWNERS / PR 模板改为引用唯一权威来源，移除虚构配置副本 |
 
 ---
 

@@ -130,8 +130,9 @@ git commit -m "feat: 建立代码审查标准和流程
 
 详见 docs/code-review/STANDARDS.md"
 
-# 推送到远程仓库
-git push origin main
+# 推送到远程仓库（经功能分支 + PR 合并，禁止直推 main）
+git checkout -b docs/add-code-review-framework
+git push origin docs/add-code-review-framework
 ```
 
 ---
@@ -165,57 +166,11 @@ Branch name pattern: main
 
 ---
 
-### Step 3: 配置 GitHub Actions CI（可选但推荐）
+### Step 3: 确认 GitHub Actions CI
 
-创建 `.github/workflows/ci.yml` 文件：
+CI 流水线已维护于 `.github/workflows/ci-cd.yml`（唯一权威配置，7 个作业：lint / build / integration / security / release / deploy-pages / notify），本文档不复制 YAML；作业明细见 [development.md §6](../development.md)。
 
-```yaml
-name: CI
-
-on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
-
-jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - run: npm run validate
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run test
-```
+分支保护中应启用的状态检查（与 CI 作业对应）：`lint`、`build`、`integration`、`security`。
 
 ---
 

@@ -1,4 +1,27 @@
 # Changelog
+## [1.13.24] - 2026-11-04
+
+### Docs
+- 文档治理：建立「单一权威来源（SSOT）」体系——`docs/README.md` 重写为索引 + SSOT 分工表 + **统一术语表**（用户脚本 / 词典采集工作台 / 词典 / 脚本注入器等收口，消除「插件 / 油猴脚本 / 词库 / 探针注入」等混用），并新增文档维护义务。
+- `docs/coding-style.md` 全量重写并以代码实况为准：修正函数行数（150 有效行）/ 参数（5）/ 圈复杂度（30）/ `curly: multi-line` 等与 ESLint 配置不符的数值；补齐缺失章节——目录组织与新文件归属、命名约定总表、import 顺序与循环依赖、错误处理与日志（脱敏）、异步与竞态、TypeScript/React 规范、API 路由规范（校验 / SSE / 鉴权限流）、CSS 组织（17 模块）、可访问性（axe）、性能预算、依赖引入、安全红线。
+- `docs/development.md` 全量重写：环境与前置要求、环境变量表、完整命令速查（对齐 `package.json` 19 个脚本）、分支管理（main / 可选 develop / 功能分支命名与工作流）、提交信息格式（11 类 type、scope kebab-case）、代码审查流程（角色 / 1 approval / SLA / merge commit）、CI 7 作业实况（lint→build/integration/security→release/deploy-pages/notify，tag 触发发布）、测试规范（`node --test` + `tests/` 目录约定）、版本发布清单、文档同步义务。
+- `docs/project.md`、`docs/architecture.md`、`docs/prototype.md` 修正全部失效路径与失真描述：`src/userscript/main.js`→`main/index.js`、`configUI.js`→`ui/configUI/`、删除不存在的 `/design` 路由（六页→五页）、`/dict-manage`→`/dictionary/manage`、`data/collect-history.json`→`docs/collect-history.json`、移除虚构的 `scripts/validate-bundle.cjs` 与 `public/css/*` 引用（补迁移注记）。
+- 消除规范正文六处重复定义：分支策略 / 提交格式收敛到 `development.md`，编码规范收敛到 `coding-style.md`，审查标准收敛到 `code-review/STANDARDS.md`，命令表镜像 `package.json`，PR 模板 / CI YAML / CODEOWNERS 不再复制，`project.md` 版本同步清单与文档索引改为指向权威来源。
+- `docs/code-review/`：修正失效链接（`PR-TEMPLATE.md`、`ci.yml`）、移除虚构 CODEOWNERS 与 CI YAML 副本（改为引用真实配置）、分支 / 提交规范改为引用 development.md、hotfix 流程对齐真实分支策略、版本行与更新日志刷新。
+- `README.md` 修正失真项目结构树（src 根级误列用户脚本模块）、文档表补全 code-review 与 docs 索引；`CONTRIBUTING.md` 重写为入口 + SSOT 引用，保留词典贡献等独有内容，修正审查 SLA 与安全报告指引。
+
+### Fixed
+- `package.json` 的 `main` 指向不存在的 `src/userscript/main.js` → 修正为 `src/userscript/main/index.js`。
+- CI `build` 作业引用的 `npm run validate` 脚本不存在（必然失败）→ 新增 `validate` 脚本（复用 `tests/smoke.test.cjs` 产物校验），并在 build 作业中先执行 `build:userscript` 再校验上传，产物不再依赖仓库已提交版本。
+- `.husky/pre-commit` 钩子缺失导致 lint-staged 从未生效 → 补齐钩子。
+- `.github/CODEOWNERS` 大量失效路径（`/src/core/*`、`/src/main.js`、`/babel.config.json` 等旧结构）→ 按 `src/userscript/` 实际结构重写。
+- PR 模板过时的测试措辞与 Issue 模板过时的版本示例修正。
+
+### Chore
+- 单一版本源 `src/userscript/version.js`、`package.json`、`package-lock.json`、README / docs 版本行与原型展示位同步至 1.13.24，并重建用户脚本产物。
+
+---
+
 ## [1.13.23] - 2026-11-04
 
 ### Style

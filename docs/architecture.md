@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文架构文档
 
-> 版本：**v1.13.23** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.24** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -11,7 +11,7 @@ GitHub Chinese 简体中文是一个浏览器用户脚本，旨在为 GitHub 提
 
 | 链路 | 交付物 | 构建方式 |
 |------|--------|---------|
-| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/userscript/main.js` 递归解析依赖图并拼接 |
+| A. 用户脚本引擎 | `build/GitHub_zh-cn.user.js` 单文件用户脚本 | `build.cjs` 从 `src/userscript/main/index.js` 递归解析依赖图并拼接 |
 | B. 词典采集工作台 | Next.js 16 应用（`src/app`） | `next build`（`npm run build:web`） |
 
 ### 1.2 架构特点
@@ -25,7 +25,7 @@ GitHub Chinese 简体中文是一个浏览器用户脚本，旨在为 GitHub 提
 ### 1.3 用户脚本引擎架构图
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        用户脚本主入口 (main.js)              │
+│                  用户脚本主入口 (main/index.js)               │
 └────────────────────────┬────────────────────────────────┘
                          │
          ┌───────────────┼───────────────┐
@@ -131,7 +131,7 @@ GitHub Chinese 简体中文是一个浏览器用户脚本，旨在为 GitHub 提
 - 提供配置界面和用户交互功能
 
 #### 2.4.2 组件组成
-- **configUI.js**：配置界面主模块
+- **configUI/**：配置界面模块（`index.js` 主入口 + `store.js` 配置持久化 + `renderer.js` 面板渲染 + `bootstrap.js` 浮动按钮与菜单命令）
   - 浮动设置按钮 (右下角固定)
   - 配置面板 (响应式设计)
   - 性能监控面板
@@ -155,7 +155,7 @@ GitHub Chinese 简体中文是一个浏览器用户脚本，旨在为 GitHub 提
 - **trie.js**：Trie 树数据结构
 - **virtualDom.js**：虚拟 DOM 优化
 
-### 2.6 主入口 (main.js)
+### 2.6 主入口 (main/index.js)
 
 #### 2.6.1 模块职责
 - 整合所有模块，初始化脚本，处理资源清理。
@@ -170,13 +170,13 @@ GitHub Chinese 简体中文是一个浏览器用户脚本，旨在为 GitHub 提
 
 ### 2.7 生命周期编排 (main/lifecycle.js)
 
-`src/userscript/main.js` 仅作为薄入口，实际编排收敛在 `lifecycleManager`：
+`src/userscript/main/index.js` 仅作为薄入口，实际编排收敛在 `main/lifecycle.js` 的 `lifecycleManager`：
 
 - `init()`：版本检查 → 翻译核心初始化 → 首次翻译 → 页面监控 → 配置界面初始化
 - `startScript()`：根据 `document.readyState` 决定立即初始化或等待 `DOMContentLoaded`
 - `cleanup()`：停止页面监控、清理翻译缓存、销毁配置界面、移除事件监听
 
-同时 `main.js` 暴露 `window.GitHub_i18n = { translationCore, configUI }`，供错误处理器的词典恢复与脚本菜单命令使用。
+同时 `main/index.js` 暴露 `window.GitHub_i18n = { translationCore, configUI }`，供错误处理器的词典恢复与脚本菜单命令使用。
 
 ### 2.8 配置界面启动链 (ui/configUI)
 
@@ -198,7 +198,7 @@ lifecycleManager.init()
    ↓
 2. DOMContentLoaded 事件触发
    ↓
-3. main.js 初始化
+3. main/index.js 初始化
    ├─ 检查版本更新
    ├─ 初始化翻译核心 (translationCore.init())
    │  ├─ 初始化词典管理器
@@ -257,7 +257,7 @@ lifecycleManager.init()
 
 ### 3.4 模块间交互
 ```
-main.js
+main/index.js
 ├── translationCore
 │   ├── dictionaryManager
 │   ├── elementSelector
@@ -299,7 +299,7 @@ main.js
 - **用途**：单元测试运行器（**无需 Jest**，与 `development.md` 一致）
 - **理由**：
   - Node 原生 `node:test` 模块，零额外依赖
-  - 支持子测试、Mock（`node:test/mock`）与覆盖率（c8）
+  - 支持子测试与 Mock（`node:test/mock`）；覆盖率可经 c8 外接（当前未配置覆盖率门禁）
   - 与项目 ESM 构建天然兼容
   - 命令：`npm run test:unit`（= `node --test`）
 
@@ -356,40 +356,35 @@ main.js
 ```
 GitHub_Chinese/
 ├── src/                              # 源码根目录
-│   ├── main.js                       # 用户脚本唯一入口
-│   ├── main/lifecycle.js             # 生命周期编排
-│   ├── core/                         # cacheManager / errorHandler(+/*) / trie / virtualDom(+/*) / virtualNode
-│   ├── translation-core/             # 翻译核心引擎
-│   │   ├── dictionaryManager.js      # 词典加载、哈希索引、Trie 与缓存查询
-│   │   ├── elementTranslator.js      # 单元素翻译
-│   │   ├── elementTranslator/        # stats / critical
-│   │   ├── partialTranslator.js      # Trie 部分匹配
-│   │   ├── selectorUtils/            # patterns / matchers
-│   │   ├── batchProcessor.js         # 分批执行
-│   │   ├── cacheController.js        # 缓存治理
-│   │   ├── translator.js             # 翻译编排
-│   │   ├── lifecycle.js              # 卸载处理与缓存清理定时器
-│   │   └── index.js                  # translationCore 对象
-│   ├── page-monitor/                 # domObserver(+/*) / pageAnalyzer / pathListener / translationTrigger
+│   ├── userscript/                   # 用户脚本引擎
+│   │   ├── main/                     # index.js 薄入口 + lifecycle.js 生命周期编排
+│   │   ├── core/                     # cacheManager / errorHandler(+/*) / trie / virtualDom(+/*) / virtualNode
+│   │   ├── translation-core/         # 翻译核心引擎
+│   │   │   ├── dictionaryManager.js  # 词典加载、哈希索引、Trie 与缓存查询
+│   │   │   ├── elementTranslator.js (+elementTranslator/)  # 单元素翻译（stats / critical）
+│   │   │   ├── partialTranslator.js  # Trie 部分匹配
+│   │   │   ├── selectorUtils/        # patterns / matchers
+│   │   │   ├── batchProcessor.js / cacheController.js / translator.js / lifecycle.js
+│   │   │   └── index.js              # translationCore 对象
+│   │   ├── page-monitor/             # domObserver(+/*) / pageAnalyzer / pathListener / translationTrigger
+│   │   ├── ui/                       # configUI(+store,renderer,bootstrap) / components / styles/configUI
+│   │   ├── config/                   # 全局配置与配置分片
+│   │   ├── version.js                # 单一版本源
+│   │   └── versionUtils.js / versionChecker/ / updateNotification/
 │   ├── dictionaries/                 # codespaces / explore / common(nav,repo,pr,issue,misc)
-│   ├── ui/                           # configUI(+store,renderer,bootstrap) / components / styles
-│   ├── utils/                        # functionUtils / stringUtils(+string/) / domUtils / urlUtils / securityUtils / tools
-│   ├── config.js + config/           # 全局配置与配置分片
-│   ├── version.js                    # 单一版本源
-│   ├── versionUtils.js / versionChecker/ / updateNotification/
-│   ├── app/                          # Next.js App Router：console / overview / coverage / design / dictionary / dict-manage + api/*
+│   ├── app/                          # Next.js App Router：/ ·/overview ·/coverage ·/dictionary ·/dictionary/manage + api/* + styles/
 │   ├── components/                   # Shell / TopNav（服务端）、navItems（导航源）、CollectorConsole（客户端岛）、叶组件
 │   ├── hooks/useCollector.ts         # 采集状态管理
-│   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts
+│   ├── lib/                          # collector-core.js / dictionary-processor.js / collector-logic.ts / project-metrics.ts 等
+│   ├── utils/                        # functionUtils / stringUtils(+string/) / domUtils / urlUtils / securityUtils / tools
 │   ├── types/                        # puppeteer-core.d.ts 等最小类型声明
 │   └── proxy.ts                      # 安全响应头（Next 16 起取代 middleware）
 ├── prototype/                        # 设计系统与高保真原型（单文件自包含 HTML，与应用代码分离）
-├── scripts/build/                    # moduleGraph.cjs / transform.cjs
-├── scripts/validate-bundle.cjs       # 构建产物校验
+├── scripts/build/                    # build.cjs 构建入口 / moduleGraph.cjs / transform.cjs
+├── scripts/                          # check-file-length / check-version-consistency / extract-release-notes / collect-dict 等工具链
+├── tests/                            # 单测（node --test）、integration/、helpers/
 ├── docs/                             # 正式规范文档（权威正文）
-├── build/GitHub_zh-cn.user.js         # 用户脚本构建产物（纳入版本控制）
-├── scripts/build/build.cjs            # 用户脚本构建入口
-├── scripts/collect-dict.cjs            # 词典采集工具（已随 v1.12.8 迁入 scripts/）
+├── build/GitHub_zh-cn.user.js        # 用户脚本构建产物（纳入版本控制）
 ├── server/collect-service/           # 独立采集服务（W5 解耦，可自托管部署的 Node 服务）
 ├── next.config.mjs / tailwind.config.ts / postcss.config.mjs
 ├── eslint.config.js / tsconfig.json
@@ -412,8 +407,8 @@ GitHub_Chinese/
 - 使用 Node 内置 `node --test`（无需 Jest，命令 `npm run test:unit`）
 
 ### 6.3 Git 提交规范
-- 提交前自动运行 lint 和测试
-- 使用语义化版本管理
+- 提交前由 Husky 钩子运行 lint-staged（对暂存文件 `eslint --fix` + `prettier --write`）
+- 使用语义化版本管理；提交信息格式见 [development.md §4](./development.md)
 
 ---
 
@@ -440,10 +435,11 @@ GitHub_Chinese/
 |------|------|------|
 | `/` | 静态 | 采集控制台；仅 `CollectorConsole` 及其叶组件为客户端组件 |
 | `/overview` | 静态 | 项目概览；由 `src/lib/project-metrics.ts` 在模块加载时一次性统计磁盘指标 |
-| `/coverage` | 静态(force-dynamic) | 覆盖率/缺口看板（T22）；服务端实时统计 |
-| `/design` | 静态 | 设计系统；展示 `src/app/styles/base.css` 的令牌与核心组件样式 |
-| `/dictionary` | 静态 | 词条字典浏览 |
-| `/dictionary/manage` | 静态 | 词条管理（增删改） |
+| `/coverage` | 静态(force-dynamic) | 覆盖率看板（T22）；服务端实时统计 |
+| `/dictionary` | 静态 | 词典助手（翻译建议 + 采纳导出） |
+| `/dictionary/manage` | 静态 | 词库管理台（审阅 / 合并 / 历史 / 导入导出） |
+
+> 设计令牌与组件展示由 `prototype/wireframes.html` 与 `prototype/app.html` 承载，应用路由不设 `/design` 页。
 
 顶部导航（无额外客户端 JS）：
 
@@ -451,7 +447,7 @@ GitHub_Chinese/
 全局顶栏 TopNav（src/components/TopNav.tsx，服务端组件），按视口宽度自适应：
   > 1024px : 横向导航条完整展开
   ≤ 1024px : 折叠为横向可滚动标签条
-导航数据  : navItems.ts 单一来源（6 项：console / overview / coverage / design / dictionary / dict-manage）
+导航数据  : navItems.ts 单一来源（5 项：采集控制台 / overview / coverage / dictionary / 词库管理）
 ```
 
 `TopNav` 为**服务端组件**，窄屏布局由 CSS 媒体查询切换可见性，
