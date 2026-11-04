@@ -13,6 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${base}/`, lastModified: now },
     { url: `${base}/overview`, lastModified: now },
-    { url: `${base}/design`, lastModified: now },
+    { url: `${base}/coverage`, lastModified: now },
+    { url: `${base}/dictionary`, lastModified: now },
+    { url: `${base}/dictionary/manage`, lastModified: now },
   ];
 }

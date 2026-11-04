@@ -2,12 +2,14 @@
 /**
  * 数据中心面板
  * @file src/components/DataCenter.tsx
- * @version 1.13.18
+ * @version 1.13.19
  * @description 文本粘贴 / 批量 URL 两种采集入口，并提供本地导出能力
  */
 
 import React, { useState } from 'react';
 import type { TermEntry } from '@/hooks/useCollector';
+import { PRESETS, URL_PREFIX } from './data-center/presets';
+import { downloadTermsAsJson } from './data-center/download-terms';
 
 interface DataCenterProps {
   terms: TermEntry[];
@@ -17,80 +19,6 @@ interface DataCenterProps {
 }
 
 type InputTab = 'manual' | 'url';
-
-const URL_PREFIX = 'http';
-
-/**
- * 将词条导出为 JSON 文件
- * @param terms - 当前清洗出的词条
- */
-function downloadTermsAsJson(terms: TermEntry[]): void {
-  if (typeof window === 'undefined') return;
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    total: terms.length,
-    terms,
-  };
-
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = `github-i18n-terms-${Date.now()}.json`;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
-
-/** 预设 GitHub 常用页面与样例文本 */
-const PRESETS = [
-  {
-    name: 'GitHub 首页 (Home)',
-    type: 'url' as const,
-    content: 'https://github.com/',
-  },
-  {
-    name: 'Issues 页面',
-    type: 'url' as const,
-    content: 'https://github.com/issues',
-  },
-  {
-    name: 'Pull Requests 页面',
-    type: 'url' as const,
-    content: 'https://github.com/pulls',
-  },
-  {
-    name: 'Explore 探索',
-    type: 'url' as const,
-    content: 'https://github.com/explore',
-  },
-  {
-    name: '常用 UI 词条 (文本样例)',
-    type: 'manual' as const,
-    content: [
-      'Dashboard',
-      'Repositories',
-      'Pull requests',
-      'Issues',
-      'Marketplace',
-      'Explore',
-      'Settings',
-      'Sign out',
-      'Create a new repository',
-      'Import repository',
-      'New gist',
-      'New organization',
-      'New project',
-      'Your profile',
-      'Your repositories',
-      'Your projects',
-      'Your stars',
-      'Your gists',
-      'Upgrade',
-      'Feature preview',
-      'Help',
-    ].join('\n'),
-  },
-];
 
 export default function DataCenter({
   terms,
