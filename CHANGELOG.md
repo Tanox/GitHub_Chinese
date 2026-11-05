@@ -1,4 +1,20 @@
 # Changelog
+## [1.13.26] - 2026-11-05
+
+### Added
+- **W5 决议与交付（无浏览器采集架构）**：维护者在「自托管服务 / 无头浏览器池化 / 纯客户端增强」三路径中决议采纳**自托管服务**——复用既有 `server/collect-service`（Express + SSE，零额外核心开发），作为 serverless（EdgeOne / Vercel）无浏览器环境下的采集替代路径。
+- 新增唯一权威文档 `docs/collect-service.md`：背景与定位、架构与数据流图、服务端部署（前置要求 / 启动 / 环境变量表 / 接口契约 / 进程保活与反代）、Next 侧接入（启用代理 / 鉴权成对配置契约 / 两层鉴权说明）、验证与排查（健康检查 / 联调 / 常见故障表）、安全建议。
+
+### Docs
+- `docs/README.md`：SSOT 分工表、文档地图与「按任务找文档」补入 `collect-service.md` 与 `tasks-done.md` 条目；修正此前发版遗漏的版本行（1.13.24 → 1.13.26）。
+- `docs/architecture.md`：数据流要点新增「无浏览器采集（W5 决议）」条目并指向权威文档；`docs/project.md` 任务注记更新为「T1–T39 与 W5 均已交付」。
+- `docs/tasks.md`：W5 从「阻塞·待定」迁移至已交付，当前无开放任务；`docs/tasks-done.md` 补 W5 交付留痕（v1.13.26）。
+
+### Chore
+- 单一版本源 `src/userscript/version.js`、`package.json`、`package-lock.json`、README / docs 版本行与原型展示位同步至 1.13.26（含修正 `docs/project.md` 指标表漏改的「当前版本 1.13.24」），并重建用户脚本产物。
+
+---
+
 ## [1.13.25] - 2026-11-05
 
 ### Docs

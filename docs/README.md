@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.13.24** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.26** ｜ 版本权威源：`src/userscript/version.js`
 
 `docs/` 是本项目规范文档的**唯一权威正文**（原 `openspec/` 已于 v1.12.1 合并移除，不再维护第二份索引或副本）。
 
@@ -15,7 +15,9 @@
 | 编码风格、命名、目录组织、注释、安全红线 | [coding-style.md](./coding-style.md) | 代码规范的唯一正文 |
 | 分支、提交、审查流程、发布、测试、命令表 | [development.md](./development.md) | 流程规范的唯一正文 |
 | 原型与页面设计 | [prototype.md](./prototype.md) | 原型文件本身在 `prototype/` |
+| 无浏览器采集（自托管服务）部署与接入 | [collect-service.md](./collect-service.md) | 对应任务 W5：自托管 `server/collect-service` 的部署、接口、接入与排查 |
 | 活动任务清单 | [tasks.md](./tasks.md) | 唯一任务清单 |
+| 已交付任务归档 | [tasks-done.md](./tasks-done.md) | 已交付任务追溯，不维护 |
 | 代码审查标准 / 清单 / 流程 / 配置 | [code-review/](./code-review/) | 四个文件分工见下表 |
 | 版本变更记录 | [../CHANGELOG.md](../CHANGELOG.md) | 历史记录不可篡改 |
 | 项目入口与快速上手 | [../README.md](../README.md) | 面向使用者 |
@@ -48,6 +50,8 @@ docs/
 ├── development.md     开发流程规范
 ├── prototype.md       原型与设计
 ├── tasks.md           活动任务清单
+├── tasks-done.md      已交付任务归档
+├── collect-service.md 无浏览器采集自托管部署与接入（W5）
 ├── code-review/       审查标准 / 清单 / 流程 / 配置
 ├── assets/            文档配图
 ├── collect-history.json  采集历史数据（由 scripts/collect-history.cjs 写入）
@@ -90,7 +94,9 @@ prototype/             prototype.html / wireframes.html / app.html（自包含�
 | 发版、同步版本号 | `development.md` §8 |
 | 了解 CI 为什么失败 | `development.md` §6 + `.github/workflows/ci-cd.yml` |
 | 查看原型与设计令牌 | `prototype.md` + `prototype/*.html` |
+| 部署 / 接入自托管采集服务（无浏览器采集） | `collect-service.md` |
 | 查看当前任务 | `tasks.md` |
+| 查看已交付任务追溯 | `tasks-done.md` |
 
 ## 5. 文档维护义务
 

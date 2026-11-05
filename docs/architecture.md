@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文架构文档
 
-> 版本：**v1.13.25** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.26** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -464,6 +464,10 @@ GitHub_Chinese/
 - **采集错误码约定（P2-7）**：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
   （纯数据模块，不含 `fs`/`child_process`，可安全被客户端导入）；服务端 `error` 事件均携带 `code`，
   前端 `useCollector` 与终端日志据此渲染 `E<code>` 徽标，便于按类型分流处理
+- **无浏览器采集（W5 决议：自托管路径）**：serverless 运行时无浏览器，采集计算下沉到自托管
+  `server/collect-service/`（Express + SSE，直接复用 `collector-core`）；Next 路由配置 `COLLECT_SERVICE_URL`
+  后将请求代理至该服务并透传其 SSE 流，上游不可用 / 401 / 中断时自动回退本地采集（默认行为不变）。
+  部署、接口、鉴权契约与排查的唯一权威文档见 [collect-service.md](./collect-service.md)
 - 原型为一组轻量高保真静态预览（`prototype/prototype.html` 等高保真原型、`prototype/wireframes.html` 组件库规范、`prototype/app.html` 应用预览），与应用代码完全分离；`server/` 仅含 `collect-service/`，采集引擎仅由 Next 工作台（`src/app/api/*`）与自托管 `server/collect-service/` 使用。
 
 架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `proxy.ts`；

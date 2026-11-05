@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.25** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.26** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -198,7 +198,7 @@ npm test                  # lint → lint:length → build → test:unit
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.25**（2026-11-04）。
+- 当前版本 **v1.13.26**（2026-11-04）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，五页 `/`、`/overview`、`/coverage`、`/dictionary`、`/dictionary/manage`）。两链路仅共享词典数据。
 
 ### 量化指标
@@ -226,7 +226,7 @@ npm test                  # lint → lint:length → build → test:unit
 
 > 工作台「项目概览」页（`/overview`）已把多数指标改为服务端实时统计，不再依赖本文档的手工数字。
 
-> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.25 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
+> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.26 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
 
 ### 已完成能力
 
@@ -236,7 +236,7 @@ npm test                  # lint → lint:length → build → test:unit
 
 ### 活动任务
 
-> 全部活动任务、优先级与验收要点以 [docs/tasks.md](./tasks.md) 为**唯一清单**，本节不再维护任务条目。当前无开放任务（T1–T38 已全部交付；仅 W5 serverless 架构阻塞待定，详见 tasks.md）。
+> 全部活动任务、优先级与验收要点以 [docs/tasks.md](./tasks.md) 为**唯一清单**，本节不再维护任务条目。当前无开放任务（T1–T39 与 W5 均已交付：W5 经维护者决议采纳「自托管服务」路径，交付文档 [collect-service.md](./collect-service.md)，归档见 tasks-done.md）。
 
 ### 迭代里程碑（节选，详见 CHANGELOG）
 
@@ -393,7 +393,7 @@ npm test                  # lint → lint:length → build → test:unit
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_Chinese |
-| **当前版本** | 1.13.24 |
+| **当前版本** | 1.13.26 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
