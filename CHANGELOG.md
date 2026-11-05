@@ -1,4 +1,15 @@
 # Changelog
+## [1.13.25] - 2026-11-05
+
+### Docs
+- 任务清单治理：新建 `docs/tasks-done.md` 归档 T1–T39 与 v1.13.24 文档治理等已交付任务（里程碑索引 + 重点验收留痕）；`docs/tasks.md` 收敛为仅保留唯一开放任务 W5，并补充其架构决策路径（自托管服务 / 无头浏览器池化 / 纯客户端增强）。
+- `docs/tasks.md`、`docs/tasks-done.md` 版本行与更新日期同步至 2026-11-05 / v1.13.25。
+
+### Chore
+- 单一版本源 `src/userscript/version.js`、`package.json`、`package-lock.json`、README / docs 版本行与原型展示位同步至 1.13.25，并重建用户脚本产物。
+
+---
+
 ## [1.13.24] - 2026-11-04
 
 ### Docs
