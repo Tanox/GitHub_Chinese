@@ -1,4 +1,16 @@
 # Changelog
+## [1.13.30] - 2026-11-07
+
+### CI/CD
+- **Release 全自动发布**：`release` 作业由「仅 tag push 触发」改为 **`push main` 且 build / integration / security 三个检查作业全绿后自动发布**（`push v*` tag 仍可触发，且校验 tag 版本与 `package.json` 一致）。版本号取自单一版本源并经 `check-version-consistency.cjs` 校验；发布时自动创建 `v<版本号>` tag，上传用户脚本产物与 `GitHub_zh-cn_v<版本号>.zip` 发布包（旧命名 `GitHub_i18n_*` 修正对齐现名）。
+- **幂等护栏**：以「`v<版本号>` tag 是否已存在」判断发布状态，已发布版本自动跳过，重复触发不会重复发布；要发布新内容必须 bump 版本号。
+- **发布并发安全**：`release` 作业改用独立并发组（`release-<ref>`、排队不取消），连续推送 `main` 时不会因流水线取消而丢失发布。
+
+### Docs
+- `docs/development.md` §3.2 / §6.2 / §8.4 同步自动发布模式：发布步骤简化为「bump 版本 + CHANGELOG + 重建产物 → 推送 main → CI 全绿自动 Release」；明确禁止手工在 GitHub 创建 Release。
+
+---
+
 ## [1.13.29] - 2026-11-07
 
 ### Docs

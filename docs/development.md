@@ -1,6 +1,6 @@
 # 开发流程规范
 
-> 版本：**v1.13.29** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.30** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**分支策略、提交信息、代码审查流程、质量门禁、测试与发布流程的唯一权威正文**。编码风格与命名见 [coding-style.md](./coding-style.md)，文档权威来源分工见 [docs/README.md](./README.md)。
 
@@ -98,8 +98,8 @@ npm run dev        # http://localhost:3000
 ```
 feature/* ──PR──▶ main（或 develop ──PR──▶ main）
     ▲                 │
-    │                 ├─ push main      → CI 全量 + 部署 Pages
-    └─ 从 main 创建    ├─ push tag v*    → CI 全量 + 发布 Release
+    │                 ├─ push main      → CI 全量 + 部署 Pages + 全绿自动发布 Release
+    └─ 从 main 创建    ├─ push tag v*    → CI 全量 + 发布 Release（版本须与单一版本源一致）
                       └─ PR 到 main     → CI 全量（不含发布/部署）
 ```
 
@@ -203,12 +203,15 @@ Version: v1.13.22
 | `build` | `lint` | `next build` → `build:userscript` → `test:unit` → `validate` → 上传用户脚本产物 |
 | `integration` | `lint` | `build:web` → `test:integration`（真实启动 Next 服务） |
 | `security` | `lint` | `npm audit --audit-level=high` |
-| `release` | `build`+`integration`+`security` | 仅 tag push 触发：版本一致性校验、抽取 Release Notes、组装发布包、创建 GitHub Release |
+| `release` | `build`+`integration`+`security` | **自动发布**：`push main` 且三个检查作业全绿后自动创建 GitHub Release；`push v*` tag 亦可触发（版本须与单一版本源一致） |
 | `deploy-pages` | 同上 | 仅 `push main`：部署仓库内容到 GitHub Pages |
 | `notify` | 同上 | 汇总前三个作业结果，任一失败即报错 |
 
 - 所有作业固定 Node `22`。
-- **发布由推送 `vX.Y.Z` tag 触发**，Release 由工作流自动创建；手工在 GitHub 上创建 Release 不会触发本工作流。
+- **自动发布**：`release` 作业不依赖手动打 tag——推送到 `main` 且 `build` / `integration` / `security` 全部成功后自动发布。版本号取自单一版本源（`package.json` 的 `version`，并校验与 CHANGELOG 顶部一致）；发布时在当前 commit 自动创建 `v<版本号>` tag 并上传用户脚本产物与发布包（`GitHub_zh-cn_v<版本号>.zip`）。
+- **幂等护栏**：`release` 作业以「`v<版本号>` tag 是否已存在」判断该版本是否已发布——已存在则整体跳过。因此**重新触发不会重复发布**；要发布新内容必须按 §8 升级版本号。tag push 时若与 `package.json` 版本不一致直接失败。
+- **发布并发安全**：`release` 作业使用独立并发组（`release-<ref>`，不取消在途作业、排队执行），连续推送 `main` 时不会因取消而丢失发布。
+- 手工在 GitHub 上创建 Release 不会触发本工作流，也不受其管理，禁止手工创建。
 - 产物校验由 `npm run validate` 执行（复用 `tests/smoke.test.cjs`）；`build` 作业先构建用户脚本再校验、上传，不依赖仓库里已提交的产物。
 
 ---
@@ -282,11 +285,13 @@ Version: v1.13.22
 
 ### 8.4 发布步骤
 
+发布为**全自动**：`main` 分支 CI 全绿后自动创建 GitHub Release，无需手动打 tag。
+
 1. 确认 `main` 为最新，`npm test` 与 §2 附加命令全部通过；
 2. 按 §8.2 同步版本、写 CHANGELOG、重建产物并提交（提交信息页脚注明版本号）；
 3. 推送 `main`；CI 自动全量检查并部署 Pages；
-4. 创建并推送标签：`git tag -a v1.13.24 -m "Release v1.13.24" && git push origin v1.13.24`；
-5. `release` 作业自动校验版本一致性、抽取 Release Notes、组装发布包并创建 GitHub Release。
+4. `build` / `integration` / `security` 三个作业全部成功后，`release` 作业自动执行：校验版本一致性 → 幂等护栏（tag 已存在则跳过）→ 构建产物 → 抽取 Release Notes → 创建 `v<版本号>` tag 与 GitHub Release；
+5. 发布失败时，修复后重新推送 `main` 即可重试（版本未发布过会再次进入发布流程）。
 
 ---
 

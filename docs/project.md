@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.29** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.30** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -184,11 +184,11 @@ npm test                  # lint → lint:length → build → test:unit
 
 ### 发布流程
 
-唯一权威正文见 [development.md §8](./development.md)。要点：
+唯一权威正文见 [development.md §8](./development.md)。发布为**全自动**：
 
 1. 更新单一版本源 `src/userscript/version.js` 的 `VERSION`，按发版清单同步全部展示位并重建产物；
 2. `npm test` 全绿；
-3. 推送 `main` 后创建并推送 `v<版本号>` tag，CI 自动校验版本一致性、抽取 Release Notes 并创建 GitHub Release。
+3. 推送 `main` 后 CI 全量检查，三个检查作业（build / integration / security）全绿即自动创建 `v<版本号>` tag 与 GitHub Release（幂等护栏防重复发布，详见 development.md §6.2）。
 
 ---
 
@@ -198,7 +198,7 @@ npm test                  # lint → lint:length → build → test:unit
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.29**（2026-11-04）。
+- 当前版本 **v1.13.30**（2026-11-04）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，五页 `/`、`/overview`、`/coverage`、`/dictionary`、`/dictionary/manage`）。两链路仅共享词典数据。
 
 ### 量化指标
@@ -393,7 +393,7 @@ npm test                  # lint → lint:length → build → test:unit
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_Chinese |
-| **当前版本** | 1.13.29 |
+| **当前版本** | 1.13.30 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

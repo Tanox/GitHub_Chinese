@@ -120,13 +120,18 @@ jobs:
     - name: 运行安全审计
       run: npm audit --audit-level=high
 
-  # 发布到 GitHub Release（tag 驱动：push vX.Y.Z）
+  # 自动发布：push main 且 build / integration / security 全绿后自动创建 GitHub Release
+  # （push v* tag 亦可触发；tag 版本须与 package.json 一致）
   release:
     runs-on: ubuntu-latest
     needs: [build, integration, security]
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     permissions:
       contents: write
+    # 发布不参与按 ref 的并发取消，排队执行，防止连推 main 时丢发布
+    concurrency:
+      group: release-${{ github.ref }}
+      cancel-in-progress: false
     steps:
     - name: 检出代码
       uses: actions/checkout@v4
@@ -140,30 +145,62 @@ jobs:
     - name: 安装依赖
       run: npm ci
 
-    - name: 构建用户脚本产物
-      run: npm run build:userscript
+    # 版本号单一来源：package.json == version.js（build 产物内联）== CHANGELOG 顶部
+    - name: 解析发布版本号（单一版本源）
+      id: version
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+          TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+          if [ "$TAG_VERSION" != "$VERSION" ]; then
+            echo "❌ tag v$TAG_VERSION 与 package.json version $VERSION 不一致"; exit 1
+          fi
+        fi
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "本次发布版本: v$VERSION"
 
     - name: 校验版本一致性（package.json == CHANGELOG 顶部）
       run: node scripts/check-version-consistency.cjs
 
+    # 幂等护栏：该版本 tag 已存在 = 已发布过，直接跳过（发新版本须 bump 版本号）
+    - name: 幂等护栏（该版本已发布则跳过）
+      id: guard
+      run: |
+        if git ls-remote --exit-code --tags origin "refs/tags/v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+          echo "⏭️ tag v${{ steps.version.outputs.version }} 已存在，该版本已发布，跳过。如需重新发布请 bump 版本号。"
+        else
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "🚀 v${{ steps.version.outputs.version }} 未发布，继续发布流程"
+        fi
+
+    - name: 构建用户脚本产物
+      if: steps.guard.outputs.skip == 'false'
+      run: npm run build:userscript
+
     - name: 抽取 Release Notes（从 CHANGELOG 对应版本段落）
-      run: node scripts/extract-release-notes.cjs ${{ github.ref_name }}
+      if: steps.guard.outputs.skip == 'false'
+      run: node scripts/extract-release-notes.cjs v${{ steps.version.outputs.version }}
 
     - name: 组装发布包
+      if: steps.guard.outputs.skip == 'false'
       run: |
         mkdir -p release
         cp build/GitHub_zh-cn.user.js release/
         cp README.md LICENSE release/ 2>/dev/null || true
         cd release
-        zip -r ../GitHub_i18n_${{ github.ref_name }}.zip .
+        zip -r ../GitHub_zh-cn_v${{ steps.version.outputs.version }}.zip .
 
+    # tag 不存在时 action 会在当前 commit 自动创建 v<版本号> tag
     - name: 发布到 GitHub Release
+      if: steps.guard.outputs.skip == 'false'
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: v${{ steps.version.outputs.version }}
         body_path: release-notes.md
         files: |
           build/GitHub_zh-cn.user.js
-          GitHub_i18n_${{ github.ref_name }}.zip
+          GitHub_zh-cn_v${{ steps.version.outputs.version }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
