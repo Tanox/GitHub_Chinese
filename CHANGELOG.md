@@ -1,4 +1,15 @@
 # Changelog
+## [1.13.31] - 2026-11-07
+
+### Docs
+- 全量文档一致性复审（21 个 md、0 断链）：`docs/project.md` 量化表按命令实算全面更新——`src/` 源码文件数 157→180、总行数 12695→15009、产物 195.93→197.90 KB、单元测试 162→170 用例，实算标注由 v1.13.22 刷新为 v1.13.30，当前版本日期修正为 2026-11-07。
+- 复核确认（无需改动）：`development.md` §2 命令表与 19 个 npm scripts 完全一致；§6.2 CI 描述与 ci-cd.yml（自动发布模式）一致；§7 测试规范与 `tests/` 实况一致；`collect-service.md` 的 engines / 依赖版本 / 测试与 lib 文件引用全部属实；`coding-style.md` 数值（函数 150 / 参数 5 / 复杂度 30 / `curly: multi-line`）与 `eslint/rules/core.js` 一致；CHANGELOG 与 code-review 模块无失真残留。
+
+### Chore
+- 版本展示位（单一版本源、package.json / lock、README、docs 头部、原型标题与页脚）同步至 1.13.31，并重建用户脚本产物。
+
+---
+
 ## [1.13.30] - 2026-11-07
 
 ### CI/CD

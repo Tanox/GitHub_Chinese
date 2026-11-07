@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.30** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.31** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -198,21 +198,21 @@ npm test                  # lint → lint:length → build → test:unit
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.30**（2026-11-04）。
+- 当前版本 **v1.13.31**（2026-11-07）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，五页 `/`、`/overview`、`/coverage`、`/dictionary`、`/dictionary/manage`）。两链路仅共享词典数据。
 
 ### 量化指标
 
-量化指标随发版由对应命令实算，**禁止手填**（最近实算：v1.13.22 发版；每次发版重新实算）：
+量化指标随发版由对应命令实算，**禁止手填**（最近实算：v1.13.30 发版；每次发版重新实算）：
 
 | 指标 | 数值 | 采集方式 |
 |------|------|---------|
-| `src/` 源码文件数 | 157 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
-| `src/` 源码总行数 | 12695 | 同上 |
+| `src/` 源码文件数 | 180 | 递归统计 `.js/.cjs/.mjs/.ts/.tsx/.css` |
+| `src/` 源码总行数 | 15009 | 同上 |
 | 用户脚本纳入模块数 | 92 | `node build.cjs` 输出 |
 | 用户脚本孤立模块数 | 1（`src/utils/logger.js`） | 同上 |
 | 构建期循环引用 | 0 | 同上 |
-| 用户脚本产物大小 | 195.93 KB（build.cjs 输出） | `build/GitHub_zh-cn.user.js` |
+| 用户脚本产物大小 | 197.90 KB（build.cjs 输出） | `build/GitHub_zh-cn.user.js` |
 | 翻译词典词条数 | 459 | `mergeAllDictionaries()` 合并计数 |
 | 词典模块数 | 12 | `src/dictionaries/**/*.js` |
 | 原型资源数 | 3 个自包含 HTML（prototype / wireframes / app） | `prototype/` |
@@ -220,13 +220,13 @@ npm test                  # lint → lint:length → build → test:unit
 | 代码检查 | 0 error / 0 warning | `npm run lint` |
 | 类型检查 | 通过（strict 模式，0 错误） | `npm run typecheck` |
 | 产物校验 | 通过（build.cjs 生成成功，vm 编译校验通过） | `npm run build:userscript` |
-| 单元测试 | 162 用例全部通过（含 a11y 自动化） | `node --test` |
+| 单元测试 | 170 用例全部通过（含 a11y 自动化） | `node --test` |
 | 超长代码文件（>200 行） | 0（含 CSS，行数门禁覆盖 js/cjs/mjs/ts/tsx/css） | `npm run lint:length` |
 | Next 构建 | 通过（npm test 全流水线绿灯） | `npm run build:web` |
 
 > 工作台「项目概览」页（`/overview`）已把多数指标改为服务端实时统计，不再依赖本文档的手工数字。
 
-> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.27 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
+> ✅ 上述「类型检查」「单元测试」「Next 构建」指标已全部转绿（以 v1.13.30 为准）；早期版本记录的 4 个 TS 错误与 lint error 已在后续迭代中修复，量化数字以 `/overview` 页服务端实时统计与门禁实跑结果为准。
 
 ### 已完成能力
 
@@ -393,7 +393,7 @@ npm test                  # lint → lint:length → build → test:unit
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_Chinese |
-| **当前版本** | 1.13.30 |
+| **当前版本** | 1.13.31 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |
