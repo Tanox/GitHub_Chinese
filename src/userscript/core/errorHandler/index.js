@@ -1,6 +1,7 @@
 /**
  * 错误处理模块
  * @file errorHandler.js
+ * @version 1.13.28
  */
 
 import { CONFIG } from '../../config/index.js';
@@ -52,12 +53,14 @@ export const ErrorHandler = {
     this.logError(context, error, type);
 
     // 检查是否需要进行恢复
-    if (options.recoveryFn && typeof options.recoveryFn === 'function') {
-      recoveryManager.attemptRecovery(context, options.recoveryFn, options.maxRetries || 1);
-    }
-
     // 检查是否需要采取紧急措施
     this.checkErrorThreshold(type, currentCount + 1);
+
+    // 把恢复结果回传给调用方（异步恢复可能失败），由调用方决定 resolve / reject
+    if (options.recoveryFn && typeof options.recoveryFn === 'function') {
+      return recoveryManager.attemptRecovery(context, options.recoveryFn, options.maxRetries || 1);
+    }
+    return undefined;
   },
 
   /**

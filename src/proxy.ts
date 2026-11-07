@@ -2,7 +2,9 @@
  * 全局 Proxy（Next.js 16 起取代 middleware 约定）
  * 为所有响应附加基础安全响应头，含基于 nonce 的 Content-Security-Policy
  * @file src/proxy.ts
- * @version 1.13.16
+ * @version 1.13.28
+ * @description 帧嵌套策略统一由 CSP frame-ancestors 控制；不再下发与之冲突的
+ *   X-Frame-Options: SAMEORIGIN（浏览器同时存在两者时会拒绝可信预览容器嵌入）。
  */
 
 import { NextResponse } from 'next/server';
@@ -46,8 +48,8 @@ export function proxy(request: NextRequest) {
 
   response.headers.set('Content-Security-Policy', csp);
   response.headers.set('X-Content-Type-Options', 'nosniff');
-  // 允许在 AI Studio 等同源或可信 iframe 容器中预览展示
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  // 帧嵌套白名单由 CSP frame-ancestors 统一声明（X-Frame-Options 无法表达多来源白名单，
+  // 同时下发 SAMEORIGIN 会覆盖并拒绝可信预览容器，故不再设置）
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('X-DNS-Prefetch-Control', 'off');
 

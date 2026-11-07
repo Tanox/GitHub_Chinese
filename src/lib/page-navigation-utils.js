@@ -1,10 +1,11 @@
 /**
  * 页面导航纯函数工具（与浏览器无关，可独立单元测试）
  * @file src/lib/page-navigation-utils.js
- * @version 1.13.10
- * @date 2026-10-01
+ * @version 1.13.28
+ * @date 2026-11-06
  * @description 从 page-navigation.js 抽离的纯逻辑：指数退避 / 可重试判定 / RetryableError /
  *   延迟 / T18 新增的 applyCookies（登录态 cookie 注入）。供 page-navigation.js 复用并对外再导出。
+ *   applyCookies 按域名边界匹配，防止把登录态发往 evilgithub.com 一类的同后缀伪造域名。
  */
 
 /** 单页最大重试次数（含首次） */
@@ -80,8 +81,9 @@ export async function applyCookies(page, cookies, target) {
     const domain = String(c.domain || '')
       .replace(/^\./, '')
       .toLowerCase();
-    // 仅注入与目标主机匹配的 cookie（含后缀匹配，如 .github.com 适配 github.com）
-    if (domain && host && !host.endsWith(domain)) continue;
+    // 仅注入与目标主机匹配的 cookie：要么完全相等，要么是其子域（必须落在点边界上）。
+    // 直接 endsWith 会放行 evilgithub.com 这类同后缀伪造域名，导致登录态外泄。
+    if (domain && host && host !== domain && !host.endsWith(`.${domain}`)) continue;
 
     /** @type {Record<string, string>} */
     const cookie = { name, value };

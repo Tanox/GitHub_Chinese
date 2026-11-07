@@ -1,11 +1,12 @@
 /**
  * 工作台外壳
  * @file src/components/Shell.tsx
- * @version 1.13.22
- * @date 2026-11-04
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 服务端组件：顶部导航（上下布局）+ 内容区的公共骨架，供各页面复用。
  *              contentClass 仅用于采集页承接 prototype.css 的组件级视觉对齐，不改变应用外壳本身。
+ *              页脚按 docs/coding-style.md §15 展示「V<版本>· build <10 位构建编号>」。
  */
 
 import type { ReactNode } from 'react';
@@ -14,9 +15,10 @@ import TopNav from './TopNav';
 import { FOOTER_NAV_ITEMS } from './navItems';
 import type { NavSection } from './navItems';
 import { VERSION } from '@/userscript/version';
+import { createBuildId } from '@/lib/build-id';
 
-/** 构建编号由 next.config.mjs 注入；缺失时回退为版本号 */
-const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID || VERSION;
+/** 构建编号由 next.config.mjs 注入（yymmddhhmm）；缺失时按同一规则即时生成，保证格式恒定 */
+const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID || createBuildId();
 
 interface ShellProps {
   /** 当前激活的顶栏导航项 */
@@ -63,15 +65,21 @@ export default function Shell({
         </header>
 
         <div id='collector-content' className='content scroll'>
-          <div className={`content-inner ${contentClass}`}>{children}</div>
+          <div id={`page-${active}`} className={`content-inner ${contentClass}`}>
+            {children}
+          </div>
         </div>
 
         <footer id='site-footer' className='footer'>
           <div className='footer-inner'>
-            <div className='footer-meta'>
+            <div className='footer-meta' id='site-footer-meta'>
               <span className='fnote'>GitHub 中文 · 采集工作台</span>
-              <span className='fnote-ver'>v{VERSION}</span>
-              <span className='fnote-build'>build {BUILD_ID}</span>
+              <span className='fnote-ver' id='site-footer-version'>
+                V{VERSION}·
+              </span>
+              <span className='fnote-build' id='site-footer-build'>
+                build {BUILD_ID}
+              </span>
             </div>
             {FOOTER_NAV_ITEMS.length > 0 && (
               <nav className='flinks' aria-label='页脚快捷导航'>

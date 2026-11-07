@@ -1,8 +1,8 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.13.10
- * @date 2026-10-01
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移。
  *   T18：collectFromUrls 支持随请求注入登录态 cookie（options.cookies）以抓取私有页。
@@ -122,7 +122,8 @@ export async function* collectFromUrls(urls, { signal, cookies } = {}) {
 
   try {
     yield { type: 'log', message: '正在初始化 Headless 浏览器...' };
-    const allTexts = yield* collectBatch(browser, targets, total, { cookies });
+    // 取消信号下传到批量抓取，客户端断连后不再继续打开新页面占用浏览器槽位
+    const allTexts = yield* collectBatch(browser, targets, total, { cookies, signal });
 
     yield { type: 'log', message: '页面提取完成，开始保存并分析词典...' };
     yield { type: 'progress', data: { type: 'analyze' } };

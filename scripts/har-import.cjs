@@ -1,8 +1,8 @@
 /**
  * HAR / 会话导入工具（T18-b）
  * @file scripts/har-import.cjs
- * @version 1.13.10
- * @date 2026-10-01
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 从浏览器开发者工具导出的 HAR（录制的一次会话）中解析 GitHub HTML 响应体，
  *   提取可见 UI 文本并复用 collect-dict.cjs 的清洗管线产出待翻译词条。无需启动浏览器，
@@ -36,7 +36,8 @@ function isGitHubHtml(entry) {
   const mime = entry?.response?.content?.mimeType || '';
   try {
     const host = new URL(url).hostname.toLowerCase();
-    if (!host.endsWith('github.com')) return false;
+    // 必须落在域名边界上：endsWith('github.com') 会放行 evilgithub.com 这类伪造域名
+    if (host !== 'github.com' && !host.endsWith('.github.com')) return false;
   } catch {
     return false;
   }

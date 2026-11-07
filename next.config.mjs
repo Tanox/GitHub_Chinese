@@ -2,26 +2,18 @@
  * Next.js 配置（根级，与 src/ 源码解耦）
  * 采用 src/ 目录模式：src/app、src/components、src/lib、src/proxy.ts
  * @file next.config.mjs
- * @version 1.13.21
+ * @version 1.13.28
+ * @description build 编号由 src/lib/build-id.js 的纯函数生成（yymmddhhmm，10 位），
+ *   与应用页脚共用同一实现，避免格式漂移（见 docs/coding-style.md §15）。
  */
 
-/** 生成本地构建编号 yyyymmddhhmm（dev/build 启动时自动注入） */
-function createBuildId(date = new Date()) {
-  const pad = (value) => String(value).padStart(2, '0');
-  return [
-    date.getFullYear(),
-    pad(date.getMonth() + 1),
-    pad(date.getDate()),
-    pad(date.getHours()),
-    pad(date.getMinutes()),
-  ].join('');
-}
+import { createBuildId, BUILD_ID_ENV_KEY } from './src/lib/build-id.js';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    NEXT_PUBLIC_BUILD_ID: createBuildId(),
+    [BUILD_ID_ENV_KEY]: createBuildId(),
   },
   // 用户脚本核心（src/userscript/main.js 等 .js）由 scripts/build/build.cjs 独立构建，Next 仅处理 app/components/lib
   typescript: {

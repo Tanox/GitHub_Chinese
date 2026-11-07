@@ -2,27 +2,17 @@
 /**
  * 导出操作栏（T24 导入导出 · T25 批量）
  * @file src/components/dictionary/ExportBar.tsx
- * @version 1.13.9
- * @description 纯展示 + 下载：导出选中 / 已审阅 / 全量词条为 JSON。下载依赖 DOM。
+ * @version 1.13.28
+ * @description 纯展示 + 下载：导出选中 / 已审阅 / 全量词条为 JSON。下载复用 lib/download-json。
  */
 import type { DictEntry } from './DictTable';
+import { downloadJson } from '@/lib/download-json';
 
 interface ExportBarProps {
   dictionary: Record<string, string>;
   reviewed: Set<string>;
   selected: Set<string>;
   shown: DictEntry[];
-}
-
-function downloadJson(filename: string, data: unknown): void {
-  if (typeof window === 'undefined') return;
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 export default function ExportBar({ dictionary, reviewed, selected, shown }: ExportBarProps) {

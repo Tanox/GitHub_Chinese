@@ -1,7 +1,7 @@
 /**
  * 采集 Hook 共享类型定义
  * @file src/hooks/collector-types.ts
- * @version 1.11.7
+ * @version 1.13.28
  * @description `useCollector` 及其拆分模块共用的类型，集中维护避免循环依赖
  */
 

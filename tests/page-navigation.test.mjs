@@ -1,7 +1,7 @@
 /**
  * 页面导航辅助测试
  * @file tests/page-navigation.test.mjs
- * @version 1.10.0
+ * @version 1.13.28
  * @description 覆盖纯函数分支（退避延迟 / 可重试判定），无需浏览器依赖
  */
 import test from 'node:test';
@@ -56,6 +56,20 @@ test('applyCookies 注入与目标主机匹配的 cookie，跳过不匹配的', 
   );
   assert.ok(recorded.some((c) => c.name === 'noDomain' && c.url === 'https://github.com/foo/bar'));
   assert.ok(!recorded.some((c) => c.name === 'evil'), '不匹配主机的 cookie 应被跳过');
+});
+
+test('applyCookies 域名边界：拒绝同后缀伪造域名', async () => {
+  const recorded = [];
+  const page = { setCookie: async (c) => recorded.push(c) };
+  await applyCookies(
+    page,
+    [
+      { name: 'sess', value: 'abc', domain: '.github.com' },
+      { name: 'root', value: 'r', domain: 'github.com' },
+    ],
+    'https://evilgithub.com/foo',
+  );
+  assert.equal(recorded.length, 0, 'evilgithub.com 不得接收 github.com 的登录态');
 });
 
 test('applyCookies 空列表 / 缺 setCookie 时安静返回', async () => {

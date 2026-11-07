@@ -1,8 +1,8 @@
 /**
  * 脚本生命周期管理器
  * @file src/userscript/main/lifecycle.js
- * @version 1.13.22
- * @date 2026-11-04
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 管理 init / start / cleanup 生命周期编排：翻译核心、页面监控与 UI 的启停
  */
@@ -11,6 +11,9 @@ import { versionChecker } from '../versionChecker/index.js';
 import { translationCore } from '../translation-core/index.js';
 import { pageMonitor } from '../page-monitor/index.js';
 import { configUI } from '../ui/configUI/index.js';
+
+/** 缓存卸载回调引用：removeEventListener 必须使用与 addEventListener 相同的函数对象 */
+let unloadHandler = null;
 
 export const lifecycleManager = {
   cleanup() {
@@ -27,12 +30,17 @@ export const lifecycleManager = {
         configUI.cleanup();
       }
 
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('beforeunload', this.cleanup.bind(this));
-        window.removeEventListener('unload', this.cleanup.bind(this));
+      if (typeof window !== 'undefined' && unloadHandler) {
+        window.removeEventListener('beforeunload', unloadHandler);
+        window.removeEventListener('unload', unloadHandler);
+        unloadHandler = null;
       }
 
-      if (typeof document !== 'undefined' && typeof window !== 'undefined' && window.visibilityChangeHandler) {
+      if (
+        typeof document !== 'undefined' &&
+        typeof window !== 'undefined' &&
+        window.visibilityChangeHandler
+      ) {
         document.removeEventListener('visibilitychange', window.visibilityChangeHandler);
         window.visibilityChangeHandler = null;
       }
@@ -73,8 +81,14 @@ export const lifecycleManager = {
       }
 
       if (typeof window !== 'undefined') {
-        window.addEventListener('beforeunload', this.cleanup.bind(this));
-        window.addEventListener('unload', this.cleanup.bind(this));
+        // 重复 init 时先注销旧监听，避免叠加多个回调
+        if (unloadHandler) {
+          window.removeEventListener('beforeunload', unloadHandler);
+          window.removeEventListener('unload', unloadHandler);
+        }
+        unloadHandler = () => this.cleanup();
+        window.addEventListener('beforeunload', unloadHandler);
+        window.addEventListener('unload', unloadHandler);
       }
 
       const visibilityChangeHandler = () => {

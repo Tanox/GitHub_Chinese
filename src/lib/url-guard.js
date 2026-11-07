@@ -1,12 +1,13 @@
 /**
  * URL 安全校验（SSRF 防护）
  * @file src/lib/url-guard.js
- * @version 1.13.1
+ * @version 1.13.28
  * @description 纯函数：校验批量采集的目标 URL——仅允许 http(s) 协议，拒绝本机 / 内网 / 链路本地 /
  *   云元数据地址，避免服务端出网抓取被用于内网探测。不含任何 Node 运行时依赖，客户端亦可安全导入。
  *
  *   已支持十进制 / 十六进制 / 八进制及省略写法（如 2852039166、0xA9FEA9FE、017700000001、127.1）
- *   的 IPv4 字面量归一化，防止非常规形式绕过私网正则实施 SSRF；IPv6 仍由既有正则覆盖。
+ *   的 IPv4 字面量归一化；并覆盖 IPv4-mapped IPv6（[::ffff:127.0.0.1]）、尾点域名（localhost.）
+ *   与 IPv4-compatible IPv6，防止绕过私网判定实施 SSRF。
  *   已知限制：不做 DNS 解析，无法防御「域名解析到内网 IP」的 DNS rebinding（需在网关或隔离网络层加固）。
  */
 
@@ -33,11 +34,15 @@ const PRIVATE_IPV4_PATTERN =
 /** 私网 / 回环 IPv6：::1、fc00::/7（ULA）、fe80::/10（链路本地） */
 const PRIVATE_IPV6_PATTERN = /^(?:::1$|f[cd]|fe[89ab])/;
 
+/** IPv4-mapped / IPv4-compatible IPv6 前缀（WHATWG URL 会把 ::ffff:127.0.0.1 规范化为 ::ffff:7f00:1） */
+const IPV4_MAPPED_IPV6_RE = /^::(?:ffff:)?([0-9a-f]{1,4}):([0-9a-f]{1,4})$/i;
+
 /** IPv4 inet_aton 合成/拆包的位宽与掩码（normalizeIpLiteral 专用） */
 const OCTET_SHIFT = 8; // 一个八位组的位宽
 const SHIFT_2_OCTETS = 16; // 两个八位组的位宽
 const SHIFT_3_OCTETS = 24; // 三个八位组的位宽
 const OCTET_MASK = 0xff; // 单八位组掩码（十进制 255）
+const OCTET_DIVISOR = 256; // 16 位分组拆成两个八位组的除数
 const TWO_OCTET_MASK = 0xffff; // 低 16 位掩码
 const THREE_OCTET_MASK = 0xffffff; // 低 24 位掩码
 const IPV4_MAX = 0xffffffff; // 32 位无符号整数上限
@@ -104,15 +109,39 @@ function normalizeIpLiteral(hostname) {
 }
 
 /**
+ * 把 IPv4-mapped / IPv4-compatible IPv6 还原成点分十进制，供私网正则复用
+ * @param {string} host - 去掉方括号且小写化的 IPv6 主机名
+ * @returns {string|null} 点分十进制或 null（非该形式）
+ */
+function mappedIpv6ToDotted(host) {
+  const match = IPV4_MAPPED_IPV6_RE.exec(host);
+  if (!match) return null;
+  const high = Number.parseInt(match[1], 16);
+  const low = Number.parseInt(match[2], 16);
+  if (!Number.isFinite(high) || !Number.isFinite(low)) return null;
+  // 用算术运算拆分 16 位分组，避免位运算（项目 ESLint 启用 no-bitwise）
+  const octets = [high, low].flatMap((part) => [
+    Math.floor(part / OCTET_DIVISOR),
+    part % OCTET_DIVISOR,
+  ]);
+  return octets.join('.');
+}
+
+/**
  * 判断主机名是否指向本机 / 内网 / 保留地址
  * @param {string} hostname - 已小写化的主机名（IPv6 可能带方括号）
  * @returns {boolean} 命中返回 true
  */
 function isPrivateHost(hostname) {
-  const host = hostname.replace(/^\[|\]$/g, '');
-  if (BLOCKED_HOSTNAMES.has(host) || host.endsWith('.localhost')) {
-    return true;
-  }
+  // 尾点域名（localhost. / 127.0.0.1.）与方括号统一去除，避免用「加个点」绕过黑名单
+  const host = hostname.replace(/^\[|\]$/g, '').replace(/\.+$/, '');
+  const normalized =
+    host === '' || host === '::' || BLOCKED_HOSTNAMES.has(host) || host.endsWith('.localhost');
+  if (normalized) return true;
+
+  const mapped = mappedIpv6ToDotted(host);
+  if (mapped) return PRIVATE_IPV4_PATTERN.test(mapped);
+  // 其他以 :: 开头的 IPv6（::1 / :: / ::ffff:0:0 等）均由私网正则覆盖
   return PRIVATE_IPV4_PATTERN.test(host) || PRIVATE_IPV6_PATTERN.test(host);
 }
 

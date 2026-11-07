@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>组件库规范 · Wireframes · v1.13.26</title>
+    <title>组件库规范 · Wireframes · v1.13.28</title>
     <style>
       /* ===== 设计令牌（与 prototype.html 同源） ===== */
       :root {
@@ -300,7 +300,7 @@
   <body>
     <header id="wf-topbar" class="wf-topbar">
       <div class="wf-topbar-inner">
-        <span class="wf-brand">组件库规范 · Wireframes<span class="v">v1.13.26</span></span>
+        <span class="wf-brand">组件库规范 · Wireframes<span class="v">v1.13.28</span></span>
         <button class="btn btn-sm" onclick="wfToast('已复制本规范链接')">复制规范</button>
       </div>
     </header>
@@ -752,8 +752,8 @@ https://docs.github.com/zh/actions</textarea>
     <div class="toast" id="wf-toast"></div>
 
     <footer id="wf-footer" class="wf-footer">
-      <div class="wf-footer-inner">
-        <span>组件库规范 · v1.13.26 · 与 prototype.html 同源设计令牌</span>
+      <div class="wf-footer-inner" id="wf-footer-meta">
+        <span>组件库规范 · <span id="wf-footer-version">V1.13.28·</span> <span id="wf-footer-build">build …</span> · 与 prototype.html 同源设计令牌</span>
         <span>仅供设计走查，不构成交付承诺</span>
       </div>
     </footer>
@@ -781,6 +781,18 @@ https://docs.github.com/zh/actions</textarea>
         var modal = document.getElementById('wf-modal');
         modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('show'); });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') modal.classList.remove('show'); });
+      })();
+    </script>
+    <script>
+      /* 页脚 build 编号：yymmddhhmm（10 位），依文件最后修改时刻生成，与应用同一规则 */
+      (function () {
+        function pad(n) { return String(n).padStart(2, '0'); }
+        var d = new Date(document.lastModified);
+        if (isNaN(d.getTime())) { d = new Date(); }
+        var id = pad(d.getFullYear() % 100) + pad(d.getMonth() + 1) + pad(d.getDate()) +
+          pad(d.getHours()) + pad(d.getMinutes());
+        var el = document.getElementById('wf-footer-build');
+        if (el) { el.textContent = 'build ' + id; }
       })();
     </script>
   </body>

@@ -2,7 +2,7 @@
 /**
  * 采集历史对比（T23 工作台 UI 接入）
  * @file src/components/dictionary/HistoryCompare.tsx
- * @version 1.13.9
+ * @version 1.13.28
  * @description 读取服务端传入的采集历史（docs/collect-history.json），选择任意两轮进行词条级
  *   对比（added / removed / changed）。两轮均含 snapshot 时用 diffDictionaries 精确对比；
  *   否则退化为逐轮统计对比展示。历史数据由采集流程写入（W5 架构决策仍待定），无数据时优雅提示。
@@ -53,8 +53,11 @@ export default function HistoryCompare({ history }: HistoryCompareProps) {
     );
   }
 
-  const a = history[fromIdx];
-  const b = history[toIdx];
+  // history 可能在 props 更新后变短，索引需收敛到有效范围，避免取到 undefined 轮次
+  const safeFromIdx = Math.min(fromIdx, history.length - 1);
+  const safeToIdx = Math.min(toIdx, history.length - 1);
+  const a = history[safeFromIdx];
+  const b = history[safeToIdx];
 
   function compare() {
     if (!a || !b) return;
@@ -89,11 +92,14 @@ export default function HistoryCompare({ history }: HistoryCompareProps) {
           <select
             id='hist-from'
             className='dict-select'
-            value={fromIdx}
-            onChange={(e) => setFromIdx(Number(e.target.value))}
+            value={safeFromIdx}
+            onChange={(e) => {
+              setFromIdx(Number(e.target.value));
+              setResult(null);
+            }}
           >
             {history.map((r, i) => (
-              <option key={i} value={i}>
+              <option key={`${r.time}-${i}`} value={i}>
                 #{i + 1} · {fmtTime(r.time)}（{r.total}）
               </option>
             ))}
@@ -104,11 +110,14 @@ export default function HistoryCompare({ history }: HistoryCompareProps) {
           <select
             id='hist-to'
             className='dict-select'
-            value={toIdx}
-            onChange={(e) => setToIdx(Number(e.target.value))}
+            value={safeToIdx}
+            onChange={(e) => {
+              setToIdx(Number(e.target.value));
+              setResult(null);
+            }}
           >
             {history.map((r, i) => (
-              <option key={i} value={i}>
+              <option key={`${r.time}-${i}`} value={i}>
                 #{i + 1} · {fmtTime(r.time)}（{r.total}）
               </option>
             ))}

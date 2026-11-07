@@ -1,8 +1,8 @@
 /**
  * 项目概览页
  * @file src/app/overview/page.tsx
- * @version 1.13.22
- * @date 2026-11-04
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 服务端页面：展示由磁盘实时统计的项目指标、已交付能力与剩余任务
  */
@@ -26,6 +26,8 @@ interface StatItem {
 }
 
 interface SpecGroup {
+  /** 语义化英文标识，用于生成稳定的 DOM id */
+  id: string;
   title: string;
   desc: string;
   items: string[];
@@ -37,6 +39,7 @@ const MAX_TREND = 8;
 /** 能力清单（静态） */
 const SPEC_GROUPS: SpecGroup[] = [
   {
+    id: 'userscript-engine',
     title: '用户脚本引擎',
     desc: 'Tampermonkey / Greasemonkey 单文件用户脚本，覆盖 GitHub 全部页面。',
     items: [
@@ -49,6 +52,7 @@ const SPEC_GROUPS: SpecGroup[] = [
     ],
   },
   {
+    id: 'collector-workbench',
     title: '词典采集工作台',
     desc: 'Next.js 16 App Router 应用，与用户脚本共享同一份词典数据。',
     items: [
@@ -60,6 +64,7 @@ const SPEC_GROUPS: SpecGroup[] = [
     ],
   },
   {
+    id: 'engineering-quality-gates',
     title: '工程化与质量门禁',
     desc: '构建即校验：依赖图自动解析、重名冲突检测与产物扫描。',
     items: [
@@ -154,8 +159,8 @@ export default function OverviewPage() {
         </section>
       )}
 
-      {SPEC_GROUPS.map((group, gi) => (
-        <section key={group.title} id={`overview-spec-${gi}`} className='card'>
+      {SPEC_GROUPS.map((group) => (
+        <section key={group.id} id={`overview-spec-${group.id}`} className='card'>
           <h2 className='section-title'>{group.title}</h2>
           <p className='section-desc'>{group.desc}</p>
           <ul className='spec-list' style={{ marginTop: '1rem' }}>

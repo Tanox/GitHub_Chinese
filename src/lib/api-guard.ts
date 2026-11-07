@@ -1,8 +1,8 @@
 /**
  * 采集 / 词典 API 访问控制（C3）：可选 Bearer 令牌鉴权 + 每 IP 限流
  * @file src/lib/api-guard.ts
- * @version 1.13.3
- * @date 2026-09-30
+ * @version 1.13.28
+ * @date 2026-11-06
  * @description 为 `/api/collect`、`/api/batch-collect` 与 `/api/dictionary/suggest` 提供统一门禁：
  *   1. 可选令牌：仅当配置 `COLLECT_API_TOKEN` 时启用，默认开放（向后兼容，无 UI 破坏）；
  *   2. 每 IP 固定窗口限流：默认 60s 内 30 次，超出返回 429 + Retry-After。
@@ -13,10 +13,23 @@ import { timingSafeEqual } from 'node:crypto';
 
 /** 配置令牌；留空则关闭鉴权（默认开放） */
 const TOKEN = process.env.COLLECT_API_TOKEN ?? '';
+/**
+ * 解析正整数配置；非法值（NaN / 0 / 负数 / 无穷）回退到默认值，
+ * 避免 `count > NaN` 恒为 false 导致限流静默失效。
+ * @param {string | undefined} raw - 环境变量原值
+ * @param {number} fallback - 默认值
+ * @returns {number} 有效的正整数
+ */
+function positiveInt(raw: string | undefined, fallback: number): number {
+  if (raw === undefined || raw.trim() === '') return fallback;
+  const value = Number(raw);
+  return Number.isSafeInteger(value) && value > 0 ? value : fallback;
+}
+
 /** 每窗口允许请求数（可通过环境变量覆盖） */
-const RATE_LIMIT = Number(process.env.COLLECT_RATE_LIMIT ?? 30);
+const RATE_LIMIT = positiveInt(process.env.COLLECT_RATE_LIMIT, 30);
 /** 限流窗口毫秒数 */
-const RATE_WINDOW_MS = Number(process.env.COLLECT_RATE_WINDOW_MS ?? 60_000);
+const RATE_WINDOW_MS = positiveInt(process.env.COLLECT_RATE_WINDOW_MS, 60_000);
 /**
  * 受信任的客户端 IP 请求头：仅当运维显式声明边缘节点（Cloudflare/EdgeOne/Nginx）
  * 保证覆写该头时才读取，取值如 `cf-connecting-ip`、`x-real-ip`、`x-forwarded-for`。

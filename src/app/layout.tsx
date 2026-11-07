@@ -1,8 +1,8 @@
 /**
  * 全局布局
  * @file src/app/layout.tsx
- * @version 1.13.22
- * @date 2026-11-04
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 加载 Tailwind 入口与 src/app/styles 下的自包含样式模块（经 Next 打包，不再依赖 public 静态目录），提供全站元数据
  */
@@ -54,8 +54,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='zh-CN'>
-      <body>{children}</body>
+    <html lang='zh-CN' id='app-root'>
+      <body id='app-body'>{children}</body>
     </html>
   );
 }

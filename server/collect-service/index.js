@@ -1,8 +1,8 @@
 /**
  * 独立采集服务（W5 架构解耦）
  * @file server/collect-service/index.js
- * @version 1.13.10
- * @date 2026-10-01
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 可自托管部署的 Node 服务，复用 src/lib/collector-core 的采集实现，
  *   通过 HTTP + SSE 暴露采集接口，使前端/Next 路由与「需要 Chrome 的采集」彻底解耦，
@@ -64,7 +64,11 @@ function sse(handler) {
     });
 
     const ac = new AbortController();
-    req.on('close', () => ac.abort());
+    // 监听响应对象的 close：IncomingMessage 的 close 只表示请求体读完，不是连接断开。
+    // 正常写完响应时 writableEnded 已置位，不应误触发取消。
+    res.on('close', () => {
+      if (!res.writableEnded) ac.abort();
+    });
 
     try {
       const generator = handler(req, ac.signal);

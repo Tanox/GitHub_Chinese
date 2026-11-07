@@ -1,8 +1,8 @@
 /**
  * 页面可见 UI 文本提取（Node 侧，jsdom）
  * @file src/lib/extract-html-text.js
- * @version 1.13.10
- * @date 2026-10-01
+ * @version 1.13.28
+ * @date 2026-11-06
  * @description T18-b：离线段提取器，复用与浏览器端 extractPageText 一致的降噪策略，
  *   供 HAR / 会话导入等无需启动浏览器的采集路径使用。基于 jsdom 构造 DOM，作用域优先
  *   #react-app / .application-main，跳过 script/style 等内容噪声；不做 CSS display 判定
@@ -78,7 +78,23 @@ function isContentNoise(el) {
 export function extractVisibleText(html, { minLength = 2, maxLength = 300 } = {}) {
   if (!html || typeof html !== 'string') return [];
   const dom = new JSDOM(html);
-  const { document, NodeFilter } = dom.window;
+  try {
+    return collectVisibleText(dom.window, minLength, maxLength);
+  } finally {
+    // 每个 HTML 页面都会创建一个 jsdom window，批量 HAR 导入时必须显式释放
+    dom.window.close();
+  }
+}
+
+/**
+ * 在 jsdom window 内遍历文本节点（与生命周期管理解耦，便于测试）
+ * @param {import('jsdom').DOMWindow} win - jsdom window
+ * @param {number} minLength - 文本最小长度
+ * @param {number} maxLength - 文本最大长度
+ * @returns {string[]} 文本块列表
+ */
+function collectVisibleText(win, minLength, maxLength) {
+  const { document, NodeFilter } = win;
   const roots = resolveScopeRoots(document);
   const collected = [];
   for (const root of roots) {

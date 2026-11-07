@@ -1,9 +1,10 @@
 /**
  * URL 安全校验测试（SSRF 防护）
  * @file tests/url-guard.test.mjs
- * @version 1.13.1
+ * @version 1.13.28
  * @description 覆盖合法公网地址放行、非 http(s) 协议、本机 / 内网 / 元数据地址与非法格式拒绝，
- *   以及非常规 IP 字面量（十进制 / 十六进制 / 八进制 / 省略写法）的 SSRF 绕过防护
+ *   非常规 IP 字面量（十进制 / 十六进制 / 八进制 / 省略写法）及 IPv4-mapped IPv6 /
+ *   尾点域名等 SSRF 绕过向量
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -66,4 +67,22 @@ test('guardUrl 放行合法公网 IP 字面量与域名', () => {
   assert.equal(guardUrl('http://93.184.216.34/').ok, true);
   assert.equal(guardUrl('http://8.8.8.8/').ok, true);
   assert.equal(guardUrl('https://github.com/').ok, true);
+});
+
+test('guardUrl 拒绝 IPv4-mapped IPv6 与尾点域名绕过', () => {
+  const blocked = [
+    'http://[::ffff:127.0.0.1]/',
+    'http://[::ffff:7f00:1]/',
+    'http://[::ffff:169.254.169.254]/',
+    'http://[::ffff:a9fe:a9fe]/',
+    'http://[0:0:0:0:0:ffff:127.0.0.1]/',
+    'http://[::127.0.0.1]/',
+    'http://[::]/',
+    'http://localhost./',
+    'http://127.0.0.1./',
+    'http://169.254.169.254./latest/meta-data/',
+  ];
+  for (const url of blocked) {
+    assert.equal(guardUrl(url).ok, false, `${url} 应被拒绝`);
+  }
 });

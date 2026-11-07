@@ -1,7 +1,7 @@
 /**
  * SSE 流式响应工厂（采集工作台公共样板）
  * @file src/lib/sse-stream.ts
- * @version 1.11.4
+ * @version 1.13.28
  * @description 将「客户端断连取消 + 心跳保活 + 错误兜底 + 收尾关闭」的 SSE 样板
  *   抽离为单一工厂，供 `/api/collect` 与 `/api/batch-collect` 复用（S2）。
  *   调用方只需提供一个根据取消信号产出采集事件的生成器。
@@ -24,12 +24,23 @@ export function createSseResponse(
 ): Response {
   // 客户端断开即取消采集，释放浏览器实例与信号量槽（C1）
   const clientAbort = new AbortController();
-  req.signal.addEventListener('abort', () => clientAbort.abort());
+  const onClientAbort = () => clientAbort.abort();
+  req.signal.addEventListener('abort', onClientAbort, { once: true });
 
   const encoder = new TextEncoder();
-  const stream = new ReadableStream({
+  /** 心跳定时器提到外层，供 cancel() 在断连时立即清理 */
+  let ping: ReturnType<typeof setInterval> | undefined;
+  const cleanup = () => {
+    if (ping) {
+      clearInterval(ping);
+      ping = undefined;
+    }
+    req.signal.removeEventListener('abort', onClientAbort);
+  };
+
+  const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const ping = setInterval(() => {
+      ping = setInterval(() => {
         try {
           controller.enqueue(encoder.encode(': ping\n\n'));
         } catch {
@@ -52,13 +63,18 @@ export function createSseResponse(
           /* 流已关闭或出错，忽略 */
         }
       } finally {
-        clearInterval(ping);
+        cleanup();
         try {
           controller.close();
         } catch {
-          /* 流已关闭，忽略 */
+          /* 流已关闭或已被 cancel，忽略 */
         }
       }
+    },
+    // 消费者取消（客户端断开）时主动中断生成器并清理心跳，避免生成器继续运行占用资源
+    cancel() {
+      clientAbort.abort();
+      cleanup();
     },
   });
 

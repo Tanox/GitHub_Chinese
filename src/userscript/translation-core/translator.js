@@ -1,6 +1,8 @@
 /**
  * 翻译执行逻辑模块
  * @file src/userscript/translation-core/translator.js
+ * @version 1.13.28
+ * @description 恢复操作改为 await 真实 Promise 结果，避免异步恢复失败时外层 Promise 永不 settle。
  */
 import { CONFIG } from '../config/index.js';
 import { ErrorHandler } from '../core/errorHandler/index.js';
@@ -9,6 +11,44 @@ import { elementSelector } from './elementSelector.js';
 import { elementTranslator } from './elementTranslator.js';
 import { performanceMonitor } from './performanceMonitor.js';
 import { processElementsInBatches } from './batchProcessor.js';
+
+/** 翻译完成后统一记录性能数据 */
+function finishPerformance() {
+  elementTranslator.performanceData.translateEndTime = Date.now();
+  performanceMonitor.logPerformanceData();
+}
+
+/**
+ * 批处理失败后执行「关键元素」恢复，并把恢复结果映射到外层 Promise
+ * @param {unknown} batchError - 原始批处理错误
+ * @param {object} translationCore - 翻译核心实例
+ * @param {() => void} resolve - 外层 Promise resolve
+ * @param {(error: unknown) => void} reject - 外层 Promise reject
+ * @returns {void}
+ */
+function recoverFromBatchError(batchError, translationCore, resolve, reject) {
+  const recovery = ErrorHandler.handleError(
+    '批处理过程',
+    batchError,
+    ErrorHandler.ERROR_TYPES.TRANSLATION,
+    {
+      retryable: true,
+      // 必须返回 Promise：recoveryManager 会 await 它并据此判断是否重试
+      recoveryFn: () => translationCore.translateCriticalElementsOnly(),
+      maxRetries: 2,
+    },
+  );
+  Promise.resolve(recovery)
+    .then((ok) => {
+      finishPerformance();
+      if (ok) resolve();
+      else reject(batchError);
+    })
+    .catch((recoverError) => {
+      finishPerformance();
+      reject(recoverError);
+    });
+}
 
 export async function translate(targetElements = null, translationCore) {
   if (!dictionaryManager.dictionary || Object.keys(dictionaryManager.dictionary).length === 0) {
@@ -52,57 +92,12 @@ export async function translate(targetElements = null, translationCore) {
 
       processElementsInBatches(elements, () => translationCore.getCurrentPageModeConfig())
         .then(() => {
-          elementTranslator.performanceData.translateEndTime = Date.now();
-          performanceMonitor.logPerformanceData();
+          finishPerformance();
           resolve();
         })
-        .catch((batchError) => {
-          ErrorHandler.handleError('批处理过程', batchError, ErrorHandler.ERROR_TYPES.TRANSLATION, {
-            retryable: true,
-            recoveryFn: () => {
-              translationCore
-                .translateCriticalElementsOnly()
-                .then(() => {
-                  elementTranslator.performanceData.translateEndTime = Date.now();
-                  performanceMonitor.logPerformanceData();
-                  resolve();
-                })
-                .catch((recoverError) => {
-                  ErrorHandler.handleError(
-                    '错误恢复',
-                    recoverError,
-                    ErrorHandler.ERROR_TYPES.TRANSLATION,
-                  );
-                  elementTranslator.performanceData.translateEndTime = Date.now();
-                  performanceMonitor.logPerformanceData();
-                  reject(recoverError);
-                });
-            },
-            maxRetries: 2,
-          });
-        });
+        .catch((batchError) => recoverFromBatchError(batchError, translationCore, resolve, reject));
     } catch (error) {
-      ErrorHandler.handleError('翻译过程', error, ErrorHandler.ERROR_TYPES.TRANSLATION, {
-        retryable: true,
-        recoveryFn: () => {
-          translationCore
-            .translateCriticalElementsOnly()
-            .then(() => {
-              performanceMonitor.logPerformanceData();
-              resolve();
-            })
-            .catch((recoverError) => {
-              ErrorHandler.handleError(
-                '错误恢复',
-                recoverError,
-                ErrorHandler.ERROR_TYPES.TRANSLATION,
-              );
-              performanceMonitor.logPerformanceData();
-              reject(recoverError);
-            });
-        },
-        maxRetries: 2,
-      });
+      recoverFromBatchError(error, translationCore, resolve, reject);
     }
   });
 }

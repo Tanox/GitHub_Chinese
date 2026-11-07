@@ -1,8 +1,9 @@
 /**
  * 采集状态管理 Hook
  * @file src/hooks/useCollector.ts
- * @version 1.11.7
- * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态
+ * @version 1.13.28
+ * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态；
+ *   done 事件需区分成功与失败，避免子进程异常退出时误报 100% 完成
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -37,6 +38,8 @@ export function useCollector() {
   const [terms, setTerms] = useState<TermEntry[]>([]);
   const [progress, setProgress] = useState<ProgressState>(IDLE_PROGRESS);
   const [isProcessing, setIsProcessing] = useState(false);
+  /** 本次请求是否收到过 error 事件（用于判断 done 是否为失败收尾） */
+  const hasErrorRef = useRef(false);
 
   const addLog = useCallback((type: LogType, message: string, code?: number) => {
     setLogs((prev) => [
@@ -46,6 +49,7 @@ export function useCollector() {
   }, []);
 
   const clearLogs = useCallback(() => {
+    hasErrorRef.current = false;
     setLogs([]);
     setTerms([]);
     setProgress(IDLE_PROGRESS);
@@ -63,12 +67,19 @@ export function useCollector() {
         return;
       }
       if (event.type === 'error' && event.message) {
+        hasErrorRef.current = true;
         addLog('error', event.message, event.code);
         return;
       }
       if (event.type === 'done') {
-        addLog('log', '任务完成');
-        setProgress((prev) => ({ ...prev, type: 'analyze', percent: PERCENT_MAX }));
+        // 子进程异常退出（code !== 0）或此前已下发过 error 时，不得渲染为 100% 成功
+        const failed = hasErrorRef.current || (typeof event.code === 'number' && event.code !== 0);
+        if (failed) {
+          addLog('error', `任务异常结束${event.code ? `（退出码 ${event.code}）` : ''}`);
+        } else {
+          addLog('log', '任务完成');
+          setProgress((prev) => ({ ...prev, type: 'analyze', percent: PERCENT_MAX }));
+        }
         setIsProcessing(false);
         return;
       }

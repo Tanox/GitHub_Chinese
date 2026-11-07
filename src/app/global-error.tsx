@@ -3,7 +3,9 @@
 /**
  * 根错误边界（Global Error Boundary）
  * @file src/app/global-error.tsx
- * @description 捕获根布局 layout.tsx 及全站未捕获错误，必须自带 <html> 与 <body>
+ * @version 1.13.28
+ * @description 捕获根布局 layout.tsx 及全站未捕获错误，必须自带 <html> 与 <body>；
+ *   与 error.tsx 一致，生产环境仅展示错误参考码，不泄露原始异常信息
  */
 
 export default function GlobalError({
@@ -13,12 +15,22 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const isProd = process.env.NODE_ENV === 'production';
+  const detail = isProd
+    ? error?.digest
+      ? `错误参考码：${error.digest}`
+      : '应用程序发生未知错误，请稍后重试'
+    : error?.message || '应用程序发生未知错误';
+
   return (
     <html lang='zh-CN'>
-      <body>
-        <div id='global-error-root' style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
+      <body id='global-error-body'>
+        <div
+          id='global-error-root'
+          style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}
+        >
           <h2>系统出现严重异常</h2>
-          <p>{error?.message || '应用程序发生未知错误'}</p>
+          <p id='global-error-detail'>{detail}</p>
           <button
             type='button'
             onClick={() => reset()}

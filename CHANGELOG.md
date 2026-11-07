@@ -1,4 +1,38 @@
 # Changelog
+## [1.13.28] - 2026-11-06
+
+### Added
+- **页脚版本与 build 编号规范（用户 2026-11-06 更新）**：应用页脚统一展示 `V<语义版本>· build <10 位编号>`（如 `V1.2.3· build 2611051259`）；build 编号格式由 12 位 `yyyymmddhhmm` 改为 **10 位 `yymmddhhmm`**（两位年+月+日+时+分）。
+- 新增 `src/lib/build-id.js` 作为 build 编号生成的唯一实现，`next.config.mjs` 注入 `NEXT_PUBLIC_BUILD_ID`，`Shell.tsx` 在注入缺失时按同一规则即时生成兜底，保证 dev/build 均生效、格式恒定。
+- 三个静态原型页脚按同一格式展示版本与 build 编号，由内联脚本依文件最后修改时刻生成；移除旧的「更新日期」展示位。
+- 新增 `tests/build-id.test.mjs`（10 位编号、应用/原型页脚格式、语义化 id 与规范正文一致性）与 Cookie 域名边界回归用例。
+
+### Fixed
+- **安全**：`url-guard.js` 拒绝 IPv4-mapped / IPv4-compatible IPv6（`[::ffff:127.0.0.1]`）、尾点域名（`localhost.`）等 SSRF 绕过向量；`page-navigation-utils.js` 的 cookie 域名改为点边界匹配，防止登录态外泄到 `evilgithub.com`；`har-import.cjs` 域名白名单同步收紧；`global-error.tsx` 生产环境仅展示错误参考码。
+- **安全**：移除 `fetcher.js` 中无法通过真实产物校验的硬编码占位哈希（本就只 warn 不阻断），改为仅在登记可信哈希时校验且失败即中止；同时修复超时定时器泄漏。
+- **正确性**：`dictionary-processor.js` 修复 stdout/stderr 跨 chunk 断行、spawn `error` 未监听、取消/超时后误发 `done`；`useCollector.ts` 的 done 事件不再把失败收尾误报为 100% 成功；`sse-stream.ts` 实现 `cancel()` 并清理心跳/监听；独立采集服务改用 `res.on('close')` 感知断连。
+- **正确性**：`recovery.js` 支持异步恢复函数（await 后判断重试），`translator.js` 的恢复结果可正确结算外层 Promise；`lifecycle.js` 用稳定引用注销卸载监听；三处导出改为共用 `download-json.ts`，延后 `revokeObjectURL` 避免下载被取消；`HistoryCompare` / `MergePatchPanel` 修复状态残留与索引越界。
+- **性能**：批量采集下传取消信号，断连即关闭在飞页面并停止后续批次；`extract-html-text.js` 每次解析后关闭 jsdom window；`api-guard.ts` 非法限流参数回退默认值（避免 `count > NaN` 使限流静默失效）；移除与 CSP `frame-ancestors` 冲突的 `X-Frame-Options`；`collect-dict.cjs` 捕获 CLI 主函数的 Promise rejection。
+
+### Docs
+- `docs/coding-style.md` §15 重写为 10 位 build 编号规范；`docs/development.md` 环境变量表与 `docs/prototype.md` 同步；README 补充说明；项目记忆新增页脚规范条目。
+- 语义化 id：根布局 `app-root`/`app-body`、页脚 `site-footer-meta`/`site-footer-version`/`site-footer-build`、页面内容区 `page-<导航项>`、预览表 `preview-body`；原型页脚 `*-footer-version`/`*-footer-build`；概览能力清单 id 由数字索引改为语义标识。
+
+### Chore
+- 单一版本源 `src/userscript/version.js`、`package.json`、`package-lock.json`、README / docs 版本行与原型展示位同步至 1.13.28，重建用户脚本产物，并恢复被误删但 `npm ci` 必需的 `package-lock.json`。
+
+---
+
+## [1.13.27] - 2026-11-05
+
+### Docs
+- `docs/tasks.md` 精简为**纯未完成任务清单**：移除残留的已完成任务状态描述与引用，仅保留「未完成任务（Open）」空清单 + 登记格式说明；已交付任务统一归档于 `docs/tasks-done.md`。
+
+### Chore
+- 版本展示位同步至 1.13.27 并重建用户脚本产物。
+
+---
+
 ## [1.13.26] - 2026-11-05
 
 ### Added

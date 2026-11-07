@@ -1,9 +1,11 @@
 /**
  * 词典清洗子进程桥接
  * @file src/lib/dictionary-processor.js
- * @version 1.12.8
+ * @version 1.13.28
+ * @date 2026-11-06
  * @description 调用 collect-dict.cjs 清洗原始词条文件，并把子进程输出转为采集事件流。
  *   每请求使用独立临时文件，避免并发请求互相覆盖（竞态，见 v1.9.47）。
+ *   修复：stdout/stderr 跨 chunk 断行、spawn error 未监听、取消/超时后误发 done 事件。
  */
 
 import os from 'os';
@@ -29,6 +31,8 @@ const QUEUE_POLL_INTERVAL_MS = 100;
 const WARN_PREFIX = '[WARN]';
 /** 词条行正则：匹配 `dict-report.cjs` 输出的 `N. "term"` 格式，用于下发结构化 term 事件（S1） */
 const TERM_LINE_RE = /^(\d+)\. "(.+)"$/;
+/** 子进程硬超时（毫秒） */
+const CHILD_TIMEOUT_MS = 120_000;
 
 /**
  * 为单次采集生成独立的原始文本临时文件路径
@@ -50,8 +54,31 @@ function delay(ms) {
 }
 
 /**
+ * 把可读流按行切分，保留跨 chunk 的半行（避免日志/词条行被截断）
+ * @param {import('stream').Readable | null} readable - 子进程输出流
+ * @param {(line: string) => void} onLine - 完整行的回调
+ * @returns {() => void} 流结束时冲刷剩余半行
+ */
+function pipeLines(readable, onLine) {
+  let pending = '';
+  readable?.on('data', (chunk) => {
+    pending += chunk.toString();
+    const lines = pending.split('\n');
+    pending = lines.pop() ?? '';
+    for (const line of lines) onLine(line);
+  });
+  return () => {
+    if (pending !== '') {
+      onLine(pending);
+      pending = '';
+    }
+  };
+}
+
+/**
  * 调用 collect-dict.cjs 并把子进程输出转为事件流
  * @param {string} rawTermsFile - 原始词条文件路径（由调用方生成，使用完毕后清理）
+ * @param {{ signal?: AbortSignal }} [options] - 取消信号
  * @returns {AsyncGenerator<CollectEvent>} 采集事件流
  */
 export async function* runDictionaryProcessor(rawTermsFile, { signal } = {}) {
@@ -63,99 +90,98 @@ export async function* runDictionaryProcessor(rawTermsFile, { signal } = {}) {
   const queue = [];
   let finished = false;
   let sawError = false;
-
-  // 客户端取消：立即终止子进程并结束事件流（C1）
-  const onAbort = () => {
-    sawError = true;
-    queue.push({
-      type: 'error',
-      message: '请求已取消，已终止词典清洗子进程',
-      code: CollectErrorCode.SUBPROCESS_FAILED,
-    });
-    try {
-      child.kill('SIGKILL');
-    } catch {}
-    finished = true;
-  };
-  if (signal) {
-    if (signal.aborted) onAbort();
-    else signal.addEventListener('abort', onAbort, { once: true });
-  }
-
-  // 子进程硬超时，防止挂起导致前端永久等待（W3/W6）
-  const CHILD_TIMEOUT_MS = 120_000;
-  const timer = setTimeout(() => {
-    sawError = true;
-    queue.push({
-      type: 'error',
-      message: `词典清洗超时（>${CHILD_TIMEOUT_MS / 1000}s），已终止子进程`,
-      code: CollectErrorCode.SUBPROCESS_FAILED,
-    });
-    try {
-      child.kill('SIGKILL');
-    } catch {}
-    finished = true;
-  }, CHILD_TIMEOUT_MS);
+  /** 取消 / 超时 / spawn 失败：此时不得下发 done，否则前端会误报成功 */
+  let terminated = false;
+  let timer = null;
 
   const pushLine = (line, type, code) => {
     if (!line.trim()) return;
     queue.push({ type, message: line, code });
   };
 
-  child.stdout?.on('data', (chunk) => {
-    chunk
-      .toString()
-      .split('\n')
-      .forEach((line) => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-        // 后端解析词条行，下发结构化 term 事件，前端不再依赖 dict-report.cjs 输出格式（S1）
-        const m = TERM_LINE_RE.exec(trimmed);
-        if (m) queue.push({ type: 'term', data: { text: m[2] } });
-        pushLine(line, 'log', undefined);
-      });
+  const terminate = (message) => {
+    if (terminated) return;
+    terminated = true;
+    sawError = true;
+    queue.push({ type: 'error', message, code: CollectErrorCode.SUBPROCESS_FAILED });
+    try {
+      child.kill('SIGKILL');
+    } catch {}
+  };
+
+  // 客户端取消：立即终止子进程并结束事件流（C1）
+  const onAbort = () => terminate('请求已取消，已终止词典清洗子进程');
+  if (signal) {
+    if (signal.aborted) onAbort();
+    else signal.addEventListener('abort', onAbort, { once: true });
+  }
+
+  if (!terminated) {
+    timer = setTimeout(() => {
+      terminate(`词典清洗超时（>${CHILD_TIMEOUT_MS / 1000}s），已终止子进程`);
+    }, CHILD_TIMEOUT_MS);
+  }
+
+  const flushStdout = pipeLines(child.stdout, (line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    // 后端解析词条行，下发结构化 term 事件，前端不再依赖 dict-report.cjs 输出格式（S1）
+    const m = TERM_LINE_RE.exec(trimmed);
+    if (m) queue.push({ type: 'term', data: { text: m[2] } });
+    pushLine(line, 'log', undefined);
   });
 
-  child.stderr?.on('data', (chunk) => {
-    chunk
-      .toString()
-      .split('\n')
-      .forEach((line) => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-        // 区分告警与错误：仅 [WARN] 前缀视为警告，避免把解析告警误报成失败（v1.9.47）
-        if (trimmed.startsWith(WARN_PREFIX)) {
-          pushLine(trimmed, 'log', undefined);
-        } else {
-          sawError = true;
-          pushLine(trimmed, 'error', CollectErrorCode.SUBPROCESS_FAILED);
-        }
-      });
+  const flushStderr = pipeLines(child.stderr, (line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    // 区分告警与错误：仅 [WARN] 前缀视为警告，避免把解析告警误报成失败（v1.9.47）
+    if (trimmed.startsWith(WARN_PREFIX)) {
+      pushLine(trimmed, 'log', undefined);
+    } else {
+      sawError = true;
+      pushLine(trimmed, 'error', CollectErrorCode.SUBPROCESS_FAILED);
+    }
+  });
+
+  // spawn 失败（ENOENT / EACCES）会触发未捕获的 'error' 事件，必须显式处理
+  child.on('error', (error) => {
+    terminate(`词典清洗子进程启动失败: ${error instanceof Error ? error.message : String(error)}`);
+    finished = true;
   });
 
   child.on('close', (code) => {
-    clearTimeout(timer);
-    if (signal) signal.removeEventListener('abort', onAbort);
+    if (timer) clearTimeout(timer);
+    flushStdout();
+    flushStderr();
     // 子进程异常退出且无 stderr 错误行时，补一条明确错误事件
-    if (code !== 0 && !sawError) {
+    if (!terminated && code !== 0 && !sawError) {
       queue.push({
         type: 'error',
         message: `词典清洗子进程异常退出（退出码 ${code}）`,
         code: CollectErrorCode.SUBPROCESS_FAILED,
       });
     }
-    queue.push({ type: 'done', code });
+    // 正常结束才下发 done；取消 / 超时 / 启动失败仅保留 error，避免 UI 误报 100% 成功
+    if (!terminated) queue.push({ type: 'done', code });
     finished = true;
   });
 
-  for (;;) {
-    if (queue.length > 0) {
-      yield queue.shift();
-      continue;
+  try {
+    for (;;) {
+      if (queue.length > 0) {
+        yield queue.shift();
+        continue;
+      }
+      if (finished) break;
+      await delay(QUEUE_POLL_INTERVAL_MS);
     }
-    if (finished) {
-      break;
+  } finally {
+    if (timer) clearTimeout(timer);
+    if (signal) signal.removeEventListener('abort', onAbort);
+    if (!finished) {
+      try {
+        child.kill('SIGKILL');
+      } catch {}
     }
-    await delay(QUEUE_POLL_INTERVAL_MS);
   }
 }

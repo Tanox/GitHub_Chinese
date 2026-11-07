@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文 · 字符串采集工作台原型设计
 
-> 版本：**v1.13.26** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.28** ｜ 版本权威源：`src/userscript/version.js`
 >
 > 说明：本文档描述「词典采集工作台」（亦名 GitHub 页面字符串采集工具）的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/`](../prototype/)：[高保真原型（采集流程）](../prototype/prototype.html) 与 [组件库规范 Wireframes](../prototype/wireframes.html)。
 >
@@ -29,6 +29,8 @@
 
   > 设计系统展示由 `prototype/wireframes.html` 与 `prototype/app.html` 承载，应用不设 `/design` 路由。
 - 公共骨架：`src/components/Shell.tsx`（顶部导航 `TopNav` + 页头 + 内容 + 页脚）。
+- 页脚（应用与三个静态原型一致）：展示 `V<版本>· build <10 位 yymmddhhmm 编号>`，如 `V1.13.28· build 2611061200`；应用由 `NEXT_PUBLIC_BUILD_ID` 构建注入，静态原型由内联脚本依 `document.lastModified` 生成。语义化 id：`site-footer` / `site-footer-meta` / `site-footer-version` / `site-footer-build`，原型为 `proto-footer` / `app-footer` / `wf-footer` 及其 `*-footer-version` / `*-footer-build`。详见 [coding-style.md §15](./coding-style.md#15-页脚版本信息)。
+- 页面级内容区 id 由 `Shell` 按导航项生成 `page-<active>`（如 `page-overview`、`page-coverage`），便于调试定位与 e2e 选择器。
 
 ## 2. 整体架构流程
 

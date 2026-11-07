@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>高保真原型 · 工作台其余模块 · v1.13.26</title>
+    <title>高保真原型 · 工作台其余模块 · v1.13.28</title>
     <style>
       /* ===== 设计令牌（与 prototype.html / wireframes.html 同源） ===== */
       :root {
@@ -230,7 +230,7 @@
   <body>
     <header class="app-topbar" id="app-topbar">
       <div class="app-topbar-inner">
-        <span class="app-brand">GitHub 中文 · 工作台<span class="v">v1.13.26</span></span>
+        <span class="app-brand">GitHub 中文 · 工作台<span class="v">v1.13.28</span></span>
         <button class="icon-btn" type="button" aria-label="设置">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="3"></circle>
@@ -417,9 +417,9 @@
     </main>
 
     <footer class="app-footer" id="app-footer">
-      <div class="app-footer-inner">
-        <span>高保真原型 · v1.13.26 · 仅供设计走查，不构成交付承诺</span>
-        <span>更新日期：2026-10-03</span>
+      <div class="app-footer-inner" id="app-footer-meta">
+        <span>高保真原型 · <span id="app-footer-version">V1.13.28·</span> <span id="app-footer-build">build …</span> · 仅供设计走查，不构成交付承诺</span>
+        <span>与 prototype.html 同源设计令牌</span>
       </div>
     </footer>
 
@@ -689,6 +689,18 @@
         buildSwatches();
         renderDict();
         renderManage();
+      })();
+    </script>
+    <script>
+      /* 页脚 build 编号：yymmddhhmm（10 位），依文件最后修改时刻生成，与应用同一规则 */
+      (function () {
+        function pad(n) { return String(n).padStart(2, '0'); }
+        var d = new Date(document.lastModified);
+        if (isNaN(d.getTime())) { d = new Date(); }
+        var id = pad(d.getFullYear() % 100) + pad(d.getMonth() + 1) + pad(d.getDate()) +
+          pad(d.getHours()) + pad(d.getMinutes());
+        var el = document.getElementById('app-footer-build');
+        if (el) { el.textContent = 'build ' + id; }
       })();
     </script>
   </body>

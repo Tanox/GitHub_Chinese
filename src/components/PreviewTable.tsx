@@ -1,3 +1,8 @@
+/**
+ * 清洗结果预览表
+ * @file src/components/PreviewTable.tsx
+ * @version 1.13.28
+ */
 import React from 'react';
 import type { TermEntry, TermStatus } from '@/hooks/useCollector';
 
@@ -33,9 +38,9 @@ export default function PreviewTable({ terms }: PreviewTableProps) {
                 <th className='right'>状态</th>
               </tr>
             </thead>
-            <tbody id='previewBody'>
+            <tbody id='preview-body'>
               {terms.map((term, i) => (
-                <tr key={i} className='term-row'>
+                <tr key={`${term.text}-${i}`} id={`preview-row-${i + 1}`} className='term-row'>
                   <td className='term-index'>{i + 1}</td>
                   <td className='term-text'>{term.text}</td>
                   <td className='right'>

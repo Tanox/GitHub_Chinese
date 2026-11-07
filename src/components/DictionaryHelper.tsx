@@ -2,8 +2,8 @@
 /**
  * 词典助手客户端岛（T21）
  * @file src/components/DictionaryHelper.tsx
- * @version 1.12.13
- * @date 2026-09-30
+ * @version 1.13.28
+ * @date 2026-11-06
  * @description 输入英文词条 → 调用 /api/dictionary/suggest 获取建议；采纳后存入 localStorage 待入库（含导出/清空）。
  *   健壮性：本地数据收窄、接口响应 unknown 校验、连发请求用 AbortController 防止旧响应覆盖新结果。
  */
@@ -14,6 +14,7 @@ import { parsePending } from './dictionary/pending';
 import { narrowSuggestResponse, readErrorMessage } from './dictionary/suggest-response';
 import { SuggestPanel } from './dictionary/SuggestPanel';
 import { PendingList } from './dictionary/PendingList';
+import { downloadJson } from '@/lib/download-json';
 
 export default function DictionaryHelper({
   samples,
@@ -112,16 +113,7 @@ export default function DictionaryHelper({
   }
 
   function exportJson() {
-    if (typeof window === 'undefined') return;
-    const blob = new Blob([JSON.stringify(pending, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dictionary-suggestions.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadJson('dictionary-suggestions.json', pending);
   }
 
   return (

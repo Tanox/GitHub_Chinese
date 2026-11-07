@@ -2,7 +2,7 @@
 /**
  * 导入 / 合并 / 入库补丁（T24 导入导出 · T20 合并入库 UI）
  * @file src/components/dictionary/MergePatchPanel.tsx
- * @version 1.13.12
+ * @version 1.13.28
  * @description 粘贴或上传词典 JSON，解析后：① 生成合并结果（T24，供手动入库）；
  *   ② 一键生成「入库补丁」（T20，added / updated 分离），预览 diff 并可下载。
  *   遵循「本地优先·离线可用」：不写服务器词典文件，仅产出结果供用户入库到 src/dictionaries/。
@@ -14,20 +14,10 @@ import {
   buildDictionaryPatch,
   renderDiffPreview,
 } from '@/lib/dictionary-io';
+import { downloadJson } from '@/lib/download-json';
 
 interface MergePatchPanelProps {
   dictionary: Record<string, string>;
-}
-
-function downloadJson(filename: string, data: unknown): void {
-  if (typeof window === 'undefined') return;
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
@@ -71,11 +61,18 @@ export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
       data: p,
     });
   }
+  /** 文本变更时重置上一次解析结果与补丁，避免按钮可用却静默无响应 */
+  function updateImportText(text: string) {
+    setImportText(text);
+    setImportResult(null);
+    setPatch(null);
+  }
+
   function onFile(e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => setImportText(String(reader.result ?? ''));
+    reader.onload = () => updateImportText(String(reader.result ?? ''));
     reader.readAsText(f);
   }
 
@@ -99,7 +96,7 @@ export default function MergePatchPanel({ dictionary }: MergePatchPanelProps) {
           className='field'
           rows={4}
           value={importText}
-          onChange={(e) => setImportText(e.target.value)}
+          onChange={(e) => updateImportText(e.target.value)}
           placeholder='{"Settings":"设置"} 或 [{"key":"Settings","value":"设置"}]'
         />
         <div className='btn-row'>

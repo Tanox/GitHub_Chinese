@@ -1,6 +1,6 @@
 # 开发流程规范
 
-> 版本：**v1.13.24** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.28** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**分支策略、提交信息、代码审查流程、质量门禁、测试与发布流程的唯一权威正文**。编码风格与命名见 [coding-style.md](./coding-style.md)，文档权威来源分工见 [docs/README.md](./README.md)。
 
@@ -44,7 +44,7 @@ npm run dev        # http://localhost:3000
 | `COLLECT_RATE_LIMIT` / `COLLECT_RATE_WINDOW_MS` | 采集 / 词典接口每 IP 限流次数与窗口 | `30` 次 / `60000` ms |
 | `COLLECT_TRUSTED_IP_HEADER` | 仅在可信边缘（Cloudflare / EdgeOne / Nginx）之后设置，如 `cf-connecting-ip` | 未配置→不信任任何代理头 |
 | `NEXT_PUBLIC_SITE_URL` | 覆盖 `metadataBase` 绝对地址 | `https://tanox.github.io/GitHub_Chinese` |
-| `NEXT_PUBLIC_BUILD_ID` | 构建时自动注入的 `yyyymmddhhmm` build 编号，页脚展示 | 缺失→回退版本号 |
+| `NEXT_PUBLIC_BUILD_ID` | 构建时自动注入的 `yymmddhhmm`（10 位）build 编号，页脚按 `V<版本>· build <编号>` 展示 | 缺失→`createBuildId()` 即时生成 |
 
 ---
 

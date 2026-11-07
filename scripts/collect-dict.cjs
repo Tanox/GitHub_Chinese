@@ -1,8 +1,8 @@
 /**
  * 词典采集工具
  * @file scripts/collect-dict.cjs
- * @version 1.12.9
- * @date 2026-09-30
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表（报告生成见 scripts/dict-report.cjs）
  */
@@ -142,7 +142,11 @@ async function main() {
 }
 
 if (require.main === module) {
-  main();
+  // 主函数是 async：未捕获的 rejection 会以非零退出码终止进程并打印可读错误
+  main().catch((error) => {
+    console.error(`❌ 词典采集失败: ${error instanceof Error ? error.message : String(error)}`);
+    process.exitCode = 1;
+  });
 }
 
 module.exports = {

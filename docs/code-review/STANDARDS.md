@@ -1,6 +1,6 @@
 # 代码审查标准 (Code Review Standards)
 
-> **版本**: v1.13.24（随项目单一版本源 `src/userscript/version.js`）
+> **版本**: v1.13.28（随项目单一版本源 `src/userscript/version.js`）
 > **更新日期**: 2026-11-04
 > **维护者**: 技术团队（CODEOWNERS：`@sutandkb`）
 

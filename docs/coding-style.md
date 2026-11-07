@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.13.24** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.28** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**编码风格、命名约定、目录组织、注释、错误处理、日志、React / TypeScript、API 路由、CSS、可访问性与安全红线的唯一权威正文**。数值型约束（行数、参数、复杂度）以 `eslint/rules/*.js` 与 `scripts/check-file-length.cjs` 的实际配置为准，本文如实转述；两者冲突时以配置文件为准并回改本文。流程类规范见 [development.md](./development.md)。
 
@@ -357,18 +357,23 @@ userscript/
 
 ## 15. 页脚版本信息
 
-应用页脚展示**版本号 + build 编号**（取代旧「更新日期」展示）：
+应用页脚展示**版本号 + build 编号**，格式固定为 `V<语义版本>· build <10 位编号>`，例如 `V1.2.3· build 2611051259`（取代旧「更新日期」展示）：
 
-- 版本号取自单一版本源 `src/userscript/version.js` 的 `VERSION`，**禁止硬编码**；
-- build 编号格式 `yyyymmddhhmm`，由构建流程在 dev / build 启动时自动注入 `NEXT_PUBLIC_BUILD_ID`，缺失时回退为版本号；
-- 页脚容器带语义化 id（`site-footer` / `app-footer`）。
+- 版本号取自单一版本源 `src/userscript/version.js` 的 `VERSION`，**禁止硬编码**，前缀大写 `V`；
+- build 编号格式为 **`yymmddhhmm`（10 位）**：两位年 + 月 + 日 + 时 + 分，例如 `2611051259` 表示 2026-11-05 12:59（旧的 12 位 `yyyymmddhhmm` 已废弃）；
+- 生成逻辑的唯一实现是 `src/lib/build-id.js` 的 `createBuildId()`；`next.config.mjs` 在 dev / build 启动时自动注入 `NEXT_PUBLIC_BUILD_ID`，`Shell.tsx` 在注入缺失时按同一规则即时生成兜底，保证格式恒定、无需手工维护；
+- 页脚容器带语义化 id（`site-footer` / `app-footer`），版本号与 build 编号元素分别带 `site-footer-version` / `site-footer-build`，便于 e2e 定位与无障碍关联；
+- 原型（`prototype/*.html`）为静态页面，页脚按同一格式展示，build 编号由内联脚本依 `document.lastModified` 生成，版本号由发版流程同步。
 
 ```html
 <footer id="site-footer">
-  <span>GitHub 中文 · 采集工具</span>
-  <span>v1.13.24 · build 202611040930</span>
+  <span>GitHub 中文 · 采集工作台</span>
+  <span id="site-footer-version">V1.13.28·</span>
+  <span id="site-footer-build">build 2611061200</span>
 </footer>
 ```
+
+> 展示效果：`V1.13.28· build 2611061200`。
 
 ---
 

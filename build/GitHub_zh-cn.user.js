@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_Chinese
-// @version      1.13.26
+// @version      1.13.28
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,8 +27,8 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.26
- * @date 2026-11-04
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
  */
@@ -38,14 +38,14 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.26';
+const VERSION = '1.13.28';
 
 /**
  * 当前发版日期（YYYY-MM-DD）
  * @type {string}
  * @description 用户脚本元数据与文档使用；工作台页脚改由构建流程注入 build 编号展示。
  */
-const BUILD_DATE = '2026-11-04';
+const BUILD_DATE = '2026-11-06';
 
 /**
  * GitHub 元素选择器列表配置
@@ -903,15 +903,34 @@ const ERROR_TYPES = {
 /**
  * 错误恢复逻辑模块
  * @file src/userscript/core/errorHandler/recovery.js
+ * @version 1.13.28
+ * @description 同步与异步恢复函数统一支持：await 恢复结果后再决定是否重试，
+ *   避免 Promise rejection 绕过 try/catch 导致调用方永远收不到结果。
  */
 
+/** 等待指定毫秒（指数退避用） */
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 const recoveryManager = {
-  attemptRecovery(context, recoveryFn, maxRetries, currentAttempt = 0) {
+  /**
+   * 尝试恢复（支持返回 Promise 的异步恢复函数）
+   * @param {string} context - 错误上下文
+   * @param {() => unknown | Promise<unknown>} recoveryFn - 恢复函数，可同步或异步
+   * @param {number} maxRetries - 最大尝试次数
+   * @param {number} [currentAttempt] - 当前已尝试次数
+   * @returns {Promise<boolean>} 是否恢复成功（重试耗尽返回 false）
+   */
+  async attemptRecovery(context, recoveryFn, maxRetries, currentAttempt = 0) {
     try {
-      recoveryFn();
+      await recoveryFn();
       if (CONFIG.debugMode) {
         console.log(`[GitHub 中文翻译] ${context} - 恢复操作成功 (尝试: ${currentAttempt + 1})`);
       }
+      return true;
     } catch (recoveryError) {
       const attempt = currentAttempt + 1;
       if (CONFIG.debugMode) {
@@ -922,15 +941,15 @@ const recoveryManager = {
       }
 
       if (attempt < maxRetries) {
-        // 指数退避重试
-        const delay = Math.pow(2, attempt) * RECOVERY_BASE_DELAY_MS;
-        setTimeout(
-          () => {
-            this.attemptRecovery(context, recoveryFn, maxRetries, attempt);
-          },
-          Math.min(delay, RECOVERY_MAX_DELAY_MS),
+        // 指数退避重试；await 保证重试结果能回传给调用方
+        const delay = Math.min(
+          Math.pow(2, attempt) * RECOVERY_BASE_DELAY_MS,
+          RECOVERY_MAX_DELAY_MS,
         );
+        await wait(delay);
+        return this.attemptRecovery(context, recoveryFn, maxRetries, attempt);
       }
+      return false;
     }
   },
 };
@@ -977,12 +996,14 @@ const ErrorHandler = {
     this.logError(context, error, type);
 
     // 检查是否需要进行恢复
-    if (options.recoveryFn && typeof options.recoveryFn === 'function') {
-      recoveryManager.attemptRecovery(context, options.recoveryFn, options.maxRetries || 1);
-    }
-
     // 检查是否需要采取紧急措施
     this.checkErrorThreshold(type, currentCount + 1);
+
+    // 把恢复结果回传给调用方（异步恢复可能失败），由调用方决定 resolve / reject
+    if (options.recoveryFn && typeof options.recoveryFn === 'function') {
+      return recoveryManager.attemptRecovery(context, options.recoveryFn, options.maxRetries || 1);
+    }
+    return undefined;
   },
 
   /**
@@ -3859,7 +3880,47 @@ async function processElementsInBatches(inputElements, getCurrentPageModeConfig)
 /**
  * 翻译执行逻辑模块
  * @file src/userscript/translation-core/translator.js
+ * @version 1.13.28
+ * @description 恢复操作改为 await 真实 Promise 结果，避免异步恢复失败时外层 Promise 永不 settle。
  */
+
+/** 翻译完成后统一记录性能数据 */
+function finishPerformance() {
+  elementTranslator.performanceData.translateEndTime = Date.now();
+  performanceMonitor.logPerformanceData();
+}
+
+/**
+ * 批处理失败后执行「关键元素」恢复，并把恢复结果映射到外层 Promise
+ * @param {unknown} batchError - 原始批处理错误
+ * @param {object} translationCore - 翻译核心实例
+ * @param {() => void} resolve - 外层 Promise resolve
+ * @param {(error: unknown) => void} reject - 外层 Promise reject
+ * @returns {void}
+ */
+function recoverFromBatchError(batchError, translationCore, resolve, reject) {
+  const recovery = ErrorHandler.handleError(
+    '批处理过程',
+    batchError,
+    ErrorHandler.ERROR_TYPES.TRANSLATION,
+    {
+      retryable: true,
+      // 必须返回 Promise：recoveryManager 会 await 它并据此判断是否重试
+      recoveryFn: () => translationCore.translateCriticalElementsOnly(),
+      maxRetries: 2,
+    },
+  );
+  Promise.resolve(recovery)
+    .then((ok) => {
+      finishPerformance();
+      if (ok) resolve();
+      else reject(batchError);
+    })
+    .catch((recoverError) => {
+      finishPerformance();
+      reject(recoverError);
+    });
+}
 
 async function translate(targetElements = null, translationCore) {
   if (!dictionaryManager.dictionary || Object.keys(dictionaryManager.dictionary).length === 0) {
@@ -3903,57 +3964,12 @@ async function translate(targetElements = null, translationCore) {
 
       processElementsInBatches(elements, () => translationCore.getCurrentPageModeConfig())
         .then(() => {
-          elementTranslator.performanceData.translateEndTime = Date.now();
-          performanceMonitor.logPerformanceData();
+          finishPerformance();
           resolve();
         })
-        .catch((batchError) => {
-          ErrorHandler.handleError('批处理过程', batchError, ErrorHandler.ERROR_TYPES.TRANSLATION, {
-            retryable: true,
-            recoveryFn: () => {
-              translationCore
-                .translateCriticalElementsOnly()
-                .then(() => {
-                  elementTranslator.performanceData.translateEndTime = Date.now();
-                  performanceMonitor.logPerformanceData();
-                  resolve();
-                })
-                .catch((recoverError) => {
-                  ErrorHandler.handleError(
-                    '错误恢复',
-                    recoverError,
-                    ErrorHandler.ERROR_TYPES.TRANSLATION,
-                  );
-                  elementTranslator.performanceData.translateEndTime = Date.now();
-                  performanceMonitor.logPerformanceData();
-                  reject(recoverError);
-                });
-            },
-            maxRetries: 2,
-          });
-        });
+        .catch((batchError) => recoverFromBatchError(batchError, translationCore, resolve, reject));
     } catch (error) {
-      ErrorHandler.handleError('翻译过程', error, ErrorHandler.ERROR_TYPES.TRANSLATION, {
-        retryable: true,
-        recoveryFn: () => {
-          translationCore
-            .translateCriticalElementsOnly()
-            .then(() => {
-              performanceMonitor.logPerformanceData();
-              resolve();
-            })
-            .catch((recoverError) => {
-              ErrorHandler.handleError(
-                '错误恢复',
-                recoverError,
-                ErrorHandler.ERROR_TYPES.TRANSLATION,
-              );
-              performanceMonitor.logPerformanceData();
-              reject(recoverError);
-            });
-        },
-        maxRetries: 2,
-      });
+      recoverFromBatchError(error, translationCore, resolve, reject);
     }
   });
 }
@@ -5450,28 +5466,36 @@ function clearNotificationDismissal() {
 /**
  * 版本检查请求模块
  * @file src/userscript/versionChecker/fetcher.js
+ * @version 1.13.28
+ * @description 拉取远端脚本内容用于版本比对。完整性校验仅在配置了可信哈希时启用：
+ *   未配置时不作校验（不伪造「已校验」的安全假象）；已配置却校验失败则拒绝使用内容。
+ *   此前硬编码的占位哈希无法通过真实产物校验且失败仅 warn，属于无效安全控制，已移除。
  */
 
 const FETCH_TIMEOUT_MS = 8000;
 const EXPONENTIAL_BASE = 2;
 
-const KNOWN_SCRIPT_HASHES = {
-  'https://github.com/Tanox/GitHub_Chinese/raw/main/build/GitHub_zh-cn.user.js':
-    'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
-};
+/**
+ * 可信脚本哈希表：由构建/发版流程注入，键为脚本 URL、值为 SHA-256 十六进制串。
+ * 运行期可通过 `globalThis.GITHUB_ZH_SCRIPT_HASHES` 覆盖（便于维护者在不改源码的情况下登记）。
+ * @type {Record<string, string>}
+ */
+const KNOWN_SCRIPT_HASHES =
+  (typeof globalThis !== 'undefined' && globalThis.GITHUB_ZH_SCRIPT_HASHES) || {};
 
 const versionFetcher = {
   async fetchWithRetry(url, maxRetries = 2, retryDelay = 1000) {
     let lastError;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      let timeoutId;
       try {
         if (CONFIG.debugMode && attempt > 0) {
           console.log(`[GitHub 中文翻译] 重试更新检查 (${attempt}/${maxRetries})...`);
         }
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+        timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
         const response = await fetch(url, {
           method: 'GET',
@@ -5483,20 +5507,17 @@ const versionFetcher = {
           credentials: 'omit',
         });
 
-        clearTimeout(timeoutId);
-
         if (!response.ok) {
           throw new Error(`HTTP错误! 状态码: ${response.status}`);
         }
 
         const scriptContent = await response.text();
 
+        // 仅在登记了可信哈希时校验；失败必须阻断，不能继续使用可疑内容
         if (KNOWN_SCRIPT_HASHES[url]) {
           const isValid = await this.verifyScriptIntegrity(scriptContent, url);
           if (!isValid) {
-            if (CONFIG.debugMode) {
-              console.warn('[GitHub 中文翻译] 脚本完整性验证失败，可能存在安全风险');
-            }
+            throw new Error('脚本完整性验证失败，已中止更新检查');
           }
         }
 
@@ -5509,6 +5530,9 @@ const versionFetcher = {
         }
 
         await utils.delay(retryDelay * Math.pow(EXPONENTIAL_BASE, attempt));
+      } finally {
+        // 超时定时器在成功、失败、重试各分支都要清理，避免遗留
+        if (timeoutId !== undefined) clearTimeout(timeoutId);
       }
     }
 
@@ -5518,9 +5542,8 @@ const versionFetcher = {
   async verifyScriptIntegrity(scriptContent, url) {
     try {
       const expectedHash = KNOWN_SCRIPT_HASHES[url];
-      if (!expectedHash) {
-        return true;
-      }
+      // 未登记可信哈希时不做校验，也不宣称已校验
+      if (!expectedHash) return true;
 
       const actualHash = await utils.sha256Hash(scriptContent);
       const isValid = actualHash === expectedHash;
@@ -6779,11 +6802,14 @@ const pageMonitor = {
 /**
  * 脚本生命周期管理器
  * @file src/userscript/main/lifecycle.js
- * @version 1.13.22
- * @date 2026-11-04
+ * @version 1.13.28
+ * @date 2026-11-06
  * @author Sut
  * @description 管理 init / start / cleanup 生命周期编排：翻译核心、页面监控与 UI 的启停
  */
+
+/** 缓存卸载回调引用：removeEventListener 必须使用与 addEventListener 相同的函数对象 */
+let unloadHandler = null;
 
 const lifecycleManager = {
   cleanup() {
@@ -6800,9 +6826,10 @@ const lifecycleManager = {
         configUI.cleanup();
       }
 
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('beforeunload', this.cleanup.bind(this));
-        window.removeEventListener('unload', this.cleanup.bind(this));
+      if (typeof window !== 'undefined' && unloadHandler) {
+        window.removeEventListener('beforeunload', unloadHandler);
+        window.removeEventListener('unload', unloadHandler);
+        unloadHandler = null;
       }
 
       if (typeof document !== 'undefined' && typeof window !== 'undefined' && window.visibilityChangeHandler) {
@@ -6846,8 +6873,14 @@ const lifecycleManager = {
       }
 
       if (typeof window !== 'undefined') {
-        window.addEventListener('beforeunload', this.cleanup.bind(this));
-        window.addEventListener('unload', this.cleanup.bind(this));
+        // 重复 init 时先注销旧监听，避免叠加多个回调
+        if (unloadHandler) {
+          window.removeEventListener('beforeunload', unloadHandler);
+          window.removeEventListener('unload', unloadHandler);
+        }
+        unloadHandler = () => this.cleanup();
+        window.addEventListener('beforeunload', unloadHandler);
+        window.addEventListener('unload', unloadHandler);
       }
 
       const visibilityChangeHandler = () => {
