@@ -37,7 +37,7 @@
 - 命名：目录 / CSS 类 kebab-case；文件 camelCase；类 / 组件 PascalCase；常量 UPPER_SNAKE_CASE；语义化 id kebab-case。
 - 关键逻辑中文注释；禁止 `any` / `var`；用 `===`。
 - 测试框架：Node 内置 `node --test`（非 Jest）。
-- 应用页脚须展示 `V<版本>· build <10 位编号>`（如 `V1.13.28· build 2611061200`）：版本号取自 `src/userscript/version.js` 的 `VERSION`，build 编号 `yymmddhhmm`（10 位，取代旧 12 位 `yyyymmddhhmm`）由 `src/lib/build-id.js` 的 `createBuildId()` 生成、`next.config.mjs` 注入 `NEXT_PUBLIC_BUILD_ID`；**不再展示更新日期**。权威正文见 `docs/coding-style.md` §15（非 §5.12）。
+- 应用页脚须展示 `V<版本>· build <10 位编号>`（如 `V1.13.29· build 2611071030`）：版本号取自 `src/userscript/version.js` 的 `VERSION`，build 编号 `yymmddhhmm`（10 位，取代旧 12 位 `yyyymmddhhmm`）由 `src/lib/build-id.js` 的 `createBuildId()` 生成、`next.config.mjs` 注入 `NEXT_PUBLIC_BUILD_ID`；**不再展示更新日期**。权威正文见 `docs/coding-style.md` §15（非 §5.12）。
 - 页脚语义化 id：`site-footer` / `site-footer-meta` / `site-footer-version` / `site-footer-build`；原型对应 `proto-footer` / `app-footer` / `wf-footer` 及 `*-footer-version` / `*-footer-build`。
 - 任务记录**单一来源**：`docs/tasks.md` 为所有任务（活动 / 优先级 / 验收要点）的唯一清单；其他文档（如 `docs/project.md`「活动任务」小节）仅引用、不维护任务条目。2026-10-03 收口，无独立冗余任务文档（历史 `TASKS.md` / `PROGRESS.md` / `IMPROVEMENT-TASKS.md` 已合并删除；`code-review/*` 为审查治理体系，保留）。
 

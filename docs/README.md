@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.13.28** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.29** ｜ 版本权威源：`src/userscript/version.js`
 
 `docs/` 是本项目规范文档的**唯一权威正文**（原 `openspec/` 已于 v1.12.1 合并移除，不再维护第二份索引或副本）。
 

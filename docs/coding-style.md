@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.13.28** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.29** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**编码风格、命名约定、目录组织、注释、错误处理、日志、React / TypeScript、API 路由、CSS、可访问性与安全红线的唯一权威正文**。数值型约束（行数、参数、复杂度）以 `eslint/rules/*.js` 与 `scripts/check-file-length.cjs` 的实际配置为准，本文如实转述；两者冲突时以配置文件为准并回改本文。流程类规范见 [development.md](./development.md)。
 
@@ -368,12 +368,12 @@ userscript/
 ```html
 <footer id="site-footer">
   <span>GitHub 中文 · 采集工作台</span>
-  <span id="site-footer-version">V1.13.28·</span>
-  <span id="site-footer-build">build 2611061200</span>
+  <span id="site-footer-version">V1.13.29·</span>
+  <span id="site-footer-build">build 2611071030</span>
 </footer>
 ```
 
-> 展示效果：`V1.13.28· build 2611061200`。
+> 展示效果：`V1.13.29· build 2611071030`。
 
 ---
 

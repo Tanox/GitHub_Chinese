@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_Chinese
-// @version      1.13.28
+// @version      1.13.29
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,8 +27,8 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.28
- * @date 2026-11-06
+ * @version 1.13.29
+ * @date 2026-11-07
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
  */
@@ -38,14 +38,14 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.28';
+const VERSION = '1.13.29';
 
 /**
  * 当前发版日期（YYYY-MM-DD）
  * @type {string}
  * @description 用户脚本元数据与文档使用；工作台页脚改由构建流程注入 build 编号展示。
  */
-const BUILD_DATE = '2026-11-06';
+const BUILD_DATE = '2026-11-07';
 
 /**
  * GitHub 元素选择器列表配置
@@ -957,6 +957,7 @@ const recoveryManager = {
 /**
  * 错误处理模块
  * @file errorHandler.js
+ * @version 1.13.28
  */
 
 const ErrorHandler = {
@@ -6832,7 +6833,11 @@ const lifecycleManager = {
         unloadHandler = null;
       }
 
-      if (typeof document !== 'undefined' && typeof window !== 'undefined' && window.visibilityChangeHandler) {
+      if (
+        typeof document !== 'undefined' &&
+        typeof window !== 'undefined' &&
+        window.visibilityChangeHandler
+      ) {
         document.removeEventListener('visibilitychange', window.visibilityChangeHandler);
         window.visibilityChangeHandler = null;
       }

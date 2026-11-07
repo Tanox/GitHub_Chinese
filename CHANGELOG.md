@@ -1,4 +1,15 @@
 # Changelog
+## [1.13.29] - 2026-11-07
+
+### Docs
+- 任务清单收口核对（2026-11-07）：`docs/tasks.md` Open 清单确认为空、无已完成任务待迁移，登记核对记录并更新时间戳；无剩余任务待推进。
+- 修正审查模板失真：`docs/code-review/CHECKLIST.md` 与 `STANDARDS.md` 的函数行数阈值由「≤ 100 行」更正为「≤ 150 有效行」（对齐 `eslint/rules/core.js` 的 `max-lines-per-function`），失效章节号 §5.6/§5.8 更正为实况（文件 ≤200 行由 `npm run lint:length` 强制）。
+
+### Chore
+- 版本展示位同步至 1.13.29（`package.json` / `package-lock.json` / `src/userscript/version.js` / README / docs / 原型），重建用户脚本产物。
+
+---
+
 ## [1.13.28] - 2026-11-06
 
 ### Added

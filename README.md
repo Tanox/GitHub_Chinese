@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_Chinese?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_Chinese?display_name=tag&color=green)](https://github.com/Tanox/GitHub_Chinese/releases)
 
-> 当前版本：**v1.13.28**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.29**（版本单一来源：`src/userscript/version.js`）
 
 > 应用页脚统一展示 `V<版本>· build <10 位编号>`（例如 `V1.2.3· build 2611051259`）：版本号取自单一版本源，build 编号为 `yymmddhhmm`（两位年+月+日+时+分），由构建流程在 dev / build 启动时自动注入 `NEXT_PUBLIC_BUILD_ID`（唯一实现 `src/lib/build-id.js`），无需手工维护。规范见 [`docs/coding-style.md` §15](docs/coding-style.md#15-页脚版本信息)。
 
@@ -71,7 +71,7 @@ npm run dev     # 打开 http://localhost:3000
 
 > **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
 
-> **原型（v1.13.28）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
+> **原型（v1.13.29）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
 
 本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
 
