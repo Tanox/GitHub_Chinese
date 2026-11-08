@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.13.31** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**编码风格、命名约定、目录组织、注释、错误处理、日志、React / TypeScript、API 路由、CSS、可访问性与安全红线的唯一权威正文**。数值型约束（行数、参数、复杂度）以 `eslint/rules/*.js` 与 `scripts/check-file-length.cjs` 的实际配置为准，本文如实转述；两者冲突时以配置文件为准并回改本文。流程类规范见 [development.md](./development.md)。
 
@@ -103,7 +103,7 @@ userscript/
 | Hook | `use` 前缀 camelCase | `useCollector.ts` |
 | 类 / 接口 / 类型 | PascalCase | `ErrorHandler`、`CollectErrorCode` |
 | 变量 / 函数 | camelCase，动词开头（get/set/is/has/handle/init…） | `findAllMatches()` |
-| 常量 | UPPER_SNAKE_CASE | `MAX_URLS`、`MIN_BUNDLE_SIZE` |
+| 常量 | UPPER_SNAKE_CASE | `MAX_COLLECT_URLS`、`MIN_BUNDLE_SIZE` |
 | 布尔值 | `is` / `has` / `can` 前缀 | `isLoaded`、`canProceed` |
 | CSS 类 | kebab-case | `.collector-topbar` |
 | 语义化 id | kebab-case（见 §14） | `data-center-input` |
@@ -285,7 +285,7 @@ userscript/
 - **请求体先校验后使用**：复用 `src/lib/request-body.js`、`url-guard.js`（SSRF 防护：拒绝内网 / 链路本地 / 元数据地址与非 http(s) 协议）；畸形输入返回 `400` + 明确错误体，服务端逻辑不做二次假设。
 - 鉴权与限流统一走 `src/lib/api-guard.ts`：默认按客户端 IP 限流（60s 30 次，`COLLECT_RATE_LIMIT` / `COLLECT_RATE_WINDOW_MS` 可调），默认**不信任任何代理头**，仅在可信边缘后显式配置 `COLLECT_TRUSTED_IP_HEADER`；桶数量上限 5000，超限先清过期再淘汰最旧桶（防限流重置绕过）。限流命中返回 `429` + `Retry-After`。
 - 集成服务鉴权：`COLLECT_SERVICE_TOKEN` 恒定时间比对 `Authorization: Bearer`，`/health` 探活始终放行；未配置令牌默认放行（仅本机 / 内网）。
-- SSE 响应：事件统一 `{type:'log'|'error'|'progress'|'done'}`；写入前检查客户端是否已断开，`controller.enqueue` 需自包 try/catch。
+- SSE 响应：事件统一 `{type:'log'|'error'|'progress'|'done'|'term'}`；写入前检查客户端是否已断开，`controller.enqueue` 需自包 try/catch。
 - 错误响应：`{error: string, code?: CollectErrorCode}`；上游失败 `502`，参数非法 `400`，未授权 `401`，限流 `429`。
 
 ---
@@ -316,7 +316,7 @@ userscript/
 | 指标 | 预算 | 守护方式 |
 |------|------|----------|
 | 用户脚本产物体积 | 约 196 KB；冒烟下限 50 KB | `tests/smoke.test.cjs` + `npm run validate` |
-| 批量采集 URL 数 | ≤ 50 / 批 | `MAX_URLS` 常量 |
+| 批量采集 URL 数 | ≤ 20 / 批 | `MAX_COLLECT_URLS` 常量（`request-body.js`） |
 | 无头浏览器并发 | 槽位 2（超出排队）；单批页并发 ≤ 3 | `browser-semaphore.js` / `batch-collector.js` |
 | 请求超时 | 词典建议 15s；采集页 30s | `AbortController` + `setTimeout` |
 | 限流窗口 | 60s 30 次 / IP（可配） | `api-guard.ts` |

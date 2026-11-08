@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文架构文档
 
-> 版本：**v1.13.31** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -371,7 +371,7 @@ GitHub_Chinese/
 │   │   ├── config/                   # 全局配置与配置分片
 │   │   ├── version.js                # 单一版本源
 │   │   └── versionUtils.js / versionChecker/ / updateNotification/
-│   ├── dictionaries/                 # codespaces / explore / common(nav,repo,pr,issue,misc)
+│   ├── dictionaries/                 # codespaces / explore / common(nav,repo,pr,issue,misc 及其分片)
 │   ├── app/                          # Next.js App Router：/ ·/overview ·/coverage ·/dictionary ·/dictionary/manage + api/* + styles/
 │   ├── components/                   # Shell / TopNav（服务端）、navItems（导航源）、CollectorConsole（客户端岛）、叶组件
 │   ├── hooks/useCollector.ts         # 采集状态管理
@@ -460,7 +460,7 @@ GitHub_Chinese/
 - `puppeteer-core` 为**可选运行时依赖**（配合系统已安装的 Chrome / Edge）：由 `browser-resolver.js` 以
   动态 `import()`（`turbopackIgnore`）在运行期解析；不声明 `serverExternalPackages`（该包为 ESM，显式外部化会触发
   Turbopack 告警）；未安装依赖或未找到可用浏览器时批量采集返回明确错误提示，而非崩溃
-- `src/proxy.ts` 为所有响应附加 `X-Content-Type-Options`、`X-Frame-Options` 等基础安全头
+- `src/proxy.ts` 为所有响应附加 `X-Content-Type-Options` 等基础安全头（`X-Frame-Options` 已由 CSP `frame-ancestors` 取代，不再下发）
 - **采集错误码约定（P2-7）**：`src/lib/collect-codes.js` 定义服务端与前端共用的 `CollectErrorCode`
   （纯数据模块，不含 `fs`/`child_process`，可安全被客户端导入）；服务端 `error` 事件均携带 `code`，
   前端 `useCollector` 与终端日志据此渲染 `E<code>` 徽标，便于按类型分流处理
@@ -468,7 +468,7 @@ GitHub_Chinese/
   `server/collect-service/`（Express + SSE，直接复用 `collector-core`）；Next 路由配置 `COLLECT_SERVICE_URL`
   后将请求代理至该服务并透传其 SSE 流，上游不可用 / 401 / 中断时自动回退本地采集（默认行为不变）。
   部署、接口、鉴权契约与排查的唯一权威文档见 [collect-service.md](./collect-service.md)
-- 原型为一组轻量高保真静态预览（`prototype/prototype.html` 等高保真原型、`prototype/wireframes.html` 组件库规范、`prototype/app.html` 应用预览），与应用代码完全分离；`server/` 仅含 `collect-service/`，采集引擎仅由 Next 工作台（`src/app/api/*`）与自托管 `server/collect-service/` 使用。
+- 原型为一组轻量高保真静态预览（`prototype/prototype.html` 等高保真原型、`prototype/wireframes.html` 组件库规范、`prototype/app.html` 应用预览），与应用代码完全分离；`server/` 仅含 `collect-service/`，采集引擎仅由工作台（`src/app/api/*`）与自托管 `server/collect-service/` 使用。
 
 架构边界：Next 仅处理 `app` / `components` / `lib` / `hooks` / `types` / `proxy.ts`；
 用户脚本核心 `.js` 由 `scripts/build/build.cjs` 独立构建，二者互不打包

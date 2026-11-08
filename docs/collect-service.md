@@ -1,6 +1,6 @@
 # 独立采集服务（自托管部署与接入）
 
-> 适用版本：**v1.13.31** ｜ 维护者：Sut
+> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
 > 本文件是「无浏览器 / serverless 采集」的**唯一权威文档**（对应任务 **W5** 决议：采用自托管 `server/collect-service` 作为无浏览器采集的替代路径）。分支 / 提交 / 编码 / 审查规范见 `docs/README.md` 索引，本文不重复。
 
 ---
@@ -77,7 +77,7 @@ COLLECT_SERVICE_PORT=8787 COLLECT_SERVICE_TOKEN='你的强令牌' node server/co
 | `POST` | `/api/batch-collect` | 批量 URL 采集，SSE 流式返回 | `{ "urls": ["https://…"], "cookies"?: [...] }` → `collectFromUrls` |
 | `GET`  | `/health`  | 存活探测，**始终免鉴权** | 返回 `{ "ok": true }` |
 
-> SSE 事件帧格式：`data: <JSON>\n\n`；采集过程按 `type` 区分 `log` / `progress` / `result` / `error`（与 Next 本地采集的 SSE 协议一致，前端无需区分来源）。
+> SSE 事件帧格式：`data: <JSON>\n\n`；采集过程按 `type` 区分 `log` / `progress` / `done` / `term` / `error`（与 Next 本地采集的 SSE 协议一致，前端无需区分来源）。
 
 ### 3.5 进程保活与反向代理（建议）
 

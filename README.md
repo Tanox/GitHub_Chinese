@@ -1,11 +1,11 @@
 # GitHub Chinese 简体中文
 
-让 GitHub 以中文的节奏呼吸。这是一套为 GitHub Chinese 简体中文插件量身定制的设计系统。它承袭 GitHub 的深色美学、精确排版与克制交互，同时以中文衬线字体、语义色彩与细腻动效，塑造属于插件自身的独立识别。
+让 GitHub 以中文的节奏呼吸。GitHub Chinese 简体中文是一款浏览器用户脚本：基于本地词典即时翻译 GitHub 全站界面文字，无需联网、不破坏布局，并附带 Next.js 词典采集工作台与高保真原型。
 
 [![GitHub license](https://img.shields.io/github/license/Tanox/GitHub_Chinese?color=blue)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/Tanox/GitHub_Chinese?display_name=tag&color=green)](https://github.com/Tanox/GitHub_Chinese/releases)
 
-> 当前版本：**v1.13.31**（版本单一来源：`src/userscript/version.js`）
+> 当前版本：**v1.13.32**（版本单一来源：`src/userscript/version.js`）
 
 > 应用页脚统一展示 `V<版本>· build <10 位编号>`（例如 `V1.2.3· build 2611051259`）：版本号取自单一版本源，build 编号为 `yymmddhhmm`（两位年+月+日+时+分），由构建流程在 dev / build 启动时自动注入 `NEXT_PUBLIC_BUILD_ID`（唯一实现 `src/lib/build-id.js`），无需手工维护。规范见 [`docs/coding-style.md` §15](docs/coding-style.md#15-页脚版本信息)。
 
@@ -52,7 +52,7 @@
 项目附带一个基于 Next.js 16 的本地采集工作台，用于从 GitHub 原生界面抓取 UI 词条并沉淀中文本地化词典。
 
 ```bash
-npm install
+npm ci
 npm run dev     # 打开 http://localhost:3000
 ```
 
@@ -69,11 +69,11 @@ npm run dev     # 打开 http://localhost:3000
 
 ## 高保真原型
 
-> **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next 工作台为准。
+> **分工说明**：`prototype/` 是**轻量高保真预览**（评审 / 演示用途），仅前端静态资源，**不接入真实采集后端、不含数据持久化**；`src/app`（Next.js 采集工作台）才是正式的采集 / 审阅 / 词典沉淀运行环境，二者功能不重叠、数据各自独立。改造以 Next.js 采集工作台为准。
 
-> **原型（v1.13.31）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
+> **原型（v1.13.32）**：原型为一组轻量高保真静态预览（评审 / 演示用途），与应用代码（`src/` / `server/` / `scripts/`）完全分离，直接用浏览器打开即可预览，无需服务器或构建。`server/` 目录仅保留独立采集服务 `collect-service`。
 
-本项目维护一套高保真原型，呈现插件在真实使用场景中的样貌，方便评审与迭代：
+本项目维护一套高保真原型，呈现用户脚本与工作台在真实使用场景中的样貌，方便评审与迭代：
 
 | 模块 | 路径 | 说明 |
 |------|------|------|
@@ -88,7 +88,7 @@ npm run dev     # 打开 http://localhost:3000
 ```
 src/
 ├── app/                     # 词典采集工作台（Next.js 16 App Router）
-│   ├── api/                 # collect / batch-collect / dictionary/suggest 流式接口
+│   ├── api/                 # collect / batch-collect（SSE 流式）+ dictionary/suggest（JSON）
 │   ├── overview|coverage|dictionary/   # 指标 / 覆盖率看板 / 词典助手 + 词库管理台
 │   └── styles/              # 工作台样式（17 个模块化 CSS，由 Next 构建打包）
 ├── components/              # 工作台组件（服务端外壳 + 'use client' 客户端岛）
@@ -121,7 +121,7 @@ docs/                        # 项目规范文档（唯一权威正文，入口 
 ```bash
 git clone https://github.com/Tanox/GitHub_Chinese.git
 cd GitHub_Chinese
-npm install
+npm ci
 npm test        # lint → 长度门禁 → 构建 → 单测（含产物冒烟）
 ```
 

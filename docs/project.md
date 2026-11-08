@@ -1,6 +1,6 @@
 # 项目规范
 
-> 版本：**v1.13.31** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 项目概述
 
@@ -44,7 +44,7 @@ GitHub_Chinese/
 │   │   ├── version.js                # 版本信息（单一版本源）
 │   │   └── versionUtils.js           # 版本比较与提取
 │   ├── dictionaries/                 # 翻译词典
-│   │   └── common/                   # 通用词典（nav / repo / pr / issue / misc）
+│   │   └── common/                   # 通用词典（nav / repo / pr / issue / misc 及其分片）
 │   ├── app/                          # Next.js App Router（采集工作台，五页：/ ·/overview ·/coverage ·/dictionary ·/dictionary/manage）
 │   │   ├── page.tsx                  # 采集控制台（服务端外壳 + 客户端岛）
 │   │   ├── overview/page.tsx         # 项目概览（服务端实时指标）
@@ -129,7 +129,7 @@ GitHub_Chinese/
 ### 5. 采集工作台（Next.js）
 
 - `src/app/page.tsx`：采集控制台服务端外壳；交互收敛在 `src/components/CollectorConsole.tsx` 客户端岛
-- `src/app/overview/page.tsx` / `src/app/coverage/page.tsx` / `src/app/design/page.tsx`：项目概览、覆盖率/缺口看板（T22）、设计系统（均为静态预渲染，`coverage` 为 `force-dynamic` 服务端实时统计）
+- `src/app/overview/page.tsx` / `src/app/coverage/page.tsx`：项目概览、覆盖率/缺口看板（T22）（`coverage` 为 `force-dynamic` 服务端实时统计）
 - `src/components/Shell.tsx` / `TopNav.tsx`：服务端外壳与顶部导航；`navItems.ts` 为导航唯一数据源
 - `src/components/CollectorConsole.tsx` 叶组件：`ScriptInjector`（探针复制）、`DataCenter`（文本/批量归集 + JSON 导出）、`PreviewTable`（词条预览）、`Dashboard`（实时进度/终端/备份）
 - `src/hooks/useCollector.ts`：采集状态与 SSE 事件流解析；`collector-types.ts` / `collector-constants.ts` / `collector-sse.ts` 按职责拆分
@@ -175,7 +175,7 @@ npm run build:userscript  # 构建用户脚本 → build/GitHub_zh-cn.user.js
 npm run validate          # 产物校验（存在性 / 体积 / 元数据 / 语法）
 npm run dev               # 启动 Next 采集工作台
 # 原型为静态预览，直接用浏览器打开 prototype/prototype.html，无需命令
-npm run build             # 构建 Next 工作台（= build:web）
+npm run build             # 构建工作台（= build:web）
 npm run lint              # 代码检查
 npm test                  # lint → lint:length → build → test:unit
 ```
@@ -198,7 +198,7 @@ npm test                  # lint → lint:length → build → test:unit
 
 ### 当前版本与双链路
 
-- 当前版本 **v1.13.31**（2026-11-07）。
+- 当前版本 **v1.13.32**（2026-11-08）。
 - 双链路：① 用户脚本引擎（核心交付物 `build/GitHub_zh-cn.user.js`，Tampermonkey / Greasemonkey）；② 词典采集工作台（Next.js 16 App Router，五页 `/`、`/overview`、`/coverage`、`/dictionary`、`/dictionary/manage`）。两链路仅共享词典数据。
 
 ### 量化指标
@@ -393,7 +393,7 @@ npm test                  # lint → lint:length → build → test:unit
 |------|------|
 | **项目名称** | GitHub Chinese 简体中文 |
 | **仓库** | https://github.com/Tanox/GitHub_Chinese |
-| **当前版本** | 1.13.31 |
+| **当前版本** | 1.13.32 |
 | **核心语言** | JavaScript (ES6+) / TypeScript |
 | **目标平台** | 浏览器用户脚本 + Next.js 采集工作台 |
 | **默认署名** | Sut |

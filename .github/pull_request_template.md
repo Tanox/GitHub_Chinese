@@ -1,4 +1,4 @@
-## 📝 改动描述 (Description)
+## 改动描述 (Description)
 
 <!-- 请简要描述这个 PR 的改动内容和目的 -->
 
@@ -20,13 +20,7 @@
 
 ---
 
-## 🧪 测试计划 (Testing Plan)
-
-### 测试环境 (Test Environment)
-
-- 浏览器: <!-- 如 Chrome 120, Firefox 115 -->
-- 系统: <!-- 如 Windows 11, macOS 14 -->
-- 测试地址: <!-- 如 https://github.com/xxx -->
+## 测试计划 (Testing Plan)
 
 ### 测试步骤 (Test Steps)
 
@@ -44,7 +38,7 @@
 
 ---
 
-## 📸 截图/录屏 (Screenshots/Demo)
+## 截图/录屏 (Screenshots/Demo)
 
 <!-- 如果涉及 UI 改动，请提供截图或录屏 -->
 
@@ -54,47 +48,29 @@
 
 ---
 
-## ✅ 代码审查自检清单 (Author Checklist)
+## 作者自检清单 (Author Checklist)
 
-### 代码质量
+### 质量门禁
 
-- [ ] 代码已通过 `npm run lint` 检查
-- [ ] 代码已通过 `npm run format` 格式化
-- [ ] 代码已通过 `npm run build` 构建检查
-- [ ] 没有遗留的 `console.log` 或 `debugger` 语句
-- [ ] 没有硬编码的敏感信息（API Key、密码等）
-
-### 功能完整性
-
-- [ ] 已实现 PR 描述中的所有功能
-- [ ] 已处理边缘情况（null、undefined、空数组等）
-- [ ] 已添加必要的错误处理
-
-### 性能考虑
-
-- [ ] 没有明显的性能问题（如频繁的 DOM 操作、无限循环等）
-- [ ] 对于性能敏感的代码，已进行优化
-
-### 可维护性
-
-- [ ] 代码易于理解，必要时添加了注释
-- [ ] 变量和函数命名清晰
-- [ ] 没有重复代码（或已提取为公共函数）
-
-### 测试
-
-- [ ] 已进行手动测试，功能正常
 - [ ] `npm test` 全流水线通过（lint → 行数门禁 → 构建 → 单测）
-- [ ] 新增核心逻辑已配套 `tests/*.test.mjs` 或 `*.test.cjs` 用例
+- [ ] `npm run typecheck` 与 `npm run format:check` 通过
+- [ ] 无遗留 `console.log` / `debugger`，无硬编码敏感信息
 
-### 文档
+### 功能与测试
 
-- [ ] 已更新相关文档（README、注释等）
-- [ ] 代码中的注释清晰、准确
+- [ ] 已实现 PR 描述中的全部改动，并处理边缘情况（null / undefined / 空数组 / 非法 JSON）
+- [ ] 新增核心逻辑配套了 `tests/*.test.mjs` / `*.test.cjs` 用例；Bug 修复附带回归测试
+
+### 文档与版本
+
+- [ ] 公开行为 / 命令 / 目录 / API / 环境变量的改动已同步对应 SSOT 文档（见 [docs/README.md](docs/README.md)）
+- [ ] 发版改动已按 [development.md §8](docs/development.md) 同步版本号与 CHANGELOG
+
+> 完整审查清单见 [docs/code-review/CHECKLIST.md](docs/code-review/CHECKLIST.md)；编码规范见 [docs/coding-style.md](docs/coding-style.md)。
 
 ---
 
-## 🔗 相关问题 (Related Issues)
+## 相关问题 (Related Issues)
 
 <!-- 关联相关的 Issue，如 Fixes #123, Closes #456 -->
 
@@ -103,24 +79,14 @@ Related to #
 
 ---
 
-## 📌 其他说明 (Additional Notes)
+## 其他说明 (Additional Notes)
 
 <!-- 任何其他需要审查者注意的信息 -->
 
 ---
 
-## 👥 审查者 (Reviewers)
+## 审查者 (Reviewers)
 
-<!-- 请 @ 相关的审查者 -->
+<!-- 由 CODEOWNERS 自动分配；如需补充请 @ 相关成员 -->
 
 @
-
----
-
-**PR 创建者检查清单**:
-
-- [ ] PR 标题清晰、准确
-- [ ] PR 描述完整
-- [ ] 已分配审查者
-- [ ] 已添加适当的标签（如 `enhancement`, `bug`, `documentation`）
-- [ ] 已关联到相关 Project/Milestone（如果有）

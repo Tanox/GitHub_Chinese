@@ -1,8 +1,8 @@
-# GitHub Chinese 简体中文 · 字符串采集工作台原型设计
+# GitHub Chinese 简体中文 · 词典采集工作台原型设计
 
-> 版本：**v1.13.31** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
 >
-> 说明：本文档描述「词典采集工作台」（亦名 GitHub 页面字符串采集工具）的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/`](../prototype/)：[高保真原型（采集流程）](../prototype/prototype.html) 与 [组件库规范 Wireframes](../prototype/wireframes.html)。
+> 说明：本文档描述「词典采集工作台」的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/`](../prototype/)：[高保真原型（采集流程）](../prototype/prototype.html) 与 [组件库规范 Wireframes](../prototype/wireframes.html)。
 >
 > 注：翻译用户脚本（配置面板 `ui/configUI`、翻译核心 `translationCore` 等）为另一子系统，其规格见 [架构设计](./architecture.md)，不在本文档范围内。
 
@@ -103,7 +103,7 @@
 - 实现：`src/components/DataCenter.tsx`（tab `manual` / `url`，`downloadTermsAsJson` 导出 `{exportedAt,total,terms}`，按钮「智能清洗 / 导出 JSON / 开始分析 / 启动批量自动抓取」）。
 - 入口 API：
   - `POST /api/collect`：`{ data: string }`（文本粘贴通道）。
-  - `POST /api/batch-collect`：`{ urls: string[] }`（批量抓取通道，上限 `MAX_URLS = 50`）。
+  - `POST /api/batch-collect`：`{ urls: string[] }`（批量抓取通道，上限 `MAX_COLLECT_URLS = 20`）。
 - `collectFromUrls`：`guardUrl` SSRF 校验 → `acquireBrowserSlot` 信号量限流（`MAX_CONCURRENT_BROWSERS = 2`）→ `puppeteer.launch` → `collectBatch`（`MAX_CONCURRENT_PAGES = 3` 组内并发）→ 文本 `Set` → 写临时原始文件 → `runDictionaryProcessor`；`finally` 中 `browser.close()` + `releaseBrowserSlot()` + 删除临时文件。
 
 ### 3.3 解析入库
@@ -121,7 +121,7 @@ POST /api/batch-collect  { urls: string[] }         → text/event-stream (SSE)
 
 SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
 ```
-{ type: 'log' | 'error' | 'progress' | 'done', message?, data?, code? }
+{ type: 'log' | 'error' | 'progress' | 'done' | 'term', message?, data?, code? }
 ```
 - `progress.data`：`{ type:'fetch', current, total, url }` 或 `{ type:'analyze' }`。
 - `code`：错误时取 `CollectErrorCode`；`done` 时携带子进程退出码。
@@ -129,8 +129,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
 限流与防护常量：
 | 常量 | 值 | 位置 |
 |------|-----|------|
-| `MAX_URLS` | 50 | `request-body.js` |
-| `MAX_URLS_PER_REQUEST` | 20 | `collector-core.js` |
+| `MAX_COLLECT_URLS` | 20 | `request-body.js`（校验与执行共用） |
 | `MAX_CONCURRENT_BROWSERS` | 2 | `browser-semaphore.js` |
 | `MAX_CONCURRENT_PAGES` | 3 | `batch-collector.js` |
 | `NAVIGATION_TIMEOUT_MS` | 30000 | `page-navigation.js` |
@@ -170,7 +169,7 @@ SSE 事件（`CollectEvent`，见 `src/lib/collector-logic.ts`）：
 
 ```
 CollectEvent = {
-  type: 'log' | 'error' | 'progress' | 'done',
+  type: 'log' | 'error' | 'progress' | 'done' | 'term',
   message?: string,
   data?: { type:'fetch', current, total, url } | { type:'analyze' } | ...,
   code?: CollectErrorCode

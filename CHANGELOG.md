@@ -1,4 +1,30 @@
 # Changelog
+## [1.13.32] - 2026-11-08
+
+### Docs
+- 全量文档一致性复审（第二遍，消除 SSOT 违规、前后矛盾与冗余表述）：
+  - `code-review/PROCESS.md`：移除内嵌 PR 描述模板（改引用 `.github/pull_request_template.md`）；合并策略统一为 merge commit（对齐 development.md §3.2/§5，删除 squash / rebase 建议）；SLA 对齐（首次回应 1 个工作日、完成 2 个工作日、紧急 4 小时、作者回应 24 小时）；紧急修复流程去重；`git pull upstream` 修正为 `origin`；横幅格式对齐标准并去除装饰性 emoji。
+  - `code-review/STANDARDS.md`：移除与 PROCESS.md 重复的效率指标表（改引用）；SLA 改引用并对齐数值；修正与代码现状不符的「可选链不兼容」示例（仓库已广泛使用 `?.`）；脚本元数据检查项改为「@version 与单一版本源一致」。
+  - `code-review/SETUP_GUIDE.md`：由「一次性启用叙事」改写为现状配置手册；分支保护状态检查统一为 `lint` / `build` / `integration` / `security` 四个 CI 作业名（修正自相矛盾的 `test`）；`npm install` → `npm ci`；SLA / 指标数字改引用 PROCESS.md。
+  - `.github/pull_request_template.md`：去除装饰性 emoji；作者自检清单对齐实际门禁（`npm test` / `typecheck` / `format:check`）并引用 CHECKLIST.md，不再复制审查清单（SSOT）；`ISSUE_TEMPLATE` 两个文件同步去除 emoji。
+  - `code-review/CHECKLIST.md`：补充标准横幅与「由 STANDARDS.md 派生」说明。
+- 修正与代码实现不符的陈旧事实：
+  - 批量采集 URL 上限 `MAX_URLS = 50` → 实际 `MAX_COLLECT_URLS = 20`（`prototype.md`、`coding-style.md` §2 / §12）。
+  - SSE 事件枚举补 `term`（`prototype.md` ×2、`collect-service.md`；后者误写的 `result` 修正为 `done` / `term`）。
+  - `project.md` 删除 `/design` 幽灵路由引用；补全 `common/` 分片说明；`architecture.md` 同步补全分片清单。
+  - `architecture.md` 修正 `proxy.ts` 安全头描述（`X-Frame-Options` 已由 CSP `frame-ancestors` 取代，不再下发）。
+  - `prototype.md` 标题去除禁用术语「字符串采集工作台」；`README.md` 重写首段（设计系统时代残留文案 → 用户脚本定位）并替换「插件」「Next 工作台」等禁用术语；`dictionary/suggest` 修正为 JSON 接口（非流式）；`npm install` → `npm ci`。
+  - `development.md` §1.1 环境变量表补 `COLLECT_API_TOKEN` 与 `GHZH_LLM_KEY`（代码已使用但文档缺失）。
+  - `tasks.md` / `tasks-done.md` / `collect-service.md` 横幅格式对齐标准。
+
+### Fixed
+- `src/app/robots.ts` 与 `src/app/sitemap.ts` 的 `NEXT_PUBLIC_SITE_URL` 兜底默认值由过期域名 `tanox.github.io/GitHub_i18n` 改为 `tanox.github.io/GitHub_Chinese`（与 `layout.tsx` 一致）：未配置环境变量时 sitemap / robots 不再指向旧仓库地址。
+
+### Chore
+- 版本展示位同步至 1.13.32：单一版本源 `src/userscript/version.js`、`package.json` / `package-lock.json`、`README.md`、`docs/*.md` 横幅、`prototype/*.html` 展示位，并重建用户脚本产物。
+
+---
+
 ## [1.13.31] - 2026-11-07
 
 ### Docs
