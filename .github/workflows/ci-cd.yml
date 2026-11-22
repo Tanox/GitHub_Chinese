@@ -185,10 +185,10 @@ jobs:
     - name: 组装发布包
       if: steps.guard.outputs.skip == 'false'
       run: |
-        mkdir -p release
-        cp build/GitHub_zh-cn.user.js release/
-        cp README.md LICENSE release/ 2>/dev/null || true
-        cd release
+        mkdir -p .tmp/release
+        cp build/GitHub_zh-cn.user.js .tmp/release/
+        cp README.md LICENSE .tmp/release/ 2>/dev/null || true
+        cd .tmp/release
         zip -r ../GitHub_zh-cn_v${{ steps.version.outputs.version }}.zip .
 
     # tag 不存在时 action 会在当前 commit 自动创建 v<版本号> tag
@@ -197,10 +197,10 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v${{ steps.version.outputs.version }}
-        body_path: release-notes.md
+        body_path: .tmp/release-notes.md
         files: |
           build/GitHub_zh-cn.user.js
-          GitHub_zh-cn_v${{ steps.version.outputs.version }}.zip
+          .tmp/GitHub_zh-cn_v${{ steps.version.outputs.version }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

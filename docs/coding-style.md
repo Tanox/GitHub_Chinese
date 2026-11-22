@@ -1,6 +1,6 @@
 # 代码风格规范
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.33** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**编码风格、命名约定、目录组织、注释、错误处理、日志、React / TypeScript、API 路由、CSS、可访问性与安全红线的唯一权威正文**。数值型约束（行数、参数、复杂度）以 `eslint/rules/*.js` 与 `scripts/check-file-length.cjs` 的实际配置为准，本文如实转述；两者冲突时以配置文件为准并回改本文。流程类规范见 [development.md](./development.md)。
 
@@ -416,6 +416,35 @@ npm test                # 质量流水线：lint → lint:length → build → t
 ### Git 钩子
 
 `.husky/pre-commit` 执行 `npx lint-staged`：对暂存的 `*.{js,cjs,mjs,ts,tsx}` 依次 `eslint --fix` + `prettier --write`（配置见 `package.json` 的 `lint-staged`）。提交前检查失败会中止提交；完整流程见 [development.md §4.4](./development.md)。
+
+---
+
+## 19. 临时文件管理
+
+**唯一约定**：所有瞬时产物（日志、缓存、中间产物、测试输出、下载文件、临时数据）一律写入项目根 `.tmp/`；
+**禁止在项目根目录或 `.tmp/` 之外创建任何临时文件**。目标是让临时文件的产生、存放与清理行为一致且可预期。
+
+- **路径来源唯一**：ESM 使用 `src/lib/temp-paths.js`，CommonJS 使用 `scripts/temp-paths.cjs`；
+  二者的 `TEMP_ROOT` 必须一致（由 `tests/temp-paths.test.mjs` 守住）。**不得**自行拼接
+  `process.cwd()` / `__dirname` / `os.tmpdir()` 构造临时路径。
+- **自动创建**：落盘前调用 `ensureTempDir()`（幂等）；并发场景用 `makeTempPath(prefix, ext)` 取唯一路径，
+  避免请求间互相覆盖；用 `tempPath(...segments)` 解析 `.tmp/` 内路径。
+- **易于清理**：`npm run clean:tmp` 清空 `.tmp/`；`npm run clean` 一并清理。CI 复用同一命令。
+- **被版本控制忽略**：`.gitignore` 已覆盖 `.tmp/`，临时文件一律不提交。
+- **持久产物例外**：`build/GitHub_zh-cn.user.js`（发布产物）、`docs/collect-history.json`、
+  `docs/untranslated-terms.txt`、`docs/har-imported-terms.txt`（应用读取的生成数据）不是临时文件，
+  维持现有路径与版本控制策略，不迁入 `.tmp/`。
+
+| 错误做法 | 正确做法 |
+|----------|----------|
+| `fs.writeFileSync('debug.log', ...)`（根目录） | `fs.writeFileSync(tempPath('debug.log'), ...)` |
+| `path.join(process.cwd(), '.tmp-x.json')` | `tempPath('integration-history.json')` |
+| `path.join(os.tmpdir(), ...)`（散落系统临时目录） | `makeTempPath('raw', '.txt')` |
+| CI 在根目录 `mkdir -p release` | 输出到 `.tmp/release/`，zip 落在 `.tmp/` |
+
+CI 发布链路已按本规范对齐：`scripts/extract-release-notes.cjs` 写 `.tmp/release-notes.md`；
+发布包在 `.tmp/release/` 组装，zip 落在 `.tmp/`；`softprops/action-gh-release` 的 `body_path` 与 `files`
+均指向 `.tmp/`。
 
 ---
 

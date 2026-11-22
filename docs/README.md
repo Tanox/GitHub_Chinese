@@ -1,6 +1,6 @@
 # 文档索引
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.33** ｜ 版本权威源：`src/userscript/version.js`
 
 `docs/` 是本项目规范文档的**唯一权威正文**（原 `openspec/` 已于 v1.12.1 合并移除，不再维护第二份索引或副本）。
 
@@ -12,7 +12,7 @@
 |------|----------|------|
 | 项目定位、目录结构、量化指标 | [project.md](./project.md) | 指标以 `/overview` 页服务端实时统计为准 |
 | 架构、技术选型、数据流 | [architecture.md](./architecture.md) | 两条交付链路 |
-| 编码风格、命名、目录组织、注释、安全红线 | [coding-style.md](./coding-style.md) | 代码规范的唯一正文 |
+| 编码风格、命名、目录组织、注释、安全红线、临时文件管理 | [coding-style.md](./coding-style.md) | 代码规范的唯一正文；临时文件统一 `.tmp/`（§19） |
 | 分支、提交、审查流程、发布、测试、命令表 | [development.md](./development.md) | 流程规范的唯一正文 |
 | 原型与页面设计 | [prototype.md](./prototype.md) | 原型文件本身在 `prototype/` |
 | 无浏览器采集（自托管服务）部署与接入 | [collect-service.md](./collect-service.md) | 对应任务 W5：自托管 `server/collect-service` 的部署、接口、接入与排查 |

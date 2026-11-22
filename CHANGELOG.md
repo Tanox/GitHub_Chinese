@@ -1,4 +1,23 @@
 # Changelog
+## [1.13.33] - 2026-11-22
+
+### Added
+- **统一临时文件管理规范**（`docs/coding-style.md` §19）：所有瞬时产物（日志 / 缓存 / 中间产物 / 测试输出 / 下载文件）一律写入项目根 `.tmp/`，禁止散落根目录或其它位置；新增 `src/lib/temp-paths.js`（ESM）与 `scripts/temp-paths.cjs`（CJS）双 helper，提供 `TEMP_ROOT` / `ensureTempDir` / `tempPath` / `makeTempPath` / `cleanTempDir`，根目录由模块位置反推（不依赖 cwd），并发用 UUID 唯一命名。
+- 新增 `npm run clean:tmp` 一键清空 `.tmp/`；`npm run clean` 同步纳入 `.tmp/`。
+- 新增 `tests/temp-paths.test.mjs`：守住 ESM/CJS 根目录一致、路径落在 `.tmp/`、唯一命名、幂等创建，并回归根目录不再产生旧式临时文件。
+
+### Changed
+- 迁移全部根目录临时写入点至 `.tmp/`：`scripts/extract-release-notes.cjs` → `.tmp/release-notes.md`；集成测试采集历史 → `.tmp/integration-history.json`；词典清洗原始文本由 `os.tmpdir()` 改为 `.tmp/` 唯一路径；`tests/collect-dict.test.cjs` 改用统一 helper。
+- CI 发布链路对齐：发布包在 `.tmp/release/` 组装、zip 落在 `.tmp/`，`softprops/action-gh-release` 的 `body_path` / `files` 同步改指 `.tmp/`。
+- `tsconfig.json` 设 `tsBuildInfoFile: ./.tmp/tsconfig.tsbuildinfo`，TS 增量缓存不再落在根目录。
+- `.gitignore` 新增 `.tmp/` 规则并标注历史规则仅为兼容保留；`docs/README.md`（SSOT 表）、`docs/development.md`（命令表）、`docs/architecture.md`（采集数据流）同步指向新规范。
+- 根目录现存 9 个历史临时输出文件与 `tsconfig.tsbuildinfo` 已迁入 `.tmp/`，根目录恢复整洁。
+
+### Chore
+- 版本展示位同步至 1.13.33，重建用户脚本产物。
+
+---
+
 ## [1.13.32] - 2026-11-08
 
 ### Docs

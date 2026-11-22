@@ -1,6 +1,6 @@
 # 开发流程规范
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.33** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**分支策略、提交信息、代码审查流程、质量门禁、测试与发布流程的唯一权威正文**。编码风格与命名见 [coding-style.md](./coding-style.md)，文档权威来源分工见 [docs/README.md](./README.md)。
 
@@ -71,7 +71,8 @@ npm run dev        # http://localhost:3000
 | `npm test` | 质量流水线：`lint` → `lint:length` → `build` → `test:unit` |
 | `npm run dict:collect -- <文件>` | 从文本文件采集待翻译词条 |
 | `npm run collect-service` | 启动独立采集服务 |
-| `npm run clean` | 清理 `build/` `dist/` `coverage/` `.next/` |
+| `npm run clean` | 清理 `build/` `dist/` `coverage/` `.next/` `.tmp/` |
+| `npm run clean:tmp` | 清空统一临时目录 `.tmp/`（日志 / 缓存 / 中间产物 / 测试输出） |
 | `npm run prepare` | 由 `npm ci` 自动调用（husky），一般不手工执行 |
 
 > 发布前建议额外跑：`npm run typecheck`、`npm run format:check`、`npm run test:integration`、`npm run validate`、`npm run build:userscript`。

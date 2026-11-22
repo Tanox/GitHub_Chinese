@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_Chinese
-// @version      1.13.32
+// @version      1.13.33
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,7 +27,7 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.32
+ * @version 1.13.33
  * @date 2026-11-07
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.32';
+const VERSION = '1.13.33';
 
 /**
  * 当前发版日期（YYYY-MM-DD）
@@ -953,171 +953,6 @@ const recoveryManager = {
     }
   },
 };
-
-/**
- * 错误处理模块
- * @file errorHandler.js
- * @version 1.13.28
- */
-
-const ErrorHandler = {
-  // 错误计数器
-  errorCounts: new Map(),
-
-  // 错误类型定义
-  ERROR_TYPES,
-
-  /**
-   * 初始化错误处理器
-   */
-  init() {
-    this.errorCounts.clear();
-    // 初始化所有错误类型的计数器
-    Object.values(this.ERROR_TYPES).forEach((type) => {
-      this.errorCounts.set(type, 0);
-    });
-  },
-
-  /**
-   * 处理错误
-   * @param {string} context - 错误发生的上下文
-   * @param {Error} error - 错误对象
-   * @param {string} type - 错误类型
-   * @param {Object} [options] - 错误处理选项
-   * @param {boolean} [options.retryable] - 是否可重试
-   * @param {Function} [options.recoveryFn] - 恢复函数
-   * @param {number} [options.maxRetries] - 最大重试次数
-   */
-  handleError(context, error, type = this.ERROR_TYPES.OTHER, options = {}) {
-    // 更新错误计数
-    const currentCount = this.errorCounts.get(type) || 0;
-    this.errorCounts.set(type, currentCount + 1);
-
-    // 记录错误日志
-    this.logError(context, error, type);
-
-    // 检查是否需要进行恢复
-    // 检查是否需要采取紧急措施
-    this.checkErrorThreshold(type, currentCount + 1);
-
-    // 把恢复结果回传给调用方（异步恢复可能失败），由调用方决定 resolve / reject
-    if (options.recoveryFn && typeof options.recoveryFn === 'function') {
-      return recoveryManager.attemptRecovery(context, options.recoveryFn, options.maxRetries || 1);
-    }
-    return undefined;
-  },
-
-  /**
-   * 记录错误日志
-   * @param {string} context - 错误发生的上下文
-   * @param {Error} error - 错误对象
-   * @param {string} type - 错误类型
-   */
-  logError(context, error, type) {
-    const sanitizedMessage = utils.sanitizeErrorMessage(error);
-    const errorMessage = `[GitHub 中文翻译] ${context}时出错 (${type}): ${sanitizedMessage}`;
-
-    if (CONFIG.debugMode) {
-      console.error(errorMessage);
-    } else {
-      console.error(errorMessage);
-    }
-  },
-
-  /**
-   * 检查错误阈值
-   * @param {string} type - 错误类型
-   * @param {number} count - 当前错误计数
-   */
-  checkErrorThreshold(type, count) {
-    const thresholds = {
-      [this.ERROR_TYPES.TRANSLATION]: CONFIG.performance?.maxTranslationErrorCount || 10,
-      [this.ERROR_TYPES.DOM_OPERATION]: CONFIG.performance?.maxDomErrorCount || DEFAULT_THRESHOLD,
-      [this.ERROR_TYPES.DICTIONARY]: CONFIG.performance?.maxDictionaryErrorCount || 5,
-      [this.ERROR_TYPES.NETWORK]: CONFIG.performance?.maxNetworkErrorCount || 3,
-      [this.ERROR_TYPES.PERFORMANCE]: CONFIG.performance?.maxPerformanceErrorCount || 15,
-      [this.ERROR_TYPES.OTHER]: CONFIG.performance?.maxOtherErrorCount || 25,
-    };
-
-    const threshold = thresholds[type] || DEFAULT_THRESHOLD;
-
-    if (count >= threshold) {
-      this.handleErrorOverflow(type, count, threshold);
-    }
-  },
-
-  /**
-   * 处理错误溢出
-   * @param {string} type - 错误类型
-   * @param {number} count - 当前错误计数
-   * @param {number} threshold - 阈值
-   */
-  handleErrorOverflow(type, count, threshold) {
-    if (CONFIG.debugMode) {
-      console.warn(`[GitHub 中文翻译] ${type} 错误超过阈值 (${count}/${threshold})，采取紧急措施`);
-    }
-
-    // 根据错误类型采取不同的紧急措施
-    switch (type) {
-      case this.ERROR_TYPES.TRANSLATION:
-        CONFIG.performance.enableFullTranslation = false;
-        break;
-      case this.ERROR_TYPES.DOM_OPERATION:
-        CONFIG.performance.batchDelay = Math.max(
-          CONFIG.performance.batchDelay || 0,
-          BATCH_DELAY_MIN_MS,
-        );
-        break;
-      case this.ERROR_TYPES.DICTIONARY:
-        if (typeof window.GitHub_i18n !== 'undefined' && window.GitHub_i18n.translationCore) {
-          window.GitHub_i18n.translationCore.initDictionary();
-        }
-        break;
-      case this.ERROR_TYPES.NETWORK:
-        CONFIG.performance.networkRequestInterval = Math.max(
-          CONFIG.performance.networkRequestInterval || NETWORK_INTERVAL_MIN_MS,
-          NETWORK_INTERVAL_MAX_MS,
-        );
-        break;
-      default:
-        CONFIG.performance.batchDelay = Math.max(
-          CONFIG.performance.batchDelay || 0,
-          BATCH_DELAY_FALLBACK_MS,
-        );
-        break;
-    }
-
-    // 重置错误计数
-    this.errorCounts.set(type, 0);
-  },
-
-  /**
-   * 获取错误统计信息
-   * @returns {Object} 错误统计对象
-   */
-  getErrorStats() {
-    const stats = {};
-    this.errorCounts.forEach((count, type) => {
-      stats[type] = count;
-    });
-    return stats;
-  },
-
-  /**
-   * 重置错误计数
-   * @param {string} [type] - 可选的错误类型，不提供则重置所有
-   */
-  resetErrorCounts(type) {
-    if (type) {
-      this.errorCounts.set(type, 0);
-    } else {
-      this.init();
-    }
-  },
-};
-
-// 初始化错误处理器
-ErrorHandler.init();
 
 /**
  * Codespaces 页面翻译词典
@@ -2122,14 +1957,14 @@ const partialTranslator = {
 
     for (const match of potentialMatches) {
       const key = match.key;
+      const value = store.dictionary[key];
       if (
         !Object.prototype.hasOwnProperty.call(store.dictionary, key) ||
-        store.dictionary[key].startsWith('待翻译: ')
+        typeof value !== 'string' ||
+        value.startsWith('待翻译: ')
       ) {
         continue;
       }
-
-      const value = store.dictionary[key];
 
       if (/^[0-9.,\s()[\]{}/*^$#@!~`|:;"'?>+-]+$/i.test(key)) {
         continue;
@@ -2251,7 +2086,9 @@ const dictionaryManager = {
       // 构建哈希表与 Trie 树：哈希用于精确查询，Trie 用于部分匹配
       Object.keys(this.dictionary).forEach((key) => {
         const value = this.dictionary[key];
-        if (value && !value.startsWith('待翻译: ')) {
+        // 非字符串值（如外部 updateDictionary 注入的数字/对象）必须跳过，
+        // 否则 startsWith 抛错会让整个 catch 分支清空词典，全站翻译失效
+        if (typeof value === 'string' && value && !value.startsWith('待翻译: ')) {
           // 原始键
           this.dictionaryHash.set(key, value);
           // 小写键（用于大小写不敏感匹配）
@@ -2378,6 +2215,178 @@ const dictionaryManager = {
     }
   },
 };
+
+/**
+ * 错误处理模块
+ * @file errorHandler.js
+ * @version 1.13.28
+ */
+
+const ErrorHandler = {
+  // 错误计数器
+  errorCounts: new Map(),
+
+  // 错误类型定义
+  ERROR_TYPES,
+
+  /**
+   * 初始化错误处理器
+   */
+  init() {
+    this.errorCounts.clear();
+    // 初始化所有错误类型的计数器
+    Object.values(this.ERROR_TYPES).forEach((type) => {
+      this.errorCounts.set(type, 0);
+    });
+  },
+
+  /**
+   * 处理错误
+   * @param {string} context - 错误发生的上下文
+   * @param {Error} error - 错误对象
+   * @param {string} type - 错误类型
+   * @param {Object} [options] - 错误处理选项
+   * @param {boolean} [options.retryable] - 是否可重试
+   * @param {Function} [options.recoveryFn] - 恢复函数
+   * @param {number} [options.maxRetries] - 最大重试次数
+   */
+  handleError(context, error, type = this.ERROR_TYPES.OTHER, options = {}) {
+    // 更新错误计数
+    const currentCount = this.errorCounts.get(type) || 0;
+    this.errorCounts.set(type, currentCount + 1);
+
+    // 记录错误日志
+    this.logError(context, error, type);
+
+    // 检查是否需要进行恢复
+    // 检查是否需要采取紧急措施
+    this.checkErrorThreshold(type, currentCount + 1);
+
+    // 把恢复结果回传给调用方（异步恢复可能失败），由调用方决定 resolve / reject
+    if (options.recoveryFn && typeof options.recoveryFn === 'function') {
+      return recoveryManager.attemptRecovery(context, options.recoveryFn, options.maxRetries || 1);
+    }
+    return undefined;
+  },
+
+  /**
+   * 记录错误日志
+   * @param {string} context - 错误发生的上下文
+   * @param {Error} error - 错误对象
+   * @param {string} type - 错误类型
+   */
+  logError(context, error, type) {
+    const sanitizedMessage = utils.sanitizeErrorMessage(error);
+    const errorMessage = `[GitHub 中文翻译] ${context}时出错 (${type}): ${sanitizedMessage}`;
+
+    if (CONFIG.debugMode) {
+      console.error(errorMessage);
+    } else {
+      console.error(errorMessage);
+    }
+  },
+
+  /**
+   * 检查错误阈值
+   * @param {string} type - 错误类型
+   * @param {number} count - 当前错误计数
+   */
+  checkErrorThreshold(type, count) {
+    const thresholds = {
+      [this.ERROR_TYPES.TRANSLATION]: CONFIG.performance?.maxTranslationErrorCount || 10,
+      [this.ERROR_TYPES.DOM_OPERATION]: CONFIG.performance?.maxDomErrorCount || DEFAULT_THRESHOLD,
+      [this.ERROR_TYPES.DICTIONARY]: CONFIG.performance?.maxDictionaryErrorCount || 5,
+      [this.ERROR_TYPES.NETWORK]: CONFIG.performance?.maxNetworkErrorCount || 3,
+      [this.ERROR_TYPES.PERFORMANCE]: CONFIG.performance?.maxPerformanceErrorCount || 15,
+      [this.ERROR_TYPES.OTHER]: CONFIG.performance?.maxOtherErrorCount || 25,
+    };
+
+    const threshold = thresholds[type] || DEFAULT_THRESHOLD;
+
+    if (count >= threshold) {
+      this.handleErrorOverflow(type, count, threshold);
+    }
+  },
+
+  /**
+   * 处理错误溢出
+   * @param {string} type - 错误类型
+   * @param {number} count - 当前错误计数
+   * @param {number} threshold - 阈值
+   */
+  handleErrorOverflow(type, count, threshold) {
+    if (CONFIG.debugMode) {
+      console.warn(`[GitHub 中文翻译] ${type} 错误超过阈值 (${count}/${threshold})，采取紧急措施`);
+    }
+
+    // 根据错误类型采取不同的紧急措施
+    switch (type) {
+      case this.ERROR_TYPES.TRANSLATION:
+        CONFIG.performance.enableFullTranslation = false;
+        break;
+      case this.ERROR_TYPES.DOM_OPERATION:
+        CONFIG.performance.batchDelay = Math.max(
+          CONFIG.performance.batchDelay || 0,
+          BATCH_DELAY_MIN_MS,
+        );
+        break;
+      case this.ERROR_TYPES.DICTIONARY:
+        // 词典恢复是独立入口，不复用 translationCore.init()（后者会重复挂载卸载钩子与定时器）
+        try {
+          dictionaryManager.init();
+        } catch (error) {
+          console.error('[GitHub 中文翻译] 词典紧急恢复失败:', error);
+        }
+        break;
+      case this.ERROR_TYPES.NETWORK:
+        // 网络异常时拉长间隔（上限），而非强制恒定值
+        CONFIG.performance.networkRequestInterval = Math.min(
+          Math.max(
+            CONFIG.performance.networkRequestInterval || NETWORK_INTERVAL_MIN_MS,
+            NETWORK_INTERVAL_MIN_MS,
+          ),
+          NETWORK_INTERVAL_MAX_MS,
+        );
+        break;
+      default:
+        CONFIG.performance.batchDelay = Math.max(
+          CONFIG.performance.batchDelay || 0,
+          BATCH_DELAY_FALLBACK_MS,
+        );
+        break;
+    }
+
+    // 重置错误计数
+    this.errorCounts.set(type, 0);
+  },
+
+  /**
+   * 获取错误统计信息
+   * @returns {Object} 错误统计对象
+   */
+  getErrorStats() {
+    const stats = {};
+    this.errorCounts.forEach((count, type) => {
+      stats[type] = count;
+    });
+    return stats;
+  },
+
+  /**
+   * 重置错误计数
+   * @param {string} [type] - 可选的错误类型，不提供则重置所有
+   */
+  resetErrorCounts(type) {
+    if (type) {
+      this.errorCounts.set(type, 0);
+    } else {
+      this.init();
+    }
+  },
+};
+
+// 初始化错误处理器
+ErrorHandler.init();
 
 /**
  * 页面模式检测模块
@@ -2616,8 +2625,10 @@ class VirtualNode {
   }
 
   hasContentChanged() {
+    // updateContentHash 会写回 this.contentHash，必须先保存旧值再比较，否则恒为 false
+    const previousHash = this.contentHash;
     const newHash = this.updateContentHash();
-    return newHash !== this.contentHash;
+    return newHash !== previousHash;
   }
 
   hasAttributesChanged() {
@@ -3474,6 +3485,18 @@ const elementTranslator = {
 
     const childNodes = Array.from(element.childNodes);
     const textNodesToProcess = [];
+    const detachedChildren = [];
+
+    // 子元素被移入 fragment 后，任何提前返回或异常都必须把它们放回原位置，
+    // 否则整棵子树会永久从 DOM 中消失
+    const restoreDetachedChildren = () => {
+      for (const { node, nextSibling } of detachedChildren) {
+        if (node.parentNode !== fragment) continue;
+        fragment.removeChild(node);
+        const anchor = nextSibling && nextSibling.parentNode === element ? nextSibling : null;
+        element.insertBefore(node, anchor);
+      }
+    };
 
     for (const node of childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
@@ -3486,9 +3509,11 @@ const elementTranslator = {
           }
         }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const nextSibling = node.nextSibling;
         try {
           element.removeChild(node);
           fragment.appendChild(node);
+          detachedChildren.push({ node, nextSibling });
           const childTranslated = this.translateElement(node);
           hasTranslatableContent ||= childTranslated;
         } catch (e) {
@@ -3496,9 +3521,11 @@ const elementTranslator = {
             console.error('[GitHub 中文翻译] 处理子元素失败:', e, '元素:', node);
           }
           try {
-            if (!node.parentNode) {
-              element.appendChild(node);
+            if (node.parentNode === fragment) {
+              fragment.removeChild(node);
             }
+            const anchor = nextSibling && nextSibling.parentNode === element ? nextSibling : null;
+            element.insertBefore(node, anchor);
           } catch (addBackError) {
             if (CONFIG.debugMode) {
               console.error('[GitHub 中文翻译] 将子元素添加回原始位置失败:', addBackError);
@@ -3509,6 +3536,7 @@ const elementTranslator = {
     }
 
     if (!hasTranslatableContent) {
+      restoreDetachedChildren();
       return false;
     }
 
@@ -3788,9 +3816,10 @@ const cacheController = {
 
     try {
       const commonKeys = Object.keys(dictionaryManager.dictionary)
-        .filter(
-          (key) => !dictionaryManager.dictionary[key].startsWith('待翻译: ') && key.length <= 50,
-        )
+        .filter((key) => {
+          const value = dictionaryManager.dictionary[key];
+          return typeof value === 'string' && !value.startsWith('待翻译: ') && key.length <= 50;
+        })
         .slice(0, 100);
 
       commonKeys.forEach((key) => {
@@ -3860,11 +3889,9 @@ async function processElementsInBatches(inputElements, getCurrentPageModeConfig)
         }
 
         if (endIndex < validElements.length) {
-          if (delay > 0) {
-            setTimeout(() => processBatch(endIndex), delay);
-          } else {
-            requestAnimationFrame(() => processBatch(endIndex));
-          }
+          // 使用 setTimeout 而非 requestAnimationFrame：后台标签页中 rAF 被浏览器暂停，
+          // 会让返回的 Promise 永久挂起，错误恢复链也无法完成
+          setTimeout(() => processBatch(endIndex), delay);
         } else {
           resolve();
         }
@@ -4463,6 +4490,75 @@ function addConfigUIStyles() {
 }
 
 /**
+ * 配置界面数据持久化模块
+ * @file src/userscript/ui/configUI/store.js
+ */
+
+const CONFIG_STORAGE_KEY = 'github-i18n-config';
+
+const configStore = {
+  loadUserSettings() {
+    try {
+      const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
+      if (!saved) return {};
+
+      // 尝试解码混淆的数据
+      const decoded = utils.deobfuscateData(saved);
+      if (decoded) {
+        return JSON.parse(decoded);
+      }
+
+      // 如果解码失败，尝试直接解析（兼容旧格式）
+      try {
+        return JSON.parse(saved);
+      } catch (_e) {
+        return {};
+      }
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 加载用户配置失败:', utils.sanitizeErrorMessage(error));
+      }
+      return {};
+    }
+  },
+
+  saveUserSettings(settings) {
+    try {
+      const jsonData = JSON.stringify(settings);
+      // 混淆存储配置数据
+      const obfuscatedData = utils.obfuscateData(jsonData);
+      localStorage.setItem(CONFIG_STORAGE_KEY, obfuscatedData);
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 保存用户配置失败:', utils.sanitizeErrorMessage(error));
+      }
+    }
+  },
+
+  resetUserSettings() {
+    localStorage.removeItem(CONFIG_STORAGE_KEY);
+  },
+
+  mergeUserConfig(target, source) {
+    const merge = (t, s) => {
+      for (const key in s) {
+        if (Object.prototype.hasOwnProperty.call(s, key)) {
+          if (s[key] && typeof s[key] === 'object' && !Array.isArray(s[key])) {
+            if (!t[key]) t[key] = {};
+            merge(t[key], s[key]);
+          } else {
+            t[key] = s[key];
+          }
+        }
+      }
+      return t;
+    };
+
+    return merge(target, source);
+  },
+};
+
+/**
  * GitHub 中文翻译性能监控组件
  * @file performanceMonitor.js
  * @version 1.13.2
@@ -4591,8 +4687,8 @@ function createPerformanceMonitoringSection() {
 function updatePerformanceStats() {
   if (window.isPageUnloading) return;
 
-  if (window.translationCore && window.translationCore.getPerformanceStats) {
-    const stats = window.translationCore.getPerformanceStats();
+  if (translationCore && typeof translationCore.getPerformanceStats === 'function') {
+    const stats = translationCore.getPerformanceStats();
 
     const durationEl = document.getElementById('github-i18n-stat-duration');
     if (durationEl) durationEl.textContent = `${stats.totalDuration} ms`;
@@ -4628,8 +4724,8 @@ function updatePerformanceStats() {
  * @returns {Object} 性能数据对象
  */
 function exportPerformanceStats() {
-  if (window.translationCore && window.translationCore.getPerformanceStats) {
-    const stats = window.translationCore.getPerformanceStats();
+  if (translationCore && typeof translationCore.getPerformanceStats === 'function') {
+    const stats = translationCore.getPerformanceStats();
     const exportData = {
       timestamp: new Date().toISOString(),
       version: VERSION,
@@ -4650,75 +4746,6 @@ function exportPerformanceStats() {
   }
   return null;
 }
-
-/**
- * 配置界面数据持久化模块
- * @file src/userscript/ui/configUI/store.js
- */
-
-const CONFIG_STORAGE_KEY = 'github-i18n-config';
-
-const configStore = {
-  loadUserSettings() {
-    try {
-      const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
-      if (!saved) return {};
-
-      // 尝试解码混淆的数据
-      const decoded = utils.deobfuscateData(saved);
-      if (decoded) {
-        return JSON.parse(decoded);
-      }
-
-      // 如果解码失败，尝试直接解析（兼容旧格式）
-      try {
-        return JSON.parse(saved);
-      } catch (_e) {
-        return {};
-      }
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 加载用户配置失败:', utils.sanitizeErrorMessage(error));
-      }
-      return {};
-    }
-  },
-
-  saveUserSettings(settings) {
-    try {
-      const jsonData = JSON.stringify(settings);
-      // 混淆存储配置数据
-      const obfuscatedData = utils.obfuscateData(jsonData);
-      localStorage.setItem(CONFIG_STORAGE_KEY, obfuscatedData);
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 保存用户配置失败:', utils.sanitizeErrorMessage(error));
-      }
-    }
-  },
-
-  resetUserSettings() {
-    localStorage.removeItem(CONFIG_STORAGE_KEY);
-  },
-
-  mergeUserConfig(target, source) {
-    const merge = (t, s) => {
-      for (const key in s) {
-        if (Object.prototype.hasOwnProperty.call(s, key)) {
-          if (s[key] && typeof s[key] === 'object' && !Array.isArray(s[key])) {
-            if (!t[key]) t[key] = {};
-            merge(t[key], s[key]);
-          } else {
-            t[key] = s[key];
-          }
-        }
-      }
-      return t;
-    };
-
-    return merge(target, source);
-  },
-};
 
 /**
  * 配置界面渲染模块
@@ -5104,14 +5131,10 @@ class ConfigUI {
     const saveBtn = this.container.querySelector('.github-i18n-config-save');
     const resetBtn = this.container.querySelector('.github-i18n-config-reset');
     const cancelBtn = this.container.querySelector('.github-i18n-config-cancel');
-    const refreshBtn = this.container.querySelector('#github-i18n-refresh-stats');
-    const exportBtn = this.container.querySelector('#github-i18n-export-stats');
 
     const handleClose = () => this.hide();
     const handleSave = () => this.handleSave();
     const handleReset = () => this.handleReset();
-    const handleRefresh = () => updatePerformanceStats();
-    const handleExport = () => exportPerformanceStats();
     const handleContainerClick = (e) => {
       if (e.target === this.container) {
         this.hide();
@@ -5122,8 +5145,6 @@ class ConfigUI {
     saveBtn?.addEventListener('click', handleSave);
     resetBtn?.addEventListener('click', handleReset);
     cancelBtn?.addEventListener('click', handleClose);
-    refreshBtn?.addEventListener('click', handleRefresh);
-    exportBtn?.addEventListener('click', handleExport);
     this.container?.addEventListener('click', handleContainerClick);
 
     this.eventListeners.push(
@@ -5131,8 +5152,6 @@ class ConfigUI {
       { element: saveBtn, event: 'click', handler: handleSave },
       { element: resetBtn, event: 'click', handler: handleReset },
       { element: cancelBtn, event: 'click', handler: handleClose },
-      { element: refreshBtn, event: 'click', handler: handleRefresh },
-      { element: exportBtn, event: 'click', handler: handleExport },
       { element: this.container, event: 'click', handler: handleContainerClick },
     );
   }
@@ -5145,7 +5164,7 @@ class ConfigUI {
   }
 
   handleSave() {
-    const newSettings = {
+    const settings = {
       debugMode: document.getElementById('github-i18n-debug-mode')?.checked || false,
       enablePartialMatch:
         document.getElementById('github-i18n-enable-partial-match')?.checked || false,
@@ -5155,7 +5174,14 @@ class ConfigUI {
       enableVirtualDom: document.getElementById('github-i18n-virtual-dom')?.checked || false,
     };
 
-    this.saveUserSettings(newSettings);
+    // 写入消费方实际读取的路径（此前写成 CONFIG 顶层键，4 个开关均为空操作）
+    CONFIG.debugMode = settings.debugMode;
+    CONFIG.performance.enablePartialMatch = settings.enablePartialMatch;
+    CONFIG.performance.enableTranslationCache = settings.enableTranslationCache;
+    CONFIG.performance.enableVirtualDom = settings.enableVirtualDom;
+    CONFIG.updateCheck.enabled = settings.autoUpdate;
+
+    this.saveUserSettings(settings);
     this.hide();
   }
 
@@ -5770,6 +5796,18 @@ const pageMonitorCache = {
 const pathListener = {
   lastPath: '',
   onPathChange: null,
+  originalPushState: null,
+  originalReplaceState: null,
+
+  /** 还原 history 方法，避免重复 init 层层包装、cleanup 后仍污染页面 */
+  restoreHistoryMethods() {
+    if (this.originalPushState && typeof history !== 'undefined') {
+      history.pushState = this.originalPushState;
+      history.replaceState = this.originalReplaceState;
+      this.originalPushState = null;
+      this.originalReplaceState = null;
+    }
+  },
 
   init(pathChangeCallback) {
     this.onPathChange = pathChangeCallback;
@@ -5792,8 +5830,11 @@ const pathListener = {
       handler: popstateHandler,
     });
 
+    this.restoreHistoryMethods();
     const originalPushState = history.pushState;
     const originalReplaceState = history.replaceState;
+    this.originalPushState = originalPushState;
+    this.originalReplaceState = originalReplaceState;
 
     history.pushState = function (...args) {
       originalPushState.apply(this, args);
@@ -5806,9 +5847,14 @@ const pathListener = {
     };
   },
 
+  stop() {
+    this.restoreHistoryMethods();
+  },
+
   handlePathChange() {
     try {
       const currentPath = window.location.pathname + window.location.search;
+      if (currentPath === this.lastPath) return;
       this.lastPath = currentPath;
 
       if (CONFIG.debugMode) {
@@ -6167,17 +6213,18 @@ function isMutationContentRelated(mutation, pageMode) {
   }
 }
 
-function calculateMutationWeights(mutation, pageMode, elementCheckCache) {
+function calculateMutationWeights(mutation, pageMode, elementCheckCaches) {
   const config = PAGE_MODE_THRESHOLDS[pageMode] || PAGE_MODE_THRESHOLDS.search;
+  const caches = elementCheckCaches || {};
   let contentChanges = 0;
   let importantChanges = 0;
   let shouldTrigger = false;
 
   if (mutation.target) {
-    const isIgnored = isElementIgnored(mutation.target, [], elementCheckCache, pageMode);
+    const isIgnored = isElementIgnored(mutation.target, [], caches.ignoredCache, pageMode);
 
     if (!isIgnored) {
-      const isImportant = isElementImportant(mutation.target, [], elementCheckCache, pageMode);
+      const isImportant = isElementImportant(mutation.target, [], caches.importantCache, pageMode);
 
       if (isImportant) {
         shouldTrigger = true;
@@ -6206,7 +6253,10 @@ function calculateMutationWeights(mutation, pageMode, elementCheckCache) {
 }
 
 function processMutationBatch(mutations, maxCheckCount, pageMode) {
-  const elementCheckCache = new WeakMap();
+  // ignored / important 是两个独立的布尔判定，不能共用同一个 WeakMap：
+  // 否则先写入的 ignored=false 会让 isElementImportant 直接命中，重要元素永远无法触发翻译
+  const ignoredCache = new WeakMap();
+  const importantCache = new WeakMap();
   let totalContentChanges = 0;
   let totalImportantChanges = 0;
 
@@ -6220,7 +6270,10 @@ function processMutationBatch(mutations, maxCheckCount, pageMode) {
       continue;
     }
 
-    const result = calculateMutationWeights(mutation, pageMode, elementCheckCache);
+    const result = calculateMutationWeights(mutation, pageMode, {
+      ignoredCache,
+      importantCache,
+    });
     totalContentChanges += result.contentChanges;
     totalImportantChanges += result.importantChanges;
 
@@ -6764,6 +6817,7 @@ const pageMonitor = {
   stop() {
     try {
       domObserver.stop();
+      pathListener.stop();
       pageMonitorCache.stopCacheCleanupTimer();
 
       if (CONFIG.debugMode) {
@@ -6809,8 +6863,9 @@ const pageMonitor = {
  * @description 管理 init / start / cleanup 生命周期编排：翻译核心、页面监控与 UI 的启停
  */
 
-/** 缓存卸载回调引用：removeEventListener 必须使用与 addEventListener 相同的函数对象 */
+/** 缓存事件回调引用：removeEventListener 必须使用与 addEventListener 相同的函数对象 */
 let unloadHandler = null;
+let visibilityChangeHandler = null;
 
 const lifecycleManager = {
   cleanup() {
@@ -6833,13 +6888,9 @@ const lifecycleManager = {
         unloadHandler = null;
       }
 
-      if (
-        typeof document !== 'undefined' &&
-        typeof window !== 'undefined' &&
-        window.visibilityChangeHandler
-      ) {
-        document.removeEventListener('visibilitychange', window.visibilityChangeHandler);
-        window.visibilityChangeHandler = null;
+      if (typeof document !== 'undefined' && visibilityChangeHandler) {
+        document.removeEventListener('visibilitychange', visibilityChangeHandler);
+        visibilityChangeHandler = null;
       }
 
       if (CONFIG.debugMode) {
@@ -6866,7 +6917,10 @@ const lifecycleManager = {
         typeof translationCore !== 'undefined' &&
         typeof translationCore.translate === 'function'
       ) {
-        translationCore.translate();
+        // translate 内部在批处理恢复失败时可能 reject，必须显式捕获，避免未处理的 Promise rejection
+        translationCore.translate().catch((error) => {
+          console.error('[GitHub 中文翻译] 初始翻译失败:', error);
+        });
       }
 
       if (typeof pageMonitor !== 'undefined' && typeof pageMonitor.init === 'function') {
@@ -6888,18 +6942,18 @@ const lifecycleManager = {
         window.addEventListener('unload', unloadHandler);
       }
 
-      const visibilityChangeHandler = () => {
-        if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
-          if (translationCore && typeof translationCore.cleanCache === 'function') {
-            translationCore.cleanCache();
-          }
-        }
-      };
       if (typeof document !== 'undefined') {
+        if (visibilityChangeHandler) {
+          document.removeEventListener('visibilitychange', visibilityChangeHandler);
+        }
+        visibilityChangeHandler = () => {
+          if (document.visibilityState === 'hidden') {
+            if (translationCore && typeof translationCore.cleanCache === 'function') {
+              translationCore.cleanCache();
+            }
+          }
+        };
         document.addEventListener('visibilitychange', visibilityChangeHandler);
-      }
-      if (typeof window !== 'undefined') {
-        window.visibilityChangeHandler = visibilityChangeHandler;
       }
     } catch (error) {
       console.error('[GitHub 中文翻译] 脚本初始化失败:', error);

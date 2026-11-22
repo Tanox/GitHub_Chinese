@@ -8,11 +8,10 @@
  *   修复：stdout/stderr 跨 chunk 断行、spawn error 未监听、取消/超时后误发 done 事件。
  */
 
-import os from 'os';
 import path from 'path';
-import { randomUUID } from 'crypto';
 import { spawn } from 'child_process';
 import { CollectErrorCode } from './collect-codes.js';
+import { makeTempPath } from './temp-paths.js';
 
 /**
  * 采集事件
@@ -39,7 +38,7 @@ const CHILD_TIMEOUT_MS = 120_000;
  * @returns {string} 临时文件路径（使用后即删除，避免并发请求共享同一文件导致竞态）
  */
 export function createRawTermsPath() {
-  return path.join(os.tmpdir(), `github-i18n-raw-${randomUUID()}.txt`);
+  return makeTempPath('github-i18n-raw', '.txt');
 }
 
 /**

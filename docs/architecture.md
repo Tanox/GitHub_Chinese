@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文架构文档
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.33** ｜ 版本权威源：`src/userscript/version.js`
 
 ## 1. 系统整体架构概述
 
@@ -456,7 +456,7 @@ GitHub_Chinese/
 要点：
 
 - 两条 API 路由均声明 `runtime = 'nodejs'`（需要 `child_process` 与文件系统）
-- 采集原始文本写入系统临时目录（`os.tmpdir()`），不污染仓库工作区
+- 采集原始文本写入统一临时目录 `.tmp/`（自动创建、git 忽略、可 `npm run clean:tmp` 一键清理），不污染仓库根目录
 - `puppeteer-core` 为**可选运行时依赖**（配合系统已安装的 Chrome / Edge）：由 `browser-resolver.js` 以
   动态 `import()`（`turbopackIgnore`）在运行期解析；不声明 `serverExternalPackages`（该包为 ESM，显式外部化会触发
   Turbopack 告警）；未安装依赖或未找到可用浏览器时批量采集返回明确错误提示，而非崩溃

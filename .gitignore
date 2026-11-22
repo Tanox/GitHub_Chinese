@@ -8,7 +8,7 @@
 /dist
 # Next.js / TypeScript 构建产物（勿提交）
 /.next
-tsconfig.tsbuildinfo
+# TypeScript 增量缓存统一落在 .tmp/（见 tsconfig.json 的 tsBuildInfoFile）
 *.code-workspace
 *.bak
 github_string_fetcher.js
@@ -49,3 +49,10 @@ release-notes.md
 *-out.txt
 .*.log
 .*.txt
+
+# 统一临时目录（规范见 docs/coding-style.md §19）
+# 所有日志 / 缓存 / 中间产物 / 测试输出 / 下载文件一律写入 .tmp/，自动创建、可一键清理
+.tmp/
+
+# 说明：以上 *.log / *.txt / .tmp-* 等为历史规则，仅为兼容旧工作流保留；
+# 新增瞬时产物不得再写入根目录，一律使用 .tmp/。

@@ -16,13 +16,15 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { collectBlockingViolations } from '../helpers/axe-html.mjs';
+import { ensureTempDir, tempPath } from '../src/lib/temp-paths.js';
 
 const PORT = process.env.INTEGRATION_PORT || '3123';
 const BASE = `http://127.0.0.1:${PORT}`;
 const ROOT = path.join(import.meta.dirname, '..', '..');
 const NEXT_BIN = path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next');
-/** 采集历史重定向到被 .gitignore 忽略的临时文件，避免测试污染仓库 */
-const HISTORY_FILE = path.join(ROOT, '.tmp-integration-history.json');
+/** 采集历史重定向到统一临时目录，避免测试污染仓库根目录 */
+const HISTORY_FILE = tempPath('integration-history.json');
+ensureTempDir();
 
 /** 与 src/app/sitemap.ts 保持一致的真实路由 */
 const PAGES = ['/', '/overview', '/coverage', '/dictionary', '/dictionary/manage'];

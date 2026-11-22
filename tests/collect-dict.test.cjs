@@ -7,11 +7,11 @@
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const os = require('os');
 const path = require('path');
 const fs = require('fs');
 
 const { analyzeTexts, generateReport } = require('../scripts/collect-dict.cjs');
+const { ensureTempDir, tempPath } = require('../scripts/temp-paths.cjs');
 
 const DICT = { Sign: '登录', Issue: '议题', 'New issue': '新建议题' };
 
@@ -33,7 +33,8 @@ test('analyzeTexts 过滤噪声不污染覆盖率分母', () => {
 });
 
 test('generateReport 写报告 + 词条级历史（注入路径，可轮次对比）', () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'gh-i18n-ct-'));
+  ensureTempDir();
+  const tmp = fs.mkdtempSync(tempPath('gh-i18n-ct-'));
   const reportFile = path.join(tmp, 'untranslated-terms.txt');
   const historyFile = path.join(tmp, 'collect-history.json');
 
