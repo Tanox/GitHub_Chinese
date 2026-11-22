@@ -1,7 +1,7 @@
 /**
  * 采集工具集成测试（参考原型重构）
  * @file tests/collect-dict.test.cjs
- * @version 1.12.8
+ * @version 1.13.34
  * @description 校验 collect-dict.cjs 的 analyzeTexts（findUntranslated + 覆盖率）与
  *   dict-report.cjs 的 generateReport（写报告 + 词条级采集历史），路径注入避免污染仓库。
  */
@@ -30,6 +30,23 @@ test('analyzeTexts 过滤噪声不污染覆盖率分母', () => {
   assert.equal(r.coverage.total, 1);
   assert.equal(r.coverage.covered, 1);
   assert.deepEqual(r.untranslated, []);
+});
+
+test('相同词条的增量统计为 0（报告写入引号与读回对称）', () => {
+  ensureTempDir();
+  const tmp = fs.mkdtempSync(tempPath('gh-i18n-delta-'));
+  const reportFile = path.join(tmp, 'untranslated-terms.txt');
+  const historyFile = path.join(tmp, 'collect-history.json');
+  const dict = { Sign: '登录' };
+
+  const first = analyzeTexts(['Sign', 'Unknown'], dict);
+  const s1 = generateReport(first.untranslated, { dictionary: dict, reportFile, historyFile });
+  assert.equal(s1.added, 1);
+
+  const second = analyzeTexts(['Sign', 'Unknown'], dict);
+  const s2 = generateReport(second.untranslated, { dictionary: dict, reportFile, historyFile });
+  assert.equal(s2.added, 0, '词条未变化不应误报新增（写入的引号必须在读回时剥离）');
+  assert.equal(s2.removed, 0);
 });
 
 test('generateReport 写报告 + 词条级历史（注入路径，可轮次对比）', () => {

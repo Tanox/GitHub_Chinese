@@ -55,11 +55,9 @@ export async function processElementsInBatches(inputElements, getCurrentPageMode
         }
 
         if (endIndex < validElements.length) {
-          if (delay > 0) {
-            setTimeout(() => processBatch(endIndex), delay);
-          } else {
-            requestAnimationFrame(() => processBatch(endIndex));
-          }
+          // 使用 setTimeout 而非 requestAnimationFrame：后台标签页中 rAF 被浏览器暂停，
+          // 会让返回的 Promise 永久挂起，错误恢复链也无法完成
+          setTimeout(() => processBatch(endIndex), delay);
         } else {
           resolve();
         }

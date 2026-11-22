@@ -1,7 +1,7 @@
 /**
  * GitHub Chinese 简体中文构建脚本
  * @file scripts/build/build.cjs
- * @version 1.13.20
+ * @version 1.13.34
  * @date 2026-09-19
  * @author Sut
  * @description 从入口自动解析模块依赖并拼接为单文件用户脚本（依赖 scripts/build/ 下的图谱与转换模块）
@@ -83,6 +83,10 @@ function resolveModules() {
 
   for (const entry of [ENTRY_FILE, ...EXTRA_ENTRIES]) {
     if (!fs.existsSync(entry)) {
+      // 主入口缺失必须失败：此前静默 continue 会让空产物也 exit 0，本地 npm test 全绿却无产物内容
+      if (entry === ENTRY_FILE) {
+        throw new Error(`用户脚本主入口不存在: ${entry}`);
+      }
       continue;
     }
     const graph = buildModuleOrder(entry, SRC_DIR);

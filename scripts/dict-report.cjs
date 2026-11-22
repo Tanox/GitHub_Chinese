@@ -1,7 +1,7 @@
 /**
  * 词典采集报告
  * @file scripts/dict-report.cjs
- * @version 1.13.21
+ * @version 1.13.34
  * @description 生成待翻译报告（含历史增量对比），并把本次统计写入采集历史
  */
 const fs = require('fs');
@@ -27,15 +27,18 @@ function computeDelta(oldSet, newSet) {
  * 读取上一次的待翻译报告（不存在时返回空集合）
  * @returns {Set<string>} 历史词条集合
  */
-function readPreviousSet() {
-  if (!fs.existsSync(REPORT_PATH)) {
+function readPreviousSet(reportFile = REPORT_PATH) {
+  if (!fs.existsSync(reportFile)) {
     return new Set();
   }
   return new Set(
     fs
-      .readFileSync(REPORT_PATH, 'utf-8')
+      .readFileSync(reportFile, 'utf-8')
       .split('\n')
       .map((line) => line.trim())
+      // 写入时每行带首尾双引号（见 generateReport），读回必须对称剥离，
+      // 否则与纯文本的 newSet 永不相等，增量统计每轮都误报「全新增 + 全移除」
+      .map((line) => line.replace(/^"|"$/g, ''))
       .filter(Boolean),
   );
 }
@@ -57,7 +60,7 @@ function generateReport(untranslated, opts = {}) {
   const historyFile = opts.historyFile || process.env.COLLECT_HISTORY_FILE;
 
   const unique = [...new Set(untranslated)].sort();
-  const oldSet = readPreviousSet();
+  const oldSet = readPreviousSet(reportFile);
   const newSet = new Set(unique);
   const { added, removed, net } = computeDelta(oldSet, newSet);
 

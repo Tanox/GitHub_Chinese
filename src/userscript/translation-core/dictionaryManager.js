@@ -1,7 +1,7 @@
 /**
  * 翻译词典管理模块
  * @file src/userscript/translation-core/dictionaryManager.js
- * @version 1.12.8
+ * @version 1.13.34
  * @date 2026-09-30
  * @author Sut
  * @description 管理翻译词典的加载和查询
@@ -42,7 +42,9 @@ export const dictionaryManager = {
       // 构建哈希表与 Trie 树：哈希用于精确查询，Trie 用于部分匹配
       Object.keys(this.dictionary).forEach((key) => {
         const value = this.dictionary[key];
-        if (value && !value.startsWith('待翻译: ')) {
+        // 非字符串值（如外部 updateDictionary 注入的数字/对象）必须跳过，
+        // 否则 startsWith 抛错会让整个 catch 分支清空词典，全站翻译失效
+        if (typeof value === 'string' && value && !value.startsWith('待翻译: ')) {
           // 原始键
           this.dictionaryHash.set(key, value);
           // 小写键（用于大小写不敏感匹配）

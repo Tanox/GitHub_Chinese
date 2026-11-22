@@ -1,7 +1,7 @@
 /**
  * 词典采集核心
  * @file src/lib/collector-core.js
- * @version 1.13.28
+ * @version 1.13.34
  * @date 2026-11-06
  * @author Sut
  * @description 采集流水线的唯一实现，Next Route Handler 与原型预览服务器共用，避免两份逻辑长期漂移。
@@ -16,6 +16,7 @@ import { MAX_COLLECT_URLS } from './request-body.js';
 import { acquireBrowser, releaseBrowser } from './browser-pool.js';
 import { acquireBrowserSlot, releaseBrowserSlot } from './browser-semaphore.js';
 import { collectBatch } from './batch-collector.js';
+import { safeCollectorError } from './collect-errors.js';
 
 /**
  * @typedef {import('./dictionary-processor.js').CollectEvent} CollectEvent
@@ -29,15 +30,6 @@ const MISSING_BROWSER_MESSAGE =
   '未找到可用的 Chrome / Edge 浏览器，无法启动批量抓取。可通过环境变量 PUPPETEER_EXECUTABLE_PATH 指定浏览器路径。';
 
 /** 单次请求允许的最大抓取 URL 数（与 request-body.js 共用 MAX_COLLECT_URLS，T27 统一） */
-
-/**
- * 将错误转换为可读消息
- * @param {unknown} error - 捕获到的异常
- * @returns {string} 错误消息
- */
-function describeError(error) {
-  return error instanceof Error ? error.message : String(error);
-}
 
 /**
  * 将浏览器池的获取失败原因映射为用户可读消息与错误码（纯函数，便于无浏览器环境单测）。
@@ -107,7 +99,16 @@ export async function* collectFromUrls(urls, { signal, cookies } = {}) {
   const total = targets.length;
 
   // 限制并发采集任务数，复用进程内浏览器实例池（M5：不再每请求新建浏览器，降低启动开销）
-  await acquireBrowserSlot();
+  // 传入取消信号：客户端断开后立即从等待队列移除，不再启动浏览器
+  try {
+    await acquireBrowserSlot(signal);
+  } catch {
+    return;
+  }
+  if (signal?.aborted) {
+    releaseBrowserSlot();
+    return;
+  }
   const { browser, error } = await acquireBrowser();
   if (!browser) {
     releaseBrowserSlot();
@@ -142,11 +143,7 @@ export async function* collectFromUrls(urls, { signal, cookies } = {}) {
       await fs.rm(rawFile, { force: true }).catch(() => {});
     }
   } catch (error) {
-    yield {
-      type: 'error',
-      message: `保存或清洗失败: ${describeError(error)}`,
-      code: CollectErrorCode.SUBPROCESS_FAILED,
-    };
+    yield safeCollectorError('保存或清洗失败', error);
   } finally {
     releaseBrowser();
     releaseBrowserSlot();
@@ -173,10 +170,15 @@ export async function* processRawData(data, { signal } = {}) {
   }
 
   // 每请求使用独立临时文件，避免并发采集互相覆盖（v1.9.47）
+  // 文本采集也推送 progress 事件：前端据此显示真实处理状态（此前只有 done/error 才切换）
+  yield { type: 'progress', data: { type: 'analyze' } };
+
   const rawFile = createRawTermsPath();
   try {
     await fs.writeFile(rawFile, data, 'utf-8');
     yield* runDictionaryProcessor(rawFile, { signal });
+  } catch (error) {
+    yield safeCollectorError('文本清洗失败', error);
   } finally {
     await fs.rm(rawFile, { force: true }).catch(() => {});
   }

@@ -1,7 +1,7 @@
 /**
  * 采集 / 词典 API 访问控制（C3）：可选 Bearer 令牌鉴权 + 每 IP 限流
  * @file src/lib/api-guard.ts
- * @version 1.13.28
+ * @version 1.13.34
  * @date 2026-11-06
  * @description 为 `/api/collect`、`/api/batch-collect` 与 `/api/dictionary/suggest` 提供统一门禁：
  *   1. 可选令牌：仅当配置 `COLLECT_API_TOKEN` 时启用，默认开放（向后兼容，无 UI 破坏）；
@@ -9,7 +9,7 @@
  *   调用方在解析请求体前执行 `checkApiAccess`，被拒时直接返回对应 Response。
  */
 import type { NextRequest } from 'next/server';
-import { timingSafeEqual } from 'node:crypto';
+import { createHash, timingSafeEqual } from 'node:crypto';
 
 /** 配置令牌；留空则关闭鉴权（默认开放） */
 const TOKEN = process.env.COLLECT_API_TOKEN ?? '';
@@ -95,19 +95,7 @@ function constantTimeEqual(a: string, b: string): boolean {
  * @returns 通过返回 null；被拒返回 401（缺令牌/令牌错误）或 429（限流）Response
  */
 export function checkApiAccess(req: NextRequest): Response | null {
-  // 可选 Bearer 令牌：仅在显式配置后启用
-  if (TOKEN) {
-    const auth = req.headers.get('authorization') ?? '';
-    const m = /^Bearer\s+(.+)$/i.exec(auth);
-    if (!m || !constantTimeEqual(m[1], TOKEN)) {
-      return new Response(JSON.stringify({ error: '未授权：缺少或错误的 API 令牌' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-  }
-
-  // 每 IP 固定窗口限流
+  // 限流先于鉴权：失败令牌也消耗配额，否则攻击者可用任意 Bearer 值无限枚举而不被限流
   const ip = clientIp(req);
   const now = Date.now();
   const bucket = buckets.get(ip);
@@ -124,6 +112,18 @@ export function checkApiAccess(req: NextRequest): Response | null {
           'Content-Type': 'application/json',
           'Retry-After': String(retryAfter),
         },
+      });
+    }
+  }
+
+  // 可选 Bearer 令牌：仅在显式配置后启用（限流之后执行，失败令牌同样计入配额）
+  if (TOKEN) {
+    const auth = req.headers.get('authorization') ?? '';
+    const m = /^Bearer\s+(.+)$/i.exec(auth);
+    if (!m || !constantTimeEqual(m[1], TOKEN)) {
+      return new Response(JSON.stringify({ error: '未授权：缺少或错误的 API 令牌' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
       });
     }
   }

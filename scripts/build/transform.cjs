@@ -1,7 +1,7 @@
 /**
  * 用户脚本模块语法转换
  * @file scripts/build/transform.cjs
- * @version 1.9.24
+ * @version 1.13.34
  * @author Sut
  * @description 将 ESM 模块改写为同作用域顺序拼接所需的代码，并做重名冲突检测
  */
@@ -35,7 +35,9 @@ function stripModuleSyntax(content) {
     }
 
     if (inExportBlock) {
-      if (/^\s*\}\s*;?\s*$/.test(rawLine)) {
+      // 兼容 `} from './x';` 形式的多行 re-export：此前只认 `};`，
+      // 会让该行之后的模块主体被静默丢弃且产物语法检查仍通过
+      if (/^\s*\}\s*(?:from\s*['"][^'"]+['"])?\s*;?\s*$/.test(rawLine)) {
         inExportBlock = false;
       }
       continue;
@@ -47,7 +49,9 @@ function stripModuleSyntax(content) {
     }
 
     if (/^\s*export\s*\{/.test(rawLine)) {
-      inExportBlock = !/^\s*export\s*\{[^}]*\}\s*;?\s*$/.test(rawLine);
+      inExportBlock = !/^\s*export\s*\{[^}]*\}(?:\s*from\s*['"][^'"]+['"])?\s*;?\s*$/.test(
+        rawLine,
+      );
       continue;
     }
 

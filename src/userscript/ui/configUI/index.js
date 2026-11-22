@@ -5,7 +5,7 @@
 
 import { CONFIG } from '../../config/index.js';
 import { addConfigUIStyles } from '../styles/configUI.styles.js';
-import { updatePerformanceStats, exportPerformanceStats } from '../components/perfPanel.js';
+import { updatePerformanceStats } from '../components/perfPanel.js';
 import { configStore } from './store.js';
 import { configRenderer } from './renderer.js';
 import { configBootstrap } from './bootstrap.js';
@@ -122,14 +122,10 @@ class ConfigUI {
     const saveBtn = this.container.querySelector('.github-i18n-config-save');
     const resetBtn = this.container.querySelector('.github-i18n-config-reset');
     const cancelBtn = this.container.querySelector('.github-i18n-config-cancel');
-    const refreshBtn = this.container.querySelector('#github-i18n-refresh-stats');
-    const exportBtn = this.container.querySelector('#github-i18n-export-stats');
 
     const handleClose = () => this.hide();
     const handleSave = () => this.handleSave();
     const handleReset = () => this.handleReset();
-    const handleRefresh = () => updatePerformanceStats();
-    const handleExport = () => exportPerformanceStats();
     const handleContainerClick = (e) => {
       if (e.target === this.container) {
         this.hide();
@@ -140,8 +136,6 @@ class ConfigUI {
     saveBtn?.addEventListener('click', handleSave);
     resetBtn?.addEventListener('click', handleReset);
     cancelBtn?.addEventListener('click', handleClose);
-    refreshBtn?.addEventListener('click', handleRefresh);
-    exportBtn?.addEventListener('click', handleExport);
     this.container?.addEventListener('click', handleContainerClick);
 
     this.eventListeners.push(
@@ -149,8 +143,6 @@ class ConfigUI {
       { element: saveBtn, event: 'click', handler: handleSave },
       { element: resetBtn, event: 'click', handler: handleReset },
       { element: cancelBtn, event: 'click', handler: handleClose },
-      { element: refreshBtn, event: 'click', handler: handleRefresh },
-      { element: exportBtn, event: 'click', handler: handleExport },
       { element: this.container, event: 'click', handler: handleContainerClick },
     );
   }
@@ -163,7 +155,7 @@ class ConfigUI {
   }
 
   handleSave() {
-    const newSettings = {
+    const settings = {
       debugMode: document.getElementById('github-i18n-debug-mode')?.checked || false,
       enablePartialMatch:
         document.getElementById('github-i18n-enable-partial-match')?.checked || false,
@@ -173,7 +165,14 @@ class ConfigUI {
       enableVirtualDom: document.getElementById('github-i18n-virtual-dom')?.checked || false,
     };
 
-    this.saveUserSettings(newSettings);
+    // 写入消费方实际读取的路径（此前写成 CONFIG 顶层键，4 个开关均为空操作）
+    CONFIG.debugMode = settings.debugMode;
+    CONFIG.performance.enablePartialMatch = settings.enablePartialMatch;
+    CONFIG.performance.enableTranslationCache = settings.enableTranslationCache;
+    CONFIG.performance.enableVirtualDom = settings.enableVirtualDom;
+    CONFIG.updateCheck.enabled = settings.autoUpdate;
+
+    this.saveUserSettings(settings);
     this.hide();
   }
 

@@ -1,7 +1,7 @@
 /**
  * 独立采集服务（W5 架构解耦）
  * @file server/collect-service/index.js
- * @version 1.13.28
+ * @version 1.13.34
  * @date 2026-11-06
  * @author Sut
  * @description 可自托管部署的 Node 服务，复用 src/lib/collector-core 的采集实现，
@@ -18,6 +18,7 @@
  */
 import express from 'express';
 import { collectFromUrls, processRawData } from '../../src/lib/collector-core.js';
+import { closeBrowserPool } from '../../src/lib/browser-pool.js';
 import { logger } from '../../src/utils/logger.js';
 import { createTokenAuth } from './auth.js';
 
@@ -25,6 +26,8 @@ import { createTokenAuth } from './auth.js';
 const DEFAULT_PORT = 8787;
 /** 请求体上限：批量 URL 采集可能携带较大 URL 列表 */
 const BODY_LIMIT = '5mb';
+/** 优雅退出的强制超时（毫秒）：超时后直接退出，避免浏览器关闭卡死 */
+const FORCE_EXIT_MS = 10_000;
 
 const app = express();
 app.use(express.json({ limit: BODY_LIMIT }));
@@ -110,7 +113,7 @@ app.post(
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 const PORT = Number(process.env.COLLECT_SERVICE_PORT) || DEFAULT_PORT;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`独立采集服务已启动: http://localhost:${PORT}（W5 解耦）`);
   if (tokenAuth) {
     logger.info('令牌校验已启用：/api/* 要求 Authorization: Bearer <COLLECT_SERVICE_TOKEN>');
@@ -118,3 +121,33 @@ app.listen(PORT, () => {
     logger.warn('未配置 COLLECT_SERVICE_TOKEN，采集接口无鉴权——公网部署请务必配置令牌');
   }
 });
+
+// 端口占用 / 权限不足时以明确错误退出，而不是未捕获的 'error' 事件导致裸堆栈崩溃
+server.on('error', (error) => {
+  logger.error(`采集服务监听失败（端口 ${PORT}）: ${error.code || error.message}`);
+  process.exit(1);
+});
+
+// 容器 / systemd 滚动更新发 SIGTERM 时，先停接收新连接并关闭浏览器内核，
+// 避免 Chromium 子进程残留与临时文件未清理
+let shuttingDown = false;
+async function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger.info(`收到 ${signal}，正在关闭采集服务...`);
+  const forceExit = setTimeout(() => process.exit(1), FORCE_EXIT_MS);
+  forceExit.unref();
+  try {
+    await new Promise((resolve) => {
+      server.close(() => resolve());
+    });
+    await closeBrowserPool();
+    logger.info('采集服务已安全关闭');
+    process.exit(0);
+  } catch (error) {
+    logger.error(`关闭采集服务失败: ${error.message}`);
+    process.exit(1);
+  }
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

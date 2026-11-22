@@ -1,7 +1,7 @@
 /**
  * 采集服务客户端
  * @file src/lib/collect-service-client.js
- * @version 1.13.0
+ * @version 1.13.34
  * @date 2026-09-30
  * @description 将采集请求转发到自托管「独立采集服务」（W5 架构解耦）：
  *   仅当配置 COLLECT_SERVICE_URL 时启用，把 SSE 流透传回调用方；
@@ -18,6 +18,12 @@ import { logger } from '../utils/logger.js';
 
 const SERVICE_URL = process.env.COLLECT_SERVICE_URL || '';
 const SERVICE_TOKEN = process.env.COLLECT_SERVICE_TOKEN || '';
+/** 严格模式：上游鉴权失败/异常时透传错误而非静默回退（默认关闭，保持既有回退语义） */
+const STRICT_MODE = /^(1|true)$/i.test(process.env.COLLECT_SERVICE_STRICT || '');
+
+const HTTP_BAD_REQUEST = 400;
+const HTTP_SERVER_ERROR = 600;
+const HTTP_BAD_GATEWAY = 502;
 
 /** 是否启用了独立采集服务 */
 export function isCollectServiceEnabled() {
@@ -53,6 +59,18 @@ export async function proxyCollectRequest({ body, signal }, kind) {
 
     if (!upstream.ok || !upstream.body) {
       logger.warn(`采集服务返回异常（${upstream.status}），回退本地采集`);
+      if (STRICT_MODE && !signal?.aborted) {
+        // 严格模式下不回退：配置错误（如令牌只配一端）必须显式暴露，而非绕过采集服务的资源隔离
+        return new Response(upstream.body || JSON.stringify({ error: '采集服务返回异常' }), {
+          status:
+            upstream.status >= HTTP_BAD_REQUEST && upstream.status < HTTP_SERVER_ERROR
+              ? upstream.status
+              : HTTP_BAD_GATEWAY,
+          headers: {
+            'Content-Type': upstream.headers.get('content-type') || 'application/json',
+          },
+        });
+      }
       return null;
     }
 
@@ -68,6 +86,12 @@ export async function proxyCollectRequest({ body, signal }, kind) {
     // 客户端中断导致的 fetch 失败属预期行为，不告警
     if (error?.name === 'AbortError' || signal?.aborted) return null;
     logger.warn('采集服务代理失败，回退本地采集:', error?.message || String(error));
+    if (STRICT_MODE) {
+      return new Response(JSON.stringify({ error: '采集服务不可用' }), {
+        status: HTTP_BAD_GATEWAY,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     return null;
   }
 }

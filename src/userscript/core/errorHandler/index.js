@@ -1,7 +1,7 @@
 /**
  * 错误处理模块
  * @file errorHandler.js
- * @version 1.13.28
+ * @version 1.13.34
  */
 
 import { CONFIG } from '../../config/index.js';
@@ -15,6 +15,7 @@ import {
   BATCH_DELAY_FALLBACK_MS,
 } from './constants.js';
 import { recoveryManager } from './recovery.js';
+import { dictionaryManager } from '../../translation-core/dictionaryManager.js';
 
 export const ErrorHandler = {
   // 错误计数器
@@ -125,13 +126,20 @@ export const ErrorHandler = {
         );
         break;
       case this.ERROR_TYPES.DICTIONARY:
-        if (typeof window.GitHub_i18n !== 'undefined' && window.GitHub_i18n.translationCore) {
-          window.GitHub_i18n.translationCore.initDictionary();
+        // 词典恢复是独立入口，不复用 translationCore.init()（后者会重复挂载卸载钩子与定时器）
+        try {
+          dictionaryManager.init();
+        } catch (error) {
+          console.error('[GitHub 中文翻译] 词典紧急恢复失败:', error);
         }
         break;
       case this.ERROR_TYPES.NETWORK:
-        CONFIG.performance.networkRequestInterval = Math.max(
-          CONFIG.performance.networkRequestInterval || NETWORK_INTERVAL_MIN_MS,
+        // 网络异常时拉长间隔（上限），而非强制恒定值
+        CONFIG.performance.networkRequestInterval = Math.min(
+          Math.max(
+            CONFIG.performance.networkRequestInterval || NETWORK_INTERVAL_MIN_MS,
+            NETWORK_INTERVAL_MIN_MS,
+          ),
           NETWORK_INTERVAL_MAX_MS,
         );
         break;

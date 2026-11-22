@@ -1,7 +1,7 @@
 /**
  * 词典采集工具
  * @file scripts/collect-dict.cjs
- * @version 1.13.28
+ * @version 1.13.34
  * @date 2026-11-06
  * @author Sut
  * @description 从 GitHub 页面采集未翻译的文本并生成待翻译列表（报告生成见 scripts/dict-report.cjs）
@@ -118,8 +118,8 @@ async function main() {
 
   const args = process.argv.slice(2);
   if (args.length === 0) {
-    console.log('用法: node collect-dict.cjs <文本文件>（每行一个待检测文本）');
-    process.exit(0);
+    console.error('用法: node collect-dict.cjs <文本文件>（每行一个待检测文本）');
+    process.exit(1);
   }
 
   const inputFile = args[0];

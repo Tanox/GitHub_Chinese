@@ -1,7 +1,7 @@
 /**
  * Trie树数据结构模块
  * @file trie.js
- * @version 1.9.21
+ * @version 1.13.34
  * @date 2026-06-09
  * @author Sut
  * @description 高效的字符串匹配数据结构，用于部分匹配翻译
@@ -28,7 +28,11 @@ export class Trie {
     }
 
     let node = this.root;
-    for (const char of word) {
+    // 与 findAllMatches 的 text[j] 保持一致，按 UTF-16 code unit 建节点：
+    // for...of 按 Unicode code point 遍历，emoji 等非 BMP 字符会建成单节点，
+    // 查询时取到的是代理项，导致含 emoji 的键永远匹配不上
+    for (let i = 0; i < word.length; i += 1) {
+      const char = word[i];
       if (!node.children.has(char)) {
         node.children.set(char, new TrieNode());
       }

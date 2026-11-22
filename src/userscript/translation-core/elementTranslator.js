@@ -42,6 +42,18 @@ export const elementTranslator = {
 
     const childNodes = Array.from(element.childNodes);
     const textNodesToProcess = [];
+    const detachedChildren = [];
+
+    // 子元素被移入 fragment 后，任何提前返回或异常都必须把它们放回原位置，
+    // 否则整棵子树会永久从 DOM 中消失
+    const restoreDetachedChildren = () => {
+      for (const { node, nextSibling } of detachedChildren) {
+        if (node.parentNode !== fragment) continue;
+        fragment.removeChild(node);
+        const anchor = nextSibling && nextSibling.parentNode === element ? nextSibling : null;
+        element.insertBefore(node, anchor);
+      }
+    };
 
     for (const node of childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
@@ -54,9 +66,11 @@ export const elementTranslator = {
           }
         }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const nextSibling = node.nextSibling;
         try {
           element.removeChild(node);
           fragment.appendChild(node);
+          detachedChildren.push({ node, nextSibling });
           const childTranslated = this.translateElement(node);
           hasTranslatableContent ||= childTranslated;
         } catch (e) {
@@ -64,9 +78,11 @@ export const elementTranslator = {
             console.error('[GitHub 中文翻译] 处理子元素失败:', e, '元素:', node);
           }
           try {
-            if (!node.parentNode) {
-              element.appendChild(node);
+            if (node.parentNode === fragment) {
+              fragment.removeChild(node);
             }
+            const anchor = nextSibling && nextSibling.parentNode === element ? nextSibling : null;
+            element.insertBefore(node, anchor);
           } catch (addBackError) {
             if (CONFIG.debugMode) {
               console.error('[GitHub 中文翻译] 将子元素添加回原始位置失败:', addBackError);
@@ -77,6 +93,7 @@ export const elementTranslator = {
     }
 
     if (!hasTranslatableContent) {
+      restoreDetachedChildren();
       return false;
     }
 

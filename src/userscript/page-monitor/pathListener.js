@@ -1,7 +1,7 @@
 /**
  * 路径变化监听模块
  * @file pageMonitor/pathListener.js
- * @version 1.9.21
+ * @version 1.13.34
  * @date 2026-06-10
  * @author Sut
  * @description 监听URL路径变化
@@ -13,6 +13,18 @@ import { pageMonitorCache } from './cacheManager.js';
 export const pathListener = {
   lastPath: '',
   onPathChange: null,
+  originalPushState: null,
+  originalReplaceState: null,
+
+  /** 还原 history 方法，避免重复 init 层层包装、cleanup 后仍污染页面 */
+  restoreHistoryMethods() {
+    if (this.originalPushState && typeof history !== 'undefined') {
+      history.pushState = this.originalPushState;
+      history.replaceState = this.originalReplaceState;
+      this.originalPushState = null;
+      this.originalReplaceState = null;
+    }
+  },
 
   init(pathChangeCallback) {
     this.onPathChange = pathChangeCallback;
@@ -35,8 +47,11 @@ export const pathListener = {
       handler: popstateHandler,
     });
 
+    this.restoreHistoryMethods();
     const originalPushState = history.pushState;
     const originalReplaceState = history.replaceState;
+    this.originalPushState = originalPushState;
+    this.originalReplaceState = originalReplaceState;
 
     history.pushState = function (...args) {
       originalPushState.apply(this, args);
@@ -49,9 +64,14 @@ export const pathListener = {
     };
   },
 
+  stop() {
+    this.restoreHistoryMethods();
+  },
+
   handlePathChange() {
     try {
       const currentPath = window.location.pathname + window.location.search;
+      if (currentPath === this.lastPath) return;
       this.lastPath = currentPath;
 
       if (CONFIG.debugMode) {

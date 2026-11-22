@@ -1,7 +1,7 @@
 /**
  * 脚本生命周期管理器
  * @file src/userscript/main/lifecycle.js
- * @version 1.13.28
+ * @version 1.13.34
  * @date 2026-11-06
  * @author Sut
  * @description 管理 init / start / cleanup 生命周期编排：翻译核心、页面监控与 UI 的启停
@@ -12,8 +12,9 @@ import { translationCore } from '../translation-core/index.js';
 import { pageMonitor } from '../page-monitor/index.js';
 import { configUI } from '../ui/configUI/index.js';
 
-/** 缓存卸载回调引用：removeEventListener 必须使用与 addEventListener 相同的函数对象 */
+/** 缓存事件回调引用：removeEventListener 必须使用与 addEventListener 相同的函数对象 */
 let unloadHandler = null;
+let visibilityChangeHandler = null;
 
 export const lifecycleManager = {
   cleanup() {
@@ -36,13 +37,9 @@ export const lifecycleManager = {
         unloadHandler = null;
       }
 
-      if (
-        typeof document !== 'undefined' &&
-        typeof window !== 'undefined' &&
-        window.visibilityChangeHandler
-      ) {
-        document.removeEventListener('visibilitychange', window.visibilityChangeHandler);
-        window.visibilityChangeHandler = null;
+      if (typeof document !== 'undefined' && visibilityChangeHandler) {
+        document.removeEventListener('visibilitychange', visibilityChangeHandler);
+        visibilityChangeHandler = null;
       }
 
       if (CONFIG.debugMode) {
@@ -69,7 +66,10 @@ export const lifecycleManager = {
         typeof translationCore !== 'undefined' &&
         typeof translationCore.translate === 'function'
       ) {
-        translationCore.translate();
+        // translate 内部在批处理恢复失败时可能 reject，必须显式捕获，避免未处理的 Promise rejection
+        translationCore.translate().catch((error) => {
+          console.error('[GitHub 中文翻译] 初始翻译失败:', error);
+        });
       }
 
       if (typeof pageMonitor !== 'undefined' && typeof pageMonitor.init === 'function') {
@@ -91,18 +91,18 @@ export const lifecycleManager = {
         window.addEventListener('unload', unloadHandler);
       }
 
-      const visibilityChangeHandler = () => {
-        if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
-          if (translationCore && typeof translationCore.cleanCache === 'function') {
-            translationCore.cleanCache();
-          }
-        }
-      };
       if (typeof document !== 'undefined') {
+        if (visibilityChangeHandler) {
+          document.removeEventListener('visibilitychange', visibilityChangeHandler);
+        }
+        visibilityChangeHandler = () => {
+          if (document.visibilityState === 'hidden') {
+            if (translationCore && typeof translationCore.cleanCache === 'function') {
+              translationCore.cleanCache();
+            }
+          }
+        };
         document.addEventListener('visibilitychange', visibilityChangeHandler);
-      }
-      if (typeof window !== 'undefined') {
-        window.visibilityChangeHandler = visibilityChangeHandler;
       }
     } catch (error) {
       console.error('[GitHub 中文翻译] 脚本初始化失败:', error);

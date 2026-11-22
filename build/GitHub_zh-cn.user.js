@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GitHub Chinese 简体中文
 // @namespace    https://github.com/Tanox/GitHub_Chinese
-// @version      1.13.33
+// @version      1.13.34
 // @description  GitHub页面自动翻译为中文
 // @author       Sut
 // @match        https://github.com/*
@@ -27,7 +27,7 @@
 /**
  * 版本信息模块
  * @file version.js
- * @version 1.13.33
+ * @version 1.13.34
  * @date 2026-11-07
  * @author Sut
  * @description 统一管理 GitHub Chinese 简体中文的版本信息
@@ -38,7 +38,7 @@
  * @type {string}
  * @description 这是项目的单一版本源，所有其他版本号引用都应从此处获取
  */
-const VERSION = '1.13.33';
+const VERSION = '1.13.34';
 
 /**
  * 当前发版日期（YYYY-MM-DD）
@@ -1839,7 +1839,7 @@ class CacheManager {
 /**
  * Trie树数据结构模块
  * @file trie.js
- * @version 1.9.21
+ * @version 1.13.34
  * @date 2026-06-09
  * @author Sut
  * @description 高效的字符串匹配数据结构，用于部分匹配翻译
@@ -1866,7 +1866,11 @@ class Trie {
     }
 
     let node = this.root;
-    for (const char of word) {
+    // 与 findAllMatches 的 text[j] 保持一致，按 UTF-16 code unit 建节点：
+    // for...of 按 Unicode code point 遍历，emoji 等非 BMP 字符会建成单节点，
+    // 查询时取到的是代理项，导致含 emoji 的键永远匹配不上
+    for (let i = 0; i < word.length; i += 1) {
+      const char = word[i];
       if (!node.children.has(char)) {
         node.children.set(char, new TrieNode());
       }
@@ -1927,7 +1931,7 @@ class Trie {
 /**
  * 部分匹配翻译模块
  * @file src/userscript/translation-core/partialTranslator.js
- * @version 1.9.26
+ * @version 1.13.34
  * @date 2026-09-22
  * @author Sut
  * @description 使用 Trie 树进行部分匹配翻译；查询上下文由调用方注入，避免与 dictionaryManager 形成循环依赖
@@ -2051,7 +2055,7 @@ const partialTranslator = {
 /**
  * 翻译词典管理模块
  * @file src/userscript/translation-core/dictionaryManager.js
- * @version 1.12.8
+ * @version 1.13.34
  * @date 2026-09-30
  * @author Sut
  * @description 管理翻译词典的加载和查询
@@ -2219,7 +2223,7 @@ const dictionaryManager = {
 /**
  * 错误处理模块
  * @file errorHandler.js
- * @version 1.13.28
+ * @version 1.13.34
  */
 
 const ErrorHandler = {
@@ -2535,7 +2539,7 @@ function removeNodes(manager, ids) {
 /**
  * 虚拟DOM节点模块
  * @file virtualNode.js
- * @version 1.9.21
+ * @version 1.13.34
  * @date 2026-06-10
  * @author Sut
  * @description 虚拟DOM节点类，表示一个DOM元素的虚拟映射
@@ -4490,78 +4494,9 @@ function addConfigUIStyles() {
 }
 
 /**
- * 配置界面数据持久化模块
- * @file src/userscript/ui/configUI/store.js
- */
-
-const CONFIG_STORAGE_KEY = 'github-i18n-config';
-
-const configStore = {
-  loadUserSettings() {
-    try {
-      const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
-      if (!saved) return {};
-
-      // 尝试解码混淆的数据
-      const decoded = utils.deobfuscateData(saved);
-      if (decoded) {
-        return JSON.parse(decoded);
-      }
-
-      // 如果解码失败，尝试直接解析（兼容旧格式）
-      try {
-        return JSON.parse(saved);
-      } catch (_e) {
-        return {};
-      }
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 加载用户配置失败:', utils.sanitizeErrorMessage(error));
-      }
-      return {};
-    }
-  },
-
-  saveUserSettings(settings) {
-    try {
-      const jsonData = JSON.stringify(settings);
-      // 混淆存储配置数据
-      const obfuscatedData = utils.obfuscateData(jsonData);
-      localStorage.setItem(CONFIG_STORAGE_KEY, obfuscatedData);
-    } catch (error) {
-      if (CONFIG.debugMode) {
-        console.error('[GitHub 中文翻译] 保存用户配置失败:', utils.sanitizeErrorMessage(error));
-      }
-    }
-  },
-
-  resetUserSettings() {
-    localStorage.removeItem(CONFIG_STORAGE_KEY);
-  },
-
-  mergeUserConfig(target, source) {
-    const merge = (t, s) => {
-      for (const key in s) {
-        if (Object.prototype.hasOwnProperty.call(s, key)) {
-          if (s[key] && typeof s[key] === 'object' && !Array.isArray(s[key])) {
-            if (!t[key]) t[key] = {};
-            merge(t[key], s[key]);
-          } else {
-            t[key] = s[key];
-          }
-        }
-      }
-      return t;
-    };
-
-    return merge(target, source);
-  },
-};
-
-/**
  * GitHub 中文翻译性能监控组件
  * @file performanceMonitor.js
- * @version 1.13.2
+ * @version 1.13.34
  * @date 2026-09-23
  * @author Sut
  * @description 性能监控区域组件
@@ -4746,6 +4681,75 @@ function exportPerformanceStats() {
   }
   return null;
 }
+
+/**
+ * 配置界面数据持久化模块
+ * @file src/userscript/ui/configUI/store.js
+ */
+
+const CONFIG_STORAGE_KEY = 'github-i18n-config';
+
+const configStore = {
+  loadUserSettings() {
+    try {
+      const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
+      if (!saved) return {};
+
+      // 尝试解码混淆的数据
+      const decoded = utils.deobfuscateData(saved);
+      if (decoded) {
+        return JSON.parse(decoded);
+      }
+
+      // 如果解码失败，尝试直接解析（兼容旧格式）
+      try {
+        return JSON.parse(saved);
+      } catch (_e) {
+        return {};
+      }
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 加载用户配置失败:', utils.sanitizeErrorMessage(error));
+      }
+      return {};
+    }
+  },
+
+  saveUserSettings(settings) {
+    try {
+      const jsonData = JSON.stringify(settings);
+      // 混淆存储配置数据
+      const obfuscatedData = utils.obfuscateData(jsonData);
+      localStorage.setItem(CONFIG_STORAGE_KEY, obfuscatedData);
+    } catch (error) {
+      if (CONFIG.debugMode) {
+        console.error('[GitHub 中文翻译] 保存用户配置失败:', utils.sanitizeErrorMessage(error));
+      }
+    }
+  },
+
+  resetUserSettings() {
+    localStorage.removeItem(CONFIG_STORAGE_KEY);
+  },
+
+  mergeUserConfig(target, source) {
+    const merge = (t, s) => {
+      for (const key in s) {
+        if (Object.prototype.hasOwnProperty.call(s, key)) {
+          if (s[key] && typeof s[key] === 'object' && !Array.isArray(s[key])) {
+            if (!t[key]) t[key] = {};
+            merge(t[key], s[key]);
+          } else {
+            t[key] = s[key];
+          }
+        }
+      }
+      return t;
+    };
+
+    return merge(target, source);
+  },
+};
 
 /**
  * 配置界面渲染模块
@@ -5787,7 +5791,7 @@ const pageMonitorCache = {
 /**
  * 路径变化监听模块
  * @file pageMonitor/pathListener.js
- * @version 1.9.21
+ * @version 1.13.34
  * @date 2026-06-10
  * @author Sut
  * @description 监听URL路径变化
@@ -6754,7 +6758,7 @@ const translationTrigger = {
 /**
  * 页面监控主模块
  * @file pageMonitor/index.js
- * @version 1.9.21
+ * @version 1.13.34
  * @date 2026-06-10
  * @author Sut
  * @description 页面监控主入口，整合所有子模块
@@ -6857,7 +6861,7 @@ const pageMonitor = {
 /**
  * 脚本生命周期管理器
  * @file src/userscript/main/lifecycle.js
- * @version 1.13.28
+ * @version 1.13.34
  * @date 2026-11-06
  * @author Sut
  * @description 管理 init / start / cleanup 生命周期编排：翻译核心、页面监控与 UI 的启停

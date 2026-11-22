@@ -1,7 +1,7 @@
 /**
  * 虚拟DOM节点模块
  * @file virtualNode.js
- * @version 1.9.21
+ * @version 1.13.34
  * @date 2026-06-10
  * @author Sut
  * @description 虚拟DOM节点类，表示一个DOM元素的虚拟映射
@@ -92,8 +92,10 @@ class VirtualNode {
   }
 
   hasContentChanged() {
+    // updateContentHash 会写回 this.contentHash，必须先保存旧值再比较，否则恒为 false
+    const previousHash = this.contentHash;
     const newHash = this.updateContentHash();
-    return newHash !== this.contentHash;
+    return newHash !== previousHash;
   }
 
   hasAttributesChanged() {

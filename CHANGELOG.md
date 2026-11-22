@@ -1,4 +1,44 @@
 # Changelog
+## [1.13.34] - 2026-11-22
+
+### Fixed（用户脚本引擎）
+- `elementTranslator`：子元素摘出到 fragment 后，若无可翻译内容或处理异常提前返回，整棵子树会永久从 DOM 消失；现记录原锚点并在所有提前返回/异常路径恢复。
+- `mutationAnalyzer` + `elementChecker`：`isElementIgnored` 与 `isElementImportant` 共用同一 WeakMap 缓存，前者写入的 `false` 让重要元素判定永远失效；现使用独立缓存。
+- `virtualNode.hasContentChanged`：`updateContentHash` 先写回再比较导致恒为 `false`，PJAX 页面内容更新后旧译文残留；现先保存旧哈希再比较。
+- `lifecycle`：初始 `translate()` 未捕获 Promise rejection；`visibilitychange` 处理器挂 `window` 且重复 init 叠加监听；现显式捕获并改为模块级引用。
+- `configUI.handleSave`：4 个开关写入 CONFIG 顶层键而消费方读 `performance.*` / `updateCheck.enabled`，设置无效；现映射到正确路径。
+- `perfPanel`：仅依赖 debug 模式才挂载的 `window.translationCore`，默认安装后统计恒为 `-`；现直接导入核心。刷新/导出按钮曾被注册两次导致重复执行；去重。
+- `errorHandler`：词典错误恢复调用不存在的 `initDictionary()`，紧急措施自身崩溃；改为调用 `dictionaryManager.init()`。网络间隔 `Math.max(x, 5000)` 恒为上限；改为 `Math.min`。
+- `batchProcessor`：后台标签页中 `requestAnimationFrame` 被暂停会让批处理 Promise 永久挂起；改用 `setTimeout`。
+- `dictionaryManager` / `partialTranslator` / `cacheController`：非字符串词典值触发 `.startsWith` 异常、导致整本词典被清空；统一加类型守卫。
+- `pathListener`：`history.pushState/replaceState` 重复包装且 cleanup 不还原；现保存原函数、init 前先还原、stop() 释放 patch，并跳过无路径变化的回调。
+
+### Fixed（API / 安全）
+- `/api/collect`、`/api/batch-collect`：请求体无上限（`req.text()` 一次性读入），可被超大 JSON 打满内存与磁盘；新增流式限额读取（1 MiB，超限 413），`data` 字段同步限长。
+- `/api/dictionary/suggest`：`term` 无长度上限，配置 LLM key 时超大原文进入付费请求；限制 200 字符。
+- `api-guard`：鉴权失败不计入限流，可无限枚举 Bearer 令牌；限流前移到鉴权之前。令牌比较改为 SHA-256 定长摘要，消除长度侧信道。
+- `collect-service-client`：上游 401/网络错误一律静默回退，绕过采集服务的资源隔离；新增 `COLLECT_SERVICE_STRICT=1` 严格模式（默认关闭，保持兼容），开启时透传上游错误。
+- `browser-semaphore`：等待浏览器槽位时不支持取消，断连客户端仍占槽并可能无谓启动 Chromium；支持 AbortSignal 并从队列移除。
+- SSE：`error` 事件下发原始异常消息（含绝对路径/内部错误码）；改为通用文案，详细错误只写服务端日志。
+- `processRawData`：文本采集不产出 `progress` 事件、错误后进度不复位，UI 状态与实际不符；补进度事件并在 error 分支复位。
+- 词库管理搜索结果无上限渲染（单字符命中上千条会卡死）；限制 200 条并提示，导出仍用完整匹配集。
+
+### Fixed（服务端 / CI / 工具链）
+- CI 发布：幂等护栏在 tag push 时必然命中「tag 已存在」，导致 tag 驱动发布 100% 静默跳过；分支 push 才执行护栏。workflow 级并发取消会连带取消 release（连推 main 丢发布）；移除该配置，release 保留独立并发组。release 改为下载 build 作业已验证产物，不再二次构建。顶层补 `contents: read` 最小权限。
+- `check-version-consistency.cjs`：只比对 package.json 与 CHANGELOG，漏掉 `version.js`；现三源一致性校验（发布标签与脚本头部版本不再可能脱节）。
+- 独立采集服务：无 SIGTERM/SIGINT 钩子导致 Chromium 子进程残留；现优雅关闭（停监听 → 关浏览器池 → 强制超时兜底）。`app.listen` 补 error 监听，端口占用时明确退出。
+- `build.cjs`：主入口缺失时静默 `continue` 并 exit 0；现构建失败。`transform.cjs`：多行/单行 re-export `} from './x'` 结束正则不识别，后续顶层代码被静默吞掉；已修正。
+- `collect-history.cjs`：直接覆盖写，进程被杀会留下半截 JSON 且解析失败静默清空；改原子写入 + 损坏文件 `.corrupt.bak` 备份。
+- `dict-report.cjs`：写入词条带引号、读回不剥离，增量统计每轮误报「全新增/全移除」；读写对称并修复注入路径未生效问题。
+- `Trie`：insert 按 Unicode code point、findAllMatches 按 UTF-16 code unit，emoji 键部分匹配永远失效；统一遍历口径。
+- `collect-dict.cjs`：缺参数时 `exit 0` 误导 CI；改 `exit 1`。
+- `collector-core.js` 超过 200 行，按职责拆出 `src/lib/collect-errors.js`（错误脱敏工具），公开 API 不变。
+
+### Tests
+- 新增回归用例：Trie emoji 键匹配、浏览器槽位 AbortSignal 取消、待翻译报告增量统计引号对称性（178 用例全通过）。
+
+---
+
 ## [1.13.33] - 2026-11-22
 
 ### Added

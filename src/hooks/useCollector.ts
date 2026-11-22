@@ -1,7 +1,7 @@
 /**
  * 采集状态管理 Hook
  * @file src/hooks/useCollector.ts
- * @version 1.13.28
+ * @version 1.13.34
  * @description 负责发起采集请求、解析 SSE 事件流并维护日志/词条/进度状态；
  *   done 事件需区分成功与失败，避免子进程异常退出时误报 100% 完成
  */
@@ -68,6 +68,8 @@ export function useCollector() {
       }
       if (event.type === 'error' && event.message) {
         hasErrorRef.current = true;
+        // 错误时立即复位进度：超时候不再下发 done，progress 会永久停留在 fetch/analyze
+        setProgress(IDLE_PROGRESS);
         addLog('error', event.message, event.code);
         return;
       }

@@ -1,7 +1,7 @@
 /**
  * 文本采集 SSE 接口
  * @file src/app/api/collect/route.ts
- * @version 1.12.12
+ * @version 1.13.34
  * @date 2026-09-30
  * @description POST /api/collect：鉴权后读取并校验一次请求体；配置 COLLECT_SERVICE_URL
  *   时代理独立采集服务的 SSE 流，代理不可用时用已解析数据回退本地采集（默认行为不变）。
@@ -11,6 +11,7 @@ import { processRawData } from '@/lib/collector-logic';
 import { createSseResponse } from '@/lib/sse-stream';
 import { checkApiAccess } from '@/lib/api-guard';
 import { proxyCollectRequest } from '@/lib/collect-service-client';
+import { MAX_COLLECT_BODY_BYTES, readLimitedBody } from '@/lib/request-body-limit';
 
 export const runtime = 'nodejs';
 
@@ -19,7 +20,14 @@ export async function POST(req: NextRequest) {
   if (denied) return denied;
 
   // 请求体只读取一次：原始字符串供代理转发，解析结果供本地回退，避免二次消费 body 流
-  const raw = await req.text();
+  const limited = await readLimitedBody(req, MAX_COLLECT_BODY_BYTES);
+  if (!limited.ok) {
+    return new Response(JSON.stringify({ error: limited.error }), {
+      status: limited.status,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  const raw = limited.text;
   let data: unknown;
   try {
     ({ data } = JSON.parse(raw));

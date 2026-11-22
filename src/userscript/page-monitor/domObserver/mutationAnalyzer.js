@@ -82,17 +82,18 @@ export function isMutationContentRelated(mutation, pageMode) {
   }
 }
 
-export function calculateMutationWeights(mutation, pageMode, elementCheckCache) {
+export function calculateMutationWeights(mutation, pageMode, elementCheckCaches) {
   const config = PAGE_MODE_THRESHOLDS[pageMode] || PAGE_MODE_THRESHOLDS.search;
+  const caches = elementCheckCaches || {};
   let contentChanges = 0;
   let importantChanges = 0;
   let shouldTrigger = false;
 
   if (mutation.target) {
-    const isIgnored = isElementIgnored(mutation.target, [], elementCheckCache, pageMode);
+    const isIgnored = isElementIgnored(mutation.target, [], caches.ignoredCache, pageMode);
 
     if (!isIgnored) {
-      const isImportant = isElementImportant(mutation.target, [], elementCheckCache, pageMode);
+      const isImportant = isElementImportant(mutation.target, [], caches.importantCache, pageMode);
 
       if (isImportant) {
         shouldTrigger = true;
@@ -121,7 +122,10 @@ export function calculateMutationWeights(mutation, pageMode, elementCheckCache) 
 }
 
 export function processMutationBatch(mutations, maxCheckCount, pageMode) {
-  const elementCheckCache = new WeakMap();
+  // ignored / important 是两个独立的布尔判定，不能共用同一个 WeakMap：
+  // 否则先写入的 ignored=false 会让 isElementImportant 直接命中，重要元素永远无法触发翻译
+  const ignoredCache = new WeakMap();
+  const importantCache = new WeakMap();
   let totalContentChanges = 0;
   let totalImportantChanges = 0;
 
@@ -135,7 +139,10 @@ export function processMutationBatch(mutations, maxCheckCount, pageMode) {
       continue;
     }
 
-    const result = calculateMutationWeights(mutation, pageMode, elementCheckCache);
+    const result = calculateMutationWeights(mutation, pageMode, {
+      ignoredCache,
+      importantCache,
+    });
     totalContentChanges += result.contentChanges;
     totalImportantChanges += result.importantChanges;
 

@@ -2,7 +2,7 @@
 /**
  * 词库管理台（T19 审阅 / T24 导入导出 / T25 搜索批量 / T20 合并入库 / T23 历史对比）
  * @file src/components/dictionary/Manager.tsx
- * @version 1.13.22
+ * @version 1.13.34
  * @date 2026-11-04
  * @author Sut
  * @description 编排层：搜索 / 排序 / 批量 / 审阅 + 子组件 DictTable（展示）、
@@ -18,6 +18,7 @@ import HistoryCompare from './HistoryCompare';
 
 const REVIEW_KEY = 'ghzh:dict-review';
 const LIMIT = 200;
+const SEARCH_LIMIT = 200;
 
 interface ManagerProps {
   dictionary: Record<string, string>;
@@ -53,7 +54,10 @@ export default function Manager({ dictionary, stats, history }: ManagerProps) {
     () => sortEntries(filterEntries(allEntries, query), sortBy, sortDir),
     [allEntries, query, sortBy, sortDir],
   );
-  const shown = query.trim() ? visible : visible.slice(0, LIMIT);
+  // 搜索命中也可能上千条：无上限挂载 <div role=row> 会卡死主线程，统一限制渲染数量
+  const shown = visible.slice(0, query.trim() ? SEARCH_LIMIT : LIMIT);
+  // 导出保留完整匹配集（搜索态不应因渲染上限而漏导出）
+  const exportEntries = query.trim() ? visible : shown;
 
   function persistReview(next: Set<string>) {
     setReviewed(next);
@@ -141,7 +145,7 @@ export default function Manager({ dictionary, stats, history }: ManagerProps) {
 
       <p className='meta'>
         {query.trim()
-          ? `匹配 ${visible.length} 条`
+          ? `匹配 ${visible.length} 条（显示前 ${shown.length} 条，导出仍为全部匹配）`
           : `显示前 ${Math.min(LIMIT, visible.length)} / 共 ${visible.length} 条（输入关键字查看全部）`}
         {shownSelectedCount > 0 ? `，当前视图已选 ${shownSelectedCount} 条` : ''}
       </p>
@@ -154,7 +158,12 @@ export default function Manager({ dictionary, stats, history }: ManagerProps) {
         onToggleReview={toggleReview}
       />
 
-      <ExportBar dictionary={dictionary} reviewed={reviewed} selected={selected} shown={shown} />
+      <ExportBar
+        dictionary={dictionary}
+        reviewed={reviewed}
+        selected={selected}
+        shown={exportEntries}
+      />
       <MergePatchPanel dictionary={dictionary} />
       <HistoryCompare history={history} />
     </div>

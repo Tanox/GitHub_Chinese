@@ -1,13 +1,14 @@
 /**
  * GitHub 中文翻译性能监控组件
  * @file performanceMonitor.js
- * @version 1.13.2
+ * @version 1.13.34
  * @date 2026-09-23
  * @author Sut
  * @description 性能监控区域组件
  */
 
 import { VERSION } from '../../version.js';
+import { translationCore } from '../../translation-core/index.js';
 
 /** 无数据时按钮反馈文案的自动复位时长（毫秒） */
 const NO_DATA_FEEDBACK_MS = 1500;
@@ -129,8 +130,8 @@ export function createPerformanceMonitoringSection() {
 export function updatePerformanceStats() {
   if (window.isPageUnloading) return;
 
-  if (window.translationCore && window.translationCore.getPerformanceStats) {
-    const stats = window.translationCore.getPerformanceStats();
+  if (translationCore && typeof translationCore.getPerformanceStats === 'function') {
+    const stats = translationCore.getPerformanceStats();
 
     const durationEl = document.getElementById('github-i18n-stat-duration');
     if (durationEl) durationEl.textContent = `${stats.totalDuration} ms`;
@@ -166,8 +167,8 @@ export function updatePerformanceStats() {
  * @returns {Object} 性能数据对象
  */
 export function exportPerformanceStats() {
-  if (window.translationCore && window.translationCore.getPerformanceStats) {
-    const stats = window.translationCore.getPerformanceStats();
+  if (translationCore && typeof translationCore.getPerformanceStats === 'function') {
+    const stats = translationCore.getPerformanceStats();
     const exportData = {
       timestamp: new Date().toISOString(),
       version: VERSION,

@@ -34,6 +34,16 @@ test('findAllMatches 受 minKeyLength 约束', () => {
   assert.equal(trie.findAllMatches('Go to', 3).length, 0, 'minKeyLength=3 应排除 Go');
 });
 
+test('findAllMatches 命中含 emoji（非 BMP）的键', () => {
+  const trie = new Trie();
+  trie.insert('状态 👍 已发布', '已发布');
+  const matches = trie.findAllMatches('当前状态 👍 已发布');
+  assert.ok(
+    matches.some((m) => m.key === '状态 👍 已发布'),
+    '插入与查询必须统一按 UTF-16 code unit 遍历，否则 emoji 键永远匹配不到',
+  );
+});
+
 test('findAllMatches 空文本返回空数组', () => {
   const trie = new Trie();
   trie.insert('x', 'X');

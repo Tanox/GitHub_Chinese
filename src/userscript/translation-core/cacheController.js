@@ -104,9 +104,10 @@ export const cacheController = {
 
     try {
       const commonKeys = Object.keys(dictionaryManager.dictionary)
-        .filter(
-          (key) => !dictionaryManager.dictionary[key].startsWith('待翻译: ') && key.length <= 50,
-        )
+        .filter((key) => {
+          const value = dictionaryManager.dictionary[key];
+          return typeof value === 'string' && !value.startsWith('待翻译: ') && key.length <= 50;
+        })
         .slice(0, 100);
 
       commonKeys.forEach((key) => {

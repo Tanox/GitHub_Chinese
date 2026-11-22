@@ -1,7 +1,7 @@
 /**
  * SSE 流式响应工厂（采集工作台公共样板）
  * @file src/lib/sse-stream.ts
- * @version 1.13.28
+ * @version 1.13.34
  * @description 将「客户端断连取消 + 心跳保活 + 错误兜底 + 收尾关闭」的 SSE 样板
  *   抽离为单一工厂，供 `/api/collect` 与 `/api/batch-collect` 复用（S2）。
  *   调用方只需提供一个根据取消信号产出采集事件的生成器。
@@ -53,7 +53,9 @@ export function createSseResponse(
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
         }
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : '未知错误';
+        // 详细错误只写服务端日志；下发的文案不暴露绝对路径与内部错误码
+        console.error('[sse] 采集事件流异常:', err);
+        const message = '采集过程发生错误，请稍后重试';
         // 流可能已因客户端断开而出错，enqueue 需自兜底，避免错误分支二次抛异常
         try {
           controller.enqueue(

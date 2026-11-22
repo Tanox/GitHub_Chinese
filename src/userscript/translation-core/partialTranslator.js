@@ -1,7 +1,7 @@
 /**
  * 部分匹配翻译模块
  * @file src/userscript/translation-core/partialTranslator.js
- * @version 1.9.26
+ * @version 1.13.34
  * @date 2026-09-22
  * @author Sut
  * @description 使用 Trie 树进行部分匹配翻译；查询上下文由调用方注入，避免与 dictionaryManager 形成循环依赖
@@ -32,14 +32,14 @@ export const partialTranslator = {
 
     for (const match of potentialMatches) {
       const key = match.key;
+      const value = store.dictionary[key];
       if (
         !Object.prototype.hasOwnProperty.call(store.dictionary, key) ||
-        store.dictionary[key].startsWith('待翻译: ')
+        typeof value !== 'string' ||
+        value.startsWith('待翻译: ')
       ) {
         continue;
       }
-
-      const value = store.dictionary[key];
 
       if (/^[0-9.,\s()[\]{}/*^$#@!~`|:;"'?>+-]+$/i.test(key)) {
         continue;

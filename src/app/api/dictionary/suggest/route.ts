@@ -1,7 +1,7 @@
 /**
  * 翻译建议接口（T21）
  * @file src/app/api/dictionary/suggest/route.ts
- * @version 1.12.10
+ * @version 1.13.34
  * @date 2026-09-30
  * @description GET /api/dictionary/suggest?term=... 返回建议译文。
  *   翻译记忆优先；配置 GHZH_LLM_KEY 时额外调用 LLM 增强，无 key 则降级跳过。
@@ -16,6 +16,9 @@ import { checkApiAccess } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
+/** term 最大长度（字符数）：正常词条远小于此值 */
+const MAX_TERM_LENGTH = 200;
+
 export async function GET(req: NextRequest) {
   // 先鉴权/限流再解析参数：配置令牌后拒绝匿名访问，默认开启每 IP 限流封顶 LLM 消耗
   const denied = checkApiAccess(req);
@@ -24,6 +27,13 @@ export async function GET(req: NextRequest) {
   const term = req.nextUrl.searchParams.get('term')?.trim() ?? '';
   if (!term) {
     return new Response(JSON.stringify({ error: '缺少 term 参数' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  // 限制输入长度：开启 GHZH_LLM_KEY 时原文会进入付费 LLM 请求体，避免超大输入抬高成本
+  if (term.length > MAX_TERM_LENGTH) {
+    return new Response(JSON.stringify({ error: `term 参数不能超过 ${MAX_TERM_LENGTH} 个字符` }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
