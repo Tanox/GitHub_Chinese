@@ -1,6 +1,6 @@
 # 代码审查快速检查清单 (Quick Checklist)
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.35** ｜ 版本权威源：`src/userscript/version.js`
 >
 > 本清单由 [STANDARDS.md](./STANDARDS.md) 派生，供审查时快速逐项核对；判定语义以标准为唯一权威。打印或在第二屏保持打开均可。
 

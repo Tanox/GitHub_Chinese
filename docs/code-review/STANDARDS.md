@@ -1,6 +1,6 @@
 # 代码审查标准 (Code Review Standards)
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.35** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**审查判定语义的唯一权威**（问题优先级、检查清单、项目特定规范、审查意见示例）。流程 / 角色 / SLA / 指标见 [PROCESS.md](./PROCESS.md)，快速清单见 [CHECKLIST.md](./CHECKLIST.md)；编码规范本身以 [coding-style.md](../coding-style.md) 为准，本文不复制其正文。
 

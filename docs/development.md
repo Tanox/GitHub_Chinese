@@ -1,8 +1,12 @@
 # 开发流程规范
 
-> 版本：**v1.13.34** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.35** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**分支策略、提交信息、代码审查流程、质量门禁、测试与发布流程的唯一权威正文**。编码风格与命名见 [coding-style.md](./coding-style.md)，文档权威来源分工见 [docs/README.md](./README.md)。
+
+**适用范围**：全部贡献者、维护者与 CI 流水线（`.github/workflows/ci-cd.yml`）。
+**约束等级**（定义见 [docs/README.md §1.2](./README.md)）：§3 分支保护、§4 提交格式、§6 质量门禁、§8 发布清单为**强制**；§5 审查响应 SLA 与 §7 测试编写建议为**推荐**（其中「CI 全绿 + 1 approval」为强制合并前置）；§2 命令表为**参考**，以 `package.json` 的 `scripts` 为准。
+**优先级**：冲突时按 [docs/README.md §1.3](./README.md) 裁决；配置文件（CI / ESLint / 门禁脚本）是最终事实来源。
 
 ## 目录
 

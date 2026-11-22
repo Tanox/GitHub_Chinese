@@ -1,6 +1,6 @@
 # GitHub Chinese 简体中文 · 词典采集工作台原型设计
 
-> 版本：**v1.13.34** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.35** ｜ 版本权威源：`src/userscript/version.js`
 >
 > 说明：本文档描述「词典采集工作台」的原型规格与其真实实现映射。可交互高保真原型位于 [`prototype/`](../prototype/)：[高保真原型（采集流程）](../prototype/prototype.html) 与 [组件库规范 Wireframes](../prototype/wireframes.html)。
 >

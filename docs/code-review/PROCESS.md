@@ -1,6 +1,6 @@
 # 代码审查流程规范 (Code Review Process)
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.35** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是**审查角色、审查流程、响应 SLA 与流程健康度指标的唯一权威正文**。审查判定标准见 [STANDARDS.md](./STANDARDS.md)，可执行清单见 [CHECKLIST.md](./CHECKLIST.md)，本地与仓库配置操作见 [SETUP_GUIDE.md](./SETUP_GUIDE.md)；分支 / 提交 / CI 的流程规范以 [development.md](../development.md) 为准，本文不复制。
 

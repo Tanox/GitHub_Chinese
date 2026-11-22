@@ -1,6 +1,6 @@
 # 代码审查体系配置指南 (Setup Guide)
 
-> 版本：**v1.13.32** ｜ 版本权威源：`src/userscript/version.js`
+> 版本：**v1.13.35** ｜ 版本权威源：`src/userscript/version.js`
 
 本文是审查体系**仓库配置的操作手册**（分支保护、CODEOWNERS、模板的启用与排障）。标准与流程正文见 [STANDARDS.md](./STANDARDS.md) 与 [PROCESS.md](./PROCESS.md)。审查体系文件均已提交入库，本文只描述现状与运维操作。
 
@@ -51,7 +51,7 @@ CI 作业明细见 [development.md §6](../development.md)；工作流唯一权�
 - `.github/pull_request_template.md`：PR 创建时自动填充；
 - `.github/ISSUE_TEMPLATE/`：`bug_report` / `feature_request` 两个模板。
 
-模板内容如需调整直接修改文件；规范正文一律引用 `docs/` 的 SSOT 文件，不在模板中复制（见 [docs/README.md §5](../README.md)）。
+模板内容如需调整直接修改文件；规范正文一律引用 `docs/` 的 SSOT 文件，不在模板中复制（见 [docs/README.md §2](../README.md)）。
 
 ## 新成员上手
 
